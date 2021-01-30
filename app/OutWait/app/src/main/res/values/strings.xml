@@ -15,4 +15,7 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="reset_password">Reset</string>
     <string name="reset_text">Enter your name in order to send a new password trough your email</string>
+    <string name="pause_text">Free time</string>
+    <string name="slotcode">Slotcode</string>
+    <string name="identifier">Identifier</string>
 </resources>
