@@ -11,19 +11,20 @@ import elite.kit.outwait.recyclerviewSetUp.viewHolder.PauseSlotViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.SpontaneousSlotViewHolder
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 
-class SlotAdapter(slotList: LiveData<List<TimeSlot>>): RecyclerView.Adapter<BaseViewHolder<*>>() {
-    var slotList=slotList
-    set(value) {
-        field=value
-        notifyDataSetChanged()
-    }
+class SlotAdapter(slotList: LiveData<List<TimeSlot>>) : RecyclerView.Adapter<BaseViewHolder<*>>() {
+    var slotList = slotList
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
         return when (viewType) {
             Type.SPONTANEOUS_SLOT.value ->
                 SpontaneousSlotViewHolder(
-                    LayoutInflater.from(parent.context).inflate(R.layout.spontaneous_slot, parent, false)
+                    LayoutInflater.from(parent.context)
+                        .inflate(R.layout.spontaneous_slot, parent, false)
                 )
             Type.FIXED_SLOT.value ->
                 FixedSlotViewHolder(
@@ -53,13 +54,7 @@ class SlotAdapter(slotList: LiveData<List<TimeSlot>>): RecyclerView.Adapter<Base
 
     override fun getItemViewType(position: Int): Int {
         val item = slotList.value!![position]
-        return when (item) {
-
-            //TODO überschreiben mit getType
-            is SpontaneousTimeSlot -> Type.SPONTANEOUS_SLOT.value
-            is FixedTimeSlot -> Type.FIXED_SLOT.value
-            is Pause -> Type.PAUSE.value
-            else -> Type.DEFAULT.value
-        }
+        return item.getType()
     }
 }
+

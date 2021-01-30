@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import elite.kit.outwait.R
@@ -34,7 +36,7 @@ class managmentViewFragment : Fragment() {
         //RecyclerView SetUp
         binding.slotList.layoutManager = LinearLayoutManager(activity)
         binding.slotList.setHasFixedSize(true)
-        slotAdapter = SlotAdapter(viewModel.slotList)
+        //slotAdapter = SlotAdapter(fakeSlotList())
 
         //TODO sync with data from repository
 //        viewModel.slotList.observe(viewLifecycleOwner, Observer {
@@ -44,23 +46,23 @@ class managmentViewFragment : Fragment() {
         return binding.root
     }
 
-    private fun fakeSlotList(): MutableList<TimeSlot> {
-        var slotList = mutableListOf<TimeSlot>()
+    private fun fakeSlotList(): LiveData<MutableList<TimeSlot>> {
+        var slotList = MutableLiveData<MutableList<TimeSlot>>()
 
         for (i in 1..1) {
-            slotList.add(FixedTimeSlot())
+            slotList.value!!.add(FixedTimeSlot())
         }
 
         for (i in 1..3) {
-            slotList.add(Pause())
+            slotList.value!!.add(Pause())
         }
 
         for (i in 1..1) {
-            slotList.add(FixedTimeSlot())
+            slotList.value!!.add(FixedTimeSlot())
         }
 
         for (i in 1..1) {
-            slotList.add(SpontaneousTimeSlot())
+            slotList.value!!.add(SpontaneousTimeSlot())
         }
         return slotList
     }

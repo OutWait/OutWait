@@ -6,8 +6,9 @@ import elite.kit.outwait.R
 import elite.kit.outwait.waitingQueue.timeSlotModel.Pause
 
 class PauseSlotViewHolder(private var itemView: View):BaseViewHolder<Pause>(itemView) {
+    private var pauseTextView = itemView.findViewById<TextView>(R.id.tvPause)
     override fun bind(item: Pause) {
-        TODO("Not yet implemented")
+        pauseTextView.text="Free time"
     }
 
 }
