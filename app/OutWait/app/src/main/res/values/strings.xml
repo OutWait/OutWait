@@ -13,4 +13,6 @@
     <string name="hint_name">Name</string>
     <string name="hint_password">Password</string>
     <string name="forgot_password">Forgot password?</string>
+    <string name="reset_password">Reset</string>
+    <string name="reset_text">Enter your name in order to send a new password trough your email</string>
 </resources>

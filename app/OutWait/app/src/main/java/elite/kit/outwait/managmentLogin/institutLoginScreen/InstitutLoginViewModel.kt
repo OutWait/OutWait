@@ -19,7 +19,8 @@ class InstitutLoginViewModel : ViewModel() {
     }
 
     fun loginTried(){
-        Log.i("login","$username + $password")
+        if(username.isNotEmpty() && password.isNotEmpty()){
+        Log.i("login","$username + $password")}
     }
 
     fun passwordForgottenString(){
