@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/navigation">
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/navigation"
+    app:startDestination="@id/institutLoginFragment">
 
+    <fragment
+        android:id="@+id/institutLoginFragment"
+        android:name="elite.kit.outwait.managmentLogin.institutLoginScreen.InstitutLoginFragment"
+        android:label="InstitutLoginFragment" >
+        <action
+            android:id="@+id/action_institutLoginFragment_to_passwordForgotFragment"
+            app:destination="@id/passwordForgotFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/passwordForgotFragment"
+        android:name="elite.kit.outwait.managmentLogin.passwordForgottenScreen.passwordForgotFragment"
+        android:label="passwordForgotFragment" />
 </navigation>

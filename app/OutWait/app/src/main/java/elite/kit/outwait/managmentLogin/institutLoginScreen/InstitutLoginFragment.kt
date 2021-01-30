@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.findNavController
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.InstitutLoginFragmentBinding
 
@@ -24,6 +25,11 @@ class InstitutLoginFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(InstitutLoginViewModel::class.java)
         binding = DataBindingUtil.inflate(inflater, R.layout.institut_login_fragment, container, false)
         binding.viewModel=this.viewModel
+
+        //navigate to ForgottenPasswordFragment
+        binding.tvPasswordForgotten.setOnClickListener { view->
+            view.findNavController().navigate(R.id.action_institutLoginFragment_to_passwordForgotFragment)
+        }
         return binding.root
     }
 
