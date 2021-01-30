@@ -23,6 +23,7 @@ class InstitutLoginFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         viewModel = ViewModelProvider(this).get(InstitutLoginViewModel::class.java)
         binding = DataBindingUtil.inflate(inflater, R.layout.institut_login_fragment, container, false)
+        binding.viewModel=this.viewModel
         return binding.root
     }
 

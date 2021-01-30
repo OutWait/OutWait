@@ -1,40 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-<FrameLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".managmentLogin.institutLoginScreen.InstitutLoginFragment">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="elite.kit.outwait.managmentLogin.institutLoginScreen.InstitutLoginViewModel" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <Button
+            android:id="@+id/btnLogin"
             android:layout_width="103dp"
             android:layout_height="51dp"
-            tools:layout_editor_absoluteX="142dp"
-            tools:layout_editor_absoluteY="456dp"></Button>
+            android:layout_marginBottom="184dp"
+            android:onClick="@{() -> viewModel.loginTried()}"
+            android:text="@string/sign_in"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/etPassword"
+            app:layout_constraintHorizontal_bias="0.504"
+            app:layout_constraintStart_toStartOf="@+id/etPassword" />
 
         <EditText
-            android:id="@+id/editTextNumberPassword"
+            android:id="@+id/etInstitutName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="236dp"
             android:ems="10"
-            android:inputType="numberPassword"
-            tools:layout_editor_absoluteX="88dp"
-            tools:layout_editor_absoluteY="275dp" />
-
-        <EditText
-            android:id="@+id/editTextTextPersonName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
+            android:hint="@string/hint_name"
             android:inputType="textPersonName"
-            android:text="Name"
-            tools:layout_editor_absoluteX="88dp"
-            tools:layout_editor_absoluteY="196dp" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:text="@={viewModel.username}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword"
+            android:text="@={viewModel.password}"
+            app:layout_constraintBottom_toTopOf="@+id/btnLogin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etInstitutName"
+            app:layout_constraintVertical_bias="0.364" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
