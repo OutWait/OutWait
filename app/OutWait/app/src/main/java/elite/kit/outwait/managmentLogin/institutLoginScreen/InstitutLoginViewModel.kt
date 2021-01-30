@@ -24,7 +24,7 @@ class InstitutLoginViewModel : ViewModel() {
 
     fun passwordForgottenString(){
         //TODO Check not empty
-        Log.i("forgot","$username")
+        Log.i("forgot","forgot password navigate to other fragment")
 
     }
 }
