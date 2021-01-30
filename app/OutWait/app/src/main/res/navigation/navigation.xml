@@ -11,9 +11,16 @@
             android:id="@+id/action_institutLoginFragment_to_passwordForgotFragment"
             app:destination="@id/passwordForgotFragment"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_institutLoginFragment_to_managmentViewFragment"
+            app:destination="@id/managmentViewFragment" />
     </fragment>
     <fragment
         android:id="@+id/passwordForgotFragment"
         android:name="elite.kit.outwait.managmentLogin.passwordForgottenScreen.passwordForgotFragment"
         android:label="passwordForgotFragment" />
+    <fragment
+        android:id="@+id/managmentViewFragment"
+        android:name="elite.kit.outwait.recyclerviewScreens.managmentViewScreen.managmentViewFragment"
+        android:label="managmentViewFragment" />
 </navigation>

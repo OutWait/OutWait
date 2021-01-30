@@ -30,6 +30,10 @@ class InstitutLoginFragment : Fragment() {
         binding.tvPasswordForgotten.setOnClickListener { view->
             view.findNavController().navigate(R.id.action_institutLoginFragment_to_passwordForgotFragment)
         }
+        //navigate to managementViewFragment
+        binding.btnLogin.setOnClickListener{
+            it.findNavController().navigate(R.id.action_institutLoginFragment_to_managmentViewFragment)
+        }
         return binding.root
     }
 
