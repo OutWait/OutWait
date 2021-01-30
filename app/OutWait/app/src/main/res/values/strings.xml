@@ -12,4 +12,5 @@
     <string name="sign_in">Sign in</string>
     <string name="hint_name">Name</string>
     <string name="hint_password">Password</string>
+    <string name="password_forgot">Password forgot?</string>
 </resources>

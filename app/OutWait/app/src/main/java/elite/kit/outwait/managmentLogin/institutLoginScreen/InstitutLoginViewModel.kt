@@ -22,7 +22,9 @@ class InstitutLoginViewModel : ViewModel() {
         Log.i("login","$username + $password")
     }
 
-    fun passwordForgottenString(username:String){
+    fun passwordForgottenString(){
+        //TODO Check not empty
+        Log.i("forgot","$username")
 
     }
 }

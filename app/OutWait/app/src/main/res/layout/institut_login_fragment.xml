@@ -17,12 +17,12 @@
             android:id="@+id/btnLogin"
             android:layout_width="103dp"
             android:layout_height="51dp"
-            android:layout_marginBottom="184dp"
+            android:layout_marginBottom="220dp"
             android:onClick="@{() -> viewModel.loginTried()}"
             android:text="@string/sign_in"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/etPassword"
-            app:layout_constraintHorizontal_bias="0.504"
+            app:layout_constraintHorizontal_bias="0.467"
             app:layout_constraintStart_toStartOf="@+id/etPassword" />
 
         <EditText
@@ -52,6 +52,19 @@
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etInstitutName"
-            app:layout_constraintVertical_bias="0.364" />
+            app:layout_constraintVertical_bias="0.711" />
+
+        <TextView
+            android:id="@+id/tvPasswordForgotten"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->viewModel.passwordForgottenString()}"
+            android:text="@string/password_forgot"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnLogin"
+            app:layout_constraintVertical_bias="0.223" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
