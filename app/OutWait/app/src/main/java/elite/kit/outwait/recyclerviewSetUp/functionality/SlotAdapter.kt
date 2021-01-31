@@ -3,6 +3,7 @@ package elite.kit.outwait.recyclerviewSetUp.functionality
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
@@ -11,19 +12,21 @@ import elite.kit.outwait.recyclerviewSetUp.viewHolder.PauseSlotViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.SpontaneousSlotViewHolder
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 
-class SlotAdapter(slotList: LiveData<List<TimeSlot>>): RecyclerView.Adapter<BaseViewHolder<*>>() {
-    var slotList=slotList
-    set(value) {
-        field=value
-        notifyDataSetChanged()
-    }
+class SlotAdapter(slotList: List<TimeSlot>) : RecyclerView.Adapter<BaseViewHolder<*>>() {
+    var slotList = slotList
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
         return when (viewType) {
             Type.SPONTANEOUS_SLOT.value ->
                 SpontaneousSlotViewHolder(
-                    LayoutInflater.from(parent.context).inflate(R.layout.spontaneous_slot, parent, false)
+                    LayoutInflater.from(parent.context)
+                        .inflate(R.layout.spontaneous_slot, parent, false)
                 )
             Type.FIXED_SLOT.value ->
                 FixedSlotViewHolder(
@@ -38,28 +41,23 @@ class SlotAdapter(slotList: LiveData<List<TimeSlot>>): RecyclerView.Adapter<Base
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
-        val element = slotList.value!![position]
-        when (holder) {
-            is SpontaneousSlotViewHolder -> holder.bind(element as SpontaneousTimeSlot)
-            is FixedSlotViewHolder -> holder.bind(element as FixedTimeSlot)
-            is PauseSlotViewHolder -> holder.bind(element as Pause)
+        val element = slotList!![position]
+        //TODO in bind cast element to its type
+        when (element.getType()) {
+             Type.SPONTANEOUS_SLOT.value-> holder.bind(element)
+            Type.FIXED_SLOT.value -> holder.bind(element)
+            Type.PAUSE.value -> holder.bind(element)
             else -> throw IllegalArgumentException()
         }
     }
 
     override fun getItemCount(): Int {
-        return slotList.value!!.size
+        return slotList!!.size
     }
 
     override fun getItemViewType(position: Int): Int {
-        val item = slotList.value!![position]
-        return when (item) {
-
-            //TODO überschreiben mit getType
-            is SpontaneousTimeSlot -> Type.SPONTANEOUS_SLOT.value
-            is FixedTimeSlot -> Type.FIXED_SLOT.value
-            is Pause -> Type.PAUSE.value
-            else -> Type.DEFAULT.value
-        }
+        val item = slotList!![position]
+        return item.getType()
     }
 }
+
