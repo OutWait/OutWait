@@ -16,6 +16,5 @@ class FixedSlotViewHolder(private var itemView: View):BaseViewHolder<FixedTimeSl
     override fun bind(item: TimeSlot) {
         identifier.text = (item as FixedTimeSlot).auxiliaryIdentifier
         slotCode.text = (item as FixedTimeSlot).slotCode
-        //TODO Appointmenttime ? oder in Detail
     }
 }

@@ -36,13 +36,11 @@ class SlotAdapter(slotList: List<TimeSlot>) : RecyclerView.Adapter<BaseViewHolde
                 PauseSlotViewHolder(
                     LayoutInflater.from(parent.context).inflate(R.layout.pause_slot, parent, false)
                 )
-
         }
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
         val element = slotList!![position]
-        //TODO in bind cast element to its type
         when (element.getType()) {
              Type.SPONTANEOUS_SLOT.value-> holder.bind(element)
             Type.FIXED_SLOT.value -> holder.bind(element)
