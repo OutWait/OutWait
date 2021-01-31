@@ -1,4 +1,4 @@
 package elite.kit.outwait.remoteDataSource
 
-class test16 {
+enum class ClientEvents {
 }
