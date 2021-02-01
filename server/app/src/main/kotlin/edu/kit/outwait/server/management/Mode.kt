@@ -1,7 +1,7 @@
-package edu.kit.outwait.management
+package edu.kit.outwait.server.management
 
 enum class Mode {
-    ONE
-    TWO
+    ONE,
+    TWO,
 }
 

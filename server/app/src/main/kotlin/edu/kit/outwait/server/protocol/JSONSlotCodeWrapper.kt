@@ -1,8 +1,12 @@
-package edu.kit.outwait.protocol
+package edu.kit.outwait.server.protocol
 
-class JSONSlotCodeWrapper : JSONObjectWrapper {
+import org.json.JSONObject
+
+import edu.kit.outwait.server.slot.SlotCode
+
+abstract class JSONSlotCodeWrapper : JSONObjectWrapper {
     constructor() {}
-    constructor(object: JSONObject) {}
+    constructor(obj: JSONObject) {}
     fun setSlotCode (slotCode: SlotCode) {}
-    fun getSlotCode(): SlotCode {}
+    fun getSlotCode(): SlotCode { return SlotCode("") }
 }

@@ -1,4 +1,4 @@
-package edu.kit.outwait.server
+package edu.kit.outwait.server.core
 
 class Server {
     val greeting: String

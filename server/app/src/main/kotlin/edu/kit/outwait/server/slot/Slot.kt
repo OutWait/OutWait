@@ -1,9 +1,12 @@
-package edu.kit.outwait.slot
+package edu.kit.outwait.server.slot
 
-class Slot {
-    slotCode: SlotCode
-    priority: Priority
-    approxTime: Date
-    expectedDuration: Duration
-    constructorTime: Date
-}
+import java.time.Duration
+import java.util.Date
+
+class Slot (
+    val slotCode: SlotCode,
+    val priority: Priority,
+    val approxTime: Date,
+    val expectedDuration: Duration,
+    val constructorTime: Date,
+)

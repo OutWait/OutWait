@@ -1,10 +1,20 @@
-package edu.kit.outwait.management
+package edu.kit.outwait.server.management
 
-class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapper) : core.AbstractManager {
-    private managements: List<Management>
-    private activeTransactions: HashSet<ManagementId>
-    private queueDelayTimes: List<Pair<Date, ManagementId>>
-    private nextDelayAlarm: Timer
+import java.util.Date
+import java.util.Timer
+
+import com.corundumstudio.socketio.SocketIONamespace
+import com.corundumstudio.socketio.SocketIOClient
+
+import edu.kit.outwait.server.core.AbstractManager
+import edu.kit.outwait.server.core.DatabaseWrapper
+import edu.kit.outwait.server.socketHelper.SocketFacade
+
+class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapper) : AbstractManager( databaseWrapper ) {
+    private val managements = listOf<Management>()
+    private val activeTransactions = hashSetOf<ManagementId>()
+    private val queueDelayTimes = listOf<Pair<Date, ManagementId>>()
+    private val nextDelayAlarm = Timer()
 
     fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade) {}
     fun removeManagement(management: Management) {}

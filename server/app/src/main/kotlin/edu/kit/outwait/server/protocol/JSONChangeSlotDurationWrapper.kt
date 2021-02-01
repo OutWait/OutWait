@@ -1,10 +1,14 @@
-package edu.kit.outwait.protocol
+package edu.kit.outwait.server.protocol
+
+import java.time.Duration
+
+import org.json.JSONObject
 
 class JSONChangeSlotDurationWrapper : JSONSlotCodeWrapper {
     constructor() {}
-    constructor(object: JSONObject) {}
+    constructor(obj: JSONObject) {}
     fun setNewDuration(duration: Duration) {}
-    fun getNewDuration(): Duration {}
+    fun getNewDuration(): Duration { return Duration.ZERO }
 }
 
 

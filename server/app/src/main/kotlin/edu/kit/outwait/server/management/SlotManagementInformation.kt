@@ -1,7 +1,9 @@
-package edu.kit.outwait.management
+package edu.kit.outwait.server.management
 
-class SlotManagementInformation {
-    details: ManagementDetails
-    notificationTime: Duration
-    delayNotificationTime: Duration
-}
+import java.time.Duration
+
+class SlotManagementInformation(
+    val details: ManagementDetails,
+    val notificationTime: Duration,
+    val delayNotificationTime: Duration,
+)

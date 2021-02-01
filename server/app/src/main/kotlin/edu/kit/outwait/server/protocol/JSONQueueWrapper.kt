@@ -1,8 +1,15 @@
-package edu.kit.outwait.protocol
+package edu.kit.outwait.server.protocol
+
+import org.json.JSONObject
+
+import edu.kit.outwait.server.management.Queue
+import edu.kit.outwait.server.management.ManagementId
+import edu.kit.outwait.server.management.QueueId
+import edu.kit.outwait.server.core.DatabaseWrapper
 
 class JSONQueueWrapper : JSONObjectWrapper {
     constructor() {}
-    constructor(object: JSONObject) {}
+    constructor(obj: JSONObject) {}
     fun setQueue(queue: Queue) {}
-    fun getQueue(): Queue {}
+    fun getQueue(): Queue { return Queue(ManagementId(0), QueueId(0), DatabaseWrapper()) }
 }
