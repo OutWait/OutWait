@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
 import elite.kit.outwait.waitingQueue.timeSlotModel.Type
 
-class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) : ItemTouchHelper.Callback() {
+class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
+    ItemTouchHelper.Callback() {
 
     private var oldPos: Int = 0
 
@@ -24,52 +25,53 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) : ItemTou
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
 
-            if (viewHolder.absoluteAdapterPosition < oldPos) {
-                //TODO implement skip also skipPauseSlots
-                //adapter.skipUp(viewHolder.absoluteAdapterPosition)
-            } else {
-                adapter.onItemMove(viewHolder.absoluteAdapterPosition, oldPos)
-            }
+        if (viewHolder.absoluteAdapterPosition < oldPos) {
+            //TODO implement skip also skipPauseSlots
+            adapter.skipPauseSlots(viewHolder.absoluteAdapterPosition)
+        } else {
+            adapter.onItemMove(viewHolder.absoluteAdapterPosition, oldPos)
+        }
 
 
-        viewHolder.itemView.setBackgroundColor(
-            ContextCompat.getColor(
-                viewHolder.itemView.context,
-                R.color.design_default_color_background
-            )
-        )
+//        viewHolder.itemView.setBackgroundColor(
+//            ContextCompat.getColor(
+//                viewHolder.itemView.context,
+//                 Color.parseColor("#F44336").toInt() )      )
     }
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
 
 
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-            viewHolder!!.itemView.setBackgroundColor(Color.BLUE)
-            oldPos = viewHolder.absoluteAdapterPosition
+           // viewHolder!!.itemView.setBackgroundColor(Color.YELLOW)
+            if (isViewHolderEnabledForSelect(viewHolder!!)) {
+                oldPos = viewHolder.absoluteAdapterPosition
+
+            }
         }
 
         super.onSelectedChanged(viewHolder, actionState)
 
     }
 
-    fun isViewHolderEnabledForDrag(viewHolder: RecyclerView.ViewHolder):Boolean{
-        return  when(viewHolder.itemViewType){
-            Type.SPONTANEOUS_SLOT.value-> true
-            else-> false
+    fun isViewHolderEnabledForDrag(viewHolder: RecyclerView.ViewHolder): Boolean {
+        return when (viewHolder.itemViewType) {
+            Type.SPONTANEOUS_SLOT.value -> true
+            else -> false
         }
     }
 
-    fun isViewHolderEnabledForSwipe(viewHolder: RecyclerView.ViewHolder):Boolean{
-        return  when(viewHolder.itemViewType){
-            Type.PAUSE.value-> false
-            else-> true
+    fun isViewHolderEnabledForSwipe(viewHolder: RecyclerView.ViewHolder): Boolean {
+        return when (viewHolder.itemViewType) {
+            Type.PAUSE.value -> false
+            else -> true
         }
     }
 
-    fun isViewHolderEnabledForSelect(viewHolder: RecyclerView.ViewHolder):Boolean{
-        return  when(viewHolder.itemViewType){
-            Type.PAUSE.value-> false
-            else-> true
+    fun isViewHolderEnabledForSelect(viewHolder: RecyclerView.ViewHolder): Boolean {
+        return when (viewHolder.itemViewType) {
+            Type.PAUSE.value -> false
+            else -> true
         }
     }
 
@@ -81,7 +83,7 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) : ItemTou
         var dragFlags = 0
         if (isViewHolderEnabledForDrag(viewHolder)) {
             dragFlags = ItemTouchHelper.UP.or(ItemTouchHelper.DOWN)
-            }
+        }
         var swiipeFlag = 0
         if (isViewHolderEnabledForSwipe(viewHolder)) {
             swiipeFlag = ItemTouchHelper.LEFT
