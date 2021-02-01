@@ -47,7 +47,7 @@ class managmentViewFragment : Fragment() {
         slotAdapter = SlotAdapter(fakeSlotList())
         var callback: ItemTouchHelper.Callback = SlotItemTouchHelper(slotAdapter)
         var itemTouchHelper: ItemTouchHelper = ItemTouchHelper(callback)
-        slotAdapter.setTouchHelpter(itemTouchHelper)
+        slotAdapter.setTouchHelper(itemTouchHelper)
         itemTouchHelper.attachToRecyclerView(binding.slotList)
         binding.slotList.adapter=slotAdapter
 
@@ -59,7 +59,7 @@ class managmentViewFragment : Fragment() {
         var slotList = mutableListOf<TimeSlot>()
 
         for (i in 1..1) {
-            slotList!!.add(FixedTimeSlot(22, "1234", "Hans", 600))
+            slotList!!.add(FixedTimeSlot(21,"4321", "Müller", 601))
         }
 
         for (i in 1..3) {
@@ -70,8 +70,8 @@ class managmentViewFragment : Fragment() {
             slotList!!.add(FixedTimeSlot(21,"4321", "Müller", 601))
         }
 
-        for (i in 1..1) {
-            slotList!!.add(SpontaneousTimeSlot(11, "333", "Frank"))
+        for (i in 1..3) {
+            slotList!!.add(SpontaneousTimeSlot(11, "33$i", "Frank"))
         }
         return slotList
     }

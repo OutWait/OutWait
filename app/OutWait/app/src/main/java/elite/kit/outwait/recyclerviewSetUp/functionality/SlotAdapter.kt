@@ -15,7 +15,7 @@ import elite.kit.outwait.recyclerviewSetUp.viewHolder.SpontaneousSlotViewHolder
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import java.util.*
 
-class SlotAdapter(slotList: List<TimeSlot>) : RecyclerView.Adapter<BaseViewHolder<*>>(),
+class SlotAdapter(slotList: MutableList<TimeSlot>) : RecyclerView.Adapter<BaseViewHolder<*>>(),
     ItemTouchHelperAdapter {
     private lateinit var itemTouchHelper: ItemTouchHelper
     var slotList = slotList
@@ -30,7 +30,7 @@ class SlotAdapter(slotList: List<TimeSlot>) : RecyclerView.Adapter<BaseViewHolde
             Type.SPONTANEOUS_SLOT.value ->
                 SpontaneousSlotViewHolder(
                     LayoutInflater.from(parent.context)
-                        .inflate(R.layout.spontaneous_slot, parent, false),itemTouchHelper
+                        .inflate(R.layout.spontaneous_slot, parent, false), itemTouchHelper
                 )
             Type.FIXED_SLOT.value ->
                 FixedSlotViewHolder(
@@ -63,38 +63,48 @@ class SlotAdapter(slotList: List<TimeSlot>) : RecyclerView.Adapter<BaseViewHolde
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
-        Log.i("skip", "fromPos:$fromPosition toPos:$toPosition newToPos: ")
+        Log.i("before move", "fromPos:$fromPosition toPos:$toPosition")
         if (getItemViewType(fromPosition) == Type.SPONTANEOUS_SLOT.value) {
 
-            if (fromPosition < toPosition) {
-                for (i in fromPosition until toPosition) {
-                    Collections.swap(slotList, i, i + 1)
-                }
-            } else {
-                for (i in fromPosition downTo toPosition + 1) {
-                    Collections.swap(slotList, i, i - 1)
-                }
+
+            for (i in fromPosition downTo toPosition + 1) {
+                Log.i("move step", "$i")
+                Collections.swap(slotList, i, i - 1)
             }
+
+            Log.i("after move", "fromPos:$fromPosition toPos:$toPosition")
+
             this.notifyItemMoved(fromPosition, toPosition)
         }
     }
 
     override fun onItemSwiped(position: Int) {
-         var swipePos=position
+        Log.i("swipe", "swipeeeeeeeeeeeeeeeeeeeeeeeeeee $position ")
+        slotList.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(0, slotList.size - 1)
     }
 
     override fun skipPauseSlots(position: Int) {
-        var newPos=position
-        do{
-            newPos--
-            Log.i("skip", "skippppppppppppppppeeeeeeeeeeee $newPos")
+        var nextPos = position - 1
 
-        }while (getItemViewType(newPos) == Type.PAUSE.value && newPos!=0 && getItemViewType(newPos-1) == Type.PAUSE.value )
-        onItemMove(position, newPos)
+        Log.i("newPos", "$nextPos")
+        if (nextPos >= 0 && getItemViewType(nextPos) == Type.PAUSE.value) {
+
+            while (getItemViewType(nextPos) == Type.PAUSE.value) {
+                //newPos!=0
+                    Log.i("newPos", "$nextPos")
+                nextPos--
+                }
+
+                onItemMove(position, nextPos)
+            }
+        }
+
+
+    fun setTouchHelper(itemTouchHelper: ItemTouchHelper) {
+        this.itemTouchHelper = itemTouchHelper
     }
 
-    fun setTouchHelpter(itemTouchHelper: ItemTouchHelper) {
-        this.itemTouchHelper=itemTouchHelper
-    }
+
 }
-

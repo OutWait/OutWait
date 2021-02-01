@@ -24,12 +24,19 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
-
-        if (viewHolder.absoluteAdapterPosition < oldPos) {
-            //TODO implement skip also skipPauseSlots
-            adapter.skipPauseSlots(viewHolder.absoluteAdapterPosition)
-        } else {
-            adapter.onItemMove(viewHolder.absoluteAdapterPosition, oldPos)
+        if(isViewHolderEnabledForDrag(viewHolder)){
+        if (viewHolder.absoluteAdapterPosition != -1) {
+            if (viewHolder.absoluteAdapterPosition < oldPos) {
+                Log.i("first case","${viewHolder.absoluteAdapterPosition}")
+                adapter.skipPauseSlots(viewHolder.absoluteAdapterPosition)
+            }
+            //Was to move slots downwards forbidden
+//            else if (viewHolder.absoluteAdapterPosition > oldPos ) {
+//                Log.i("second case","${viewHolder.absoluteAdapterPosition}++++ $oldPos")
+//
+//                adapter.onItemMove(viewHolder.absoluteAdapterPosition, oldPos)
+//            }
+        }
         }
 
 
@@ -42,37 +49,16 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
 
 
-        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-           // viewHolder!!.itemView.setBackgroundColor(Color.YELLOW)
-            if (isViewHolderEnabledForSelect(viewHolder!!)) {
+        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && isViewHolderEnabledForSelect(viewHolder!!)) {
+            // viewHolder!!.itemView.setBackgroundColor(Color.YELLOW)
+                Log.i("drag","is draged and droped same place")
                 oldPos = viewHolder.absoluteAdapterPosition
 
-            }
+
         }
 
         super.onSelectedChanged(viewHolder, actionState)
 
-    }
-
-    fun isViewHolderEnabledForDrag(viewHolder: RecyclerView.ViewHolder): Boolean {
-        return when (viewHolder.itemViewType) {
-            Type.SPONTANEOUS_SLOT.value -> true
-            else -> false
-        }
-    }
-
-    fun isViewHolderEnabledForSwipe(viewHolder: RecyclerView.ViewHolder): Boolean {
-        return when (viewHolder.itemViewType) {
-            Type.PAUSE.value -> false
-            else -> true
-        }
-    }
-
-    fun isViewHolderEnabledForSelect(viewHolder: RecyclerView.ViewHolder): Boolean {
-        return when (viewHolder.itemViewType) {
-            Type.PAUSE.value -> false
-            else -> true
-        }
     }
 
 
@@ -102,11 +88,29 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-//        try {
-////            val position = viewHolder.absoluteAdapterPosition
-////            mAdapter.onItemSwiped(position)
-//        } catch (e: IndexOutOfBoundsException) {
-//            Log.i("error", "${e.printStackTrace()}")
-//        }
+        val position = viewHolder.absoluteAdapterPosition
+        adapter.onItemSwiped(position)
+    }
+
+
+    fun isViewHolderEnabledForDrag(viewHolder: RecyclerView.ViewHolder): Boolean {
+        return when (viewHolder.itemViewType) {
+            Type.SPONTANEOUS_SLOT.value -> true
+            else -> false
+        }
+    }
+
+    fun isViewHolderEnabledForSwipe(viewHolder: RecyclerView.ViewHolder): Boolean {
+        return when (viewHolder.itemViewType) {
+            Type.PAUSE.value -> false
+            else -> true
+        }
+    }
+
+    fun isViewHolderEnabledForSelect(viewHolder: RecyclerView.ViewHolder): Boolean {
+        return when (viewHolder.itemViewType) {
+            Type.PAUSE.value -> false
+            else -> true
+        }
     }
 }
