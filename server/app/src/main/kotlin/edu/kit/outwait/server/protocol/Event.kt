@@ -1,6 +1,6 @@
-package edu.kit.outwait.protocol
+package edu.kit.outwait.server.protocol
 
-enum class Event(val tag: String) {
+enum class Event( val tag: String ) {
     MANAGEMENT_LOGIN("managementLogin@S"),
     MANAGEMENT_LOGOUT("managementLogout@S"),
     START_TRANSACTION("startTransaction@S"),
@@ -31,7 +31,7 @@ enum class Event(val tag: String) {
     SLOT_ENDED("endSlot@C"),
     SLOT_DELETED("deleteSlot@C"),
     INVALID_CODE("invalidCode@C"),
-    INVALID_CLIENT_REQUEST("invalidRequest@C")
+    INVALID_CLIENT_REQUEST("invalidRequest@C");
 
-    fun getTag(): String { return tag; }
+    fun getEventTag(): String { return tag; }
 }

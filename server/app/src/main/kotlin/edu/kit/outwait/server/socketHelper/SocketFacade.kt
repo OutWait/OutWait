@@ -1,9 +1,12 @@
-package edu.kit.outwait.socketHelper
+package edu.kit.outwait.server.socketHelper
 
-class SocketFacade(socket: SocketIOClient, adapter: SocketAdapter) {
-    private socket: SocketIOClient
-    internal eventCallbacks: HashMap<Event, (receivedData: JSONObjectWrapper) -> Unit>
-    internal disconnectCallback: () -> Unit
+import com.corundumstudio.socketio.SocketIOClient
+import edu.kit.outwait.server.protocol.JSONObjectWrapper
+import edu.kit.outwait.server.protocol.Event
+
+class SocketFacade(val socket: SocketIOClient, adapter: SocketAdapter) {
+    internal val eventCallbacks = hashMapOf<Event, (receivedData: JSONObjectWrapper) -> Unit>()
+    internal val disconnectCallback: () -> Unit = {}
 
     fun send(event: Event, toSend: JSONObjectWrapper) {}
     fun onReceive(event: Event, callback: (receivedData: JSONObjectWrapper) -> Unit) {}

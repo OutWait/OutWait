@@ -1,6 +1,8 @@
-package edu.kit.outwait.protocol
+package edu.kit.outwait.server.protocol
+
+import org.json.JSONObject
 
 class JSONEmptyWrapper : JSONObjectWrapper {
     constructor() {}
-    constructor(object: JSONObject) {}
+    constructor(obj: JSONObject) {}
 }

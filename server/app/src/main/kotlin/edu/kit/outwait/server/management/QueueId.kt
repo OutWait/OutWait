@@ -1,5 +1,3 @@
-package edu.kit.outwait.management
+package edu.kit.outwait.server.management
 
-class QueueId {
-    id: Long
-}
+class QueueId( val id: Long )

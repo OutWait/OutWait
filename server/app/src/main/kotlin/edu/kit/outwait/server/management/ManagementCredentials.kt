@@ -1,7 +1,3 @@
-package edu.kit.outwait.management
+package edu.kit.outwait.server.management
 
-class ManagementCredentials {
-    id: ManagementId
-    username: String
-    password: String
-}
+class ManagementCredentials(val id: ManagementId, val username: String, val password: String)

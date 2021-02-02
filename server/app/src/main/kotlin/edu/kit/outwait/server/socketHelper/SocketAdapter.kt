@@ -1,7 +1,11 @@
-package edu.kit.outwait.socketHelper
+package edu.kit.outwait.server.socketHelper
+
+import com.corundumstudio.socketio.SocketIONamespace
+import com.corundumstudio.socketio.SocketIOClient
+import edu.kit.outwait.server.protocol.Event
 
 class SocketAdapter(namespace: SocketIONamespace) {
-    private facades: HashMap<SocketIOClient, SocketFacade>
+    private val facades = hashMapOf<SocketIOClient, SocketFacade>()
 
     fun configureEvents(events: List<Event>) {}
     fun addFacadeForSocket(facade: SocketFacade, socket: SocketIOClient) {}

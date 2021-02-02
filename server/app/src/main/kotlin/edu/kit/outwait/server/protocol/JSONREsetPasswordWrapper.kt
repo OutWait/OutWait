@@ -1,8 +1,10 @@
-package edu.kit.outwait.protocol
+package edu.kit.outwait.server.protocol
+
+import org.json.JSONObject
 
 class JSONResetPasswordWrapper : JSONObjectWrapper {
     constructor() {}
-    constructor(object: JSONObject) {}
+    constructor(obj: JSONObject) {}
     fun setUsername (username: String) {}
-    fun getUsername(): String {}
+    fun getUsername(): String { return "" }
 }

@@ -1,8 +1,12 @@
-package edu.kit.outwait.protocol
+package edu.kit.outwait.server.protocol
+
+import java.util.Date
+
+import org.json.JSONObject
 
 class JSONChangeSlotTimeWrapper : JSONSlotCodeWrapper {
     constructor() {}
-    constructor(object: JSONObject) {}
+    constructor(obj: JSONObject) {}
     fun setNewTime(time: Date) {}
-    fun getNewTime(): Date {}
+    fun getNewTime(): Date { return Date(0) }
 }

@@ -1,10 +1,11 @@
-package edu.kit.outwait.protocol
+package edu.kit.outwait.server.protocol
+
+import org.json.JSONObject
 
 abstract class JSONObjectWrapper {
-    protected object: JSONObject
+    protected val obj = JSONObject()
 
     constructor() {}
-    constructor(object: JSONObject) {}
-    fun getJSONString(): String { return object.toString(); }
-
+    constructor(obj: JSONObject) {}
+    fun getJSONString(): String { return obj.toString(); }
 }

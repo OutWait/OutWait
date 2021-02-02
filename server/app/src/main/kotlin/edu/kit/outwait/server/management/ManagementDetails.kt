@@ -1,5 +1,3 @@
-package edu.kit.outwait.management
+package edu.kit.outwait.server.management
 
-class ManagementDetails {
-    name: String
-}
+class ManagementDetails(val name: String)

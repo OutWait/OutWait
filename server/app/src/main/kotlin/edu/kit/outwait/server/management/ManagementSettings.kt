@@ -1,9 +1,11 @@
-package edu.kit.outwait.management
+package edu.kit.outwait.server.management
 
-class ManagementSettings {
-    mode: Mode
-    defaultSlotDuration: Duration
-    notificationTime: Duration
-    delayNotificationTime: Duration
-    prioritizationTime: Duration
-}
+import java.time.Duration
+
+class ManagementSettings(
+    val mode: Mode,
+    val defaultSlotDuration: Duration,
+    val notificationTime: Duration,
+    val delayNotificationTime: Duration,
+    val prioritizationTime: Duration,
+)

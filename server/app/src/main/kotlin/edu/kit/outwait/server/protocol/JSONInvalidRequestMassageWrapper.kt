@@ -1,8 +1,10 @@
-package edu.kit.outwait.protocol
+package edu.kit.outwait.server.protocol
+
+import org.json.JSONObject
 
 class JSONInvalidRequestMessageWrapper : JSONObjectWrapper {
     constructor() {}
-    constructor(object: JSONObject) {}
+    constructor(obj: JSONObject) {}
     fun setMessage(message: String) {}
-    fun getMessage(): String {}
+    fun getMessage(): String { return "" }
 }

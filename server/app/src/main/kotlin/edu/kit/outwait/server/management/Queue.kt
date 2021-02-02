@@ -1,9 +1,14 @@
-package edu.kit.outwait.management
+package edu.kit.outwait.server.management
 
-class Queue(managementId: ManagementId, queueId: QueueId, databaseWrapper: DatabaseWrapper) {
-    private queueId: QueueId
-    private managementId: ManagementId
-    private slots: List<Slot>
+import java.util.Date
+import java.time.Duration
+
+import edu.kit.outwait.server.core.DatabaseWrapper
+import edu.kit.outwait.server.slot.Slot
+import edu.kit.outwait.server.slot.SlotCode
+
+class Queue(val managementId: ManagementId, val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
+    private val slots = listOf<Slot>()
 
     fun updateQueue(prioritizationTime: Duration) {}
     fun calculateNextDelayChange(): Date { return Date() }
