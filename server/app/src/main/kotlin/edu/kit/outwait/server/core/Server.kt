@@ -7,12 +7,12 @@ import com.corundumstudio.socketio.SocketIONamespace
 import com.corundumstudio.socketio.SocketIOServer
 import com.corundumstudio.socketio.listener.DataListener
 
-//import edu.kit.outwait.server.client.ClientManager
+import edu.kit.outwait.server.client.ClientManager
 import edu.kit.outwait.server.management.ManagementManager
 
 class Server {
     val server: SocketIOServer
-    //val clientManager: ClientManager
+    val clientManager: ClientManager
     val managementManager: ManagementManager
 
     init {
@@ -30,7 +30,7 @@ class Server {
         val managementNamespace = server.addNamespace("/management");
 
         // Finally our own classes
-        //clientManager = ClientManager(clientNamespace, databaseWrapper)
+        clientManager = ClientManager(clientNamespace, databaseWrapper)
         managementManager = ManagementManager(managementNamespace, databaseWrapper)
     }
 

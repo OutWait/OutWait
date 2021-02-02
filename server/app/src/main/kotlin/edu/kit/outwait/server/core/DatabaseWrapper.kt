@@ -10,9 +10,9 @@ import edu.kit.outwait.server.management.ManagementCredentials
 import edu.kit.outwait.server.management.ManagementSettings
 import edu.kit.outwait.server.management.ManagementDetails
 import edu.kit.outwait.server.management.Mode
+import edu.kit.outwait.server.client.SlotInformationReceiver
 import edu.kit.outwait.server.slot.SlotCode
 import edu.kit.outwait.server.slot.Slot
-//import edu.kit.outwait.server.client.SlotInformationReceiver
 
 // TODO fix the stub
 class DatabaseWrapper {
@@ -52,11 +52,12 @@ class DatabaseWrapper {
 
     }
 
-    // fun registerReceiver(receiver: SlotInformationReceiver, slotCode: SlotCode): Boolean {
-    // }
+    fun registerReceiver(receiver: SlotInformationReceiver, slotCode: SlotCode): Boolean {
+        return true
+    }
 
-    // fun unregisterReceiver(receiver: SlotInformationReceiver) {
-    // }
+    fun unregisterReceiver(receiver: SlotInformationReceiver) {
+    }
 
     fun changeManagementPassword(username: String, password: String) {
 
