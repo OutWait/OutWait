@@ -14,8 +14,8 @@ class Management( private val socketFace: SocketFacade,
 
     init {
         // TODO load real data
-        managementInformation = ManagementInformation(ManagementDetails(""), 
-                                                      ManagementSettings(Mode.ONE, Duration.ZERO, Duration.ZERO, 
+        managementInformation = ManagementInformation(ManagementDetails(""),
+                                                      ManagementSettings(Mode.ONE, Duration.ZERO, Duration.ZERO,
                                                                          Duration.ZERO, Duration.ZERO))
 
     }

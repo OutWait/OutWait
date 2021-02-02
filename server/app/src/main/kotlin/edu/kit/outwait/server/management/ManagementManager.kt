@@ -10,13 +10,13 @@ import edu.kit.outwait.server.core.AbstractManager
 import edu.kit.outwait.server.core.DatabaseWrapper
 import edu.kit.outwait.server.socketHelper.SocketFacade
 
-class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapper) : AbstractManager( databaseWrapper ) {
+class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapper) : AbstractManager( namespace, databaseWrapper ) {
     private val managements = listOf<Management>()
     private val activeTransactions = hashSetOf<ManagementId>()
     private val queueDelayTimes = listOf<Pair<Date, ManagementId>>()
     private val nextDelayAlarm = Timer()
 
-    fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade) {}
+    override fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade) {}
     fun removeManagement(management: Management) {}
     fun beginTransaction(managementId: ManagementId): Queue? { return null }
     fun abortTransaction(managementId: ManagementId): Queue { return Queue(managementId, QueueId(0), databaseWrapper) }
