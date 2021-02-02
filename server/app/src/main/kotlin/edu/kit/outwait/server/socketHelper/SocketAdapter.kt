@@ -1,7 +1,7 @@
 package edu.kit.outwait.server.socketHelper
 
-import com.corundumstudio.socketio.SocketIONamespace
 import com.corundumstudio.socketio.SocketIOClient
+import com.corundumstudio.socketio.SocketIONamespace
 import edu.kit.outwait.server.protocol.Event
 
 class SocketAdapter(namespace: SocketIONamespace) {

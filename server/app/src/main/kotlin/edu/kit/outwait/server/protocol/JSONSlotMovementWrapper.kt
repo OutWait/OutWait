@@ -1,8 +1,7 @@
 package edu.kit.outwait.server.protocol
 
-import org.json.JSONObject
-
 import edu.kit.outwait.server.slot.SlotCode
+import org.json.JSONObject
 
 class JSONSlotMovementWrapper : JSONObjectWrapper {
     constructor() {}

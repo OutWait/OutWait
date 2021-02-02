@@ -1,11 +1,10 @@
 package edu.kit.outwait.server.protocol
 
-import org.json.JSONObject
-
-import edu.kit.outwait.server.management.Queue
-import edu.kit.outwait.server.management.ManagementId
-import edu.kit.outwait.server.management.QueueId
 import edu.kit.outwait.server.core.DatabaseWrapper
+import edu.kit.outwait.server.management.ManagementId
+import edu.kit.outwait.server.management.Queue
+import edu.kit.outwait.server.management.QueueId
+import org.json.JSONObject
 
 class JSONQueueWrapper : JSONObjectWrapper {
     constructor() {}
