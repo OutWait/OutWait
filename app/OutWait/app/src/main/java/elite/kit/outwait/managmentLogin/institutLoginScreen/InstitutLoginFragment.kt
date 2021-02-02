@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.InstitutLoginFragmentBinding
+import elite.kit.outwait.recyclerviewScreens.addSlotDialog.AddSlotDialogFragment
 
 class InstitutLoginFragment : Fragment() {
 
@@ -32,7 +33,9 @@ class InstitutLoginFragment : Fragment() {
         }
         //navigate to managementViewFragment
         binding.btnLogin.setOnClickListener{
-            it.findNavController().navigate(R.id.action_institutLoginFragment_to_managmentViewFragment)
+            var add = AddSlotDialogFragment()
+            add.show(requireActivity().supportFragmentManager, "missiles")
+          //  it.findNavController().navigate(R.id.action_institutLoginFragment_to_managmentViewFragment)
         }
         return binding.root
     }

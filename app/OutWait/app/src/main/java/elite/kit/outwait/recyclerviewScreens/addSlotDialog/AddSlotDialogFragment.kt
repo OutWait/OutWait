@@ -5,49 +5,55 @@ import android.app.Dialog
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.databinding.DataBindingUtil
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding
+import mobi.upod.timedurationpicker.TimeDurationPicker
 
 class AddSlotDialogFragment : AppCompatDialogFragment() {
-
-    companion object {
-        fun newInstance() = AddSlotDialogFragment()
-    }
 
     private lateinit var viewModel: AddSlotDialogViewModel
     private lateinit var binding: AddSlotDialogFragmentBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        viewModel = ViewModelProvider(this).get(AddSlotDialogViewModel::class.java)
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.add_slot_dialog_fragment, container, false)
-        return binding.root
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
         val inflater = requireActivity().layoutInflater
-        val view = inflater.inflate(R.layout.add_slot_dialog_fragment, null)
+        binding = AddSlotDialogFragmentBinding.inflate(LayoutInflater.from(context))
 
-        //TODO for appointmenttime and duration take a sample
-        //TODO use binding in layout, confirm only calls method from vm
+        viewModel = ViewModelProvider(this).get(AddSlotDialogViewModel::class.java)
+        binding.viewModel = this.viewModel
+        //binding.tpAppointmentTime.setIs24HourView(true)
+        binding.timeDurationInput.setTimeUnits(TimeDurationPicker.HH_MM)
+
+        //TODO check alternative timepicker for android 21 lolipop (hour)
+        //TODO FixedSlot only possible in Modus 2 - binding.cbIsFixedSlot.isEnabled & appointment timepicker disable
 
         builder.apply {
-            setView(view)
+
+            setView(binding.root)
             setTitle(getString(R.string.title_add_slot))
+
             setPositiveButton(getString(R.string.confirm)) { dialog, which ->
-
-
+                //TODO use TimeDate und Duration Format from benni
+                //TODO identifier is not useable trough databinding PROBLEM ? binding.etIdentifierAddDialog.text
+                //TODO same with isFixedSlot
+                viewModel.notifyAddSlot(binding.timeDurationInput.duration / (3.6 * Math.pow(10.0,
+                    6.0)), 2000L)
             }
+
             setNegativeButton(getString(R.string.cancel)) { dialog, which ->
                 dialog.cancel()
             }
