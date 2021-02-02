@@ -26,6 +26,7 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
         super.clearView(recyclerView, viewHolder)
         if(isViewHolderEnabledForDrag(viewHolder)){
         if (viewHolder.absoluteAdapterPosition != -1) {
+            //Maybe oldPos is useless
             if (viewHolder.absoluteAdapterPosition < oldPos) {
                 Log.i("first case","${viewHolder.absoluteAdapterPosition}")
                 adapter.skipPauseSlots(viewHolder.absoluteAdapterPosition)
