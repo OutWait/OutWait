@@ -24,21 +24,17 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
-        if(isViewHolderEnabledForDrag(viewHolder)){
-        if (viewHolder.absoluteAdapterPosition != -1) {
-            //Maybe oldPos is useless
-            if (viewHolder.absoluteAdapterPosition < oldPos) {
-                Log.i("first case","${viewHolder.absoluteAdapterPosition}")
-                adapter.skipPauseSlots(viewHolder.absoluteAdapterPosition)
+        //TODO ehance algo to skip pause slots
+        /*if (isViewHolderEnabledForDrag(viewHolder)) {
+            if (viewHolder.absoluteAdapterPosition != -1) {
+                //Maybe oldPos is useless
+                if (viewHolder.absoluteAdapterPosition < oldPos) {
+                    Log.i("first case", "${viewHolder.absoluteAdapterPosition}")
+                    adapter.skipPauseSlots(viewHolder.absoluteAdapterPosition)
+                }
+
             }
-            //Was to move slots downwards forbidden
-//            else if (viewHolder.absoluteAdapterPosition > oldPos ) {
-//                Log.i("second case","${viewHolder.absoluteAdapterPosition}++++ $oldPos")
-//
-//                adapter.onItemMove(viewHolder.absoluteAdapterPosition, oldPos)
-//            }
-        }
-        }
+        }*/
 
 
 //        viewHolder.itemView.setBackgroundColor(
@@ -50,10 +46,11 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
 
 
-        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && isViewHolderEnabledForSelect(viewHolder!!)) {
+        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && isViewHolderEnabledForSelect(
+                viewHolder!!)
+        ) {
             // viewHolder!!.itemView.setBackgroundColor(Color.YELLOW)
-                Log.i("drag","is draged and droped same place")
-                oldPos = viewHolder.absoluteAdapterPosition
+            oldPos = viewHolder.absoluteAdapterPosition
 
 
         }

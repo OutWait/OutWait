@@ -3,11 +3,11 @@ package elite.kit.outwait.recyclerviewSetUp.functionality
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
+import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ItemActionListener
+import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.managmentViewFragment
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.FixedSlotViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.PauseSlotViewHolder
@@ -15,7 +15,7 @@ import elite.kit.outwait.recyclerviewSetUp.viewHolder.SpontaneousSlotViewHolder
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import java.util.*
 
-class SlotAdapter(slotList: MutableList<TimeSlot>) : RecyclerView.Adapter<BaseViewHolder<*>>(),
+class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemActionListener) : RecyclerView.Adapter<BaseViewHolder<*>>(),
     ItemTouchHelperAdapter {
     private lateinit var itemTouchHelper: ItemTouchHelper
     var slotList = slotList
@@ -80,9 +80,12 @@ class SlotAdapter(slotList: MutableList<TimeSlot>) : RecyclerView.Adapter<BaseVi
 
     override fun onItemSwiped(position: Int) {
         Log.i("swipe", "swipeeeeeeeeeeeeeeeeeeeeeeeeeee $position ")
+        var removedSlot=slotList.get(position)
         slotList.removeAt(position)
         notifyItemRemoved(position)
-        notifyItemRangeChanged(0, slotList.size - 1)
+        notifyItemRangeChanged(0, slotList.size - 2)
+        listener.onItemSwiped(position,removedSlot)
+
     }
 
     override fun skipPauseSlots(position: Int) {
