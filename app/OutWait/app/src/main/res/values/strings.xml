@@ -18,4 +18,11 @@
     <string name="pause_text">Free time</string>
     <string name="slotcode">Slotcode</string>
     <string name="identifier">Identifier</string>
+    <string name="duration">Duration</string>
+    <string name="appointment_time">Appointment Time</string>
+    <string name="title_add_slot">Add a Slot</string>
+    <string name="confirm">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="fixed_slot">Fixed Slot</string>
+    <string name="undo">UNDO</string>
 </resources>

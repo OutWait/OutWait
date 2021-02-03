@@ -9,7 +9,7 @@ import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 class PauseSlotViewHolder(private var itemView: View):BaseViewHolder<Pause>(itemView) {
     private var pauseTextView = itemView.findViewById<TextView>(R.id.tvPause)
     override fun bind(item: TimeSlot) {
-        pauseTextView.text="Free time"
+        //Time space is possible to add
     }
 
 }
