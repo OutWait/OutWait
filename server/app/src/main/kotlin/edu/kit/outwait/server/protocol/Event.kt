@@ -1,6 +1,6 @@
 package edu.kit.outwait.server.protocol
 
-enum class Event( val tag: String ) {
+enum class Event(val tag: String) {
     MANAGEMENT_LOGIN("managementLogin@S"),
     MANAGEMENT_LOGOUT("managementLogout@S"),
     START_TRANSACTION("startTransaction@S"),

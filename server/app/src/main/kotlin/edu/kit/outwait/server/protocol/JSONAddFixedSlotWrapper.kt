@@ -2,7 +2,6 @@ package edu.kit.outwait.server.protocol
 
 import java.time.Duration
 import java.util.Date
-
 import org.json.JSONObject
 
 class JSONAddFixedSlotWrapper : JSONObjectWrapper {

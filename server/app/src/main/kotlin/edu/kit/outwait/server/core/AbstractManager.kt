@@ -1,5 +1,22 @@
 package edu.kit.outwait.server.core
 
-abstract class AbstractManager(protected val databaseWrapper: DatabaseWrapper) {
+import com.corundumstudio.socketio.SocketIOClient
+import com.corundumstudio.socketio.SocketIONamespace
+import edu.kit.outwait.server.protocol.Event
+import edu.kit.outwait.server.socketHelper.SocketAdapter
+import edu.kit.outwait.server.socketHelper.SocketFacade
 
+abstract class AbstractManager(
+    namespace: SocketIONamespace,
+    protected val databaseWrapper: DatabaseWrapper
+) {
+    protected val socketAdapter = SocketAdapter(namespace)
+
+    abstract fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade)
+
+    private fun configureConnectionCreation() {
+    }
+
+    fun configureEventListeners(events: List<Event>) {
+    }
 }
