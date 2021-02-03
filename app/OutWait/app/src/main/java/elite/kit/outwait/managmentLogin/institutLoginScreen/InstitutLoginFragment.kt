@@ -33,9 +33,9 @@ class InstitutLoginFragment : Fragment(){
         }
         //navigate to managementViewFragment
         binding.btnLogin.setOnClickListener{
-           /* var add = AddSlotDialogFragment()
-            add.show(requireActivity().supportFragmentManager, "missiles")*/
-          it.findNavController().navigate(R.id.action_institutLoginFragment_to_managmentViewFragment)
+            var add = AddSlotDialogFragment()
+            add.show(requireActivity().supportFragmentManager, "missiles")
+//          it.findNavController().navigate(R.id.action_institutLoginFragment_to_managmentViewFragment)
         }
         return binding.root
     }
