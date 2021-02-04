@@ -2,36 +2,35 @@ package elite.kit.outwait.recyclerviewScreens.addSlotDialog
 
 import android.app.AlertDialog
 import android.app.Dialog
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-
 import androidx.appcompat.app.AppCompatDialogFragment
-import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding
 import mobi.upod.timedurationpicker.TimeDurationPicker
+import org.joda.time.Duration
+import org.joda.time.DateTime
 
 class AddSlotDialogFragment : AppCompatDialogFragment() {
 
     private lateinit var viewModel: AddSlotDialogViewModel
     private lateinit var binding: AddSlotDialogFragmentBinding
 
-    override fun onCreateView(
+    /*override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         return super.onCreateView(inflater, container, savedInstanceState)
-    }
+    }*/
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
         val inflater = requireActivity().layoutInflater
         binding = AddSlotDialogFragmentBinding.inflate(LayoutInflater.from(context))
+
+
 
         viewModel = ViewModelProvider(this).get(AddSlotDialogViewModel::class.java)
         binding.viewModel = this.viewModel
