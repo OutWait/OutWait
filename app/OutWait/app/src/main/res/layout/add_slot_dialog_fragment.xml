@@ -18,17 +18,7 @@
             tools:context=".recyclerviewScreens.addSlotDialog.AddSlotDialogFragment">
 
 
-            <!--            <TimePicker-->
-            <!--                android:id="@+id/tpAppointmentTime"-->
-            <!--                android:layout_width="281dp"-->
-            <!--                android:layout_height="293dp"-->
-            <!--                android:layout_marginTop="20dp"-->
-            <!--                android:timePickerMode="clock"-->
-            <!--                app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                app:layout_constraintStart_toStartOf="parent"-->
-            <!--                app:layout_constraintTop_toBottomOf="@+id/tvAppointmentTimeAddDialog" />-->
-
-            <mobi.upod.timedurationpicker.TimeDurationPicker
+            <!--<mobi.upod.timedurationpicker.TimeDurationPicker
                 android:id="@+id/timeDurationInput"
                 android:layout_width="213dp"
                 android:layout_height="247dp"
@@ -41,20 +31,33 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvDurationAddDialog">
 
-            </mobi.upod.timedurationpicker.TimeDurationPicker>
+            </mobi.upod.timedurationpicker.TimeDurationPicker>-->
+
+            <TimePicker
+                android:id="@+id/tpAppointmentTime"
+                android:layout_width="304dp"
+                android:layout_height="391dp"
+                android:layout_marginTop="28dp"
+                android:timePickerMode="clock"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.495"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvAppointmentTimeAddDialog"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/tvAppointmentTimeAddDialog"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
+                android:layout_marginBottom="384dp"
                 android:text="@string/appointment_time"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/timeDurationInput"
-                app:layout_constraintVertical_bias="0.154" />
+                app:layout_constraintTop_toBottomOf="@+id/tvDurationAddDialog"
+                app:layout_constraintVertical_bias="0.257" />
 
             <TextView
                 android:id="@+id/tvDurationAddDialog"
