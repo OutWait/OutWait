@@ -1,5 +1,7 @@
 package elite.kit.outwait.waitingQueue.timeSlotModel
 
-abstract class TimeSlot(var interval:Long) {
-    abstract fun getType():Int
+import org.joda.time.Interval
+
+abstract class TimeSlot(val interval: Interval) {
+    abstract fun getType() : Type
 }
