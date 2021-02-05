@@ -10,7 +10,6 @@ cd outwait
 
 # App
 cd app/OutWait
-# TODO: check/fix app building instructions
 gradle build
 
 cd ../..
