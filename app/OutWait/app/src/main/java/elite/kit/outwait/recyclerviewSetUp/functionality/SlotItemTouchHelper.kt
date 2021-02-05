@@ -93,21 +93,21 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
 
     fun isViewHolderEnabledForDrag(viewHolder: RecyclerView.ViewHolder): Boolean {
         return when (viewHolder.itemViewType) {
-            Type.SPONTANEOUS_SLOT.value -> true
+            Type.SPONTANEOUS_SLOT.ordinal -> true
             else -> false
         }
     }
 
     fun isViewHolderEnabledForSwipe(viewHolder: RecyclerView.ViewHolder): Boolean {
         return when (viewHolder.itemViewType) {
-            Type.PAUSE.value -> false
+            Type.PAUSE.ordinal -> false
             else -> true
         }
     }
 
     fun isViewHolderEnabledForSelect(viewHolder: RecyclerView.ViewHolder): Boolean {
         return when (viewHolder.itemViewType) {
-            Type.PAUSE.value -> false
+            Type.PAUSE.ordinal -> false
             else -> true
         }
     }

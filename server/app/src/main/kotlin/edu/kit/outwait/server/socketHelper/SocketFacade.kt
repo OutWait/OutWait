@@ -6,13 +6,19 @@ import edu.kit.outwait.server.protocol.JSONObjectWrapper
 
 class SocketFacade(val socket: SocketIOClient, adapter: SocketAdapter) {
     internal val eventCallbacks = hashMapOf<Event, (receivedData: JSONObjectWrapper) -> Unit>()
-    internal val disconnectCallback: () -> Unit = {}
+    internal var disconnectCallback: () -> Unit = {}
 
     init {
         adapter.addFacadeForSocket(this, socket)
     }
 
-    fun send(event: Event, toSend: JSONObjectWrapper) {}
-    fun onReceive(event: Event, callback: (receivedData: JSONObjectWrapper) -> Unit) {}
-    fun onDisconnect(event: Event, callback: () -> Unit) {}
+    fun send(event: Event, toSend: JSONObjectWrapper) {
+        socket.sendEvent(event.getEventTag(), toSend.getJSONString())
+    }
+    fun onReceive(event: Event, callback: (receivedData: JSONObjectWrapper) -> Unit) {
+        eventCallbacks.put(event, callback)
+    }
+    fun onDisconnect(callback: () -> Unit) {
+        disconnectCallback = callback
+    }
 }

@@ -4,11 +4,16 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import elite.kit.outwait.instituteRepository.InstituteRepository
+import org.joda.time.DateTime
+import javax.inject.Inject
 
-class InstitutLoginViewModel : ViewModel() {
+@HiltViewModel
+class InstitutLoginViewModel @Inject constructor(private val repo : InstituteRepository): ViewModel() {
 
-    private lateinit var _successfullLoginTime: MutableLiveData<Long>
-    val successfullLoginTime:LiveData<Long>
+    private lateinit var _successfullLoginTime: MutableLiveData<DateTime>
+    val successfullLoginTime:LiveData<DateTime>
     get() {return _successfullLoginTime}
      var username:String
      var password: String
@@ -21,6 +26,7 @@ class InstitutLoginViewModel : ViewModel() {
     fun loginTried(){
         if(username.isNotEmpty() && password.isNotEmpty()){
         Log.i("login","$username + $password")}
+        repo.doSomething()
     }
 
     fun passwordForgottenString(){

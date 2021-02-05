@@ -4,4 +4,19 @@ OutWait is a platform to manage waiting times in facilities like doctor offices 
 This project was created for the computer science lecture "PSE" at the Karlsruhe Institute of Technology.
 
 ## Getting started
-TODO: add building instructions
+```
+git clone https://git.scc.kit.edu/outwait/outwait.git
+cd outwait
+
+# App
+cd app/OutWait
+gradle build
+
+cd ../..
+
+# Server
+cd server
+gradle build
+# To start the server: gradle run
+
+```

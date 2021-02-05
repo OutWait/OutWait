@@ -8,10 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.InstitutLoginFragmentBinding
 import elite.kit.outwait.recyclerviewScreens.addSlotDialog.AddSlotDialogFragment
 
+@AndroidEntryPoint
 class InstitutLoginFragment : Fragment(){
 
     companion object {
@@ -33,9 +35,10 @@ class InstitutLoginFragment : Fragment(){
         }
         //navigate to managementViewFragment
         binding.btnLogin.setOnClickListener{
-            var add = AddSlotDialogFragment()
-            add.show(requireActivity().supportFragmentManager, "missiles")
-//          it.findNavController().navigate(R.id.action_institutLoginFragment_to_managmentViewFragment)
+           /* var add = AddSlotDialogFragment()
+            add.show(requireActivity().supportFragmentManager, "missiles")*/
+            viewModel.loginTried()
+            it.findNavController().navigate(R.id.action_institutLoginFragment_to_managmentViewFragment)
         }
         return binding.root
     }
