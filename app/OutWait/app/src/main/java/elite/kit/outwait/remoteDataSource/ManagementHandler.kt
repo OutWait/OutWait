@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.customDataTypes.ReceivedList
+import org.joda.time.DateTime
+import org.joda.time.Duration
 
 interface ManagementHandler {
 
@@ -20,32 +22,31 @@ interface ManagementHandler {
 
     fun changePreferences(newPreferences: Preferences)
 
+
     fun startTransaction()
 
     fun abortTransaction()
 
     fun saveTransaction()
 
-    /*
-    Es fehlt noch die Yoda Time Library
+
     fun newSpontaneousSlot(duration: Duration)
 
     fun newFixedSlot(appointmentTime: DateTime, duration: Duration)
-     */
+
 
     fun deleteSlot(slotCode: String)
 
     fun endCurrentSlot()
 
+
     fun moveSlotAfterAnother(movedSlot: String, otherSlot: String)
 
-    /*
-    Es fehlen noch Joda Time Lib?
     fun changeSlotDuration(slotCode: String, duration: Duration)
 
     fun changeFixedSlotTime(slotCode: String, newAppointmentTime: DateTime)
 
-     */
+
 
 
     /*

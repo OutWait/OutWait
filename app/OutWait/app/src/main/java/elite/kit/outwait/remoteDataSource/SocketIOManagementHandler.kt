@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.customDataTypes.ReceivedList
 import io.socket.client.Socket
+import org.joda.time.DateTime
+import org.joda.time.Duration
 
 class SocketIOManagementHandler : ManagementHandler {
 
@@ -66,6 +68,14 @@ class SocketIOManagementHandler : ManagementHandler {
         TODO("Not yet implemented")
     }
 
+    override fun newSpontaneousSlot(duration: Duration) {
+        TODO("Not yet implemented")
+    }
+
+    override fun newFixedSlot(appointmentTime: DateTime, duration: Duration) {
+        TODO("Not yet implemented")
+    }
+
     override fun deleteSlot(slotCode: String) {
         TODO("Not yet implemented")
     }
@@ -78,6 +88,13 @@ class SocketIOManagementHandler : ManagementHandler {
         TODO("Not yet implemented")
     }
 
+    override fun changeFixedSlotTime(slotCode: String, newAppointmentTime: DateTime) {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeSlotDuration(slotCode: String, duration: Duration) {
+        TODO("Not yet implemented")
+    }
 
     override fun getReceivedList(): LiveData<ReceivedList> {
         return _currentList
