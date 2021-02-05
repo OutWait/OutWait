@@ -20,21 +20,23 @@ class SocketIOManagementHandler : ManagementHandler {
     Live Data um die aktuelle WaitingQueue lesbar zu machen, einmal Mutable für intern und
     plain LiveData für READ_ONLY
 
+     */
+
     private val currentList = MutableLiveData<ReceivedList>()
     private val _currentList : LiveData<ReceivedList>
         get() = currentList
 
-     */
 
     /*
     Live Data um die aktuellen ManagementEinstellungen (Preferences)
     lesbar zu machen, einmal Mutable für intern und plain
     LiveData für READ_ONLY
+     */
 
     private val currentPrefs = MutableLiveData<Preferences>()
     private val _currentPrefs : LiveData<Preferences>
         get() = currentPrefs
-     */
+
 
     override fun login(username: String, password: String): Boolean {
         TODO("Not yet implemented")
@@ -78,13 +80,11 @@ class SocketIOManagementHandler : ManagementHandler {
 
 
     override fun getReceivedList(): LiveData<ReceivedList> {
-        //return _currentList
-        TODO("Not yet implemented")
+        return _currentList
     }
 
     override fun getUpdatedPreferences() : LiveData<Preferences> {
-        //return _currentPrefs
-        TODO("Not yet implemented")
+        return _currentPrefs
     }
 
 
