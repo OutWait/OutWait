@@ -44,11 +44,12 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
-        val element = slotList!![position]
-        when (element.getType()) {
-            Type.SPONTANEOUS_SLOT -> holder.bind(element)
-            Type.FIXED_SLOT -> holder.bind(element)
-            Type.PAUSE -> holder.bind(element)
+        val element=slotList!![position]
+        val viewType = slotList!![position].getType().ordinal
+        when (viewType) {
+            Type.SPONTANEOUS_SLOT.ordinal -> holder.bind(element)
+            Type.FIXED_SLOT.ordinal -> holder.bind(element)
+            Type.PAUSE.ordinal -> holder.bind(element)
             else -> throw IllegalArgumentException()
         }
     }
