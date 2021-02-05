@@ -6,6 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import javax.inject.Inject
@@ -25,6 +28,23 @@ class InstituteRepository @Inject constructor() {
     fun getObservablePreferences() = preferences as LiveData<Preferences>
     fun getObservableTimeSlotList() = timeSlotList as LiveData<List<TimeSlot>>
     fun getErrorNotifications() = errorNotifications as LiveData<List<String>>
+
+    suspend fun loginCo(username: String, password: String): Boolean{
+        withContext(IO){
+            //Server Request
+            Log.d("login::InstiRepo", "before server connect running in ${Thread.currentThread().name}")
+            delay(2000)
+            Log.d("login::InstiRepo", "after server connect")
+        }
+        //change Live Data
+        delay(2000)
+        var d = Duration(2999999)
+        Log.d("login::InstiRepo", "before liveData changed running in ${Thread.currentThread().name}")
+        preferences.value = Preferences(d, d, d, d, Mode.TWO)
+        Log.d("login::InstiRepo", "after liveData changed")
+
+        return true
+    }
 
     fun login(username: String, password: String){
 

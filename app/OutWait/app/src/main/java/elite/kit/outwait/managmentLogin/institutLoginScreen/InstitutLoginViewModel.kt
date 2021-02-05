@@ -6,6 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.instituteRepository.InstituteRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import javax.inject.Inject
 
@@ -26,7 +29,14 @@ class InstitutLoginViewModel @Inject constructor(private val repo : InstituteRep
     fun loginTried(){
         if(username.isNotEmpty() && password.isNotEmpty()){
         Log.i("login","$username + $password")}
-        repo.doSomething()
+        CoroutineScope(Main).launch {
+            if (repo.loginCo("bla", "bla")){
+                //switch to Recyclerview Fragment
+                Log.d("loginTried::InstLoginVM", "switching Fragment in Thread ${Thread.currentThread().name}")
+            } else{
+                //show error warning
+            }
+        }
     }
 
     fun passwordForgottenString(){
