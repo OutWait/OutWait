@@ -3,6 +3,7 @@ package elite.kit.outwait.recyclerviewScreens.addSlotDialog
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.lifecycle.ViewModelProvider
@@ -34,8 +35,8 @@ class AddSlotDialogFragment : AppCompatDialogFragment() {
 
         viewModel = ViewModelProvider(this).get(AddSlotDialogViewModel::class.java)
         binding.viewModel = this.viewModel
-        //binding.tpAppointmentTime.setIs24HourView(true)
-        binding.timeDurationInput.setTimeUnits(TimeDurationPicker.HH_MM)
+        binding.tpAppointmentTime.setIs24HourView(true)
+      //  binding.timeDurationInput.setTimeUnits(TimeDurationPicker.HH_MM)
 
         //TODO check alternative timepicker for android 21 lolipop (hour)
         //TODO FixedSlot only possible in Modus 2 - binding.cbIsFixedSlot.isEnabled & appointment timepicker disable
@@ -49,8 +50,10 @@ class AddSlotDialogFragment : AppCompatDialogFragment() {
                 //TODO use TimeDate und Duration Format from benni
                 //TODO identifier is not useable trough databinding PROBLEM ? binding.etIdentifierAddDialog.text
                 //TODO same with isFixedSlot
-                viewModel.notifyAddSlot(binding.timeDurationInput.duration / (3.6 * Math.pow(10.0,
-                    6.0)), 2000L)
+               var hour: Int = binding.tpAppointmentTime.currentHour
+                Log.i("timepicker","$hour")
+               // viewModel.notifyAddSlot(binding.timeDurationInput.duration / (3.6 * Math.pow(10.0,
+               //     6.0)), 2000L)
             }
 
             setNegativeButton(getString(R.string.cancel)) { dialog, which ->

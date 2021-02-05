@@ -19,20 +19,20 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
     ItemTouchHelperAdapter {
     private lateinit var itemTouchHelper: ItemTouchHelper
     var slotList = slotList
-        set(value) {
-            field = value
+       /* set {
+            field =
             notifyDataSetChanged()
-        }
+        }*/
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
         return when (viewType) {
-            Type.SPONTANEOUS_SLOT.value ->
+            Type.SPONTANEOUS_SLOT.ordinal ->
                 SpontaneousSlotViewHolder(
                     LayoutInflater.from(parent.context)
                         .inflate(R.layout.spontaneous_slot, parent, false), itemTouchHelper
                 )
-            Type.FIXED_SLOT.value ->
+            Type.FIXED_SLOT.ordinal ->
                 FixedSlotViewHolder(
                     LayoutInflater.from(parent.context).inflate(R.layout.fixed_slot, parent, false)
                 )
@@ -46,9 +46,9 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
     override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
         val element = slotList!![position]
         when (element.getType()) {
-            Type.SPONTANEOUS_SLOT.value -> holder.bind(element)
-            Type.FIXED_SLOT.value -> holder.bind(element)
-            Type.PAUSE.value -> holder.bind(element)
+            Type.SPONTANEOUS_SLOT -> holder.bind(element)
+            Type.FIXED_SLOT -> holder.bind(element)
+            Type.PAUSE -> holder.bind(element)
             else -> throw IllegalArgumentException()
         }
     }
@@ -57,14 +57,14 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
         return slotList!!.size
     }
 
-    override fun getItemViewType(position: Int): Int {
+     override fun getItemViewType(position: Int): Int {
         val item = slotList!![position]
-        return item.getType()
+        return item.getType().ordinal
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         Log.i("before move", "fromPos:$fromPosition toPos:$toPosition")
-        if (getItemViewType(fromPosition) == Type.SPONTANEOUS_SLOT.value) {
+        if (getItemViewType(fromPosition) == Type.SPONTANEOUS_SLOT.ordinal) {
 
 
             for (i in fromPosition downTo toPosition + 1) {
@@ -92,9 +92,9 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
         var nextPos = position - 1
 
         Log.i("newPos", "$nextPos")
-        if (nextPos >= 0 && getItemViewType(nextPos) == Type.PAUSE.value) {
+        if (nextPos >= 0 && getItemViewType(nextPos) == Type.PAUSE.ordinal) {
 
-            while (getItemViewType(nextPos) == Type.PAUSE.value) {
+            while (getItemViewType(nextPos) == Type.PAUSE.ordinal) {
                 //newPos!=0
                     Log.i("newPos", "$nextPos")
                 nextPos--

@@ -4,11 +4,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import org.joda.time.DateTime
 
 class InstitutLoginViewModel : ViewModel() {
 
-    private lateinit var _successfullLoginTime: MutableLiveData<Long>
-    val successfullLoginTime:LiveData<Long>
+    private lateinit var _successfullLoginTime: MutableLiveData<DateTime>
+    val successfullLoginTime:LiveData<DateTime>
     get() {return _successfullLoginTime}
      var username:String
      var password: String
