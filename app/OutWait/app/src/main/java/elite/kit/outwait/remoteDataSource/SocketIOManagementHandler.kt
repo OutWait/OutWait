@@ -2,6 +2,8 @@ package elite.kit.outwait.remoteDataSource
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import elite.kit.outwait.customDataTypes.Preferences
+import elite.kit.outwait.customDataTypes.ReceivedList
 import io.socket.client.Socket
 
 class SocketIOManagementHandler : ManagementHandler {
@@ -46,12 +48,9 @@ class SocketIOManagementHandler : ManagementHandler {
         TODO("Not yet implemented")
     }
 
-    /*
     override fun changePreferences(newPreferences: Preferences) {
         TODO("Not yet implemented")
     }
-
-     */
 
     override fun startTransaction() {
         TODO("Not yet implemented")
@@ -77,15 +76,17 @@ class SocketIOManagementHandler : ManagementHandler {
         TODO("Not yet implemented")
     }
 
-    /*
+
     override fun getReceivedList(): LiveData<ReceivedList> {
-        return _currentList
+        //return _currentList
+        TODO("Not yet implemented")
     }
 
     override fun getUpdatedPreferences() : LiveData<Preferences> {
-        return _currentPrefs
+        //return _currentPrefs
+        TODO("Not yet implemented")
     }
-     */
+
 
 
 

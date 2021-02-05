@@ -2,6 +2,8 @@ package elite.kit.outwait.remoteDataSource
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import elite.kit.outwait.customDataTypes.Preferences
+import elite.kit.outwait.customDataTypes.ReceivedList
 
 interface ManagementHandler {
 
@@ -16,7 +18,7 @@ interface ManagementHandler {
 
     fun resetPassword(username: String)
 
-    //fun changePreferences(newPreferences: Preferences)
+    fun changePreferences(newPreferences: Preferences)
 
     fun startTransaction()
 
@@ -38,18 +40,20 @@ interface ManagementHandler {
     fun moveSlotAfterAnother(movedSlot: String, otherSlot: String)
 
     /*
-    Es fehlen noch customDataTypes package
+    Es fehlen noch Joda Time Lib?
     fun changeSlotDuration(slotCode: String, duration: Duration)
 
     fun changeFixedSlotTime(slotCode: String, newAppointmentTime: DateTime)
+
      */
+
 
     /*
     Methoden um LiveData zum Observen zurückzugeben
      */
-    //fun getReceivedList(): LiveData<ReceivedList>
+    fun getReceivedList(): LiveData<ReceivedList>
 
-    //fun getUpdatedPreferences(): LiveData<Preferences>
+    fun getUpdatedPreferences(): LiveData<Preferences>
 
 
     /*

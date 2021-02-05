@@ -17,4 +17,5 @@ class SocketIOClientHandler : ClientHandler {
     override fun refreshWaitingTime(code: String) {
         TODO("Not yet implemented")
     }
+
 }
