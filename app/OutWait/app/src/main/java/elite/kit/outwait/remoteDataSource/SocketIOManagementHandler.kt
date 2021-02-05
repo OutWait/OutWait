@@ -104,6 +104,13 @@ class SocketIOManagementHandler : ManagementHandler {
         return _currentPrefs
     }
 
+    private fun processIncomingEvent() {
+        //TODO Callback param für ListenerRegistrieung
+
+        //TODO hier logik um eventstring und JSONObj. entgegen zu nehmen und
+        // mittels Strategie zu verarbeiten
+    }
+
 
 
 

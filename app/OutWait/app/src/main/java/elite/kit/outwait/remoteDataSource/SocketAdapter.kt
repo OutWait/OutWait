@@ -26,6 +26,12 @@ class SocketAdapter(private val serverURI: String) {
         //TODO Was ist mit on("Connect") Event?
     }
 
+    fun emitEventToServer() {
+        // TODO: implementen
+        // TODO param ist EventString und JSONObject
+        //TODO hier logik um JSONObj. in JSON String umzuwandeln
+    }
+
 
     private fun registerEventListeners() {
         //TODO: Wie werden die/der Callback übergeben mit den Events?
