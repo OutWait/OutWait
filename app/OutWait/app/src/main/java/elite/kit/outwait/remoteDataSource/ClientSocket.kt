@@ -7,11 +7,7 @@ import java.net.URI
 
 class ClientSocket {
 
-    // Socket als Singleton bzw. Kotlin "Object"
-/*
-object ClientSocket {
-
-    private const val  serverURI = "http://127.0.0.1:8080/client"
+    private val  serverURI = "http://127.0.0.1:8080/client"
 
     private val cSocket: Socket? = null
 
@@ -21,14 +17,5 @@ object ClientSocket {
 
         val cSocket = IO.socket(URI.create(serverURI), options)
     }
-
-    /*
-    Getter für den ClientSocket
-     */
-    fun getClientSocket(): Socket? {
-        return this.cSocket
-    }
 }
- */
 
-}

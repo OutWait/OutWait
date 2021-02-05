@@ -85,8 +85,9 @@ class SocketIOManagementHandler : ManagementHandler {
     override fun getUpdatedPreferences() : LiveData<Preferences> {
         return _currentPrefs
     }
-
      */
+
+
 
 
 

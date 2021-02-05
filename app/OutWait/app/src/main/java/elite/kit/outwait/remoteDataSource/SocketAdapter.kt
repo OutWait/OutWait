@@ -4,11 +4,9 @@ import io.socket.client.IO
 import io.socket.client.Socket
 import java.net.URI
 
-class ManagementSocket() {
+//TODO Fehler werfen bei Verbindungsfehler/Abbruch (inkl. der Listener)
 
-    //TODO Nur ein Socket und serverURI in Konstruktor
-
-    private val  serverURI = "http://127.0.0.1:8080/management"
+class SocketAdapter(private val serverURI: String) {
 
     private val mSocket: Socket? = null
 
@@ -25,17 +23,20 @@ class ManagementSocket() {
         registerEventListeners()
         mSocket?.connect()
 
-        //TODO Was ist mit onConnectEvent?
+        //TODO Was ist mit on("Connect") Event?
     }
 
 
     private fun registerEventListeners() {
         //TODO: Wie werden die/der Callback übergeben mit den Events?
         //TODO: Ein Callback und Strategie im konkreten Handler
-        //TODO: Public oder privat?
+
+        //TODO: JSON-String in JSON-Object Konvertierung auslagern?
     }
 
     fun releaseConnection() {
+        //TODO Was noch um alle Ressourcen freizugeben?
         mSocket?.close()
     }
+
 }
