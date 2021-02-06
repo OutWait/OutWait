@@ -1,5 +1,7 @@
 package elite.kit.outwait.remoteDataSource
 
+import org.json.JSONObject
+
 class SocketIOClientHandler : ClientHandler {
 
     override fun initCommunication(): Boolean {
@@ -16,6 +18,12 @@ class SocketIOClientHandler : ClientHandler {
 
     override fun refreshWaitingTime(code: String) {
         TODO("Not yet implemented")
+    }
+
+    private fun processIncomingEvent(event: String, data: JSONObject) {
+
+        //TODO Strategie verwenden um Daten zu verarbeiten
+
     }
 
 }

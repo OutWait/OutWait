@@ -7,6 +7,7 @@ import elite.kit.outwait.customDataTypes.ReceivedList
 import io.socket.client.Socket
 import org.joda.time.DateTime
 import org.joda.time.Duration
+import org.json.JSONObject
 
 class SocketIOManagementHandler : ManagementHandler {
 
@@ -104,11 +105,9 @@ class SocketIOManagementHandler : ManagementHandler {
         return _currentPrefs
     }
 
-    private fun processIncomingEvent() {
-        //TODO Callback param für ListenerRegistrieung
+    private fun processIncomingEvent(event: String, data: JSONObject) {
 
-        //TODO hier logik um eventstring und JSONObj. entgegen zu nehmen und
-        // mittels Strategie zu verarbeiten
+        //TODO Strategie verwenden um Event und seine Daten zu verarbeiten
     }
 
 
