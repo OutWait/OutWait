@@ -31,8 +31,6 @@ class InstitutLoginViewModel @Inject constructor(private val repo : InstituteRep
     }
 
     fun passwordForgottenString(){
-        //TODO Check not empty
-        Log.i("forgot","forgot password navigate to other fragment")
-
+        coordinator.navigateToPasswordForgot()
     }
 }

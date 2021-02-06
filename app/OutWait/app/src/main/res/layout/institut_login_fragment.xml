@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="elite.kit.outwait.managmentLogin.institutLoginScreen.InstitutLoginViewModel" />
@@ -18,13 +19,12 @@
             android:layout_width="103dp"
             android:layout_height="51dp"
             android:layout_marginBottom="220dp"
-            android:text="@string/sign_in"
             android:onClick="@{() -> viewModel.loginTried()}"
+            android:text="@string/sign_in"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/etPassword"
             app:layout_constraintHorizontal_bias="0.467"
             app:layout_constraintStart_toStartOf="@+id/etPassword" />
-
 
 
         <EditText
@@ -64,13 +64,13 @@
             android:id="@+id/tvPasswordForgotten"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{()->viewModel.passwordForgottenString()}"
             android:text="@string/forgot_password"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnLogin"
             app:layout_constraintVertical_bias="0.223" />
-        <!--            android:onClick="@{()->viewModel.passwordForgottenString()}"-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
