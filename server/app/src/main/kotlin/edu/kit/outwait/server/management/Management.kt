@@ -30,9 +30,9 @@ class Management(
     init {
         // Configure the event callbacks
         socketFacade.onReceive(Event.MANAGEMENT_LOGOUT) { logout() }
-        socketFacade.onReceive(Event.START_TRANSACTION) { json -> beginNewTransaction() }
-        socketFacade.onReceive(Event.ABORT_TRANSACTION) { json -> abortCurrentTransaction() }
-        socketFacade.onReceive(Event.SAVE_TRANSACTION) { json -> saveCurrentTransaction() }
+        socketFacade.onReceive(Event.START_TRANSACTION) { beginNewTransaction() }
+        socketFacade.onReceive(Event.ABORT_TRANSACTION) { abortCurrentTransaction() }
+        socketFacade.onReceive(Event.SAVE_TRANSACTION) { saveCurrentTransaction() }
         socketFacade.onReceive(Event.DELETE_SLOT) { json ->
             if (checkTransactionStarted()) {
                 queue?.deleteSlot((json as JSONSlotCodeWrapper).getSlotCode())

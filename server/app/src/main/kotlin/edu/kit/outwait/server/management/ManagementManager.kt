@@ -94,9 +94,12 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
         return queue
     }
-    fun saveTransaction(managementId: ManagementId, queue: Queue) {
-        assert(activeTransactions.contains(managementId))
 
+    /**
+     * Is called internally when the queue has been changed somewhere. It will store the queue in
+     * the database, inform all Managements and update the next-delay-alarm.
+     */
+    private fun handleQueueUpdate(managementId: ManagementId, queue: Queue) {
         queue.storeToDB(databaseWrapper)
 
         // Distribute the queue
@@ -108,6 +111,12 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
         // Create delay timer
         keepQueueDelayTime(queue.calculateNextDelayChange(), managementId)
+    }
+
+    fun saveTransaction(managementId: ManagementId, queue: Queue) {
+        assert(activeTransactions.contains(managementId))
+
+        handleQueueUpdate(managementId, queue)
 
         activeTransactions.remove(managementId)
     }
@@ -159,19 +168,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                     .prioritizationTime
             queue.updateQueue(prioritizationTime)
 
-            // TODO the following code is duplicated in saveTransaction => refactor
-
-            queue.storeToDB(databaseWrapper)
-
-            // Distribute the queue
-            for (management in managements) {
-                if (management.managementId == urgentQueueManagementId) {
-                    management.sendUpdatedQueue(queue)
-                }
-            }
-
-            // Save the next non-trivial change
-            keepQueueDelayTime(queue.calculateNextDelayChange(), urgentQueueManagementId)
+            handleQueueUpdate(urgentQueueManagementId, queue) // this will also set the next timer
         } else if (queueDelayTimes.isNotEmpty()) {
             // Reset the next timer, if the trigger was invalid
             nextDelayAlarm.schedule(
