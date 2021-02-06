@@ -4,6 +4,10 @@ import org.json.JSONObject
 
 class SocketIOClientHandler : ClientHandler {
 
+    //TODO Mit ObjectWrappern die Daten zum versenden verpacken
+    //TODO Mit Strategie (oder internen Methoden, da net so viele) die incomingEvents verarbeiten
+    //Falls nur interne Methoden, dann diese direkt in Event-Callback-Mapping einfügen?
+
     override fun initCommunication(): Boolean {
         TODO("Not yet implemented")
     }
