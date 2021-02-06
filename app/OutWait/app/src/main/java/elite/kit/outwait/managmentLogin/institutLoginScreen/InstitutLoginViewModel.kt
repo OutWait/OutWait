@@ -10,7 +10,7 @@ import org.joda.time.DateTime
 import javax.inject.Inject
 
 @HiltViewModel
-class InstitutLoginViewModel @Inject constructor(private val repo : InstituteRepository): ViewModel() {
+class InstitutLoginViewModel @Inject constructor(private val repo : InstituteRepository,private val coordinator: InstitutCoordinator): ViewModel() {
 
     private lateinit var _successfullLoginTime: MutableLiveData<DateTime>
     val successfullLoginTime:LiveData<DateTime>
@@ -26,6 +26,7 @@ class InstitutLoginViewModel @Inject constructor(private val repo : InstituteRep
     fun loginTried(){
         if(username.isNotEmpty() && password.isNotEmpty()){
         Log.i("login","$username + $password")}
+        coordinator.navigateToManagementView()
         repo.doSomething()
     }
 
