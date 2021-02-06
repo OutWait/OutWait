@@ -35,10 +35,18 @@ class SocketAdapter(private val serverURI: String) {
         //TODO Was ist mit on("Connect") Event?
     }
 
-    fun emitEventToServer() {
-        // TODO: implementen
-        // TODO param ist EventString und JSONObject
-        //TODO hier logik um JSONObj. in JSON String umzuwandeln
+    /*
+    Emitte Event mit Daten zum Server
+     */
+    fun emitEventToServer(event: String, jsonData: JSONObject) {
+        mSocket?.emit(event, jsonData.toString())
+    }
+
+    /*
+    Emitte Event ohne Daten zum Server
+     */
+    fun emitEventToServer(event: String) {
+        mSocket?.emit(event)
     }
 
 
@@ -52,10 +60,12 @@ class SocketAdapter(private val serverURI: String) {
     ) {
         for (k in mapEventsToCallback.keys) {
             mSocket?.on(k, Emitter.Listener {
+
                 // parse the received data string into JSONObject (
-                // TODO: Kommt vom Server ein String im JSONFORMat?
                 var jsonData: JSONObject = JSONObject(it[0].toString())
+
                 // Invoke the given callback with the parsed data
+                //TODO Funktioniert der Aufruf der Callback Methode richtig?
                 mapEventsToCallback[k]?.invoke(k, jsonData)
             })
         }
