@@ -42,7 +42,7 @@ class DatabaseWrapper {
         )
     }
 
-    fun getManagamentByUsername(username: String): ManagementCredentials {
+    fun getManagementByUsername(username: String): ManagementCredentials {
         return ManagementCredentials(ManagementId(0), "", "")
     }
 
