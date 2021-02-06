@@ -22,9 +22,7 @@ class SocketFacade(val socket: SocketIOClient, adapter: SocketAdapter) {
         disconnectCallback = callback
     }
 
-    /**
-     * Closes the connection
-     */
+    /** Closes the connection */
     fun disconnect() {
         socket.disconnect()
     }

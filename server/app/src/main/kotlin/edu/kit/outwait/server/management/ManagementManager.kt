@@ -7,6 +7,7 @@ import edu.kit.outwait.server.core.DatabaseWrapper
 import edu.kit.outwait.server.protocol.Event
 import edu.kit.outwait.server.protocol.JSONCredentialsWrapper
 import edu.kit.outwait.server.protocol.JSONEmptyWrapper
+import edu.kit.outwait.server.protocol.JSONResetPasswordWrapper
 import edu.kit.outwait.server.socketHelper.SocketFacade
 import java.util.Date
 import java.util.Timer
@@ -41,9 +42,8 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
     }
 
     override fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade) {
+        // Handle the login
         socketFacade.onReceive(Event.MANAGEMENT_LOGIN) { json ->
-            // Handle the login
-
             val wrapper = (json as JSONCredentialsWrapper)
             val credentials = databaseWrapper.getManagementByUsername(wrapper.getUsername())
 
@@ -57,6 +57,11 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                 val manager = Management(socketFacade, credentials.id, databaseWrapper, this)
                 managements.add(manager)
             }
+        }
+
+        // Handle the reset password function
+        socketFacade.onReceive(Event.RESET_PASSWORD) { json ->
+            resetManagementPassword((json as JSONResetPasswordWrapper).getUsername())
         }
 
         // Login request
@@ -149,7 +154,9 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
             // Update the queue
             val prioritizationTime =
-            databaseWrapper.getManagementById(urgentQueueManagementId).settings.prioritizationTime
+                databaseWrapper.getManagementById(urgentQueueManagementId)
+                    .settings
+                    .prioritizationTime
             queue.updateQueue(prioritizationTime)
 
             // TODO the following code is duplicated in saveTransaction => refactor
