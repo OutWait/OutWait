@@ -37,8 +37,8 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
      * Implementation of abstract bindSocket-method of super class.
      * Called by configureConnectionCreation-method of super class in onConnection-event.
      * Creates a client object for incoming connection and adds it to list.
-     *
-     * @param socket ?
+     * TODO: Überprüfung ob SocketIOClient-Parameter nötig?
+     * @param socket
      * @param socketFacade passed to new client-Object
      */
     override fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade) {

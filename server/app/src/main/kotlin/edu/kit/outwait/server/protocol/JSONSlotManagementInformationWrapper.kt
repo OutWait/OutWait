@@ -8,7 +8,7 @@ import org.json.JSONObject
 class JSONSlotManagementInformationWrapper : JSONSlotCodeWrapper {
     constructor() {}
     constructor(obj: JSONObject) {}
-    fun setinformation(information: SlotManagementInformation) {}
+    fun setInformation(information: SlotManagementInformation) {}
     fun getInformation(): SlotManagementInformation {
         return SlotManagementInformation(ManagementDetails(""), Duration.ZERO, Duration.ZERO)}
 }
