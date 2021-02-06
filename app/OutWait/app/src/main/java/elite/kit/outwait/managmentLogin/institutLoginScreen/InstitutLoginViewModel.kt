@@ -11,10 +11,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InstitutLoginViewModel @Inject constructor(private val repo : InstituteRepository,private val coordinator: InstitutCoordinator): ViewModel() {
-
     private lateinit var _successfullLoginTime: MutableLiveData<DateTime>
     val successfullLoginTime:LiveData<DateTime>
-    get() {return _successfullLoginTime}
+        get() {return _successfullLoginTime}
+
      var username:String
      var password: String
 

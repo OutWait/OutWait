@@ -20,11 +20,12 @@
         android:layout_marginTop="100dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvCleintLoginText" />
+    <!--        android:text="@={viewModel.clientSlotCode}"-->
+
 
     <TextView
         android:id="@+id/tvCleintLoginText"
@@ -42,6 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Enter Code"
+        android:onClick="@{()-> viewModel.loginTried()}"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/ibStartScan"
         app:layout_constraintHorizontal_bias="0.558"
@@ -65,6 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Institut Login"
+        android:onClick="@{()-> viewModel.navigateToInstitutLogin()}"
         app:layout_constraintBottom_toTopOf="@+id/tvCleintLoginText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.886"

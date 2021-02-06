@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.ManagmentViewFragmentBinding
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
@@ -19,6 +20,7 @@ import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import org.joda.time.*
 import java.util.*
 
+@AndroidEntryPoint
 class managmentViewFragment : Fragment(), ItemActionListener {
 
 
@@ -104,5 +106,9 @@ class managmentViewFragment : Fragment(), ItemActionListener {
 
     override fun editTimeSlot(position: Int) {
         TODO("Not yet implemented")
+    }
+
+    fun navigateToAddSlotDialog(){
+        viewModel.navigateToAddSlotDialog()
     }
 }

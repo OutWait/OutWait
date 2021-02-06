@@ -38,7 +38,8 @@
         android:label="EditCodeFragment" >
         <action
             android:id="@+id/action_editCodeFragment_to_remainingTimeFragment"
-            app:destination="@id/remainingTimeFragment" />
+            app:destination="@id/remainingTimeFragment"
+            app:popUpTo="@id/navigation" />
         <action
             android:id="@+id/action_editCodeFragment_to_institutLoginFragment"
             app:destination="@id/institutLoginFragment" />

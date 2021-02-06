@@ -7,9 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.PasswordForgotFragmentBinding
 
+@AndroidEntryPoint
 class passwordForgotFragment : Fragment() {
 
     companion object {

@@ -48,6 +48,7 @@ dependencies {
 
     implementation "com.google.dagger:hilt-android:$hilt_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     implementation 'joda-time:joda-time:2.10.9'
     implementation 'mobi.upod:time-duration-picker:1.1.3'
