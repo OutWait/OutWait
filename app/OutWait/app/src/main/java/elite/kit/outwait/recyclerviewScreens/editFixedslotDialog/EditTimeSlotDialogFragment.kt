@@ -17,20 +17,11 @@ import mobi.upod.timedurationpicker.TimeDurationPicker
 
 class EditTimeSlotDialogFragment : AppCompatDialogFragment() {
 
-    companion object {
-        fun newInstance() = EditTimeSlotDialogFragment()
-    }
+
 
     private lateinit var viewModel: EditTimeSlotDialogViewModel
     private lateinit var binding:EditTimeSlotDialogFragmentBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-
-        return binding.root
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         viewModel = ViewModelProvider(this).get(EditTimeSlotDialogViewModel::class.java)

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding
@@ -15,25 +16,17 @@ import org.joda.time.DateTime
 
 class AddSlotDialogFragment : AppCompatDialogFragment() {
 
-    private lateinit var viewModel: AddSlotDialogViewModel
+    private  val viewModel: AddSlotDialogViewModel by viewModels()
     private lateinit var binding: AddSlotDialogFragmentBinding
 
-    /*override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }*/
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
-        val inflater = requireActivity().layoutInflater
         binding = AddSlotDialogFragmentBinding.inflate(LayoutInflater.from(context))
 
 
 
-        viewModel = ViewModelProvider(this).get(AddSlotDialogViewModel::class.java)
         binding.viewModel = this.viewModel
         binding.tpAppointmentTime.setIs24HourView(true)
       //  binding.timeDurationInput.setTimeUnits(TimeDurationPicker.HH_MM)

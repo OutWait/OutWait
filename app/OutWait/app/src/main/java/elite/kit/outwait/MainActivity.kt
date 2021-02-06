@@ -35,7 +35,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onBackPressed() {
+    //TODO define it only for remainingfragment and mangementfragment if one of both is activ
+    /*override fun onBackPressed() {
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed()
             return
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
 
         Handler().postDelayed(Runnable { doubleBackToExitPressedOnce = false }, 2000)
-    }
+    }*/
 
 
 }

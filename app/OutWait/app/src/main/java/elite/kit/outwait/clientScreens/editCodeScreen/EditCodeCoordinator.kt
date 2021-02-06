@@ -7,7 +7,7 @@ import javax.inject.Inject
 class EditCodeCoordinator @Inject constructor(private val navigator: Navigator) {
 
     fun navigateToRemainingTimeFragment(){
-        navigator.navigate(EditCodeFragmentDirections.actionEditCodeFragmentToRemainingTimeFragment())
+        navigator.navigate(EditCodeFragmentDirections.actionEditCodeFragmentToRemainingTimeFragment2())
 
     }
 

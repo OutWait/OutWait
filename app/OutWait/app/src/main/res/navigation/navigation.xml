@@ -37,12 +37,11 @@
         android:name="elite.kit.outwait.clientScreens.editCodeScreen.EditCodeFragment"
         android:label="EditCodeFragment" >
         <action
-            android:id="@+id/action_editCodeFragment_to_remainingTimeFragment"
-            app:destination="@id/remainingTimeFragment"
-            app:popUpTo="@id/navigation" />
-        <action
             android:id="@+id/action_editCodeFragment_to_institutLoginFragment"
             app:destination="@id/institutLoginFragment" />
+        <action
+            android:id="@+id/action_editCodeFragment_to_remainingTimeFragment2"
+            app:destination="@id/remainingTimeFragment" />
     </fragment>
     <fragment
         android:id="@+id/remainingTimeFragment"

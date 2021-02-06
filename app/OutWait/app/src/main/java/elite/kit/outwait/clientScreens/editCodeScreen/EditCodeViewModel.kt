@@ -1,5 +1,6 @@
 package elite.kit.outwait.clientScreens.editCodeScreen
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,11 +13,11 @@ import javax.inject.Inject
 @HiltViewModel
 class EditCodeViewModel @Inject constructor(private val repo : InstituteRepository, private val coordinator: EditCodeCoordinator) : ViewModel() {
 
-    private lateinit var _clientSlotCode: MutableLiveData<String>
-    val clientSlotCode: LiveData<String>
-        get() {return _clientSlotCode}
+    val clientSlotCode= MutableLiveData<String>()
+
 
     fun loginTried(){
+        //TODO repo call expected
         coordinator.navigateToRemainingTimeFragment()
     }
 

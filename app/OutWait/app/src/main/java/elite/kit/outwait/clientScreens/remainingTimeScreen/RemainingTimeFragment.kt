@@ -31,25 +31,14 @@ class RemainingTimeFragment : Fragment() {
             container,
             false)
         binding.viewModel=this.viewModel
-
-
-
-
         return binding.root
     }
 
-    fun onBackPressed() {
-
-        Toast.makeText(context, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
-
-    }
 
 
 
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
 
-    }
+
 
 }

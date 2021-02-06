@@ -23,21 +23,8 @@ class InstitutLoginFragment : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-       // viewModel = ViewModelProvider(this).get(InstitutLoginViewModel::class.java)
         binding = DataBindingUtil.inflate(inflater, R.layout.institut_login_fragment, container, false)
         binding.viewModel=this.viewModel
-
-//        navigate to ForgottenPasswordFragment
-        /*binding.tvPasswordForgotten.setOnClickListener { view->
-            view.findNavController().navigate(R.id.action_institutLoginFragment_to_passwordForgotFragment)
-        }*/
-        //navigate to managementViewFragment
-      /*  binding.btnLogin.setOnClickListener{
-           *//* var add = AddSlotDialogFragment()
-            add.show(requireActivity().supportFragmentManager, "missiles")*//*
-            viewModel.loginTried()
-            it.findNavController().navigate(R.id.action_institutLoginFragment_to_managmentViewFragment)
-        }*/
         return binding.apply { lifecycleOwner=this@InstitutLoginFragment }.root
     }
 
