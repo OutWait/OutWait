@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/navigation"
-    app:startDestination="@id/institutLoginFragment">
+    app:startDestination="@id/editCodeFragment">
 
     <fragment
         android:id="@+id/institutLoginFragment"
@@ -22,5 +22,29 @@
     <fragment
         android:id="@+id/managmentViewFragment"
         android:name="elite.kit.outwait.recyclerviewScreens.managmentViewScreen.managmentViewFragment"
-        android:label="managmentViewFragment" />
+        android:label="managmentViewFragment" >
+        <action
+            android:id="@+id/action_managmentViewFragment_to_addSlotDialogFragment"
+            app:destination="@id/addSlotDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/addSlotDialogFragment"
+        android:name="elite.kit.outwait.recyclerviewScreens.addSlotDialog.AddSlotDialogFragment"
+        android:label="AddSlotDialogFragment" />
+    <fragment android:id="@+id/placeholder" />
+    <fragment
+        android:id="@+id/editCodeFragment"
+        android:name="elite.kit.outwait.clientScreens.editCodeScreen.EditCodeFragment"
+        android:label="EditCodeFragment" >
+        <action
+            android:id="@+id/action_editCodeFragment_to_remainingTimeFragment"
+            app:destination="@id/remainingTimeFragment" />
+        <action
+            android:id="@+id/action_editCodeFragment_to_institutLoginFragment"
+            app:destination="@id/institutLoginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/remainingTimeFragment"
+        android:name="elite.kit.outwait.clientScreens.remainingTimeScreen.RemainingTimeFragment"
+        android:label="RemainingTimeFragment" />
 </navigation>
