@@ -2,7 +2,7 @@ package edu.kit.outwait.server.management
 
 import java.time.Duration
 
-class ManagementSettings(
+data class ManagementSettings(
     val mode: Mode,
     val defaultSlotDuration: Duration,
     val notificationTime: Duration,

@@ -1,3 +1,3 @@
 package edu.kit.outwait.server.management
 
-class ManagementId(val id: Long)
+data class ManagementId(val id: Long)
