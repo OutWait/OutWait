@@ -41,6 +41,7 @@ class SocketAdapter(val namespace: SocketIONamespace) {
                 override fun onDisconnect(client: SocketIOClient) {
                     val facade = facades[client]
                     if (facade != null) {
+                        removeFacade(facade)
                         facade.disconnectCallback()
                     }
                 }

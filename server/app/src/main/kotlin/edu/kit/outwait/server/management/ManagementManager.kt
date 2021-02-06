@@ -49,7 +49,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
             if (wrapper.getPassword() != credentials.password) {
                 socketFacade.send(Event.MANAGEMENT_LOGIN_DENIED, JSONEmptyWrapper())
-                socket.disconnect()
+                socketFacade.disconnect()
             } else {
                 socketFacade.send(Event.MANAGEMENT_LOGIN_SUCCESS, JSONEmptyWrapper())
 
