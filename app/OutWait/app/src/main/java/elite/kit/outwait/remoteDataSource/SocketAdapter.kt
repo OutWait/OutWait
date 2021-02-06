@@ -1,5 +1,6 @@
 package elite.kit.outwait.remoteDataSource
 
+import android.util.Log
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -8,6 +9,9 @@ import java.net.URI
 
 
 //TODO Fehler werfen bei Verbindungsfehler/Abbruch (inkl. der Listener)
+//oder generell wann müssen/sollen Fehlermeldungen geworfen werden?
+//TODO Was ist Socket.IO mäßig noch zu beachten?
+//TODO Was noch um alle Ressourcen freizugeben?
 
 class SocketAdapter(private val serverURI: String) {
 
@@ -21,18 +25,30 @@ class SocketAdapter(private val serverURI: String) {
     }
 
     /*
-    Intialisiere Verbindung mit Server //TODO Was ist Socket.IO mäßig noch zu beachten?
+    Intialisiere Verbindung mit Server
     Uund registriere die EventListener (in private Methode ausgelagert)
+    //TODO Was ist Socket.IO mäßig noch zu beachten?
      */
-    fun initializeConnection(
-        mapEventsToCallback: HashMap<String,
-                (event: String, jsonObj: JSONObject) -> Unit>
-    ) {
-        //TODO Param für EventListener
+    fun initializeConnection(mapEventsToCallback: HashMap<String,
+                (event: String, jsonObj: JSONObject) -> Unit>) {
+
         registerEventListeners(mapEventsToCallback)
+
+        //TODO Was ist mit on(CONNECT) und on(DISCONNECT) Event (-listeners) ?
+        //TODO Testlog falls Socket erfolgreich connected
+        mSocket?.on(Socket.EVENT_CONNECT, Emitter.Listener {
+            Log.i("SocketAdapter", "Socket is connected")
+        }
+        )
+
+        //TODO Testlog falls Socket disconnected
+        mSocket?.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
+            Log.i("SocketAdapter", "Socket is disconnected")
+        }
+        )
+
         mSocket?.connect()
 
-        //TODO Was ist mit on("Connect") Event?
     }
 
     /*
