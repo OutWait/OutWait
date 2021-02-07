@@ -27,4 +27,10 @@
     <string name="undo">UNDO</string>
     <string name="enter_slotcode_text">Please enter your slot code</string>
     <string name="slot_details">Slot details</string>
+    <string name="standard_slot_duration">Standard slot duration</string>
+    <string name="notificationtime">Notificationtime</string>
+    <string name="delay_notificationtime">Delay notificationtime</string>
+    <string name="prioritizationtime">Prioritizationtime</string>
+    <string name="mode_1">Mode 1</string>
+    <string name="mode_2">Mode 2</string>
 </resources>

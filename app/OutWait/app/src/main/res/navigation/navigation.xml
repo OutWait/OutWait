@@ -26,6 +26,9 @@
         <action
             android:id="@+id/action_managmentViewFragment_to_addSlotDialogFragment"
             app:destination="@id/addSlotDialogFragment" />
+        <action
+            android:id="@+id/action_managmentViewFragment_to_configDialogFragment"
+            app:destination="@id/configDialogFragment2" />
     </fragment>
     <dialog
         android:id="@+id/addSlotDialogFragment"
@@ -48,4 +51,8 @@
         android:id="@+id/remainingTimeFragment"
         android:name="elite.kit.outwait.clientScreens.remainingTimeScreen.RemainingTimeFragment"
         android:label="RemainingTimeFragment" />
+    <fragment
+        android:id="@+id/configDialogFragment2"
+        android:name="elite.kit.outwait.recyclerviewScreens.configurationsScreen.ConfigDialogFragment"
+        android:label="ConfigDialogFragment" />
 </navigation>

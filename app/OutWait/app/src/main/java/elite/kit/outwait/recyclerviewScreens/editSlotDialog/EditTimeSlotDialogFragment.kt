@@ -35,6 +35,7 @@ class EditTimeSlotDialogFragment : DialogFragment() {
         //EXAMPLE
         var slot= FixedTimeSlot(Interval(0L,200L),"1234", "HIlfe", DateTime.now())
         binding.timeDurationInput.setTimeUnits(TimeDurationPicker.HH_MM)
+        binding.tpAppointmentTime.setIs24HourView(true)
         viewModel.identifier.value=slot.auxiliaryIdentifier
         viewModel.isFixedSlot.value = isFixedSlot(slot)
 

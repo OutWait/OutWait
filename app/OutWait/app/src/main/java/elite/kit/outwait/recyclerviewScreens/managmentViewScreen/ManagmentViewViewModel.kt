@@ -18,6 +18,10 @@ class ManagmentViewViewModel @Inject constructor(private val repo : InstituteRep
     fun navigateToAddSlotDialog() {
         coordinator.navigateToAddDialogFragment()
     }
+
+    fun navigateToConfigDialog() {
+        coordinator.navigateToConfigDialog()
+    }
     // val slotList:LiveData<List<TimeSlot>>=institutRepository.getAllSlots().asLiveData()
 
 

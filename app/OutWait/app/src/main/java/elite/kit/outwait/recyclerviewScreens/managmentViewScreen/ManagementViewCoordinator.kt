@@ -7,4 +7,8 @@ class ManagementViewCoordinator @Inject constructor(private val navigator: Navig
     fun navigateToAddDialogFragment() {
         navigator.navigate(ManagmentViewFragmentDirections.actionManagmentViewFragmentToAddSlotDialogFragment())
     }
+
+    fun navigateToConfigDialog() {
+        navigator.navigate(ManagmentViewFragmentDirections.actionManagmentViewFragmentToConfigDialogFragment())
+    }
 }

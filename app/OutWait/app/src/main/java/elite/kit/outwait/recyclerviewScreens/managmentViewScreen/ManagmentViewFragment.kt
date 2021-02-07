@@ -5,14 +5,14 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -65,6 +65,8 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         //TODO double back press to exit app not to close
         exitApp()
 
+        setHasOptionsMenu(true)
+
         return binding.root
     }
 
@@ -97,10 +99,10 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
 
         var start = DateTime(DateTime.now()).plusHours(1)
         var end = start.plusMinutes(33)
-        Log.i("datetime", "${TransformationInput.formatDateTime(20,15)}")
+       /* Log.i("datetime", "${TransformationInput.formatDateTime(20,15)}")
         Log.i("duration", "${TransformationInput.formatDuration(6000)}")
         Log.i("interval", "${TransformationInput.formatInterval(6000)}")
-        Log.i("interval", "${Duration(200L).toIntervalFrom(DateTime.now())}")
+        Log.i("interval", "${Duration(200L).toIntervalFrom(DateTime.now())}")*/
 
         for (i in 1..1) {
 
@@ -159,7 +161,15 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         editDialog.show(childFragmentManager,"aaa")
     }
 
-    fun navigateToAddSlotDialog() {
-        viewModel.navigateToAddSlotDialog()
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.overflow, menu)
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        viewModel.navigateToConfigDialog()
+        return true
     }
 }
