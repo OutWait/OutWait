@@ -4,10 +4,13 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import elite.kit.outwait.instituteRepository.InstituteRepository
 import org.joda.time.DateTime
 import org.joda.time.Interval
-
-class AddSlotDialogViewModel : ViewModel() {
+import javax.inject.Inject
+@HiltViewModel
+class AddSlotDialogViewModel @Inject constructor(private val repo : InstituteRepository) : ViewModel() {
 
 
      val identifier = MutableLiveData<String>()

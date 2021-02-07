@@ -45,7 +45,6 @@ android {
 }
 
 dependencies {
-
     implementation "com.google.dagger:hilt-android:$hilt_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
@@ -76,4 +75,8 @@ dependencies {
 
     //Dependency for timepicker android 21
     implementation 'com.github.ifr0z:timepickercompact:1.0'
+
+    //Dependency to generate a QRCode
+    implementation 'com.google.zxing:core:3.4.0'
+
 }

@@ -22,7 +22,7 @@ import org.joda.time.*
 import java.util.*
 
 @AndroidEntryPoint
-class managmentViewFragment : Fragment(), ItemActionListener {
+class ManagmentViewFragment : Fragment(), ItemActionListener {
 
     private  val viewModel: ManagmentViewViewModel by viewModels()
     private lateinit var binding: ManagmentViewFragmentBinding

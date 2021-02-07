@@ -5,6 +5,6 @@ import javax.inject.Inject
 
 class ManagementViewCoordinator @Inject constructor(private val navigator: Navigator) {
     fun navigateToAddDialogFragment() {
-        navigator.navigate(managmentViewFragmentDirections.actionManagmentViewFragmentToAddSlotDialogFragment())
+        navigator.navigate(ManagmentViewFragmentDirections.actionManagmentViewFragmentToAddSlotDialogFragment())
     }
 }
