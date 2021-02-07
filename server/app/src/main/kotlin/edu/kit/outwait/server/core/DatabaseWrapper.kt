@@ -30,7 +30,7 @@ class DatabaseWrapper {
         return Date(0)
     }
 
-    fun setSloxApprox(slotCode: SlotCode, slotApprox: Date) {
+    fun setSlotApprox(slotCode: SlotCode, slotApprox: Date) {
     }
 
     fun saveSlots(slots: List<Slot>, queueId: QueueId) {
