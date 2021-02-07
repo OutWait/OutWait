@@ -11,16 +11,61 @@ class Queue(
     val queueId: QueueId,
     databaseWrapper: DatabaseWrapper
 ) {
-    private val slots = listOf<Slot>()
+    private var slots = mutableListOf<Slot>()
 
-    fun updateQueue(prioritizationTime: Duration) {}
-    fun calculateNextDelayChange(): Date { return Date() }
-    fun storeToDB(databaseWrapper: DatabaseWrapper) {}
-    fun addSpontaneousSlot(slot: Slot) {}
-    fun addFixedSlot(slot: Slot) {}
-    fun deleteSlot(slotCode: SlotCode) {}
-    fun endCurrentSlot() {}
-    fun moveSlotAfterAnother(slotToMove: SlotCode, otherSlot: SlotCode) {}
-    fun changeAppointmentTime(slot: SlotCode, newTime: Date) {}
-    fun updateSlotLength(slotCode: SlotCode, newLength: Duration) {}
+    init {
+        slots = databaseWrapper.getSlots(queueId).toMutableList()
+    }
+    fun updateQueue(prioritizationTime: Duration) {
+        // TODO
+    }
+    fun calculateNextDelayChange(): Date {
+        // TODO
+        return Date()
+    }
+    fun storeToDB(databaseWrapper: DatabaseWrapper) {
+        databaseWrapper.saveSlots(slots, queueId)
+    }
+    fun addSpontaneousSlot(slot: Slot) {
+        slots.add(slot);
+    }
+    fun addFixedSlot(slot: Slot) {
+        slots.add(slot);
+    }
+    fun deleteSlot(slotCode: SlotCode) {
+        slots.removeIf({ it.slotCode == slotCode })
+    }
+    fun endCurrentSlot() {
+        if(slots.isNotEmpty()) {
+            slots.removeAt(0)
+        }
+    }
+    fun moveSlotAfterAnother(slotToMove: SlotCode, otherSlot: SlotCode) {
+        val slot = slots.find { it.slotCode == slotToMove }
+        if (slot != null) {
+            slots.remove(slot)
+            val targetIndex = slots.indexOfFirst { it.slotCode == otherSlot }
+            slots.add(targetIndex + 1, slot)
+        }
+    }
+
+    /** Replaces a slot in the list with a updated slot */
+    private fun replaceSlot(oldSlot:Slot, newSlot:Slot) {
+        val index = slots.indexOf(oldSlot)
+        slots.remove(oldSlot)
+        slots.add(index, newSlot)
+    }
+
+    fun changeAppointmentTime(slotCode: SlotCode, newTime: Date) {
+        var oldSlot = slots.find { it.slotCode == slotCode }
+        if (oldSlot != null) {
+            replaceSlot(oldSlot, oldSlot.copy(constructorTime=newTime))
+        }
+    }
+    fun updateSlotLength(slotCode: SlotCode, newLength: Duration) {
+        var oldSlot = slots.find { it.slotCode == slotCode }
+        if (oldSlot != null) {
+            replaceSlot(oldSlot, oldSlot.copy(expectedDuration=newLength))
+        }
+    }
 }
