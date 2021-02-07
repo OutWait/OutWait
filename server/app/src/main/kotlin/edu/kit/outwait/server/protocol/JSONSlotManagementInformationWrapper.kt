@@ -5,9 +5,8 @@ import edu.kit.outwait.server.management.SlotManagementInformation
 import java.time.Duration
 import org.json.JSONObject
 
-class JSONSlotManagementInformationWrapper : JSONSlotCodeWrapper {
-    constructor() {}
-    constructor(obj: JSONObject) {}
+class JSONSlotManagementInformationWrapper(obj: JSONObject) : JSONSlotCodeWrapper(obj) {
+    constructor() : this(JSONObject())
     fun setinformation(information: SlotManagementInformation) {}
     fun getInformation(): SlotManagementInformation {
         return SlotManagementInformation(ManagementDetails(""), Duration.ZERO, Duration.ZERO)}

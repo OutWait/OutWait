@@ -4,9 +4,8 @@ import java.time.Duration
 import java.util.Date
 import org.json.JSONObject
 
-class JSONAddFixedSlotWrapper : JSONObjectWrapper {
-    constructor() {}
-    constructor(obj: JSONObject) {}
+class JSONAddFixedSlotWrapper(obj: JSONObject) : JSONObjectWrapper(obj) {
+    constructor() : this(JSONObject())
     fun setAppointmentTime(time: Date) {}
     fun setDuration(duration: Duration) {}
     fun getAppointmentTime(): Date { return Date(0) }
