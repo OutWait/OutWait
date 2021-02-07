@@ -21,8 +21,7 @@ object TransformationInput {
     @JvmStatic
     fun formatInterval(duration:Long) : Interval {
         var start =DateTime(START_TIME_DURATION)
-        var end = start.plusMinutes(Duration(duration).standardMinutes.toInt())
-        Duration(2)
+        var end = start.plus(duration)
         return Interval(start,end)
     }
 

@@ -24,6 +24,7 @@ import elite.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFr
 import elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
+import elite.kit.outwait.utils.TransformationInput
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import org.joda.time.*
 import java.util.*
@@ -96,7 +97,10 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
 
         var start = DateTime(DateTime.now()).plusHours(1)
         var end = start.plusMinutes(33)
-        Log.i("interval date now", "${Interval(start, end).toDuration().toStandardMinutes()}")
+        Log.i("datetime", "${TransformationInput.formatDateTime(20,15)}")
+        Log.i("duration", "${TransformationInput.formatDuration(6000)}")
+        Log.i("interval", "${TransformationInput.formatInterval(6000)}")
+        Log.i("interval", "${Duration(200L).toIntervalFrom(DateTime.now())}")
 
         for (i in 1..1) {
 
