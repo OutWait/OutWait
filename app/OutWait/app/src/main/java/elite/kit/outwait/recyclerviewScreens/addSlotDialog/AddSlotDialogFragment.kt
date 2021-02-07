@@ -10,6 +10,8 @@ import elite.kit.outwait.R
 import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding
 import elite.kit.outwait.utils.TransformationInput
 import mobi.upod.timedurationpicker.TimeDurationPicker
+import org.joda.time.DateTime
+import org.joda.time.DateTimeFieldType.hourOfDay
 import kotlin.time.toDuration
 
 class AddSlotDialogFragment : AppCompatDialogFragment() {
@@ -27,7 +29,11 @@ class AddSlotDialogFragment : AppCompatDialogFragment() {
 
         binding.viewModel = this.viewModel
         binding.tpAppointmentTime.setIs24HourView(true)
+        //Default time is now time
+        binding.tpAppointmentTime.hour= DateTime.now().hourOfDay.plus(1)
+        binding.tpAppointmentTime.minute= DateTime.now().minuteOfDay
         binding.timeDurationInput.setTimeUnits(TimeDurationPicker.HH_MM)
+        viewModel.isModeTwo.value=true
 
         //TODO FixedSlot only possible in Modus 2 - binding.cbIsFixedSlot.isEnabled & appointment timepicker disable
 

@@ -21,8 +21,14 @@ class AddSlotDialogViewModel : ViewModel() {
 
      val isFixedSlot = MutableLiveData<Boolean>()
 
+    var isModeTwo=MutableLiveData<Boolean>()
+
 
     fun notifyAddSlot() {
+        //TODO check mode
+        //TODO pass slot
         Log.i("addSlot","\n ${identifier.value} \n ${appointmentTime.value} \n ${interval.value} \n ${isFixedSlot.value}")
     }
+
+    //TODO add observer to disable entering fixedslot
 }
