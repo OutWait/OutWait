@@ -130,7 +130,7 @@ class Management(
     }
 
     private fun updateAndSendQueue() {
-        if(queue!=null) {
+        if (queue != null) {
             queue?.updateQueue(managementInformation.settings.prioritizationTime)
             sendUpdatedQueue(queue!!)
         }

@@ -36,7 +36,7 @@ class Queue(
         slots.removeIf({ it.slotCode == slotCode })
     }
     fun endCurrentSlot() {
-        if(slots.isNotEmpty()) {
+        if (slots.isNotEmpty()) {
             slots.removeAt(0)
         }
     }
