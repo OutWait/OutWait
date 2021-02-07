@@ -13,15 +13,16 @@ class AddSlotDialogViewModel : ViewModel() {
      val identifier = MutableLiveData<String>()
 
 
-     val appointmentTime = MutableLiveData<DateTime>()
+     var appointmentTime = MutableLiveData<DateTime>()
 
 
-     val duration = MutableLiveData<Interval>()
+     var interval = MutableLiveData<Interval>()
 
 
      val isFixedSlot = MutableLiveData<Boolean>()
 
 
-    fun notifyAddSlot(duration: Interval, appointmentTime: DateTime) {
+    fun notifyAddSlot() {
+        Log.i("addSlot","\n ${identifier.value} \n ${appointmentTime.value} \n ${interval.value} \n ${isFixedSlot.value}")
     }
 }

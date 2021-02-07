@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -23,8 +24,7 @@ import java.util.*
 @AndroidEntryPoint
 class managmentViewFragment : Fragment(), ItemActionListener {
 
-
-    private lateinit var viewModel: ManagmentViewViewModel
+    private  val viewModel: ManagmentViewViewModel by viewModels()
     private lateinit var binding: ManagmentViewFragmentBinding
     private lateinit var slotAdapter: SlotAdapter
 
@@ -32,7 +32,6 @@ class managmentViewFragment : Fragment(), ItemActionListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel = ViewModelProvider(this).get(ManagmentViewViewModel::class.java)
         binding =DataBindingUtil.inflate(inflater,R.layout.managment_view_fragment, container, false)
         binding.viewModel=this.viewModel
         //RecyclerView SetUp
