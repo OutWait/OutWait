@@ -36,11 +36,13 @@ class Management(
         socketFacade.onReceive(Event.DELETE_SLOT) { json ->
             if (checkTransactionStarted()) {
                 queue?.deleteSlot((json as JSONSlotCodeWrapper).getSlotCode())
+                updateAndSendQueue()
             }
         }
         socketFacade.onReceive(Event.END_CURRENT_SLOT) {
             if (checkTransactionStarted()) {
                 queue?.endCurrentSlot()
+                updateAndSendQueue()
             }
         }
         socketFacade.onReceive(Event.CHANGE_MANAGEMENT_SETTINGS) { json ->
@@ -50,12 +52,14 @@ class Management(
             if (checkTransactionStarted()) {
                 val wrapper = json as JSONSlotMovementWrapper
                 queue?.moveSlotAfterAnother(wrapper.getMovedSlot(), wrapper.getOtherSlot())
+                updateAndSendQueue()
             }
         }
         socketFacade.onReceive(Event.CHANGE_FIXED_SLOT_TIME) { json ->
             if (checkTransactionStarted()) {
                 val wrapper = json as JSONChangeSlotTimeWrapper
                 queue?.changeAppointmentTime(wrapper.getSlotCode(), wrapper.getNewTime())
+                updateAndSendQueue()
             }
         }
         socketFacade.onReceive(Event.ADD_SPONTANEOUS_SLOT) { json ->
@@ -71,6 +75,7 @@ class Management(
                         wrapper.getCreationTime()
                     )
                 queue?.addSpontaneousSlot(slot)
+                updateAndSendQueue()
             }
         }
         socketFacade.onReceive(Event.ADD_FIXED_SLOT) { json ->
@@ -86,12 +91,14 @@ class Management(
                         wrapper.getAppointmentTime()
                     )
                 queue?.addFixedSlot(slot)
+                updateAndSendQueue()
             }
         }
         socketFacade.onReceive(Event.CHANGE_SLOT_DURATION) { json ->
             if (checkTransactionStarted()) {
                 val wrapper = json as JSONChangeSlotDurationWrapper
                 queue?.updateSlotLength(wrapper.getSlotCode(), wrapper.getNewDuration())
+                updateAndSendQueue()
             }
         }
 
@@ -122,6 +129,12 @@ class Management(
         }
     }
 
+    private fun updateAndSendQueue() {
+        if(queue!=null) {
+            queue?.updateQueue(managementInformation.settings.prioritizationTime)
+            sendUpdatedQueue(queue!!)
+        }
+    }
     internal fun sendUpdatedQueue (queue: Queue):Unit {
         val json = JSONQueueWrapper();
         json.setQueue(queue)
