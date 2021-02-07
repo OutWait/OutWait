@@ -5,7 +5,9 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.EditTimeSlotDialogFragmentBinding
 import elite.kit.outwait.utils.TransformationInput
@@ -16,8 +18,8 @@ import elite.kit.outwait.waitingQueue.timeSlotModel.Type
 import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.joda.time.DateTime
 import org.joda.time.Interval
-
-class EditTimeSlotDialogFragment : AppCompatDialogFragment() {
+@AndroidEntryPoint
+class EditTimeSlotDialogFragment : DialogFragment() {
 
 
 

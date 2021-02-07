@@ -1,6 +1,8 @@
 package elite.kit.outwait.clientScreens.remainingTimeScreen
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +23,7 @@ class RemainingTimeFragment : Fragment() {
 
     private val viewModel: RemainingTimeViewModel by viewModels()
     private lateinit var binding: RemainingTimeFragmentBinding
+    private var isFirstBackPressed = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,9 +34,32 @@ class RemainingTimeFragment : Fragment() {
             container,
             false)
         binding.viewModel=this.viewModel
+        exitApp()
         return binding.root
     }
 
+    private fun exitApp() {
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+
+                override fun handleOnBackPressed() {
+                    if (childFragmentManager.backStackEntryCount !== 0) {
+                    } else {
+                        if (isFirstBackPressed) {
+                        } else {
+                            Log.i("ss", "sssssssssssss")
+
+                            isFirstBackPressed = true
+                            Toast.makeText(context, "Press back again to exit", Toast.LENGTH_LONG)
+                            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                                isFirstBackPressed = false
+                            }, 1500)
+                        }
+                    }
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
 
 
 

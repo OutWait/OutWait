@@ -5,7 +5,9 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding
 import elite.kit.outwait.utils.TransformationInput
@@ -13,8 +15,8 @@ import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.joda.time.DateTime
 import org.joda.time.DateTimeFieldType.hourOfDay
 import kotlin.time.toDuration
-
-class AddSlotDialogFragment : AppCompatDialogFragment() {
+@AndroidEntryPoint
+class AddSlotDialogFragment : DialogFragment() {
 
     private  val viewModel: AddSlotDialogViewModel by viewModels()
     private lateinit var binding: AddSlotDialogFragmentBinding

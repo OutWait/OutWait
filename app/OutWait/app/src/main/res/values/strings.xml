@@ -26,4 +26,5 @@
     <string name="fixed_slot">Fixed Slot</string>
     <string name="undo">UNDO</string>
     <string name="enter_slotcode_text">Please enter your slot code</string>
+    <string name="slot_details">Slot details</string>
 </resources>

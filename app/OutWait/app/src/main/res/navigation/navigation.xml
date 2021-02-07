@@ -41,7 +41,8 @@
             app:destination="@id/institutLoginFragment" />
         <action
             android:id="@+id/action_editCodeFragment_to_remainingTimeFragment2"
-            app:destination="@id/remainingTimeFragment" />
+            app:destination="@id/remainingTimeFragment"
+            />
     </fragment>
     <fragment
         android:id="@+id/remainingTimeFragment"
