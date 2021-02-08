@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var navigator: Navigator
-    private var doubleBackToExitPressedOnce = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

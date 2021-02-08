@@ -13,6 +13,7 @@ import androidx.core.app.SharedElementCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.RemainingTimeFragmentBinding
@@ -24,6 +25,7 @@ class RemainingTimeFragment : Fragment() {
     private val viewModel: RemainingTimeViewModel by viewModels()
     private lateinit var binding: RemainingTimeFragmentBinding
     private var isFirstBackPressed = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,10 +49,10 @@ class RemainingTimeFragment : Fragment() {
                     } else {
                         if (isFirstBackPressed) {
                         } else {
-                            Log.i("ss", "sssssssssssss")
+                            Log.i("back button", "back button double pressed")
 
                             isFirstBackPressed = true
-                            Toast.makeText(context, "Press back again to exit", Toast.LENGTH_LONG)
+                            Toast.makeText(context, "Press back again to exit", Toast.LENGTH_LONG).show()
                             Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                 isFirstBackPressed = false
                             }, 1500)

@@ -2,23 +2,13 @@ package elite.kit.outwait.recyclerviewScreens.slotDetailDialog
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.database.DatabaseUtils
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.DataBindingUtil.inflate
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import elite.kit.outwait.R
-import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding
-import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding.inflate
 import elite.kit.outwait.databinding.SlotDetailDialogFragmentBinding
 import elite.kit.outwait.qrCode.generator.QRCodeGenerator
-import elite.kit.outwait.utils.TransformationInput
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.FixedTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
@@ -26,7 +16,7 @@ import elite.kit.outwait.waitingQueue.timeSlotModel.Type
 import org.joda.time.DateTime
 import org.joda.time.Interval
 
-class SlotDetailDialogFragment : DialogFragment() {
+class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : DialogFragment() {
 
 
     private val viewModel: SlotDetailDialogViewModel by viewModels()

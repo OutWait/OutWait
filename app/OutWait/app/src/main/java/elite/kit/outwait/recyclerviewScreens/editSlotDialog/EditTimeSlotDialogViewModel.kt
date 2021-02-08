@@ -1,5 +1,6 @@
 package elite.kit.outwait.recyclerviewScreens.editSlotDialog
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,7 +13,7 @@ import javax.inject.Inject
 class EditTimeSlotDialogViewModel @Inject constructor(private val repo : InstituteRepository) : ViewModel() {
 
 
-    val identifier = MutableLiveData<String>()
+    var identifier = MutableLiveData<String>()
 
 
     var appointmentTime = MutableLiveData<DateTime>()
@@ -21,7 +22,7 @@ class EditTimeSlotDialogViewModel @Inject constructor(private val repo : Institu
     var interval = MutableLiveData<Interval>()
 
 
-    val isFixedSlot = MutableLiveData<Boolean>()
+    var isFixedSlot = MutableLiveData<Boolean>()
 
     fun notifyEditSlot() {
         //TODO pass edit slot repo

@@ -1,6 +1,5 @@
 package elite.kit.outwait.recyclerviewScreens.managmentViewScreen
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,23 +10,18 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
-import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
-import elite.kit.outwait.databinding.EditTimeSlotDialogFragmentBindingImpl
 import elite.kit.outwait.databinding.ManagmentViewFragmentBinding
 import elite.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFragment
 import elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
-import elite.kit.outwait.utils.TransformationInput
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import org.joda.time.*
-import java.util.*
 
 @AndroidEntryPoint
 class ManagmentViewFragment : Fragment(), ItemActionListener {
@@ -79,10 +73,10 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
                     } else {
                         if (isFirstBackPressed) {
                         } else {
-                            Log.i("ss", "sssssssssssss")
+                            Log.i("back press", "Double clicked")
 
                             isFirstBackPressed = true
-                            Toast.makeText(context, "Press back again to exit", Toast.LENGTH_LONG)
+                            Toast.makeText(context, "Press back again to exit", Toast.LENGTH_LONG).show()
                             Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                 isFirstBackPressed = false
                             }, 1500)
@@ -135,7 +129,7 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
     }
 
     override fun onItemClicked(position: Int) {
-        var detailDialog= SlotDetailDialogFragment()
+        var detailDialog= SlotDetailDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
         detailDialog.show(childFragmentManager,"ssss")
     }
 
@@ -157,15 +151,15 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
     }
 
     override fun editTimeSlot(position: Int) {
-        var editDialog=EditTimeSlotDialogFragment()
+        var editDialog= EditTimeSlotDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
         editDialog.show(childFragmentManager,"aaa")
+       // viewModel.navigateToEditDialog(slotAdapter.slotList[position] as ClientTimeSlot)
     }
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.overflow, menu)
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
