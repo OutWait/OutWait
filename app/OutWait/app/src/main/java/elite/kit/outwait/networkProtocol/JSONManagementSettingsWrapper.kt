@@ -3,7 +3,7 @@ package elite.kit.outwait.networkProtocol
 import org.json.JSONObject
 import elite.kit.outwait.customDataTypes.Preferences
 
-class JSONPreferencesWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
+class JSONManagementSettingsWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
 
     constructor(prefs: Preferences) : this(JSONObject()) {
         //TODO Werte aus Joda Klassen parsen in UNIX Timestamp??
