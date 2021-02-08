@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
 import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ItemActionListener
-import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.managmentViewFragment
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.FixedSlotViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.PauseSlotViewHolder
@@ -30,11 +29,11 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
             Type.SPONTANEOUS_SLOT.ordinal ->
                 SpontaneousSlotViewHolder(
                     LayoutInflater.from(parent.context)
-                        .inflate(R.layout.spontaneous_slot, parent, false), itemTouchHelper
+                        .inflate(R.layout.spontaneous_slot, parent, false), itemTouchHelper, listener
                 )
             Type.FIXED_SLOT.ordinal ->
                 FixedSlotViewHolder(
-                    LayoutInflater.from(parent.context).inflate(R.layout.fixed_slot, parent, false)
+                    LayoutInflater.from(parent.context).inflate(R.layout.fixed_slot, parent, false), listener
                 )
             else ->
                 PauseSlotViewHolder(
@@ -68,9 +67,14 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
         if (getItemViewType(fromPosition) == Type.SPONTANEOUS_SLOT.ordinal) {
 
 
-            for (i in fromPosition downTo toPosition + 1) {
-                Log.i("move step", "$i")
-                Collections.swap(slotList, i, i - 1)
+            if(fromPosition<toPosition){
+                for(i in fromPosition until toPosition){
+                    Collections.swap(slotList,i,i+1)
+                }
+            }else{
+                for(i in fromPosition downTo toPosition+1){
+                    Collections.swap(slotList,i,i-1)
+                }
             }
 
             Log.i("after move", "fromPos:$fromPosition toPos:$toPosition")

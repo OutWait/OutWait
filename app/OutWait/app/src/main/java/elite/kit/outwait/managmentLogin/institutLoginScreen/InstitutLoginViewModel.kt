@@ -13,22 +13,22 @@ import org.joda.time.DateTime
 import javax.inject.Inject
 
 @HiltViewModel
-class InstitutLoginViewModel @Inject constructor(private val repo : InstituteRepository): ViewModel() {
+class InstitutLoginViewModel @Inject constructor(
+    private val repo: InstituteRepository,
+    private val coordinator: InstitutCoordinator,
+) : ViewModel() {
 
     private lateinit var _successfullLoginTime: MutableLiveData<DateTime>
-    val successfullLoginTime:LiveData<DateTime>
-    get() {return _successfullLoginTime}
-     var username:String
-     var password: String
+    val successfullLoginTime: LiveData<DateTime>
+        get() {
+            return _successfullLoginTime
+        }
 
-    init {
-        username=""
-        password=""
-    }
+    val institutName = MutableLiveData<String>()
+    val institutPassword = MutableLiveData<String>()
+
 
     fun loginTried(){
-        if(username.isNotEmpty() && password.isNotEmpty()){
-        Log.i("login","$username + $password")}
         CoroutineScope(Main).launch {
             if (repo.loginCo("bla", "bla")){
                 //switch to Recyclerview Fragment
@@ -36,12 +36,13 @@ class InstitutLoginViewModel @Inject constructor(private val repo : InstituteRep
             } else{
                 //show error warning
             }
+            coordinator.navigateToManagementView()
+            repo.doSomething()
         }
+
     }
 
-    fun passwordForgottenString(){
-        //TODO Check not empty
-        Log.i("forgot","forgot password navigate to other fragment")
-
+    fun passwordForgottenString() {
+        coordinator.navigateToPasswordForgot()
     }
 }

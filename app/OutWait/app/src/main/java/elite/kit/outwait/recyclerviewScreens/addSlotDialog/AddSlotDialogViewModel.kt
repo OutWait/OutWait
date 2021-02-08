@@ -4,29 +4,34 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import elite.kit.outwait.instituteRepository.InstituteRepository
 import org.joda.time.DateTime
 import org.joda.time.Interval
+import javax.inject.Inject
+@HiltViewModel
+class AddSlotDialogViewModel @Inject constructor(private val repo : InstituteRepository) : ViewModel() {
 
-class AddSlotDialogViewModel : ViewModel() {
+
+     val identifier = MutableLiveData<String>()
 
 
-    private val _identifier = MutableLiveData<String>()
-    val identifier: LiveData<String>
-    get() = _identifier
+     var appointmentTime = MutableLiveData<DateTime>()
 
-    private val _appointmentTime = MutableLiveData<DateTime>()
-    val appointmentTime: LiveData<DateTime>
-        get() = _appointmentTime
 
-    private val _duration = MutableLiveData<Interval>()
-    val duration: LiveData<Interval>
-        get() = _duration
+     var interval = MutableLiveData<Interval>()
 
-    private val _isFixedSlot = MutableLiveData<Boolean>()
-    val isFixedSlot: LiveData<Boolean>
-        get() = _isFixedSlot
 
-    fun notifyAddSlot(duration: Interval, appointmentTime: DateTime) {
-        Log.i("viewmodel","call functions $_identifier")
+     val isFixedSlot = MutableLiveData<Boolean>()
+
+    var isModeTwo=MutableLiveData<Boolean>()
+
+
+    fun notifyAddSlot() {
+        //TODO check mode
+        //TODO pass slot
+        Log.i("addSlot","\n ${identifier.value} \n ${appointmentTime.value} \n ${interval.value} \n ${isFixedSlot.value}")
     }
+
+    //TODO add observer to disable entering fixedslot
 }
