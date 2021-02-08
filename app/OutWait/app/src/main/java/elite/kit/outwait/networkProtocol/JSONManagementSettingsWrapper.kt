@@ -18,5 +18,6 @@ class JSONManagementSettingsWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jso
     fun getPreferences(): Preferences {
         TODO("Not yet implemented")
         //aus JSON String Timestamps wieder Joda Time Einheiten machen
+        //Preferences Objekt konstruieren udn zurückgeben
     }
 }

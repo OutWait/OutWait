@@ -6,7 +6,7 @@ import org.json.JSONObject
 class JSONChangeSlotTimeWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
 
     constructor(slotCode: String, newTime: DateTime) : this(JSONObject()) {
-        jsonObj.put("slotCode", slotCode)
+        jsonObj.put(SLOT_CODE, slotCode)
         //TODO DateTime konvertieren und in jsonObj putten
     }
 

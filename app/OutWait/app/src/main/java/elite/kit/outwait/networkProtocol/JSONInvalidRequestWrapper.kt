@@ -5,7 +5,11 @@ import org.json.JSONObject
 
 class JSONInvalidRequestWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
 
-    constructor(slotCode: String, newDuration: Duration) : this(JSONObject()) {
+    constructor(errorMessage: String) : this(JSONObject()) {
+        jsonObj.put(ERROR_MESSAGE, errorMessage)
+    }
 
+    fun getErrorMessage(): String {
+        return jsonObj.getString(ERROR_MESSAGE)
     }
 }
