@@ -33,18 +33,12 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
         binding = SlotDetailDialogFragmentBinding.inflate(LayoutInflater.from(context))
         binding.viewModel = this.viewModel
 
-        //Example Slot
-        var start = DateTime(DateTime.now()).plusHours(1)
-        var end = start.plusMinutes(33)
-        displayProperties(FixedTimeSlot(Interval(start,end),
-            "4444",
-            "Müller",
-            DateTime(DateTime.now().year,
-                DateTime.now().monthOfYear, DateTime.now().dayOfWeek, 22, 33)))
+        viewModel.isFixedSlot.value = clientTimeSlot.getType().ordinal == Type.FIXED_SLOT.ordinal
+        displayProperties(clientTimeSlot)
 
         builder.apply {
             setView(binding.root)
-            val title = setTitle(getString(R.string.slot_details))
+            setTitle(getString(R.string.slot_details))
 
             setPositiveButton(getString(R.string.confirm)) { dialog, which ->
 
@@ -54,7 +48,6 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
     }
 
     private fun displayProperties(slot: ClientTimeSlot) {
-        viewModel.isFixedSlot.value = slot.getType().ordinal == Type.FIXED_SLOT.ordinal
             when (viewModel.isFixedSlot.value) {
                 true -> displayFixedSlot(slot as FixedTimeSlot)
                 else -> displaySpontaneousSlot(slot as SpontaneousTimeSlot)
@@ -63,6 +56,7 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
     }
 
     private fun displaySpontaneousSlot(spontaneousSlot: SpontaneousTimeSlot) {
+        viewModel.slotCode.value=spontaneousSlot.slotCode
         viewModel.identifier.value=spontaneousSlot.auxiliaryIdentifier
         viewModel.interval.value=spontaneousSlot.interval
         viewModel.qrCode.value=qrCodeGenerator.generateQRCode(spontaneousSlot.slotCode)
@@ -72,6 +66,7 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
     }
 
     private fun displayFixedSlot(fixedSlot: FixedTimeSlot) {
+        viewModel.slotCode.value=fixedSlot.slotCode
         viewModel.identifier.value=fixedSlot.auxiliaryIdentifier
         viewModel.interval.value=fixedSlot.interval
         viewModel.appointmentTime.value=fixedSlot.appointmentTime

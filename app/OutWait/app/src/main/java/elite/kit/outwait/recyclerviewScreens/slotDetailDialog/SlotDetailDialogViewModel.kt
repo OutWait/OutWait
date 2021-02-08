@@ -11,6 +11,7 @@ class SlotDetailDialogViewModel : ViewModel() {
 
     val identifier = MutableLiveData<String>()
 
+    val slotCode = MutableLiveData<String>()
 
     var appointmentTime = MutableLiveData<DateTime>()
 

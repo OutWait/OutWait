@@ -14,6 +14,17 @@
     tools:context=".recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment">
 
 
+    <TextView
+        android:id="@+id/tvSlotCodeDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@{viewModel.slotCode}"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivQRCode" />
+
     <ImageView
         android:id="@+id/ivQRCode"
         android:layout_width="400dp"
@@ -32,14 +43,14 @@
         android:text="@{viewModel.identifier}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivQRCode" />
+        app:layout_constraintTop_toBottomOf="@+id/tvSlotCodeDetail" />
 
     <TextView
         android:id="@+id/tvDurationDetail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@{viewModel.interval.toString()}"
+        android:text="@{viewModel.interval.toDuration().toStandardMinutes().toString()}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvIdentifierDetail" />

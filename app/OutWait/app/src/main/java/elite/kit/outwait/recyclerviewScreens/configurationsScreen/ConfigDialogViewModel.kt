@@ -18,4 +18,12 @@ class ConfigDialogViewModel @Inject constructor(private val repo: InstituteRepos
     var isModusTwo = MutableLiveData<Boolean>()
     val prioritizationTime = MutableLiveData<Duration>()
     val delayNotificationTime = MutableLiveData<Duration>()
+
+    fun logout(){
+        //TODO repo call
+    }
+
+    fun saveConfigValues(){
+        //TODO repo call
+    }
 }
