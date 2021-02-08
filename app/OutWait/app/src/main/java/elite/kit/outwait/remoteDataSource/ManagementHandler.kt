@@ -1,7 +1,6 @@
 package elite.kit.outwait.remoteDataSource
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.customDataTypes.ReceivedList
 import org.joda.time.DateTime
@@ -30,9 +29,9 @@ interface ManagementHandler {
     fun saveTransaction()
 
 
-    fun newSpontaneousSlot(duration: Duration)
+    fun addSpontaneousSlot(duration: Duration, timeOfCreation: DateTime)
 
-    fun newFixedSlot(appointmentTime: DateTime, duration: Duration)
+    fun addFixedSlot(duration: Duration, appointmentTime: DateTime)
 
 
     fun deleteSlot(slotCode: String)
@@ -42,9 +41,9 @@ interface ManagementHandler {
 
     fun moveSlotAfterAnother(movedSlot: String, otherSlot: String)
 
-    fun changeSlotDuration(slotCode: String, duration: Duration)
+    fun changeSlotDuration(slotCode: String, newDuration: Duration)
 
-    fun changeFixedSlotTime(slotCode: String, newAppointmentTime: DateTime)
+    fun changeFixedSlotTime(slotCode: String, newTime: DateTime)
 
 
 

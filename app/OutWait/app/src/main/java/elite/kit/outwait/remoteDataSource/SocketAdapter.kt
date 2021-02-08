@@ -13,15 +13,17 @@ import java.net.URI
 //TODO Was ist Socket.IO mäßig noch zu beachten?
 //TODO Was noch um alle Ressourcen freizugeben?
 
-class SocketAdapter(private val serverURI: String) {
+const val serverURI: String = "http://127.0.0.1:8080"
 
-    private val mSocket: Socket? = null
+class SocketAdapter(private val namespace: String) {
+
+    private val socketIOSocket: Socket? = null
 
     init {
         val options = IO.Options()
         options.reconnection = true
 
-        val mSocket = IO.socket(URI.create(serverURI), options)
+        val mSocket = IO.socket(URI.create(serverURI+namespace), options)
     }
 
     /*
@@ -36,18 +38,18 @@ class SocketAdapter(private val serverURI: String) {
 
         //TODO Was ist mit on(CONNECT) und on(DISCONNECT) Event (-listeners) ?
         //TODO Testlog falls Socket erfolgreich connected
-        mSocket?.on(Socket.EVENT_CONNECT, Emitter.Listener {
+        socketIOSocket?.on(Socket.EVENT_CONNECT, Emitter.Listener {
             Log.i("SocketAdapter", "Socket is connected")
         }
         )
 
         //TODO Testlog falls Socket disconnected
-        mSocket?.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
+        socketIOSocket?.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
             Log.i("SocketAdapter", "Socket is disconnected")
         }
         )
 
-        mSocket?.connect()
+        socketIOSocket?.connect()
 
     }
 
@@ -55,14 +57,14 @@ class SocketAdapter(private val serverURI: String) {
     Emitte Event mit Daten zum Server
      */
     fun emitEventToServer(event: String, jsonData: JSONObject) {
-        mSocket?.emit(event, jsonData.toString())
+        socketIOSocket?.emit(event, jsonData.toString())
     }
 
     /*
     Emitte Event ohne Daten zum Server
      */
     fun emitEventToServer(event: String) {
-        mSocket?.emit(event)
+        socketIOSocket?.emit(event)
     }
 
 
@@ -75,7 +77,7 @@ class SocketAdapter(private val serverURI: String) {
                 (event: String, jsonObj: JSONObject) -> Unit>
     ) {
         for (k in mapEventsToCallback.keys) {
-            mSocket?.on(k, Emitter.Listener {
+            socketIOSocket?.on(k, Emitter.Listener {
 
                 // parse the received data string into JSONObject (
                 var jsonData: JSONObject = JSONObject(it[0].toString())
@@ -88,7 +90,7 @@ class SocketAdapter(private val serverURI: String) {
 
         fun releaseConnection() {
             //TODO Was noch um alle Ressourcen freizugeben?
-            mSocket?.close()
+            socketIOSocket?.close()
         }
 
     }

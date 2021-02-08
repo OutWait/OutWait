@@ -1,6 +1,6 @@
 package elite.kit.outwait.remoteDataSource
 
-enum class ManagementEvents(eventString: String) {
+enum class ManagementEvents(private val eventString: String) {
 
 
     MANAGEMENT_LOGIN("managementLogin@S"),
@@ -25,6 +25,10 @@ enum class ManagementEvents(eventString: String) {
     TRANSACTION_DENIED("transactionDenied@M"),
     UPDATE_MANAGEMENT_SETTINGS("updateManagementSettings@M"),
     UPDATE_QUEUE("updateQueue@M"),
-    INVALID_REQUEST("invalidRequest@M")
+    INVALID_REQUEST("invalidRequest@M");
+
+    fun getEventString(): String {
+        return eventString
+    }
 
 }

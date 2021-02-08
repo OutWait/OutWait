@@ -1,6 +1,6 @@
 package elite.kit.outwait.remoteDataSource
 
-enum class ClientEvents(eventString: String) {
+enum class ClientEvents(private val eventString: String) {
 
     LISTEN_SLOT("listenSlot@S"),
     REFRESH_SLOT_APPROX("refreshSlotApprox@S"),
@@ -11,6 +11,10 @@ enum class ClientEvents(eventString: String) {
     END_SLOT("endSlot@C"),
     DELETE_SLOT("deleteSlot@C"),
     INVALID_CODE("invalidCode@C"),
-    INVALID_REQUEST("invalidRequest@C")
+    INVALID_REQUEST("invalidRequest@C");
+
+    fun getEventString(): String {
+        return eventString
+    }
 
 }

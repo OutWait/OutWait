@@ -4,12 +4,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.customDataTypes.ReceivedList
-import io.socket.client.Socket
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.json.JSONObject
 
+const val namespaceManagement: String = "/management"
+
 class SocketIOManagementHandler : ManagementHandler {
+
+    private val mSocket: SocketAdapter
+
+    init {
+        mSocket = SocketAdapter(namespaceManagement)
+    }
 
     //TODO Mit ObjectWrappern die Daten zum versenden verpacken
     //TODO Mit Strategie (oder internen Methoden, da net so viele) die incomingEvents verarbeiten
@@ -46,59 +53,77 @@ class SocketIOManagementHandler : ManagementHandler {
 
 
     override fun login(username: String, password: String): Boolean {
-        TODO("Not yet implemented")
+        var data:JSONObject = JSONObject()
+        data.put("username", username)
+        data.put("password", username)
+        //TODO Wie failsafe emitten? Was abfangen? Was returnen?
+        return true
     }
 
     override fun logout(): Boolean {
-        TODO("Not yet implemented")
+        mSocket.emitEventToServer(ManagementEvents.MANAGEMENT_LOGOUT.getEventString())
+        //TODO Rückgabe als Boolean nötig? Ggf falls sonst Fehlermeldung geworfen?
+        return true
     }
 
     override fun resetPassword(username: String) {
-        TODO("Not yet implemented")
+        var data:JSONObject = JSONObject()
+        data.put("username", username)
+        mSocket.emitEventToServer(ManagementEvents.RESET_PASSWORD.getEventString(), data)
     }
 
     override fun changePreferences(newPreferences: Preferences) {
         TODO("Not yet implemented")
+        //TODO JSONObjWrapper für Preferences
     }
 
     override fun startTransaction() {
-        TODO("Not yet implemented")
+        mSocket.emitEventToServer(ManagementEvents.START_TRANSACTION.getEventString())
     }
 
     override fun abortTransaction() {
-        TODO("Not yet implemented")
+        mSocket.emitEventToServer((ManagementEvents.ABORT_TRANSACTION.getEventString()))
     }
 
     override fun saveTransaction() {
-        TODO("Not yet implemented")
+        mSocket.emitEventToServer((ManagementEvents.SAVE_TRANSACTION.getEventString()))
     }
 
-    override fun newSpontaneousSlot(duration: Duration) {
+    override fun addSpontaneousSlot(duration: Duration, timeOfCreation: DateTime) {
         TODO("Not yet implemented")
+        //TODO Wrapper? Joda Time Einheiten in UNIX timestamp umwandeln
     }
 
-    override fun newFixedSlot(appointmentTime: DateTime, duration: Duration) {
+    override fun addFixedSlot(duration: Duration, appointmentTime: DateTime) {
         TODO("Not yet implemented")
+        //TODO Wrapper? Joda Time Einheiten in UNIX timestamp umwandeln
     }
 
     override fun deleteSlot(slotCode: String) {
-        TODO("Not yet implemented")
+        var data: JSONObject = JSONObject()
+        data.put("slotCode", slotCode)
+        mSocket.emitEventToServer(ManagementEvents.DELETE_SLOT.getEventString(), data)
     }
 
     override fun endCurrentSlot() {
-        TODO("Not yet implemented")
+        mSocket.emitEventToServer((ManagementEvents.END_CURRENT_SLOT.getEventString()))
     }
 
     override fun moveSlotAfterAnother(movedSlot: String, otherSlot: String) {
-        TODO("Not yet implemented")
+        var data: JSONObject = JSONObject()
+        data.put("movedSlot", movedSlot)
+        data.put("otherSlot", otherSlot)
+        mSocket.emitEventToServer(ManagementEvents.MOVE_SLOT_AFTER_ANOTHER.getEventString(), data)
     }
 
-    override fun changeFixedSlotTime(slotCode: String, newAppointmentTime: DateTime) {
+    override fun changeFixedSlotTime(slotCode: String, newTime: DateTime) {
         TODO("Not yet implemented")
+        //TODO Wrapper? Joda Time Einheiten in UNIX timestamp umwandeln
     }
 
-    override fun changeSlotDuration(slotCode: String, duration: Duration) {
+    override fun changeSlotDuration(slotCode: String, newDuration: Duration) {
         TODO("Not yet implemented")
+        //TODO Wrapper? Joda Time Einheiten in UNIX timestamp umwandeln
     }
 
     override fun getReceivedList(): LiveData<ReceivedList> {
