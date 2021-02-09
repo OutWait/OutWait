@@ -1,4 +1,4 @@
-package elite.kit.outwait.remoteDataSource
+package elite.kit.outwait.networkProtocol
 
 enum class ManagementEvents(private val eventString: String) {
 

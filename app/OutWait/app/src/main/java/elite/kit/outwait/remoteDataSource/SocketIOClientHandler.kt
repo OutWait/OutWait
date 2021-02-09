@@ -1,5 +1,6 @@
 package elite.kit.outwait.remoteDataSource
 
+import elite.kit.outwait.networkProtocol.ClientEvents
 import elite.kit.outwait.networkProtocol.JSONLoginWrapper
 import elite.kit.outwait.networkProtocol.JSONObjectWrapper
 import org.json.JSONObject
