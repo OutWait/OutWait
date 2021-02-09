@@ -9,9 +9,9 @@ import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.json.JSONObject
 
-const val namespaceManagement: String = "/management"
-
 class SocketIOManagementHandler : ManagementHandler {
+
+    private val namespaceManagement: String = "/management"
 
     private val mSocket: SocketAdapter
 

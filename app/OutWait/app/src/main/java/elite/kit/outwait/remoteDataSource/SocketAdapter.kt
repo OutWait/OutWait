@@ -1,6 +1,8 @@
 package elite.kit.outwait.remoteDataSource
 
 import android.util.Log
+import elite.kit.outwait.networkProtocol.ClientEvents
+import elite.kit.outwait.networkProtocol.JSONObjectWrapper
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -13,9 +15,9 @@ import java.net.URI
 //TODO Was ist Socket.IO mäßig noch zu beachten?
 //TODO Was noch um alle Ressourcen freizugeben?
 
-const val serverURI: String = "http://127.0.0.1:8080"
-
 class SocketAdapter(private val namespace: String) {
+
+    private val serverURI: String = "http://127.0.0.1:8080"
 
     private val socketIOSocket: Socket? = null
 
@@ -31,8 +33,8 @@ class SocketAdapter(private val namespace: String) {
     Uund registriere die EventListener (in private Methode ausgelagert)
     //TODO Was ist Socket.IO mäßig noch zu beachten?
      */
-    fun initializeConnection(mapEventsToCallback: HashMap<String,
-                (event: String, jsonObj: JSONObject) -> Unit>) {
+    fun initializeConnection(mapEventsToCallback: HashMap<ClientEvents,
+                (event: String, jsonObj: JSONObjectWrapper) -> Unit>) {
 
         registerEventListeners(mapEventsToCallback)
 
@@ -50,8 +52,8 @@ class SocketAdapter(private val namespace: String) {
         )
 
         socketIOSocket?.connect()
-
     }
+
 
     /*
     Emitte Event mit Daten zum Server
@@ -73,18 +75,22 @@ class SocketAdapter(private val namespace: String) {
     Mapping von EventNamen:String und Callbacks
      */
     private fun registerEventListeners(
-        mapEventsToCallback: HashMap<String,
-                (event: String, jsonObj: JSONObject) -> Unit>
+        mapEventsToCallback: HashMap<ClientEvents,
+                (event: String, jsonObj: JSONObjectWrapper) -> Unit>
     ) {
         for (k in mapEventsToCallback.keys) {
-            socketIOSocket?.on(k, Emitter.Listener {
+
+            socketIOSocket?.on(k.getEventString(), Emitter.Listener {
 
                 // parse the received data string into JSONObject (
                 var jsonData: JSONObject = JSONObject(it[0].toString())
 
+                // wrap the parsed JSONObject with appropriate JSONObjectWrapper
+                val wrappedJSONData = k.createWrapper(jsonData)
+
                 // Invoke the given callback with the parsed data
                 //TODO Funktioniert der Aufruf der Callback Methode richtig?
-                mapEventsToCallback[k]?.invoke(k, jsonData)
+                mapEventsToCallback[k]?.invoke(k.getEventString(), wrappedJSONData)
             })
         }
 
