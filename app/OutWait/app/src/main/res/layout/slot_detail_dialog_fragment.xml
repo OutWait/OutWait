@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogViewModel" />
+        <import type="android.view.View" />
+    </data>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment">
+
+
+    <TextView
+        android:id="@+id/tvSlotCodeDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@{viewModel.slotCode}"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivQRCode" />
+
+    <ImageView
+        android:id="@+id/ivQRCode"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_clear"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvIdentifierDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@{viewModel.identifier}"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSlotCodeDetail" />
+
+    <TextView
+        android:id="@+id/tvDurationDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@{viewModel.interval.toDuration().toStandardMinutes().toString()}"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvIdentifierDetail" />
+
+    <TextView
+        android:id="@+id/tvAppointmentTimeDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@{viewModel.appointmentTime.toString()}"
+        android:visibility="@{viewModel.isFixedSlot?View.VISIBLE:View.INVISIBLE}"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDurationDetail"
+        app:layout_constraintVertical_bias="0.0" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+
