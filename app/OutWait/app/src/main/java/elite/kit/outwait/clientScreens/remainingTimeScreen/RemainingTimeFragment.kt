@@ -28,27 +28,31 @@ class RemainingTimeFragment : Fragment() {
     private var isFirstBackPressed = false
     private lateinit var counterDownTimer: CountDownTimer
 
+    companion object {
+        private const val CORRECTION_TIME = 1000L
+        private const val COUNTDOWN_INTERVAL = 1000L
+        private const val MINIMUM_INTERVAL = 1000f
+
+
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        binding=DataBindingUtil.inflate(inflater,
+        binding = DataBindingUtil.inflate(inflater,
             R.layout.remaining_time_fragment,
             container,
             false)
-        binding.viewModel=this.viewModel
+        binding.viewModel = this.viewModel
 
-        exitApp()
-        counterDownTimer()
 
         binding.circularProgressBar.apply {
-            // Set Progress
-           // progress = 0f
-            // or with animation
-            //setProgressWithAnimation(20f, 1000) // =1s
+
 
             // Set Progress Max
+            //TODO set remianing time
             progressMax = 10000f
 
 
@@ -64,7 +68,8 @@ class RemainingTimeFragment : Fragment() {
             // or with gradient
             backgroundProgressBarColorStart = Color.WHITE
             backgroundProgressBarColorEnd = Color.RED
-            backgroundProgressBarColorDirection = CircularProgressBar.GradientDirection.TOP_TO_BOTTOM
+            backgroundProgressBarColorDirection =
+                CircularProgressBar.GradientDirection.TOP_TO_BOTTOM
 
             // Set Width
             progressBarWidth = 7f // in DP
@@ -72,58 +77,31 @@ class RemainingTimeFragment : Fragment() {
 
             // Other
             roundBorder = true
-            startAngle = 0f
+            startAngle = MINIMUM_INTERVAL
             progressDirection = CircularProgressBar.ProgressDirection.TO_LEFT
         }
 
-
+        counterDownTimer()
 
         return binding.root
     }
 
-    private fun counterDownTimer(){
-        counterDownTimer= object :CountDownTimer(11000, 1000) {
+    private fun counterDownTimer() {
+        //TODO set remainingTime
+        counterDownTimer = object : CountDownTimer(10000 + CORRECTION_TIME, COUNTDOWN_INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
-                binding.circularProgressBar.setProgressWithAnimation(millisUntilFinished.toFloat()-1000f)
-                binding.tvRemainingTime.setText((millisUntilFinished / 1000).toString())
+                binding.circularProgressBar.setProgressWithAnimation(millisUntilFinished.toFloat() - CORRECTION_TIME)
+                binding.tvRemainingTime.text =
+                    ((millisUntilFinished / COUNTDOWN_INTERVAL).toString())
             }
 
             override fun onFinish() {
-                binding.tvRemainingTime.setText("done!")
-                binding.circularProgressBar.progress=0f
+                binding.tvRemainingTime.text = "Please go to your institut"
+                binding.circularProgressBar.progress = MINIMUM_INTERVAL
             }
         }.start()
 
     }
-
-    private fun exitApp() {
-        val callback: OnBackPressedCallback =
-            object : OnBackPressedCallback(true) {
-
-                override fun handleOnBackPressed() {
-                    if (childFragmentManager.backStackEntryCount !== 0) {
-                    } else {
-                        if (isFirstBackPressed) {
-                        } else {
-                            Log.i("back button", "back button double pressed")
-
-                            isFirstBackPressed = true
-                            Toast.makeText(context, "Press back again to exit", Toast.LENGTH_LONG).show()
-                            Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                isFirstBackPressed = false
-                            }, 1500)
-                        }
-                    }
-                }
-            }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-    }
-
-
-
-
-
-
 
 }
