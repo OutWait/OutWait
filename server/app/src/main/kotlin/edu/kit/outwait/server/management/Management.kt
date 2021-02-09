@@ -16,7 +16,6 @@ import edu.kit.outwait.server.slot.Priority
 import edu.kit.outwait.server.slot.Slot
 import edu.kit.outwait.server.slot.SlotCode
 import edu.kit.outwait.server.socketHelper.SocketFacade
-import java.util.Date
 
 class Management(
     private val socketFacade: SocketFacade,
@@ -70,7 +69,8 @@ class Management(
                     Slot(
                         SlotCode(""),
                         Priority.NORMAL,
-                        Date(),
+                        wrapper.getCreationTime(),
+                        // The creation time is the expected time for new slots
                         wrapper.getDuration(),
                         wrapper.getCreationTime()
                     )
@@ -86,7 +86,8 @@ class Management(
                     Slot(
                         SlotCode(""),
                         Priority.NORMAL,
-                        Date(),
+                        wrapper.getAppointmentTime(),
+                        // The creation time is the expected time for new slots
                         wrapper.getDuration(),
                         wrapper.getAppointmentTime()
                     )

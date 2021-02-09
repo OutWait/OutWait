@@ -84,5 +84,8 @@ dependencies {
     //Dependency to generate a QRCode
     implementation 'com.google.zxing:core:3.4.0'
 
+    //Dependency for progress bar
+    implementation 'com.mikhaellopez:circularprogressbar:3.0.3'
+
 
 }

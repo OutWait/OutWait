@@ -4,19 +4,28 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import org.joda.time.DateTime
+import org.joda.time.Interval
 import javax.inject.Inject
 
 @HiltViewModel
 class RemainingTimeViewModel  @Inject constructor(private val repo : InstituteRepository): ViewModel() {
 
-    private lateinit var _waitingTime: MutableLiveData<String>
-    val waitingTime: LiveData<String>
-        get() {return _waitingTime}
+/*
+    - enteredCode should be passed to get specific clientinfo
+    - calculation of remainingtime here?
+    - what to do with errornotification
+    - how to get new remaining time, there is no observation possible (getActiveSlots)
+*/
 
-    //TODO attribut for institut information
+    //TODO calculation of remaining time
+    var clientInfo = MutableLiveData<ClientInfo>()
 
+init {
+    //clientInfo=ClientRepository.getActiveSlots.value[0]
+}
     fun navigateBack() {
         TODO("Not yet implemented")
     }
@@ -24,5 +33,4 @@ class RemainingTimeViewModel  @Inject constructor(private val repo : InstituteRe
     fun refreshWaitingTime(){
 
     }
-    // TODO: Implement the ViewModel
 }
