@@ -9,6 +9,9 @@ class JSONLoginWrapper(jsonObj: JSONObject): JSONObjectWrapper(jsonObj) {
         jsonObj.put(PASSWORD, password)
     }
 
+    /*
+    Eigentlich brauchen wir keine getter, da wir dieses Objekt nur verschicken, nie erhalten
+
     fun getUsername(): String {
         return jsonObj.getString(USERNAME)
     }
@@ -16,5 +19,7 @@ class JSONLoginWrapper(jsonObj: JSONObject): JSONObjectWrapper(jsonObj) {
     fun getPassword(): String {
         return jsonObj.getString(PASSWORD)
     }
+
+     */
 
 }

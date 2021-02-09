@@ -9,6 +9,9 @@ class JSONMoveSlotWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
         jsonObj.put(OTHER_SLOT, otherSlot)
     }
 
+    /*
+    Eigentlich brauchen wir diese getter nicht, da wir das Objekt nur versenden, nie erhalten
+
     fun getMovedSlot(): String {
         return jsonObj.getString(MOVED_SLOT)
     }
@@ -16,4 +19,6 @@ class JSONMoveSlotWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
     fun getOtherSlot(): String {
         return jsonObj.getString(OTHER_SLOT)
     }
+
+     */
 }

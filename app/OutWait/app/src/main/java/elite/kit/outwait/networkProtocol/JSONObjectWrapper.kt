@@ -32,6 +32,15 @@ const val NAME = "name"
 
 const val ERROR_MESSAGE = "errorMessage"
 
+const val CURRENT_SLOT_STARTED_TIME = "currentSlotStartedTime"
+const val SLOT_ORDER = "slotOrder"
+const val SPONTANEOUS_SLOTS = "spontanSlots"
+const val SPONTAN_SLOT = "spontanSlot"
+const val FIXED_SLOTS = "fixedSlots"
+const val FIX_SLOT = "fixedSlot"
+
+
+
 
 
 abstract class JSONObjectWrapper(protected val jsonObj: JSONObject) {

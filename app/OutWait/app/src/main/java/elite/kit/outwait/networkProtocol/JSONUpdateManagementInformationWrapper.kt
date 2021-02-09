@@ -5,22 +5,31 @@ import org.json.JSONObject
 
 class JSONUpdateManagementInformationWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
 
+    /*
+    TODO Brauchen wir wirklich den secondary Konstruktor,
+     da wir dieses Objekt nur erhalten, nie selbst verschicken
+
     constructor(slotCode: String, notificationTime: Duration, delayNotificationTime: Duration,
                 name: String) : this(JSONObject()) {
         jsonObj.put(SLOT_CODE, slotCode)
-        //TODO Joda Einheitn in UNIX Timestamps konvertieren, erst dann in JSONObject putten
     }
+
+     */
 
     fun getSlotCode(): String {
         return jsonObj.getString(SLOT_CODE)
     }
 
     fun getNotificationTime(): Duration {
-        TODO("JSON String in Joda Einheit konvertieren")
+
+        // Creates a Duration object from a timestamp of type Long
+        return Duration(jsonObj.getLong(NOTIFICATION_TIME))
     }
 
     fun getDelayNotificationTime(): Duration {
-        TODO("JSON Srtring in Joda Einheit konvertieren")
+
+        // Creates a Duration object from a timestamp of type Long
+        return Duration(jsonObj.getLong(DELAY_NOTIFICATION_TIME))
     }
 
     fun getName(): String {
