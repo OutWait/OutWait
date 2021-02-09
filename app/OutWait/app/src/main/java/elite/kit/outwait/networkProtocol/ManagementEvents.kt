@@ -2,6 +2,7 @@ package elite.kit.outwait.networkProtocol
 
 enum class ManagementEvents(private val eventString: String) {
 
+    //TODO EventENums mit JSONWarpper verbinden und createrWrapper methode
 
     MANAGEMENT_LOGIN("managementLogin@S"),
     MANAGEMENT_LOGOUT("managementLogout@S"),

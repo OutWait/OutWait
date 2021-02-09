@@ -2,6 +2,8 @@ package elite.kit.outwait.networkProtocol
 
 enum class ClientEvents(private val eventString: String) {
 
+    //TODO EventENums mit JSONWarpper verbinden und createrWrapper methode
+
     LISTEN_SLOT("listenSlot@S"),
     REFRESH_SLOT_APPROX("refreshSlotApprox@S"),
 
