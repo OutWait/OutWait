@@ -42,9 +42,7 @@ class SocketIOClientHandler : ClientHandler {
         cSocket.emitEventToServer(event.getEventString(), data)
     }
 
-    private fun processIncomingEvent(event: String, data: JSONObject) {
-
-        val data: JSONObjectWrapper = JSONLoginWrapper("username", "password")
+    private fun processIncomingEvent(event: Event, wrappedJSONData: JSONObjectWrapper) {
 
         //TODO Strategie verwenden um Daten zu verarbeiten
 

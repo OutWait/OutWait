@@ -191,14 +191,10 @@ class SocketIOManagementHandler : ManagementHandler {
         return _currentPrefs
     }
 
-    private fun processIncomingEvent(event: String, data: JSONObject) {
+    private fun processIncomingEvent(event: Event, wrappedJSONData: JSONObjectWrapper) {
 
-        //TODO Strategie verwenden um Event und seine Daten zu verarbeiten
+        //TODO Strategie verwenden um Daten zu verarbeiten
+
     }
-
-
-
-
-
 
 }

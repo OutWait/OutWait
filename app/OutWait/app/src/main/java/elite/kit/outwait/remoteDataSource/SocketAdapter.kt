@@ -33,10 +33,10 @@ class SocketAdapter(private val namespace: String) {
     Uund registriere die EventListener (in private Methode ausgelagert)
     //TODO Was ist Socket.IO mäßig noch zu beachten?
      */
-    fun initializeConnection(mapEventsToCallback: HashMap<Event,
-                (event: String, jsonObj: JSONObjectWrapper) -> Unit>) {
+    fun initializeConnection(mapEventToCallback: HashMap<Event,
+                (event: Event, wrappedJSONData: JSONObjectWrapper) -> Unit>) {
 
-        registerEventListeners(mapEventsToCallback)
+        registerEventListeners(mapEventToCallback)
 
         //TODO Was ist mit on(CONNECT) und on(DISCONNECT) Event (-listeners) ?
         //TODO Testlog falls Socket erfolgreich connected
@@ -59,7 +59,7 @@ class SocketAdapter(private val namespace: String) {
     Emitte Event mit Daten zum Server
      */
     fun emitEventToServer(event: String, wrappedJSONData: JSONObjectWrapper) {
-        socketIOSocket?.emit(event, jsonData.toString())
+        socketIOSocket?.emit(event, wrappedJSONData.getJSONString())
     }
 
     /*
@@ -68,21 +68,21 @@ class SocketAdapter(private val namespace: String) {
      */
     private fun registerEventListeners(
         mapEventsToCallback: HashMap<Event,
-                (event: String, jsonObj: JSONObjectWrapper) -> Unit>
+                (event: Event, wrappedJSONData: JSONObjectWrapper) -> Unit>
     ) {
         for (k in mapEventsToCallback.keys) {
 
             socketIOSocket?.on(k.getEventString(), Emitter.Listener {
 
                 // parse the received data string into JSONObject (
-                var jsonData: JSONObject = JSONObject(it[0].toString())
+                val jsonData: JSONObject = JSONObject(it[0].toString())
 
                 // wrap the parsed JSONObject with appropriate JSONObjectWrapper
                 val wrappedJSONData = k.createWrapper(jsonData)
 
                 // Invoke the given callback with the parsed data
                 //TODO Funktioniert der Aufruf der Callback Methode richtig?
-                mapEventsToCallback[k]?.invoke(k.getEventString(), wrappedJSONData)
+                mapEventsToCallback[k]?.invoke(k, wrappedJSONData)
             })
         }
 
