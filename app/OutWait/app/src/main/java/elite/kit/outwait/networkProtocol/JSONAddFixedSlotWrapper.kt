@@ -1,16 +1,17 @@
 package elite.kit.outwait.networkProtocol
 
 import org.joda.time.DateTime
+import org.joda.time.Duration
 import org.json.JSONObject
 
 class JSONAddFixedSlotWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
 
-    constructor(slotCode: String, appointmentTime: DateTime) : this(JSONObject()) {
+    constructor(duration: Duration, appointmentTime: DateTime) : this(JSONObject()) {
 
         //TODO Konvertieren wir in Millisekunden oder Sekunden?
         val timeStamp: Long = appointmentTime.millis
 
-        jsonObj.put(SLOT_CODE, slotCode)
+        jsonObj.put(DURATION, duration)
         jsonObj.put(APPOINTMENT_TIME, timeStamp)
     }
 
