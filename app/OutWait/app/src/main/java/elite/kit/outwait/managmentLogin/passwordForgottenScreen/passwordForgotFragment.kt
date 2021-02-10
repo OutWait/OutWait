@@ -34,6 +34,8 @@ class passwordForgotFragment : Fragment() {
             container,
             false)
         binding.viewModel=this.viewModel
+        binding.lifecycleOwner=this
+
         return binding.root
     }
 

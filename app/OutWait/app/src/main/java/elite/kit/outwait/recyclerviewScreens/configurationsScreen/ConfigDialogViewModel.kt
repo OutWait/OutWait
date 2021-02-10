@@ -14,9 +14,8 @@ class ConfigDialogViewModel @Inject constructor(private val repo: InstituteRepos
     ViewModel() {
 
     /*
-    * - are getobserablepreferences set before login happen?
-    * - what should errornofification should do ? why a list? if edit was wrong should it be shown?
-    * - again transaction?
+    * - preferences never null, values first from server
+    * - standardduration show in addslotfragment
     * */
 
     //TODO check queue is emtpy to switch mode

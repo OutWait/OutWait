@@ -14,10 +14,8 @@ import javax.inject.Inject
 class RemainingTimeViewModel  @Inject constructor(private val repo : InstituteRepository): ViewModel() {
 
 /*
-    - enteredCode should be passed to get specific clientinfo
     - calculation of remainingtime here?
-    - what to do with errornotification
-    - how to get new remaining time, there is no observation possible (getActiveSlots)
+    - calculation of remainingTime is trough approximatedTime
 */
 
     //TODO calculation of remaining time

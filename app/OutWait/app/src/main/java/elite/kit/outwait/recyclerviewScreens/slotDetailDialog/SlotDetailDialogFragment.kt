@@ -32,6 +32,7 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
         val builder = AlertDialog.Builder(activity)
         binding = SlotDetailDialogFragmentBinding.inflate(LayoutInflater.from(context))
         binding.viewModel = this.viewModel
+        binding.lifecycleOwner=this
 
         viewModel.isFixedSlot.value = clientTimeSlot.getType().ordinal == Type.FIXED_SLOT.ordinal
         displayProperties(clientTimeSlot)

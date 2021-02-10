@@ -46,6 +46,7 @@ class RemainingTimeFragment : Fragment() {
             container,
             false)
         binding.viewModel = this.viewModel
+        binding.lifecycleOwner=this
 
 
         binding.circularProgressBar.apply {

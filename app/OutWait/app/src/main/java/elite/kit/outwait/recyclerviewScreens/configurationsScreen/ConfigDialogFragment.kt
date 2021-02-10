@@ -27,6 +27,7 @@ class ConfigDialogFragment : Fragment() {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.config_dialog_fragment, container, false)
         binding.viewModel = this.viewModel
+        binding.lifecycleOwner=this
 
         //Setup Dialog
         displaySetValues()

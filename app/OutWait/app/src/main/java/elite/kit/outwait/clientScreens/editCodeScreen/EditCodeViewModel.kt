@@ -10,8 +10,9 @@ import javax.inject.Inject
 class EditCodeViewModel @Inject constructor(private val repo : InstituteRepository, private val coordinator: EditCodeCoordinator) : ViewModel() {
 
     /*
-    * - newCodeEntered should give back clientifo to pass it to remainingtimeFragment
+    * - getActiveSlots is for login system oberservable
     * */
+
     val clientSlotCode= MutableLiveData<String>()
 
 

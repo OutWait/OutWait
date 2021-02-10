@@ -32,6 +32,8 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = EditTimeSlotDialogFragmentBinding.inflate(LayoutInflater.from(context))
         binding.viewModel = this.viewModel
+        binding.lifecycleOwner=this
+
         val builder = AlertDialog.Builder(activity)
 
         //EXAMPLE
