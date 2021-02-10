@@ -1,12 +1,13 @@
 package elite.kit.outwait.remoteDataSource
 
+import elite.kit.outwait.networkProtocol.ClientEvents
 import elite.kit.outwait.networkProtocol.JSONLoginWrapper
 import elite.kit.outwait.networkProtocol.JSONObjectWrapper
 import org.json.JSONObject
 
-const val namespaceClient: String = "/client"
-
 class SocketIOClientHandler : ClientHandler {
+
+    private val namespaceClient: String = "/client"
 
     private val cSocket: SocketAdapter
 

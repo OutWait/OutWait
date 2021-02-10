@@ -4,15 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.customDataTypes.ReceivedList
-import elite.kit.outwait.networkProtocol.JSONObjectWrapper
-import elite.kit.outwait.networkProtocol.JSONResetPasswordWrapper
+import elite.kit.outwait.networkProtocol.ManagementEvents
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.json.JSONObject
 
-const val namespaceManagement: String = "/management"
-
 class SocketIOManagementHandler : ManagementHandler {
+
+    private val namespaceManagement: String = "/management"
 
     private val mSocket: SocketAdapter
 
