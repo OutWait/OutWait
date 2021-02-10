@@ -18,6 +18,11 @@ class InstitutLoginViewModel @Inject constructor(
     private val coordinator: InstitutCoordinator,
 ) : ViewModel() {
 
+    /*
+    * - what should _sucessfulLoginTime do ?
+    * - login should give a boolean value for login system
+    * */
+
     private lateinit var _successfullLoginTime: MutableLiveData<DateTime>
     val successfullLoginTime: LiveData<DateTime>
         get() {
@@ -31,10 +36,9 @@ class InstitutLoginViewModel @Inject constructor(
     fun loginTried(){
         CoroutineScope(Main).launch {
             if (repo.loginCo("bla", "bla")){
-                //switch to Recyclerview Fragment
-                Log.d("loginTried::InstLoginVM", "switching Fragment in Thread ${Thread.currentThread().name}")
+                //TODO navigate to managementView
             } else{
-                //show error warning
+                //TODOD show error
             }
             coordinator.navigateToManagementView()
             repo.doSomething()

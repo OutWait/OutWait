@@ -13,6 +13,14 @@ import javax.inject.Inject
 class ConfigDialogViewModel @Inject constructor(private val repo: InstituteRepository) :
     ViewModel() {
 
+    /*
+    * - are getobserablepreferences set before login happen?
+    * - what should errornofification should do ? why a list? if edit was wrong should it be shown?
+    * - again transaction?
+    * */
+
+    //TODO check queue is emtpy to switch mode
+
     val standardSlotDauer = MutableLiveData<Duration>()
     var notificationTime = MutableLiveData<Duration>()
     var isModusTwo = MutableLiveData<Boolean>()

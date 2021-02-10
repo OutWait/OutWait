@@ -8,9 +8,19 @@ import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 import javax.inject.Inject
 
 @HiltViewModel
-class ManagmentViewViewModel @Inject constructor(private val repo : InstituteRepository, private val coordinator: ManagementViewCoordinator)
-    : ViewModel() {
+class ManagmentViewViewModel @Inject constructor(
+    private val repo: InstituteRepository,
+    private val coordinator: ManagementViewCoordinator,
+) : ViewModel() {
 
+    /*
+    * - i will observe the queue
+    * - explain moveslotafterantother?
+    * - deleteslot
+    * - again transaction
+    * */
+
+    // val slotList:LiveData<List<TimeSlot>>=institutRepository.getAllSlots().asLiveData()
 
     fun navigateToAddSlotDialog() {
         coordinator.navigateToAddDialogFragment()
@@ -24,7 +34,6 @@ class ManagmentViewViewModel @Inject constructor(private val repo : InstituteRep
         coordinator.navigateToEditDialogFragment(timeSlot)
     }
 
-    // val slotList:LiveData<List<TimeSlot>>=institutRepository.getAllSlots().asLiveData()
 
 
 }
