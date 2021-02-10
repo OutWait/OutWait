@@ -1,8 +1,18 @@
 package elite.kit.outwait.services
 
+import android.app.Notification
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import androidx.core.app.NotificationCompat
+import elite.kit.outwait.MainActivity
+import elite.kit.outwait.R
+
+    /*
+    TODO Create Notification Channel with this ID
+    */
+const val CHANNEL_ID = "ExampleServiceChannel"
 
 class TimerService : Service() {
 
@@ -45,8 +55,33 @@ class TimerService : Service() {
      * @see .stopSelfResult
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return super.onStartCommand(intent, flags, startId)
+
+        //Create (Pending) Intent for the Notification to start the MainActivity if User
+        //Clicks on (ForegroundService) Notification
+        val notificationIntent: Intent = Intent(this, MainActivity::class.java)
+
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(this,
+            0, notificationIntent, 0)
+
+        //Create the (permanent) Notification that will be displayed while ForegroundService is running
+        //TODO Create the corresponding notification channel with its CHANNEL_ID
+        var notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Outwait")
+            .setContentText("Ihr nächster Termin ist in:")      //TODO Setze hier Daten aus ClientDB
+            .setSmallIcon(R.drawable.ic_baseline_av_timer_24)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        //Start Service, promoting it to the foreground immediately with the notification and its id
+        startForeground(1, notification);
+
+        //TODO: Here goes the heavy work on a background thread
+        //stopSelf();
+
+        // Service wont be started again after System kills it
+        return START_NOT_STICKY;
     }
+
 
     /**
      * Called by the system to notify a Service that it is no longer used and is being removed.  The

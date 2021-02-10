@@ -1,3 +1,3 @@
 package edu.kit.outwait.server.management
 
-class ManagementInformation(val details: ManagementDetails, val settings: ManagementSettings)
+data class ManagementInformation(val details: ManagementDetails, val settings: ManagementSettings)

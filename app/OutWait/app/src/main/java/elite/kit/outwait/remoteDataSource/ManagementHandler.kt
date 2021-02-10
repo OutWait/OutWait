@@ -1,7 +1,10 @@
 package elite.kit.outwait.remoteDataSource
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import elite.kit.outwait.customDataTypes.Preferences
+import elite.kit.outwait.customDataTypes.ReceivedList
+import org.joda.time.DateTime
+import org.joda.time.Duration
 
 interface ManagementHandler {
 
@@ -16,7 +19,8 @@ interface ManagementHandler {
 
     fun resetPassword(username: String)
 
-    //fun changePreferences(newPreferences: Preferences)
+    fun changePreferences(newPreferences: Preferences)
+
 
     fun startTransaction()
 
@@ -24,32 +28,32 @@ interface ManagementHandler {
 
     fun saveTransaction()
 
-    /*
-    Es fehlt noch die Yoda Time Library
-    fun newSpontaneousSlot(duration: Duration)
 
-    fun newFixedSlot(appointmentTime: DateTime, duration: Duration)
-     */
+    fun addSpontaneousSlot(duration: Duration, timeOfCreation: DateTime)
+
+    fun addFixedSlot(duration: Duration, appointmentTime: DateTime)
+
 
     fun deleteSlot(slotCode: String)
 
     fun endCurrentSlot()
 
+
     fun moveSlotAfterAnother(movedSlot: String, otherSlot: String)
 
-    /*
-    Es fehlen noch customDataTypes package
-    fun changeSlotDuration(slotCode: String, duration: Duration)
+    fun changeSlotDuration(slotCode: String, newDuration: Duration)
 
-    fun changeFixedSlotTime(slotCode: String, newAppointmentTime: DateTime)
-     */
+    fun changeFixedSlotTime(slotCode: String, newTime: DateTime)
+
+
+
 
     /*
     Methoden um LiveData zum Observen zurückzugeben
      */
-    //fun getReceivedList(): LiveData<ReceivedList>
+    fun getReceivedList(): LiveData<ReceivedList>
 
-    //fun getUpdatedPreferences(): LiveData<Preferences>
+    fun getUpdatedPreferences(): LiveData<Preferences>
 
 
     /*

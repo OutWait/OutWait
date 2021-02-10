@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
 import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ItemActionListener
-import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.managmentViewFragment
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.FixedSlotViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.PauseSlotViewHolder
@@ -19,22 +18,22 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
     ItemTouchHelperAdapter {
     private lateinit var itemTouchHelper: ItemTouchHelper
     var slotList = slotList
-        set(value) {
-            field = value
+       /* set {
+            field =
             notifyDataSetChanged()
-        }
+        }*/
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
         return when (viewType) {
-            Type.SPONTANEOUS_SLOT.value ->
+            Type.SPONTANEOUS_SLOT.ordinal ->
                 SpontaneousSlotViewHolder(
                     LayoutInflater.from(parent.context)
-                        .inflate(R.layout.spontaneous_slot, parent, false), itemTouchHelper
+                        .inflate(R.layout.spontaneous_slot, parent, false), itemTouchHelper, listener
                 )
-            Type.FIXED_SLOT.value ->
+            Type.FIXED_SLOT.ordinal ->
                 FixedSlotViewHolder(
-                    LayoutInflater.from(parent.context).inflate(R.layout.fixed_slot, parent, false)
+                    LayoutInflater.from(parent.context).inflate(R.layout.fixed_slot, parent, false), listener
                 )
             else ->
                 PauseSlotViewHolder(
@@ -44,11 +43,12 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
-        val element = slotList!![position]
-        when (element.getType()) {
-            Type.SPONTANEOUS_SLOT.value -> holder.bind(element)
-            Type.FIXED_SLOT.value -> holder.bind(element)
-            Type.PAUSE.value -> holder.bind(element)
+        val element=slotList!![position]
+        val viewType = slotList!![position].getType().ordinal
+        when (viewType) {
+            Type.SPONTANEOUS_SLOT.ordinal -> holder.bind(element)
+            Type.FIXED_SLOT.ordinal -> holder.bind(element)
+            Type.PAUSE.ordinal -> holder.bind(element)
             else -> throw IllegalArgumentException()
         }
     }
@@ -57,19 +57,24 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
         return slotList!!.size
     }
 
-    override fun getItemViewType(position: Int): Int {
+     override fun getItemViewType(position: Int): Int {
         val item = slotList!![position]
-        return item.getType()
+        return item.getType().ordinal
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         Log.i("before move", "fromPos:$fromPosition toPos:$toPosition")
-        if (getItemViewType(fromPosition) == Type.SPONTANEOUS_SLOT.value) {
+        if (getItemViewType(fromPosition) == Type.SPONTANEOUS_SLOT.ordinal) {
 
 
-            for (i in fromPosition downTo toPosition + 1) {
-                Log.i("move step", "$i")
-                Collections.swap(slotList, i, i - 1)
+            if(fromPosition<toPosition){
+                for(i in fromPosition until toPosition){
+                    Collections.swap(slotList,i,i+1)
+                }
+            }else{
+                for(i in fromPosition downTo toPosition+1){
+                    Collections.swap(slotList,i,i-1)
+                }
             }
 
             Log.i("after move", "fromPos:$fromPosition toPos:$toPosition")
@@ -92,9 +97,9 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
         var nextPos = position - 1
 
         Log.i("newPos", "$nextPos")
-        if (nextPos >= 0 && getItemViewType(nextPos) == Type.PAUSE.value) {
+        if (nextPos >= 0 && getItemViewType(nextPos) == Type.PAUSE.ordinal) {
 
-            while (getItemViewType(nextPos) == Type.PAUSE.value) {
+            while (getItemViewType(nextPos) == Type.PAUSE.ordinal) {
                 //newPos!=0
                     Log.i("newPos", "$nextPos")
                 nextPos--

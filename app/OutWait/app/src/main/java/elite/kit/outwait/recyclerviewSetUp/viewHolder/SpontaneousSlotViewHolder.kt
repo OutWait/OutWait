@@ -6,20 +6,39 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
+import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ItemActionListener
 import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 
-class SpontaneousSlotViewHolder(private var itemView: View,     private var itemTouchHelper: ItemTouchHelper) :
+class SpontaneousSlotViewHolder(
+    private var itemView: View,
+    private var itemTouchHelper: ItemTouchHelper,
+    listener: ItemActionListener
+) :
     BaseViewHolder<SpontaneousTimeSlot>(itemView),View.OnTouchListener, GestureDetector.OnGestureListener {
     private var identifier = itemView.findViewById<TextView>(R.id.tvIdentifier)
     private var slotCode = itemView.findViewById<TextView>(R.id.tvSlotCode)
     private var icon = itemView.findViewById<ImageView>(R.id.ivEditIcon)
+    private var container = itemView.findViewById<TextView>(R.id.tvSpoSlotContainer)
+
 
     val gestureDetector: GestureDetector = GestureDetector(itemView.context, this)
 
     init {
         itemView.setOnTouchListener(this)
+
+        container.setOnClickListener{
+            if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
+                listener.onItemClicked(absoluteAdapterPosition)
+            }
+        }
+        icon.setOnClickListener{
+            if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
+                listener.editTimeSlot(absoluteAdapterPosition)
+            }
+        }
     }
 
     override fun bind(item: TimeSlot) {

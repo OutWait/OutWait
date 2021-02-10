@@ -7,6 +7,7 @@ import edu.kit.outwait.server.management.ManagementId
 import edu.kit.outwait.server.management.ManagementInformation
 import edu.kit.outwait.server.management.ManagementSettings
 import edu.kit.outwait.server.management.Mode
+import edu.kit.outwait.server.management.QueueId
 import edu.kit.outwait.server.slot.Slot
 import edu.kit.outwait.server.slot.SlotCode
 import java.time.Duration
@@ -21,7 +22,7 @@ class DatabaseWrapper {
     init {
     }
 
-    fun getSlots(managementId: ManagementId): List<Slot> {
+    fun getSlots(queueId: QueueId): List<Slot> {
         return listOf<Slot>()
     }
 
@@ -29,10 +30,10 @@ class DatabaseWrapper {
         return Date(0)
     }
 
-    fun setSloxApprox(slotCode: SlotCode, slotApprox: Date) {
+    fun setSlotApprox(slotCode: SlotCode, slotApprox: Date) {
     }
 
-    fun saveSlots(slots: List<Slot>) {
+    fun saveSlots(slots: List<Slot>, queueId: QueueId) {
     }
 
     fun getManagementById(managementId: ManagementId): ManagementInformation {
@@ -42,7 +43,11 @@ class DatabaseWrapper {
         )
     }
 
-    fun getManagamentByUsername(username: String): ManagementCredentials {
+    fun getQueueIdOfManagement(managementId: ManagementId) : QueueId {
+        return QueueId(0);
+    }
+
+    fun getManagementByUsername(username: String): ManagementCredentials {
         return ManagementCredentials(ManagementId(0), "", "")
     }
 

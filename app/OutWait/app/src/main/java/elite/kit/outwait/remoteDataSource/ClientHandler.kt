@@ -15,8 +15,8 @@ interface ClientHandler {
  //Wie im AndroidKurs muss man dann auch sicherstellen, dass onEventFinish() aufgerufen wird!!
   */
 
-    fun newCodeEntered(code: String)
+    fun newCodeEntered(slotCode: String)
 
-    fun refreshWaitingTime(code: String)
+    fun refreshWaitingTime(slotCode: String)
 
 }

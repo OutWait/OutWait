@@ -25,7 +25,7 @@ enum class Event(private val tag: String, private val wrapper: (String) -> JSONO
     LOGIN_REQUEST("loginRequest@M", { JSONEmptyWrapper(JSONObject(it)) }),
     MANAGEMENT_LOGIN_SUCCESS("managementLoginSuccess@M", { JSONEmptyWrapper(JSONObject(it)) }),
     MANAGEMENT_LOGIN_DENIED("managementLoginDenied@M", { JSONEmptyWrapper(JSONObject(it)) }),
-    UPDATE_MANAGEMENT_SETTING(
+    UPDATE_MANAGEMENT_SETTINGS(
         "updateManagementSettings@M",
         { JSONManagementSettingsWrapper(JSONObject(it)) }
     ),

@@ -1,8 +1,11 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
-
+apply plugin: 'kotlin-android-extensions'
+apply plugin: "androidx.navigation.safeargs.kotlin"
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -41,6 +44,15 @@ android {
 }
 
 dependencies {
+    def room_version = "2.2.6"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    testImplementation "androidx.room:room-testing:$room_version"
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     implementation 'joda-time:joda-time:2.10.9'
     implementation 'mobi.upod:time-duration-picker:1.1.3'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -58,9 +70,22 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation "androidx.navigation:navigation-dynamic-features-fragment:2.3.3"
+
 
     // Dependency for Socket.IO.client
     implementation('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }
+
+    //Dependency for timepicker android 21
+    implementation 'com.github.ifr0z:timepickercompact:1.0'
+
+    //Dependency to generate a QRCode
+    implementation 'com.google.zxing:core:3.4.0'
+
+    //Dependency for progress bar
+    implementation 'com.mikhaellopez:circularprogressbar:3.0.3'
+
+
 }

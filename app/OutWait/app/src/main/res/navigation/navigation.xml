@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/navigation"
-    app:startDestination="@id/institutLoginFragment">
+    app:startDestination="@id/editCodeFragment">
 
     <fragment
         android:id="@+id/institutLoginFragment"
@@ -21,6 +21,50 @@
         android:label="passwordForgotFragment" />
     <fragment
         android:id="@+id/managmentViewFragment"
-        android:name="elite.kit.outwait.recyclerviewScreens.managmentViewScreen.managmentViewFragment"
-        android:label="managmentViewFragment" />
+        android:name="elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ManagmentViewFragment"
+        android:label="managmentViewFragment" >
+        <action
+            android:id="@+id/action_managmentViewFragment_to_addSlotDialogFragment"
+            app:destination="@id/addSlotDialogFragment" />
+        <action
+            android:id="@+id/action_managmentViewFragment_to_configDialogFragment"
+            app:destination="@id/configDialogFragment2" />
+        <action
+            android:id="@+id/action_managmentViewFragment_to_editTimeSlotDialogFragment"
+            app:destination="@id/editTimeSlotDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/addSlotDialogFragment"
+        android:name="elite.kit.outwait.recyclerviewScreens.addSlotDialog.AddSlotDialogFragment"
+        android:label="AddSlotDialogFragment" />
+    <fragment android:id="@+id/placeholder" />
+    <fragment
+        android:id="@+id/editCodeFragment"
+        android:name="elite.kit.outwait.clientScreens.editCodeScreen.EditCodeFragment"
+        android:label="EditCodeFragment" >
+        <action
+            android:id="@+id/action_editCodeFragment_to_institutLoginFragment"
+            app:destination="@id/institutLoginFragment" />
+        <action
+            android:id="@+id/action_editCodeFragment_to_remainingTimeFragment2"
+            app:destination="@id/remainingTimeFragment"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/remainingTimeFragment"
+        android:name="elite.kit.outwait.clientScreens.remainingTimeScreen.RemainingTimeFragment"
+        android:label="RemainingTimeFragment" >
+    </fragment>
+    <fragment
+        android:id="@+id/configDialogFragment2"
+        android:name="elite.kit.outwait.recyclerviewScreens.configurationsScreen.ConfigDialogFragment"
+        android:label="ConfigDialogFragment" />
+    <dialog
+        android:id="@+id/editTimeSlotDialogFragment"
+        android:name="elite.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFragment"
+        android:label="EditTimeSlotDialogFragment" >
+       <!-- <argument
+            android:name="editSlot"
+            app:argType="elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot" />-->
+    </dialog>
 </navigation>

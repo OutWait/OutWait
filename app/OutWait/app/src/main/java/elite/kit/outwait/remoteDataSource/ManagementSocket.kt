@@ -1,16 +1,14 @@
 package elite.kit.outwait.remoteDataSource
 
-class ManagementSocket {
-
-    //ManagementSocket als Singleton bzw. Kotlin Object
-/*
 import io.socket.client.IO
 import io.socket.client.Socket
 import java.net.URI
 
-object ManagementSocket {
+class ManagementSocket() {
 
-    private const val  serverURI = "http://127.0.0.1:8080/management"
+    //TODO Nur ein Socket und serverURI in Konstruktor
+
+    private val  serverURI = "http://127.0.0.1:8080/management"
 
     private val mSocket: Socket? = null
 
@@ -21,11 +19,23 @@ object ManagementSocket {
         val mSocket = IO.socket(URI.create(serverURI), options)
     }
 
-    // Getter für den ManagementSocket
-    fun getClientSocket(): Socket? {
-        return this.mSocket
-    }
-}
+    fun initializeConnection() {
+        //TODO Param für EventListener
 
- */
+        registerEventListeners()
+        mSocket?.connect()
+
+        //TODO Was ist mit onConnectEvent?
+    }
+
+
+    private fun registerEventListeners() {
+        //TODO: Wie werden die/der Callback übergeben mit den Events?
+        //TODO: Ein Callback und Strategie im konkreten Handler
+        //TODO: Public oder privat?
+    }
+
+    fun releaseConnection() {
+        mSocket?.close()
+    }
 }

@@ -21,4 +21,9 @@ class SocketFacade(val socket: SocketIOClient, adapter: SocketAdapter) {
     fun onDisconnect(callback: () -> Unit) {
         disconnectCallback = callback
     }
+
+    /** Closes the connection */
+    fun disconnect() {
+        socket.disconnect()
+    }
 }
