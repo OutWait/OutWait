@@ -1,8 +1,6 @@
 package elite.kit.outwait.remoteDataSource
 
-import elite.kit.outwait.networkProtocol.ClientEvents
-import elite.kit.outwait.networkProtocol.JSONLoginWrapper
-import elite.kit.outwait.networkProtocol.JSONObjectWrapper
+import elite.kit.outwait.networkProtocol.*
 import org.json.JSONObject
 
 class SocketIOClientHandler : ClientHandler {
@@ -30,20 +28,21 @@ class SocketIOClientHandler : ClientHandler {
     }
 
     override fun newCodeEntered(slotCode: String) {
-        var data: JSONObject = JSONObject()
-        data.put("slotCode", slotCode)
-        cSocket.emitEventToServer(ClientEvents.LISTEN_SLOT.getEventString(), data)
+        val event: Event = Event.LISTEN_SLOT
+        val data: JSONObjectWrapper = JSONSlotCodeWrapper(slotCode)
+
+        cSocket.emitEventToServer(event.getEventString(), data)
+
     }
 
     override fun refreshWaitingTime(slotCode: String) {
-        var data: JSONObject = JSONObject()
-        data.put("slotCode", slotCode)
-        cSocket.emitEventToServer(ClientEvents.REFRESH_SLOT_APPROX.getEventString())
+        val event: Event = Event.REFRESH_SLOT_APPROX
+        val data: JSONObjectWrapper = JSONSlotCodeWrapper(slotCode)
+
+        cSocket.emitEventToServer(event.getEventString(), data)
     }
 
-    private fun processIncomingEvent(event: String, data: JSONObject) {
-
-        val data: JSONObjectWrapper = JSONLoginWrapper("username", "password")
+    private fun processIncomingEvent(event: Event, wrappedJSONData: JSONObjectWrapper) {
 
         //TODO Strategie verwenden um Daten zu verarbeiten
 

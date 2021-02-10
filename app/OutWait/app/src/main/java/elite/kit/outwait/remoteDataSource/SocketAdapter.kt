@@ -1,7 +1,7 @@
 package elite.kit.outwait.remoteDataSource
 
 import android.util.Log
-import elite.kit.outwait.networkProtocol.ClientEvents
+import elite.kit.outwait.networkProtocol.Event
 import elite.kit.outwait.networkProtocol.JSONObjectWrapper
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -25,7 +25,7 @@ class SocketAdapter(private val namespace: String) {
         val options = IO.Options()
         options.reconnection = true
 
-        val mSocket = IO.socket(URI.create(serverURI+namespace), options)
+        val mSocket = IO.socket(URI.create(serverURI + namespace), options)
     }
 
     /*
@@ -33,10 +33,10 @@ class SocketAdapter(private val namespace: String) {
     Uund registriere die EventListener (in private Methode ausgelagert)
     //TODO Was ist Socket.IO mäßig noch zu beachten?
      */
-    fun initializeConnection(mapEventsToCallback: HashMap<ClientEvents,
-                (event: String, jsonObj: JSONObjectWrapper) -> Unit>) {
+    fun initializeConnection(mapEventToCallback: HashMap<Event,
+                (event: Event, wrappedJSONData: JSONObjectWrapper) -> Unit>) {
 
-        registerEventListeners(mapEventsToCallback)
+        registerEventListeners(mapEventToCallback)
 
         //TODO Was ist mit on(CONNECT) und on(DISCONNECT) Event (-listeners) ?
         //TODO Testlog falls Socket erfolgreich connected
@@ -58,39 +58,31 @@ class SocketAdapter(private val namespace: String) {
     /*
     Emitte Event mit Daten zum Server
      */
-    fun emitEventToServer(event: String, jsonData: JSONObject) {
-        socketIOSocket?.emit(event, jsonData.toString())
+    fun emitEventToServer(event: String, wrappedJSONData: JSONObjectWrapper) {
+        socketIOSocket?.emit(event, wrappedJSONData.getJSONString())
     }
-
-    /*
-    Emitte Event ohne Daten zum Server
-     */
-    fun emitEventToServer(event: String) {
-        socketIOSocket?.emit(event)
-    }
-
 
     /*
     Methode um die EventListener auf dem Socket zu registrieren, aus dem übergebenen
     Mapping von EventNamen:String und Callbacks
      */
     private fun registerEventListeners(
-        mapEventsToCallback: HashMap<ClientEvents,
-                (event: String, jsonObj: JSONObjectWrapper) -> Unit>
+        mapEventsToCallback: HashMap<Event,
+                (event: Event, wrappedJSONData: JSONObjectWrapper) -> Unit>
     ) {
         for (k in mapEventsToCallback.keys) {
 
             socketIOSocket?.on(k.getEventString(), Emitter.Listener {
 
                 // parse the received data string into JSONObject (
-                var jsonData: JSONObject = JSONObject(it[0].toString())
+                val jsonData: JSONObject = JSONObject(it[0].toString())
 
                 // wrap the parsed JSONObject with appropriate JSONObjectWrapper
                 val wrappedJSONData = k.createWrapper(jsonData)
 
                 // Invoke the given callback with the parsed data
                 //TODO Funktioniert der Aufruf der Callback Methode richtig?
-                mapEventsToCallback[k]?.invoke(k.getEventString(), wrappedJSONData)
+                mapEventsToCallback[k]?.invoke(k, wrappedJSONData)
             })
         }
 
