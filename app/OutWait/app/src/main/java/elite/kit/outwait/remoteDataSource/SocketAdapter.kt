@@ -1,7 +1,7 @@
 package elite.kit.outwait.remoteDataSource
 
 import android.util.Log
-import elite.kit.outwait.networkProtocol.ClientEvents
+import elite.kit.outwait.networkProtocol.Event
 import elite.kit.outwait.networkProtocol.JSONObjectWrapper
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -25,7 +25,7 @@ class SocketAdapter(private val namespace: String) {
         val options = IO.Options()
         options.reconnection = true
 
-        val mSocket = IO.socket(URI.create(serverURI+namespace), options)
+        val mSocket = IO.socket(URI.create(serverURI + namespace), options)
     }
 
     /*
@@ -33,7 +33,7 @@ class SocketAdapter(private val namespace: String) {
     Uund registriere die EventListener (in private Methode ausgelagert)
     //TODO Was ist Socket.IO mäßig noch zu beachten?
      */
-    fun initializeConnection(mapEventsToCallback: HashMap<ClientEvents,
+    fun initializeConnection(mapEventsToCallback: HashMap<Event,
                 (event: String, jsonObj: JSONObjectWrapper) -> Unit>) {
 
         registerEventListeners(mapEventsToCallback)
@@ -58,24 +58,16 @@ class SocketAdapter(private val namespace: String) {
     /*
     Emitte Event mit Daten zum Server
      */
-    fun emitEventToServer(event: String, jsonData: JSONObject) {
+    fun emitEventToServer(event: String, wrappedJSONData: JSONObjectWrapper) {
         socketIOSocket?.emit(event, jsonData.toString())
     }
-
-    /*
-    Emitte Event ohne Daten zum Server
-     */
-    fun emitEventToServer(event: String) {
-        socketIOSocket?.emit(event)
-    }
-
 
     /*
     Methode um die EventListener auf dem Socket zu registrieren, aus dem übergebenen
     Mapping von EventNamen:String und Callbacks
      */
     private fun registerEventListeners(
-        mapEventsToCallback: HashMap<ClientEvents,
+        mapEventsToCallback: HashMap<Event,
                 (event: String, jsonObj: JSONObjectWrapper) -> Unit>
     ) {
         for (k in mapEventsToCallback.keys) {
