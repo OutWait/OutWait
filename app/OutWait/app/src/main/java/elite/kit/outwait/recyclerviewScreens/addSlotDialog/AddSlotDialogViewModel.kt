@@ -12,6 +12,11 @@ import javax.inject.Inject
 @HiltViewModel
 class AddSlotDialogViewModel @Inject constructor(private val repo : InstituteRepository) : ViewModel() {
 
+    /*
+    * - only pass of new data is enough?
+    * - trough live data queue gets new info ?
+    * - how should transaction happen?
+    * */
 
      val identifier = MutableLiveData<String>()
 
@@ -30,9 +35,10 @@ class AddSlotDialogViewModel @Inject constructor(private val repo : InstituteRep
         isFixedSlot.value=false
     }
 
+    //TODO edit visibility of fixedslot trough isModeTwo && isFixedSlot
 
     fun notifyAddSlot() {
-        //TODO check mode
+        //TODO check mode and type of slot
         //TODO pass slot
     }
 }

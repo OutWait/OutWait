@@ -12,6 +12,10 @@ import javax.inject.Inject
 @HiltViewModel
 class EditTimeSlotDialogViewModel @Inject constructor(private val repo : InstituteRepository) : ViewModel() {
 
+    /*
+    * - only pass data ?
+    * again transaction
+    * */
 
     var identifier = MutableLiveData<String>()
 

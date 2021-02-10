@@ -9,6 +9,9 @@ import javax.inject.Inject
 @HiltViewModel
 class EditCodeViewModel @Inject constructor(private val repo : InstituteRepository, private val coordinator: EditCodeCoordinator) : ViewModel() {
 
+    /*
+    * - newCodeEntered should give back clientifo to pass it to remainingtimeFragment
+    * */
     val clientSlotCode= MutableLiveData<String>()
 
 
