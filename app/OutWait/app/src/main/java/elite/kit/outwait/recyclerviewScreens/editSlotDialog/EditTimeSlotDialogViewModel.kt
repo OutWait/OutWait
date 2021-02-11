@@ -27,8 +27,10 @@ class EditTimeSlotDialogViewModel @Inject constructor(private val repo: Institut
 
     var isFixedSlot = MutableLiveData<Boolean>()
 
-    fun notifyEditSpontaneousSlot(slotCode: String) {
-        repo.changeSpontaneousSlotInfo(slotCode,
+    var slotCode = MutableLiveData<String>()
+
+    fun notifyEditSpontaneousSlot() {
+        repo.changeSpontaneousSlotInfo(slotCode.value!!,
             interval.value!!.toDuration(), identifier.value!!)
         Log.i("input", "${identifier.value}\n" +
             "            ${appointmentTime.value}\n" +
@@ -36,8 +38,8 @@ class EditTimeSlotDialogViewModel @Inject constructor(private val repo: Institut
     }
 
 
-    fun notifyEditFixedSlot(slotCode: String) {
-        repo.changeFixedSlotAppointmentTime(slotCode,
+    fun notifyEditFixedSlot() {
+        repo.changeFixedSlotAppointmentTime(slotCode.value!!,
             interval.value!!.toDuration(),
             identifier.value!!,
             appointmentTime.value!!)

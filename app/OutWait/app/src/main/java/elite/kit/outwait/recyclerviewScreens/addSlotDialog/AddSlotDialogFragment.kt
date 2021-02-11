@@ -60,6 +60,7 @@ class AddSlotDialogFragment : DialogFragment() {
 
                 if (viewModel.isModeTwo.value!! && viewModel.isFixedSlot.value!!) {
                     setFixedSlotValues()
+
                     if (isDefaultAppointmentTime()) Toast.makeText(context,
                         "Faild: Please enter an appointmentTime",
                         Toast.LENGTH_LONG).show() else viewModel.notifyAddFixedSlot()
