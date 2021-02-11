@@ -58,7 +58,6 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
                     viewModel.interval.value =
                         TransformationInput.formatInterval(binding.timeDurationInput.duration)
                 }
-                viewModel.notifyEditSlot()
             }
 
             setNegativeButton(getString(R.string.cancel)) { dialog, which ->

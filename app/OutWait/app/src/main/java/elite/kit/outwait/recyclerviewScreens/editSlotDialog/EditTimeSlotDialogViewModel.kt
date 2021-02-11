@@ -10,7 +10,8 @@ import org.joda.time.Interval
 import javax.inject.Inject
 
 @HiltViewModel
-class EditTimeSlotDialogViewModel @Inject constructor(private val repo : InstituteRepository) : ViewModel() {
+class EditTimeSlotDialogViewModel @Inject constructor(private val repo: InstituteRepository) :
+    ViewModel() {
 
     /*
     * */
@@ -26,8 +27,23 @@ class EditTimeSlotDialogViewModel @Inject constructor(private val repo : Institu
 
     var isFixedSlot = MutableLiveData<Boolean>()
 
-    fun notifyEditSlot() {
-        //TODO pass edit slot repo
+    fun notifyEditSpontaneousSlot(slotCode: String) {
+        repo.changeSpontaneousSlotInfo(slotCode,
+            interval.value!!.toDuration(), identifier.value!!)
+        Log.i("input", "${identifier.value}\n" +
+            "            ${appointmentTime.value}\n" +
+            "            ${interval.value!!.toDurationMillis()}")
+    }
+
+
+    fun notifyEditFixedSlot(slotCode: String) {
+        repo.changeFixedSlotAppointmentTime(slotCode,
+            interval.value!!.toDuration(),
+            identifier.value!!,
+            appointmentTime.value!!)
+        Log.i("input", "${identifier.value}\n" +
+            "            ${appointmentTime.value}\n" +
+            "            ${interval.value!!.toDurationMillis()}")
     }
 
 }

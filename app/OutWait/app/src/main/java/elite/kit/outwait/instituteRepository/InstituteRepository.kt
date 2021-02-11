@@ -72,7 +72,7 @@ class InstituteRepository @Inject constructor() {
 
     }
 
-    fun changeSlotInfo(slotCode : String, duration : Duration, auxiliaryIdentifier : String){
+    fun changeSpontaneousSlotInfo(slotCode : String, duration : Duration, auxiliaryIdentifier : String){
 
     }
 
@@ -88,7 +88,7 @@ class InstituteRepository @Inject constructor() {
 
     }
 
-    fun changeFixedSlotAppointmentTime(slotCode : String, newAppointmentTime : DateTime){
+    fun changeFixedSlotAppointmentTime(slotCode : String, duration : Duration, auxiliaryIdentifier : String ,newAppointmentTime : DateTime){
 
     }
 
