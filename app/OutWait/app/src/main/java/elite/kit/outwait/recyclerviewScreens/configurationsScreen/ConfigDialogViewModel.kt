@@ -10,7 +10,7 @@ import org.joda.time.Interval
 import javax.inject.Inject
 
 @HiltViewModel
-class ConfigDialogViewModel @Inject constructor(private val repo: InstituteRepository) :
+class ConfigDialogViewModel @Inject constructor( val repo: InstituteRepository) :
     ViewModel() {
 
     /*
@@ -27,10 +27,11 @@ class ConfigDialogViewModel @Inject constructor(private val repo: InstituteRepos
     val delayNotificationTime = MutableLiveData<Duration>()
 
     fun logout(){
-        //TODO repo call
+        //TODO notify login system
+        repo.logout()
     }
 
     fun saveConfigValues(){
-        //TODO repo call
+        repo.changePreferences(standardSlotDauer.value!!,notificationTime.value!!,delayNotificationTime.value!!,prioritizationTime.value!!,isModusTwo.value!!)
     }
 }
