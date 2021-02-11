@@ -42,7 +42,8 @@ class InstituteRepository @Inject constructor() {
         Log.d("login::InstiRepo", "before liveData changed running in ${Thread.currentThread().name}")
         preferences.value = Preferences(d, d, d, d, Mode.TWO)
         Log.d("login::InstiRepo", "after liveData changed")
-
+        val l = listOf("Fehler")
+        errorNotifications.value = l
         return true
     }
 
