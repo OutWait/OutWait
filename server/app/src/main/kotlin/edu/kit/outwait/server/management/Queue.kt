@@ -13,12 +13,16 @@ class Queue(
     databaseWrapper: DatabaseWrapper
 ) {
     private var slots = mutableListOf<Slot>()
+    private var delayChangeTime: Date? = null
 
     init {
         slots = databaseWrapper.getSlots(queueId).toMutableList()
     }
     fun updateQueue(prioritizationTime: Duration) {
-        if (slots.isEmpty()) return // Don't run the algorithm, if no slots exist
+        delayChangeTime = null
+        if (slots.isEmpty()) {
+            return // Don't run the algorithm, if no slots exist
+        }
 
         val newQueue = mutableListOf<Slot>() // The new queue
 
@@ -27,13 +31,14 @@ class Queue(
         val fixSlots = slots.filter { it.priority == Priority.FIX_APPOINTMENT }.toMutableList()
 
         // If the first slot has already started, it can not be moved
+        slots.sortWith(compareBy { it.approxTime })// Sort the queue, to find the current slot
         if (slots[0].approxTime.before(Date())) {
             newQueue.add(slots[0])
             spontaneousSlots.remove(slots[0])
             fixSlots.remove(slots[0])
         }
 
-        // Sort the array by their creation time
+        // Sort the slots by their creation time
         spontaneousSlots.sortWith(compareBy { it.constructorTime })
         fixSlots.sortWith(compareBy { it.constructorTime })
 
@@ -49,11 +54,23 @@ class Queue(
             val nextSpontaneous = spontaneousSlots[0]
             val nextFix = fixSlots[0]
 
+            val timeToNextFixSlot =
+                Duration.ofMillis(
+                    Math.max(
+                        0,
+                        nextFix.constructorTime.toInstant().toEpochMilli() - line.toEpochMilli()
+                    )
+                )
+            val remainingPrioritizationBuffer =
+                prioritizationTime -
+                    Duration.ofMillis(
+                        line.toEpochMilli() -
+                            nextSpontaneous.constructorTime.toInstant().toEpochMilli()
+                    )
             // Check if the next spontaneous slot fits in between the line and the next fix slot and
             // if the next spontaneous slot is not prioritized
-            if ((line + nextSpontaneous.expectedDuration)
-                .isAfter(nextFix.constructorTime.toInstant()) &&
-                (nextSpontaneous.constructorTime.toInstant() + prioritizationTime).isAfter(line)
+            if ((timeToNextFixSlot - nextSpontaneous.expectedDuration).isNegative() &&
+                !remainingPrioritizationBuffer.isNegative()
             ) {
                 // Choose the fix slot
                 val chosenSlot =
@@ -66,6 +83,17 @@ class Queue(
                     )
                 newQueue.add(chosenSlot)
                 fixSlots.removeAt(0)
+
+                // Store delay time
+                if (delayChangeTime == null && newQueue.isNotEmpty()) {
+                    // timeToNextFixSlot seems to be the only variable which indicates when a
+                    // "non-trivial" change happens
+                    delayChangeTime =
+                        Date.from(
+                            newQueue[0].approxTime.toInstant() + newQueue[0].expectedDuration +
+                                timeToNextFixSlot
+                        )
+                }
 
                 line = chosenSlot.approxTime.toInstant() + chosenSlot.expectedDuration
             } else {
@@ -87,9 +115,8 @@ class Queue(
         // Finalize the queue
         slots = newQueue
     }
-    fun calculateNextDelayChange(): Date {
-        // TODO
-        return Date()
+    fun calculateNextDelayChange(): Date? {
+        return delayChangeTime
     }
     fun storeToDB(databaseWrapper: DatabaseWrapper) {
         databaseWrapper.saveSlots(slots, queueId)
@@ -109,6 +136,7 @@ class Queue(
         }
     }
     fun moveSlotAfterAnother(slotToMove: SlotCode, otherSlot: SlotCode) {
+        // TODO this implementation will not work (updateQueue will revert the change)
         val slot = slots.find { it.slotCode == slotToMove }
         if (slot != null) {
             slots.remove(slot)

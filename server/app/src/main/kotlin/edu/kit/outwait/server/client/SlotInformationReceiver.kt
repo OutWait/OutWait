@@ -7,8 +7,9 @@ import java.time.Duration
 import java.util.Date
 
 /**
- * Observes UpdateMediator by being registered through DatabaseWrapper.
- * Informed by UpdateMediator on changes
+ * Observes UpdateMediator by being registered through DatabaseWrapper. Informed by UpdateMediator
+ * on changes
+ *
  * @param client Client-Object which has to be informed on changes
  * @param slotCode Slot which is being observed through UpdateMediator
  * @property slotManagementInformation SlotManagementInformation of observed Slot
@@ -20,8 +21,8 @@ class SlotInformationReceiver(val client: Client, val slotCode: SlotCode) {
         SlotManagementInformation(ManagementDetails(""), Duration.ZERO, Duration.ZERO)
 
     /**
-     * Called by UpdateMediator on change of Slot ETA
-     * TODO: Überprüfung auf Änderung Ja/Nein?
+     * Called by UpdateMediator on change of Slot ETA TODO: Überprüfung auf Änderung Ja/Nein?
+     *
      * @param slotApprox new Slot ETA
      */
     fun setSlotApprox(slotApprox: Date) {
@@ -31,16 +32,15 @@ class SlotInformationReceiver(val client: Client, val slotCode: SlotCode) {
         }
     }
 
-    /**
-     * Getter for Slot ETA f. ex. for "REFRESH_SLOT_APPROX"-Event
-     */
+    /** Getter for Slot ETA f. ex. for "REFRESH_SLOT_APPROX"-Event */
     fun getSlotApprox(): Date {
         return this.slotApprox
     }
 
     /**
-     * Called by UpdateMediator on change of SlotManagementInformation
-     * TODO: Überprüfung auf Änderung Ja/Nein?
+     * Called by UpdateMediator on change of SlotManagementInformation TODO: Überprüfung auf
+     * Änderung Ja/Nein?
+     *
      * @param slotManagementInformation new SlotManagementInformation
      */
     fun setSlotManagementInformation(slotManagementInformation: SlotManagementInformation) {
@@ -48,21 +48,16 @@ class SlotInformationReceiver(val client: Client, val slotCode: SlotCode) {
         this.client.sendManagementInformation(slotCode, slotManagementInformation)
     }
 
-
-    fun getSlotManagementInformation() : SlotManagementInformation{
+    fun getSlotManagementInformation() : SlotManagementInformation {
         return this.slotManagementInformation
     }
 
-    /**
-     * Called by UpdateMediator if Slot has been ended by management
-     */
+    /** Called by UpdateMediator if Slot has been ended by management */
     fun end() {
         client.endSlot(slotCode)
     }
 
-    /**
-     * Called by UpdateMediator if Slot has been deleted by management
-     */
+    /** Called by UpdateMediator if Slot has been deleted by management */
     fun delete() {
         client.deleteSlot(slotCode)
     }
