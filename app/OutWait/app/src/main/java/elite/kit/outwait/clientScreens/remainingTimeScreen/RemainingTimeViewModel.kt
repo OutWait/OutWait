@@ -5,13 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.clientDatabase.ClientInfo
+import elite.kit.outwait.clientRepository.ClientRepository
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import org.joda.time.DateTime
 import org.joda.time.Interval
 import javax.inject.Inject
 
 @HiltViewModel
-class RemainingTimeViewModel  @Inject constructor(private val repo : InstituteRepository): ViewModel() {
+class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepository): ViewModel() {
 
 /*
     - calculation of remainingtime here?
