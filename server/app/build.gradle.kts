@@ -16,6 +16,8 @@ plugins {
 repositories {
     // Use JCenter for resolving dependencies.
     jcenter()
+    //Use mavenCentral for JDBC
+    mavenCentral()
 }
 
 dependencies {
@@ -30,6 +32,9 @@ dependencies {
     implementation("org.json:json:20201115")
 
     implementation("com.corundumstudio.socketio:netty-socketio:1.7.18")
+
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    implementation("mysql:mysql-connector-java:8.0.23")
 
     // This dependency is used by the application.
     implementation("com.google.guava:guava:29.0-jre")
