@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.customDataTypes.Preferences
+import elite.kit.outwait.waitingQueue.gravityQueue.FixedGravitySlot
+import elite.kit.outwait.waitingQueue.gravityQueue.SpontaneousGravitySlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
@@ -44,6 +46,18 @@ class InstituteRepository @Inject constructor() {
         Log.d("login::InstiRepo", "after liveData changed")
         val l = listOf("Fehler")
         errorNotifications.value = l
+
+        Log.d("login::InstiRepo", "DateTime-Test-start")
+        var dd = DateTime(118800000) //2.1.1970 9:00 UTC
+        var slot = FixedGravitySlot("abc", Duration.standardMinutes(20), DateTime.now()-Duration.standardMinutes(10))
+        val interval = slot.interval(DateTime.now())
+        val begin = interval.start
+        val end = interval.end
+        Log.d("login::InstiRepo", "slotBegin: ${begin.toString()}")
+        Log.d("login::InstiRepo", "slotEnd: ${end.toString()}")
+        Log.d("login::InstiRepo", "DateTime-Test-end")
+
+
         return true
     }
 
