@@ -42,7 +42,8 @@ class InstituteRepository @Inject constructor() {
         Log.d("login::InstiRepo", "before liveData changed running in ${Thread.currentThread().name}")
         preferences.value = Preferences(d, d, d, d, Mode.TWO)
         Log.d("login::InstiRepo", "after liveData changed")
-
+        val l = listOf("Fehler")
+        errorNotifications.value = l
         return true
     }
 
@@ -72,7 +73,7 @@ class InstituteRepository @Inject constructor() {
 
     }
 
-    fun changeSlotInfo(slotCode : String, duration : Duration, auxiliaryIdentifier : String){
+    fun changeSpontaneousSlotInfo(slotCode : String, duration : Duration, auxiliaryIdentifier : String){
 
     }
 
@@ -88,7 +89,7 @@ class InstituteRepository @Inject constructor() {
 
     }
 
-    fun changeFixedSlotAppointmentTime(slotCode : String, newAppointmentTime : DateTime){
+    fun changeFixedSlotAppointmentTime(slotCode : String, duration : Duration, auxiliaryIdentifier : String ,newAppointmentTime : DateTime){
 
     }
 

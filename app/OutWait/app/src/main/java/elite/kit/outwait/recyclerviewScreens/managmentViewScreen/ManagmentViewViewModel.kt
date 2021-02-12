@@ -14,10 +14,8 @@ class ManagmentViewViewModel @Inject constructor(
 ) : ViewModel() {
 
     /*
-    * - i will observe the queue
-    * - explain moveslotafterantother?
-    * - deleteslot
-    * - again transaction
+    * - zuerst gebewgter slot dann der feste
+    * - both delete and endCurrent
     * */
 
     // val slotList:LiveData<List<TimeSlot>>=institutRepository.getAllSlots().asLiveData()

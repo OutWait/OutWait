@@ -18,30 +18,17 @@ class InstitutLoginViewModel @Inject constructor(
     private val coordinator: InstitutCoordinator,
 ) : ViewModel() {
 
-    /*
-    * - what should _sucessfulLoginTime do ?
-    * - login should give a boolean value for login system
-    * */
+    private val _isinstitutLogged = MutableLiveData<Boolean>(false)
 
-    private lateinit var _successfullLoginTime: MutableLiveData<DateTime>
-    val successfullLoginTime: LiveData<DateTime>
-        get() {
-            return _successfullLoginTime
-        }
-
+    val isinstitutLogged: LiveData<Boolean> get() = _isinstitutLogged
     val institutName = MutableLiveData<String>()
     val institutPassword = MutableLiveData<String>()
 
 
     fun loginTried(){
         CoroutineScope(Main).launch {
-            if (repo.loginCo("bla", "bla")){
-                //TODO navigate to managementView
-            } else{
-                //TODOD show error
-            }
-            coordinator.navigateToManagementView()
-            repo.doSomething()
+            _isinstitutLogged.value= repo.loginCo("bla", "bla")
+            if(_isinstitutLogged.value!!) coordinator.navigateToManagementView()  else repo.doSomething()
         }
 
     }

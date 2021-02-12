@@ -18,39 +18,44 @@
         android:id="@+id/tvSlotCodeDetail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="@string/slotcode"
         android:text="@{viewModel.slotCode}"
-        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivQRCode" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/ivQRCode"
         android:layout_width="400dp"
         android:layout_height="400dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:src="@drawable/ic_clear"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.454"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tvSlotCodeDetail" />
 
     <TextView
         android:id="@+id/tvIdentifierDetail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:hint="@string/identifier"
         android:text="@{viewModel.identifier}"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSlotCodeDetail" />
+        app:layout_constraintTop_toBottomOf="@+id/ivQRCode" />
 
     <TextView
         android:id="@+id/tvDurationDetail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@{viewModel.interval.toDuration().toStandardMinutes().toString()}"
+        android:text="@{viewModel.interval}"
+        android:hint="@string/duration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvIdentifierDetail" />
@@ -61,8 +66,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:text="@{viewModel.appointmentTime.toString()}"
+        android:text="@{viewModel.appointmentTime}"
         android:visibility="@{viewModel.isFixedSlot?View.VISIBLE:View.INVISIBLE}"
+        android:hint="@string/appointment_time"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"

@@ -39,6 +39,8 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.managment_view_fragment, container, false)
         binding.viewModel = this.viewModel
+        binding.lifecycleOwner=this
+
         //RecyclerView SetUp
         binding.slotList.layoutManager = LinearLayoutManager(activity)
         binding.slotList.setHasFixedSize(true)

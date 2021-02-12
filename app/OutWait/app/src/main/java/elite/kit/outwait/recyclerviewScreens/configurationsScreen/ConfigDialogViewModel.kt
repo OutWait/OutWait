@@ -10,13 +10,12 @@ import org.joda.time.Interval
 import javax.inject.Inject
 
 @HiltViewModel
-class ConfigDialogViewModel @Inject constructor(private val repo: InstituteRepository) :
+class ConfigDialogViewModel @Inject constructor( val repo: InstituteRepository) :
     ViewModel() {
 
     /*
-    * - are getobserablepreferences set before login happen?
-    * - what should errornofification should do ? why a list? if edit was wrong should it be shown?
-    * - again transaction?
+    * - preferences never null, values first from server
+    * - standardduration show in addslotfragment
     * */
 
     //TODO check queue is emtpy to switch mode
@@ -28,10 +27,11 @@ class ConfigDialogViewModel @Inject constructor(private val repo: InstituteRepos
     val delayNotificationTime = MutableLiveData<Duration>()
 
     fun logout(){
-        //TODO repo call
+        //TODO notify login system
+        repo.logout()
     }
 
     fun saveConfigValues(){
-        //TODO repo call
+        repo.changePreferences(standardSlotDauer.value!!,notificationTime.value!!,delayNotificationTime.value!!,prioritizationTime.value!!,isModusTwo.value!!)
     }
 }

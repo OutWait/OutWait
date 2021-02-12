@@ -110,7 +110,10 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         }
 
         // Create delay timer
-        keepQueueDelayTime(queue.calculateNextDelayChange(), managementId)
+        val nextDelayChange = queue.calculateNextDelayChange();
+        if (nextDelayChange != null) {
+            keepQueueDelayTime(nextDelayChange, managementId)
+        }
     }
 
     fun saveTransaction(managementId: ManagementId, queue: Queue) {

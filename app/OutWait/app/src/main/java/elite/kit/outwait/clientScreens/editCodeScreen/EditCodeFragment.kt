@@ -29,6 +29,8 @@ class EditCodeFragment : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.edit_code_fragment, container, false)
         binding.viewModel=this.viewModel
+        binding.lifecycleOwner=this
+
         return binding.root
     }
 

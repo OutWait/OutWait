@@ -9,36 +9,43 @@ import elite.kit.outwait.instituteRepository.InstituteRepository
 import org.joda.time.DateTime
 import org.joda.time.Interval
 import javax.inject.Inject
+
 @HiltViewModel
-class AddSlotDialogViewModel @Inject constructor(private val repo : InstituteRepository) : ViewModel() {
+class AddSlotDialogViewModel @Inject constructor(val repo: InstituteRepository) :
+    ViewModel() {
 
-    /*
-    * - only pass of new data is enough?
-    * - trough live data queue gets new info ?
-    * - how should transaction happen?
-    * */
-
-     val identifier = MutableLiveData<String>()
+    val identifier = MutableLiveData("")
 
 
-     var appointmentTime = MutableLiveData<DateTime>()
+    var appointmentTime = MutableLiveData<DateTime>()
 
 
-     var interval = MutableLiveData<Interval>()
+    var interval = MutableLiveData<Interval>()
 
 
-     val isFixedSlot = MutableLiveData<Boolean>()
+    val isFixedSlot = MutableLiveData(false)
 
-    var isModeTwo=MutableLiveData<Boolean>()
+    var isModeTwo = MutableLiveData<Boolean>()
 
-    init {
-        isFixedSlot.value=false
+
+    fun notifyAddSpontaneousSlot() {
+        repo.newSpontaneousSlot(identifier.value!!,
+            interval.value!!.toDuration())
+
+
+        Log.i("input", "${identifier.value}\n" +
+            "            ${appointmentTime.value}\n" +
+            "            ${interval.value!!.toDurationMillis()}")
     }
 
-    //TODO edit visibility of fixedslot trough isModeTwo && isFixedSlot
 
-    fun notifyAddSlot() {
-        //TODO check mode and type of slot
-        //TODO pass slot
+
+    fun notifyAddFixedSlot() {
+        repo.newFixedSlot(identifier.value!!,
+            appointmentTime.value!!,
+            interval.value!!.toDuration())
+        Log.i("input", "${identifier.value}\n" +
+            "            ${appointmentTime.value}\n" +
+            "            ${interval.value!!.toDurationMillis()}")
     }
 }

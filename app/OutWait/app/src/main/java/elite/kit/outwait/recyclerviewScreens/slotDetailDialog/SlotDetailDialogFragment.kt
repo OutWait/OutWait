@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.SlotDetailDialogFragmentBinding
 import elite.kit.outwait.qrCode.generator.QRCodeGenerator
+import elite.kit.outwait.utils.TransformationOutput
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.FixedTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
@@ -21,30 +22,30 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
 
     private val viewModel: SlotDetailDialogViewModel by viewModels()
     private lateinit var binding: SlotDetailDialogFragmentBinding
-    private val qrCodeGenerator: QRCodeGenerator
-
-    init {
-        qrCodeGenerator = QRCodeGenerator()
-    }
+    private val qrCodeGenerator: QRCodeGenerator = QRCodeGenerator()
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
         binding = SlotDetailDialogFragmentBinding.inflate(LayoutInflater.from(context))
         binding.viewModel = this.viewModel
+        binding.lifecycleOwner=this
 
-        viewModel.isFixedSlot.value = clientTimeSlot.getType().ordinal == Type.FIXED_SLOT.ordinal
+        viewModel.isFixedSlot.value = isFixedSlot()
         displayProperties(clientTimeSlot)
 
         builder.apply {
             setView(binding.root)
             setTitle(getString(R.string.slot_details))
-
             setPositiveButton(getString(R.string.confirm)) { dialog, which ->
-
+                dialog.dismiss()
             }
         }
         return builder.create()
+    }
+
+    private fun isFixedSlot(): Boolean {
+        return clientTimeSlot.getType().ordinal == Type.FIXED_SLOT.ordinal
     }
 
     private fun displayProperties(slot: ClientTimeSlot) {
@@ -58,7 +59,7 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
     private fun displaySpontaneousSlot(spontaneousSlot: SpontaneousTimeSlot) {
         viewModel.slotCode.value=spontaneousSlot.slotCode
         viewModel.identifier.value=spontaneousSlot.auxiliaryIdentifier
-        viewModel.interval.value=spontaneousSlot.interval
+        viewModel.interval.value=TransformationOutput.intervalToString(spontaneousSlot.interval)
         viewModel.qrCode.value=qrCodeGenerator.generateQRCode(spontaneousSlot.slotCode)
         binding.ivQRCode.setImageBitmap(viewModel.qrCode.value)
 
@@ -68,8 +69,8 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
     private fun displayFixedSlot(fixedSlot: FixedTimeSlot) {
         viewModel.slotCode.value=fixedSlot.slotCode
         viewModel.identifier.value=fixedSlot.auxiliaryIdentifier
-        viewModel.interval.value=fixedSlot.interval
-        viewModel.appointmentTime.value=fixedSlot.appointmentTime
+        viewModel.interval.value=TransformationOutput.intervalToString(fixedSlot.interval)
+        viewModel.appointmentTime.value=TransformationOutput.appointmentToString(fixedSlot.appointmentTime)
         viewModel.qrCode.value=qrCodeGenerator.generateQRCode(fixedSlot.slotCode)
         binding.ivQRCode.setImageBitmap(viewModel.qrCode.value)
 

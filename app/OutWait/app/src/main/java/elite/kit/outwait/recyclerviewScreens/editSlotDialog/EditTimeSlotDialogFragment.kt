@@ -32,13 +32,15 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = EditTimeSlotDialogFragmentBinding.inflate(LayoutInflater.from(context))
         binding.viewModel = this.viewModel
+        binding.lifecycleOwner = this
+
         val builder = AlertDialog.Builder(activity)
 
         //EXAMPLE
-        var slot = editSlot
         setUpPicker()
         setValuesOfScreen(editSlot)
-        viewModel.isFixedSlot.value = isFixedSlot(slot)
+        viewModel.isFixedSlot.value = isFixedSlot(editSlot)
+        viewModel.slotCode.value = editSlot.slotCode
         builder.apply {
 
             setView(binding.root)
@@ -47,16 +49,12 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
             setPositiveButton(getString(R.string.confirm)) { dialog, which ->
 
                 if (viewModel.isFixedSlot.value!!) {
-                    viewModel.interval.value =
-                        TransformationInput.formatInterval(binding.timeDurationInput.duration)
-                    viewModel.appointmentTime.value =
-                        TransformationInput.formatDateTime(binding.tpAppointmentTime.hour,
-                            binding.tpAppointmentTime.minute)
+                    setFixedSlotValues()
+                    viewModel.notifyEditFixedSlot()
                 } else {
-                    viewModel.interval.value =
-                        TransformationInput.formatInterval(binding.timeDurationInput.duration)
+                    setSpontaneousSlotValues()
+                    viewModel.notifyEditSpontaneousSlot()
                 }
-                viewModel.notifyEditSlot()
             }
 
             setNegativeButton(getString(R.string.cancel)) { dialog, which ->
@@ -65,6 +63,19 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
 
         }
         return builder.create()
+    }
+
+    private fun setSpontaneousSlotValues() {
+        viewModel.interval.value =
+            TransformationInput.formatInterval(binding.timeDurationInput.duration)
+    }
+
+    private fun setFixedSlotValues() {
+        viewModel.interval.value =
+            TransformationInput.formatInterval(binding.timeDurationInput.duration)
+        viewModel.appointmentTime.value =
+            TransformationInput.formatDateTime(binding.tpAppointmentTime.hour,
+                binding.tpAppointmentTime.minute)
     }
 
     private fun isFixedSlot(slot: ClientTimeSlot): Boolean? {

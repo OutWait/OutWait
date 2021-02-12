@@ -3,15 +3,17 @@ package elite.kit.outwait.clientScreens.editCodeScreen
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import elite.kit.outwait.clientRepository.ClientRepository
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class EditCodeViewModel @Inject constructor(private val repo : InstituteRepository, private val coordinator: EditCodeCoordinator) : ViewModel() {
+class EditCodeViewModel @Inject constructor(private val repo : ClientRepository, private val coordinator: EditCodeCoordinator) : ViewModel() {
 
     /*
-    * - newCodeEntered should give back clientifo to pass it to remainingtimeFragment
+    * - getActiveSlots is for login system oberservable
     * */
+
     val clientSlotCode= MutableLiveData<String>()
 
 

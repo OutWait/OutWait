@@ -14,11 +14,11 @@ import javax.inject.Inject
 class PasswordForgotViewModel @Inject constructor(private val repo : InstituteRepository, private val coordinator: InstitutCoordinator) : ViewModel() {
 
     /*
-    * - passwordForgotten is void, is there a message neccessary ?
+    * - passwordForgotten is void- CHECK
     * */
     val institutName=MutableLiveData<String>()
 
     fun resetPassword(){
-        //TODO Call method of Repository with the para institutName
+        repo.passwordForgotten(institutName.value!!)
     }
 }

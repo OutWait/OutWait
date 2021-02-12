@@ -5,19 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.clientDatabase.ClientInfo
+import elite.kit.outwait.clientRepository.ClientRepository
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import org.joda.time.DateTime
 import org.joda.time.Interval
 import javax.inject.Inject
 
 @HiltViewModel
-class RemainingTimeViewModel  @Inject constructor(private val repo : InstituteRepository): ViewModel() {
+class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepository): ViewModel() {
 
 /*
-    - enteredCode should be passed to get specific clientinfo
     - calculation of remainingtime here?
-    - what to do with errornotification
-    - how to get new remaining time, there is no observation possible (getActiveSlots)
+    - calculation of remainingTime is trough approximatedTime
 */
 
     //TODO calculation of remaining time
