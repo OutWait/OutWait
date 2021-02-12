@@ -16,17 +16,18 @@ import java.time.Duration
 import java.util.Date
 import java.util.Properties
 
-
+//TODO: Update Management und Slot zusammenstellen
 class DatabaseWrapper (private val updateMediator: UpdateMediator){
-    private var connection: Connection? = null
+    private lateinit var connection: Connection
     private val connectionProps: Properties = Properties()
 
 
+    //TODO: Sicherstellen dass geladen
     init {
         this.connectionProps["user"] = "outwait"
         this.connectionProps["password"] = "OurOutwaitDB"
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/", connectionProps)
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/", connectionProps)!!
             println("Connected to Database!")
         } catch (e : SQLException) {
             e.printStackTrace()
@@ -39,7 +40,7 @@ class DatabaseWrapper (private val updateMediator: UpdateMediator){
         val slots = mutableListOf<Slot>()
         try {
             //TODO: connection null abfangen
-            getSlotsQuery = connection!!.prepareStatement(
+            getSlotsQuery = connection.prepareStatement(
                 "SELECT code, duration, priority, init_time, eta"
                     + "FROM Slot"
                     + "WHERE Slot.queue_id = ?"
@@ -102,7 +103,17 @@ class DatabaseWrapper (private val updateMediator: UpdateMediator){
         }
     }
 
+    fun addTemporarySlot(slot : Slot, queueId: QueueId): SlotCode {
+        //insert
+        return SlotCode("")
+    }
+
+    fun deleteAllTemporarySlot(queueId: QueueId) {
+        //delete
+    }
+
     fun saveSlots(slots: List<Slot>, queueId: QueueId) {
+        //Update (autom. dass slot nicht mehr temporär)
         //TODO: Wie soll gespeichert werden? Update oder Insert? Was ist mit SlotCode
     }
 
