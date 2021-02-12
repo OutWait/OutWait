@@ -27,9 +27,20 @@ class Management(
     private var queue: Queue? = null
 
     init {
-        // TODO extract receivers configurations into own method
-
         // Configure the event callbacks
+        configureReceivers(databaseWrapper)
+
+        // Send settings
+        managementInformation = databaseWrapper.getManagementById(managementId)
+        sendUpdatedManagementSettings(managementInformation.settings)
+
+        // Send queue
+        val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
+        val queue = Queue(managementId, queueId, databaseWrapper)
+        sendUpdatedQueue(queue)
+    }
+
+    private fun configureReceivers(databaseWrapper: DatabaseWrapper) {
         socketFacade.onReceive(Event.MANAGEMENT_LOGOUT) { logout() }
         socketFacade.onReceive(Event.START_TRANSACTION) { beginNewTransaction() }
         socketFacade.onReceive(Event.ABORT_TRANSACTION) { abortCurrentTransaction() }
@@ -66,7 +77,6 @@ class Management(
         socketFacade.onReceive(Event.ADD_SPONTANEOUS_SLOT) { json ->
             if (checkTransactionStarted()) {
                 val wrapper = json as JSONAddSpontaneousSlotWrapper
-                // TODO fix the slot code creation...
                 val slot =
                     Slot(
                         SlotCode(""), // will be set by the database
@@ -84,7 +94,6 @@ class Management(
         socketFacade.onReceive(Event.ADD_FIXED_SLOT) { json ->
             if (checkTransactionStarted()) {
                 val wrapper = json as JSONAddFixedSlotWrapper
-                // TODO fix the slot code creation...
                 val slot =
                     Slot(
                         SlotCode(""), // will be set by the database
@@ -106,15 +115,6 @@ class Management(
                 updateAndSendQueue()
             }
         }
-
-        // Send settings
-        managementInformation = databaseWrapper.getManagementById(managementId)
-        sendUpdatedManagementSettings(managementInformation.settings)
-
-        // Send queue
-        val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
-        val queue = Queue(managementId, queueId, databaseWrapper)
-        sendUpdatedQueue(queue)
     }
 
     /**
