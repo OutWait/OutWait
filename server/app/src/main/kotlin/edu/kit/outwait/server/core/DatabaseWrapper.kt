@@ -72,7 +72,7 @@ class DatabaseWrapper (private val updateMediator: UpdateMediator){
         var slotApprox = Date()
         try {
             //TODO: connection null abfangen
-            getSlotApproxQuery = connection!!.prepareStatement(
+            getSlotApproxQuery = connection.prepareStatement(
                 "SELECT eta"
                     + "FROM Slot"
                     + "WHERE Slot.code = ?"
@@ -90,7 +90,7 @@ class DatabaseWrapper (private val updateMediator: UpdateMediator){
         val setSlotApproxQuery: PreparedStatement
         try {
             //TODO: connection null abfangen
-            setSlotApproxQuery = connection!!.prepareStatement(
+            setSlotApproxQuery = connection.prepareStatement(
                 "UPDATE Slot"
                     + "SET eta = ?"
                     + "WHERE Slot.code = ?"
@@ -108,7 +108,7 @@ class DatabaseWrapper (private val updateMediator: UpdateMediator){
         return SlotCode("")
     }
 
-    fun deleteAllTemporarySlot(queueId: QueueId) {
+    fun deleteAllTemporarySlots(queueId: QueueId) {
         //delete
     }
 
@@ -123,7 +123,7 @@ class DatabaseWrapper (private val updateMediator: UpdateMediator){
         var managementInformation = ManagementInformation()
         try {
             //TODO: connection null abfangen
-            getManagementByIdQuery = connection!!.prepareStatement(
+            getManagementByIdQuery = connection.prepareStatement(
                 "SELECT name, mode, default_slot_duration, client_notification_time, delay_notification_time, max_slot_waiting_time"
                     + "FROM Management"
                     + "WHERE Management.id = ?"
@@ -158,7 +158,7 @@ class DatabaseWrapper (private val updateMediator: UpdateMediator){
         var queueId = QueueId(-1)
         try {
             //TODO: connection null abfangen
-            getQueueIdOfManagementQuery = connection!!.prepareStatement(
+            getQueueIdOfManagementQuery = connection.prepareStatement(
                 "SELECT queue_id"
                     + "FROM Queue"
                     + "WHERE Queue.management_id = ?"
@@ -179,7 +179,7 @@ class DatabaseWrapper (private val updateMediator: UpdateMediator){
         var managementCredentials= ManagementCredentials(ManagementId(0), "", "")
         try {
             //TODO: connection null abfangen
-            getManagementByUsernameQuery = connection!!.prepareStatement(
+            getManagementByUsernameQuery = connection.prepareStatement(
                 "SELECT id, username, password"
                     + "FROM Management"
                     + "WHERE Management.username = ?"
@@ -215,7 +215,7 @@ class DatabaseWrapper (private val updateMediator: UpdateMediator){
         val changeManagementPasswordQuery: PreparedStatement
         try {
             //TODO: connection null abfangen
-            changeManagementPasswordQuery = connection!!.prepareStatement(
+            changeManagementPasswordQuery = connection.prepareStatement(
                 "UPDATE Management"
                     + "SET password = ?"
                     + "WHERE Management.username = ?"
@@ -232,7 +232,7 @@ class DatabaseWrapper (private val updateMediator: UpdateMediator){
         val endSlotQuery: PreparedStatement
         try {
             //TODO: connection null abfangen
-            endSlotQuery = connection!!.prepareStatement(
+            endSlotQuery = connection.prepareStatement(
                 "DELETE FROM Slot"
                     + "WHERE Slot.code = ?"
             )
@@ -248,7 +248,7 @@ class DatabaseWrapper (private val updateMediator: UpdateMediator){
         val deleteSlotQuery: PreparedStatement
         try {
             //TODO: connection null abfangen
-            deleteSlotQuery = connection!!.prepareStatement(
+            deleteSlotQuery = connection.prepareStatement(
                 "DELETE FROM Slot"
                     + "WHERE Slot.code = ?"
             )
