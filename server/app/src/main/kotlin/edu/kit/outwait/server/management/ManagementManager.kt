@@ -90,6 +90,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
         // Re-load the queue with the state before the transaction
         val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
+        databaseWrapper.deleteAllTemporarySlots(queueId) // delete all temporary slots
         val queue = Queue(managementId, queueId, databaseWrapper)
 
         return queue

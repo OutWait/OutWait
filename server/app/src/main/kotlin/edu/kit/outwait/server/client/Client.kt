@@ -26,7 +26,6 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
         socketFacade.send(Event.READY_TO_SERVE, JSONEmptyWrapper())
     }
 
-
     /**
      * Configuration of onReceives through SocketFacade.
      * TODO: Lambdas korrekt?
