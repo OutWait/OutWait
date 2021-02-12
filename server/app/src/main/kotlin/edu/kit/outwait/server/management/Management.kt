@@ -36,7 +36,7 @@ class Management(
 
         // Send queue
         val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
-        val queue = Queue(managementId, queueId, databaseWrapper)
+        val queue = Queue(queueId, databaseWrapper)
         sendUpdatedQueue(queue)
     }
 

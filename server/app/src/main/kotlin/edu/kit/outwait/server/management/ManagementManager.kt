@@ -78,7 +78,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
             // Load the queue
             val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
-            val queue = Queue(managementId, queueId, databaseWrapper)
+            val queue = Queue(queueId, databaseWrapper)
 
             return queue
         }
@@ -91,7 +91,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         // Re-load the queue with the state before the transaction
         val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
         databaseWrapper.deleteAllTemporarySlots(queueId) // delete all temporary slots
-        val queue = Queue(managementId, queueId, databaseWrapper)
+        val queue = Queue(queueId, databaseWrapper)
 
         return queue
     }
@@ -163,7 +163,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
             // Load the queue
             val queueId = databaseWrapper.getQueueIdOfManagement(urgentQueueManagementId)
-            val queue = Queue(urgentQueueManagementId, queueId, databaseWrapper)
+            val queue = Queue(queueId, databaseWrapper)
 
             // Update the queue
             val prioritizationTime =

@@ -7,11 +7,7 @@ import edu.kit.outwait.server.slot.SlotCode
 import java.time.Duration
 import java.util.Date
 
-class Queue(
-    val managementId: ManagementId,
-    val queueId: QueueId,
-    databaseWrapper: DatabaseWrapper
-) {
+class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     private var slots = mutableListOf<Slot>()
     private var delayChangeTime: Date? = null
 
