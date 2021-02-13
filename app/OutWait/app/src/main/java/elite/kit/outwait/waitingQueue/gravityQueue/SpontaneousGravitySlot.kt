@@ -6,7 +6,7 @@ import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.joda.time.Interval
 
-class SpontaneousGravitySlot(slotCode: String, duration: Duration) : ClientGravitySlot(slotCode, duration) {
+class SpontaneousGravitySlot(slotCode: String, duration: Duration, auxiliaryIdentifier: String) : ClientGravitySlot(slotCode, duration, auxiliaryIdentifier) {
     override fun toClientTimeSlot(predecessor: TimeSlot): TimeSlot {
         val interval = interval(predecessor.interval.end)
         return SpontaneousTimeSlot(interval, slotCode, auxiliaryIdentifier)

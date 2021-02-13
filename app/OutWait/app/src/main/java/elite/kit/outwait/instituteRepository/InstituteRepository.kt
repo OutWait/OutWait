@@ -51,7 +51,7 @@ class InstituteRepository @Inject constructor() {
 
         Log.d("login::InstiRepo", "DateTime-Test-start")
         var dd = DateTime(118800000) //2.1.1970 9:00 UTC
-        var slot = FixedGravitySlot("abc", Duration.standardMinutes(20), DateTime.now()-Duration.standardMinutes(10))
+        var slot = FixedGravitySlot("abc", Duration.standardMinutes(20), DateTime.now()-Duration.standardMinutes(10), "Hans")
         val interval = slot.interval(DateTime.now())
         val begin = interval.start
         val end = interval.end
