@@ -39,29 +39,22 @@ class DatabaseWrapper() {
         val getSlotsQuery: PreparedStatement
         val slots = mutableListOf<Slot>()
         try {
-            //TODO: connection null abfangen
-            // TODO only return slots, which have the temporary-flag not set
             getSlotsQuery =
                 connection.prepareStatement(
-                    "SELECT code, duration, priority, init_time, eta" + "FROM Slot" +
-                        "WHERE Slot.queue_id = ?"
+                    "SELECT code, expected_duration, priority, constructor_time, approx_time "
+                        + "FROM Slot "
+                        + "WHERE Slot.queue_id = ? AND Slot.is_temporary = 0"
                 )
-            //TODO: toInt() oder in DB queueId auf Long setzen?
-            getSlotsQuery.setInt(1, queueId.id.toInt())
+            getSlotsQuery.setLong(1, queueId.id)
             val rs = getSlotsQuery.executeQuery()
             while (rs.next()) {
                 val s =
                     Slot(
                         slotCode = SlotCode(code = rs.getString("code")),
-                        constructorTime = Date(rs.getTimestamp("init_time").time),
-                        approxTime = Date(rs.getTimestamp("eta").time),
-                        expectedDuration = Duration.ofSeconds(rs.getInt("duration").toLong()),
-                        priority =
-                            when (rs.getInt("priority")) {
-                                0 -> Priority.URGENT
-                                1 -> Priority.FIX_APPOINTMENT
-                                else -> Priority.NORMAL
-                            }
+                        constructorTime = Date(rs.getTimestamp("constructor_time").time),
+                        approxTime = Date(rs.getTimestamp("approx_time").time),
+                        expectedDuration = Duration.ofSeconds(rs.getInt("expected_duration").toLong()),
+                        priority = Priority.valueOf(rs.getString("priority"))
                     )
                 slots.add(s)
             }
@@ -75,12 +68,14 @@ class DatabaseWrapper() {
         val getSlotApproxQuery: PreparedStatement
         var slotApprox = Date()
         try {
-            //TODO: connection null abfangen
             getSlotApproxQuery =
-                connection.prepareStatement("SELECT eta" + "FROM Slot" + "WHERE Slot.code = ?")
+                connection.prepareStatement("SELECT approx_time "
+                    + "FROM Slot"
+                    + "WHERE Slot.code = ? AND Slot.is_temporary = 0"
+                )
             getSlotApproxQuery.setString(1, slotCode.code)
             val rs = getSlotApproxQuery.executeQuery()
-            slotApprox = Date(rs.getTimestamp("eta").time)
+            slotApprox = Date(rs.getTimestamp("approx_time").time)
         } catch (e: SQLException) {
             e.printStackTrace()
         }
@@ -88,59 +83,97 @@ class DatabaseWrapper() {
     }
 
     fun setSlotApprox(slotCode: SlotCode, slotApprox: Date) {
-        val setSlotApproxQuery: PreparedStatement
+        val setSlotApproxUpdate: PreparedStatement
         try {
-            //TODO: connection null abfangen
-            setSlotApproxQuery =
-                connection.prepareStatement("UPDATE Slot" + "SET eta = ?" + "WHERE Slot.code = ?")
-            setSlotApproxQuery.setTimestamp(1, Timestamp(slotApprox.time))
-            setSlotApproxQuery.setString(2, slotCode.code)
-            setSlotApproxQuery.executeUpdate()
+            setSlotApproxUpdate =
+                connection.prepareStatement("UPDATE Slot "
+                    + "SET approx_time = ? "
+                    + "WHERE Slot.code = ?")
+            setSlotApproxUpdate.setTimestamp(1, Timestamp(slotApprox.time))
+            setSlotApproxUpdate.setString(2, slotCode.code)
+            setSlotApproxUpdate.executeUpdate()
         } catch (e: SQLException) {
             e.printStackTrace()
         }
     }
 
-    fun addTemporarySlot(slot : Slot, queueId: QueueId): SlotCode {
-        //insert
-        // TODO Should set slot.slotCode instead of returning the slot code
-        return SlotCode("")
+    fun addTemporarySlot(slot : Slot, queueId: QueueId) : Slot{
+        val addTemporarySlotQuery: PreparedStatement
+        var slotCopy = slot.copy()
+        try {
+            addTemporarySlotQuery =
+                connection.prepareStatement("INSERT INTO Slot "
+                    + "(priority, approx_time, expected_duration, constructor_time, is_temporary) "
+                    + "OUTPUT INSERTED.code "
+                    + "VALUES (?, ?, ?, ?, ?)"
+                )
+            addTemporarySlotQuery.setString(1, slot.priority.toString())
+            addTemporarySlotQuery.setTimestamp(2, Timestamp(slot.approxTime.time))
+            addTemporarySlotQuery.setLong(3, slot.expectedDuration.seconds)
+            addTemporarySlotQuery.setInt(4, 1)
+            val rs = addTemporarySlotQuery.executeQuery()
+            slotCopy = slot.copy(slotCode = SlotCode(rs.getString("code")))
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
+        return slotCopy
     }
 
     fun deleteAllTemporarySlots(queueId: QueueId) {
-        //delete
+        val deleteAllTemporarySlotsUpdate: PreparedStatement
+        try {
+            deleteAllTemporarySlotsUpdate =
+                connection.prepareStatement("DELETE FROM Slot "
+                    + "WHERE queue_id = ? AND is_temporary = 1"
+                )
+            deleteAllTemporarySlotsUpdate.setLong(1, queueId.id)
+            deleteAllTemporarySlotsUpdate.executeUpdate()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
     }
 
     fun saveSlots(slots: List<Slot>, queueId: QueueId) {
         //Update (autom. dass slot nicht mehr temporär)
-        //TODO: Wie soll gespeichert werden? Update oder Insert? Was ist mit SlotCode
+        var saveSlotsUpdate: PreparedStatement
+        try {
+            for (slot in slots) {
+                saveSlotsUpdate =
+                    connection.prepareStatement("UPDATE Slot "
+                        + "SET expected_duration = ?, priority = ?, approx_time = ?, is_temporary = 0 "
+                        + "WHERE queue_id = ? AND code = ?"
+                    )
+                saveSlotsUpdate.setLong(1, slot.expectedDuration.seconds)
+                saveSlotsUpdate.setString(2, slot.priority.toString())
+                saveSlotsUpdate.setTimestamp(3, Timestamp(slot.approxTime.time))
+                saveSlotsUpdate.setLong(4, queueId.id)
+                saveSlotsUpdate.setString(5, slot.slotCode.code)
+                saveSlotsUpdate.executeUpdate()
+            }
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
     }
 
     fun getManagementById(managementId: ManagementId): ManagementInformation {
         val getManagementByIdQuery: PreparedStatement
-        //TODO: Null Fall?
         try {
-            //TODO: connection null abfangen
             getManagementByIdQuery =
                 connection.prepareStatement(
-                    "SELECT name, mode, default_slot_duration, client_notification_time, " +
-                        "delay_notification_time, max_slot_waiting_time" + "FROM Management" +
+                    "SELECT name, mode, default_slot_duration, notification_time, " +
+                        "delay_notification_time, prioritization_time " +
+                        "FROM Management " +
                         "WHERE Management.id = ?"
                 )
-            //TODO: toInt() oder in DB queueId auf Long setzen?
-            getManagementByIdQuery.setInt(1, managementId.id.toInt())
+            getManagementByIdQuery.setLong(1, managementId.id)
             val rs = getManagementByIdQuery.executeQuery()
             return ManagementInformation(
                 ManagementDetails(rs.getString("name")),
-                ManagementSettings(
-                    when (rs.getInt("mode")) {
-                        0 -> Mode.ONE
-                        else -> Mode.TWO
-                    },
-                    Duration.ofSeconds(rs.getInt("default_slot_duration").toLong()),
-                    Duration.ofSeconds(rs.getInt("client_notification_time").toLong()),
-                    Duration.ofSeconds(rs.getInt("delay_notification_time").toLong()),
-                    Duration.ofSeconds(rs.getInt("max_slot_waiting_time").toLong())
+                ManagementSettings(Mode.valueOf(rs.getString("mode")),
+                    Duration.ofSeconds(rs.getLong("default_slot_duration")),
+                    Duration.ofSeconds(rs.getLong("notification_time")),
+                    Duration.ofSeconds(rs.getLong("delay_notification_time")),
+                    Duration.ofSeconds(rs.getLong("prioritization_time"))
                 )
             )
         } catch (e: SQLException) {
@@ -164,15 +197,13 @@ class DatabaseWrapper() {
         //TODO: Null Fall?
         var queueId = QueueId(-1)
         try {
-            //TODO: connection null abfangen
             getQueueIdOfManagementQuery =
                 connection.prepareStatement(
                     "SELECT queue_id" + "FROM Queue" + "WHERE Queue.management_id = ?"
                 )
-            //TODO: toInt() oder in DB queueId auf Long setzen?
-            getQueueIdOfManagementQuery.setInt(1, managementId.id.toInt())
+            getQueueIdOfManagementQuery.setLong(1, managementId.id)
             val rs = getQueueIdOfManagementQuery.executeQuery()
-            queueId = QueueId(rs.getInt("queue_id").toLong())
+            queueId = QueueId(rs.getLong("queue_id"))
         } catch (e: SQLException) {
             e.printStackTrace()
         }
@@ -184,7 +215,6 @@ class DatabaseWrapper() {
         //TODO: Null Fall?
         var managementCredentials = ManagementCredentials(ManagementId(0), "", "")
         try {
-            //TODO: connection null abfangen
             getManagementByUsernameQuery =
                 connection.prepareStatement(
                     "SELECT id, username, password" + "FROM Management" +
@@ -192,10 +222,9 @@ class DatabaseWrapper() {
                 )
             getManagementByUsernameQuery.setString(1, username)
             val rs = getManagementByUsernameQuery.executeQuery()
-            //TODO: toInt() oder in DB queueId auf Long setzen?
             managementCredentials =
                 ManagementCredentials(
-                    ManagementId(rs.getInt("id").toLong()),
+                    ManagementId(rs.getLong("id")),
                     rs.getString("username"),
                     rs.getString("password")
                 )
@@ -222,7 +251,6 @@ class DatabaseWrapper() {
     fun changeManagementPassword(username: String, password: String) {
         val changeManagementPasswordQuery: PreparedStatement
         try {
-            //TODO: connection null abfangen
             changeManagementPasswordQuery =
                 connection.prepareStatement(
                     "UPDATE Management" + "SET password = ?" + "WHERE Management.username = ?"
@@ -238,7 +266,6 @@ class DatabaseWrapper() {
     fun endSlot(slotCode: SlotCode) {
         val endSlotQuery: PreparedStatement
         try {
-            //TODO: connection null abfangen
             endSlotQuery = connection.prepareStatement("DELETE FROM Slot" + "WHERE Slot.code = ?")
             endSlotQuery.setString(1, slotCode.code)
             endSlotQuery.executeUpdate()
@@ -251,7 +278,6 @@ class DatabaseWrapper() {
     fun deleteSlot(slotCode: SlotCode) {
         val deleteSlotQuery: PreparedStatement
         try {
-            //TODO: connection null abfangen
             deleteSlotQuery =
                 connection.prepareStatement("DELETE FROM Slot" + "WHERE Slot.code = ?")
             deleteSlotQuery.setString(1, slotCode.code)
