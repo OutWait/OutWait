@@ -36,4 +36,8 @@
     <string name="title_edit_dialog">Edit the slot</string>
     <string name="logout">Logout</string>
     <string name="refresh">Refresh</string>
+    <!-- Strings for Error-Notifications (Institute) -->
+    <string name="TRANSACTION_DENIED">Transaction denied!</string>
+    <!-- Strings for Error-Notifications (Client) -->
+    <string name="EXAMPLE_ERROR">Example Error!</string>
 </resources>

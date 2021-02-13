@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class ClientRepository @Inject constructor(private val dao: ClientInfoDao) {
 
     private val activeSlots = MutableLiveData<List<ClientInfo>>()
-    private val errorNotifications = MutableLiveData<List<String>>()
+    private val errorNotifications = MutableLiveData<List<ClientErrors>>()
 
     fun newCodeEntered(code : String){
 
@@ -20,5 +20,5 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao) {
 
     }
     fun getActiveSlots() : LiveData<List<ClientInfo>> = activeSlots
-    fun getErrorNotifications() : LiveData<List<String>> = errorNotifications
+    fun getErrorNotifications() = errorNotifications as LiveData<List<ClientErrors>>
 }

@@ -25,11 +25,13 @@ class InstituteRepository @Inject constructor() {
 
     private val preferences = MutableLiveData<Preferences>()
     private val timeSlotList = MutableLiveData<List<TimeSlot>>()
-    private val errorNotifications = MutableLiveData<List<String>>()
+    private val errorNotifications = MutableLiveData<List<InstituteErrors>>()
+    private val inTransaction = MutableLiveData<Boolean>(false)
 
     fun getObservablePreferences() = preferences as LiveData<Preferences>
     fun getObservableTimeSlotList() = timeSlotList as LiveData<List<TimeSlot>>
-    fun getErrorNotifications() = errorNotifications as LiveData<List<String>>
+    fun getErrorNotifications() = errorNotifications as LiveData<List<InstituteErrors>>
+    fun isInTransaction() = inTransaction as LiveData<Boolean>
 
     suspend fun loginCo(username: String, password: String): Boolean{
         withContext(IO){
@@ -44,7 +46,7 @@ class InstituteRepository @Inject constructor() {
         Log.d("login::InstiRepo", "before liveData changed running in ${Thread.currentThread().name}")
         preferences.value = Preferences(d, d, d, d, Mode.TWO)
         Log.d("login::InstiRepo", "after liveData changed")
-        val l = listOf("Fehler")
+        val l = listOf(InstituteErrors.TRANSACTION_DENIED)
         errorNotifications.value = l
 
         Log.d("login::InstiRepo", "DateTime-Test-start")
