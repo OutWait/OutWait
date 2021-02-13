@@ -41,9 +41,8 @@ class DatabaseWrapper() {
         try {
             getSlotsQuery =
                 connection.prepareStatement(
-                    "SELECT code, expected_duration, priority, constructor_time, approx_time "
-                        + "FROM Slot "
-                        + "WHERE Slot.queue_id = ? AND Slot.is_temporary = 0"
+                    "SELECT code, expected_duration, priority, constructor_time, approx_time " +
+                        "FROM Slot " + "WHERE Slot.queue_id = ? AND Slot.is_temporary = 0"
                 )
             getSlotsQuery.setLong(1, queueId.id)
             val rs = getSlotsQuery.executeQuery()
@@ -53,7 +52,8 @@ class DatabaseWrapper() {
                         slotCode = SlotCode(code = rs.getString("code")),
                         constructorTime = Date(rs.getTimestamp("constructor_time").time),
                         approxTime = Date(rs.getTimestamp("approx_time").time),
-                        expectedDuration = Duration.ofSeconds(rs.getInt("expected_duration").toLong()),
+                        expectedDuration =
+                            Duration.ofSeconds(rs.getInt("expected_duration").toLong()),
                         priority = Priority.valueOf(rs.getString("priority"))
                     )
                 slots.add(s)
@@ -69,9 +69,9 @@ class DatabaseWrapper() {
         var slotApprox = Date()
         try {
             getSlotApproxQuery =
-                connection.prepareStatement("SELECT approx_time "
-                    + "FROM Slot"
-                    + "WHERE Slot.code = ? AND Slot.is_temporary = 0"
+                connection.prepareStatement(
+                    "SELECT approx_time " + "FROM Slot" +
+                        "WHERE Slot.code = ? AND Slot.is_temporary = 0"
                 )
             getSlotApproxQuery.setString(1, slotCode.code)
             val rs = getSlotApproxQuery.executeQuery()
@@ -86,9 +86,9 @@ class DatabaseWrapper() {
         val setSlotApproxUpdate: PreparedStatement
         try {
             setSlotApproxUpdate =
-                connection.prepareStatement("UPDATE Slot "
-                    + "SET approx_time = ? "
-                    + "WHERE Slot.code = ?")
+                connection.prepareStatement(
+                    "UPDATE Slot " + "SET approx_time = ? " + "WHERE Slot.code = ?"
+                )
             setSlotApproxUpdate.setTimestamp(1, Timestamp(slotApprox.time))
             setSlotApproxUpdate.setString(2, slotCode.code)
             setSlotApproxUpdate.executeUpdate()
@@ -97,15 +97,15 @@ class DatabaseWrapper() {
         }
     }
 
-    fun addTemporarySlot(slot : Slot, queueId: QueueId) : Slot{
+    fun addTemporarySlot(slot : Slot, queueId: QueueId) : Slot {
         val addTemporarySlotQuery: PreparedStatement
         var slotCopy = slot.copy()
         try {
             addTemporarySlotQuery =
-                connection.prepareStatement("INSERT INTO Slot "
-                    + "(priority, approx_time, expected_duration, constructor_time, is_temporary) "
-                    + "OUTPUT INSERTED.code "
-                    + "VALUES (?, ?, ?, ?, ?)"
+                connection.prepareStatement(
+                    "INSERT INTO Slot " +
+                        "(priority, approx_time, expected_duration, constructor_time, " +
+                        "is_temporary) " + "OUTPUT INSERTED.code " + "VALUES (?, ?, ?, ?, ?)"
                 )
             addTemporarySlotQuery.setString(1, slot.priority.toString())
             addTemporarySlotQuery.setTimestamp(2, Timestamp(slot.approxTime.time))
@@ -123,8 +123,8 @@ class DatabaseWrapper() {
         val deleteAllTemporarySlotsUpdate: PreparedStatement
         try {
             deleteAllTemporarySlotsUpdate =
-                connection.prepareStatement("DELETE FROM Slot "
-                    + "WHERE queue_id = ? AND is_temporary = 1"
+                connection.prepareStatement(
+                    "DELETE FROM Slot " + "WHERE queue_id = ? AND is_temporary = 1"
                 )
             deleteAllTemporarySlotsUpdate.setLong(1, queueId.id)
             deleteAllTemporarySlotsUpdate.executeUpdate()
@@ -139,9 +139,10 @@ class DatabaseWrapper() {
         try {
             for (slot in slots) {
                 saveSlotsUpdate =
-                    connection.prepareStatement("UPDATE Slot "
-                        + "SET expected_duration = ?, priority = ?, approx_time = ?, is_temporary = 0 "
-                        + "WHERE queue_id = ? AND code = ?"
+                    connection.prepareStatement(
+                        "UPDATE Slot " +
+                            "SET expected_duration = ?, priority = ?, approx_time = ?, " +
+                            "is_temporary = 0 " + "WHERE queue_id = ? AND code = ?"
                     )
                 saveSlotsUpdate.setLong(1, slot.expectedDuration.seconds)
                 saveSlotsUpdate.setString(2, slot.priority.toString())
@@ -161,15 +162,15 @@ class DatabaseWrapper() {
             getManagementByIdQuery =
                 connection.prepareStatement(
                     "SELECT name, mode, default_slot_duration, notification_time, " +
-                        "delay_notification_time, prioritization_time " +
-                        "FROM Management " +
+                        "delay_notification_time, prioritization_time " + "FROM Management " +
                         "WHERE Management.id = ?"
                 )
             getManagementByIdQuery.setLong(1, managementId.id)
             val rs = getManagementByIdQuery.executeQuery()
             return ManagementInformation(
                 ManagementDetails(rs.getString("name")),
-                ManagementSettings(Mode.valueOf(rs.getString("mode")),
+                ManagementSettings(
+                    Mode.valueOf(rs.getString("mode")),
                     Duration.ofSeconds(rs.getLong("default_slot_duration")),
                     Duration.ofSeconds(rs.getLong("notification_time")),
                     Duration.ofSeconds(rs.getLong("delay_notification_time")),
