@@ -16,7 +16,7 @@ import java.time.Duration
 import java.util.Date
 import java.util.Properties
 
-//TODO: Update Management und Slot zusammenstellen
+
 class DatabaseWrapper() {
     private val updateMediator = UpdateMediator()
     private lateinit var connection: Connection
