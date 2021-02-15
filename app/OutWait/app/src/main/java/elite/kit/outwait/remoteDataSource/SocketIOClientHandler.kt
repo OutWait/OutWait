@@ -54,17 +54,22 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         cSocket.initializeConnection(clientEventToCallbackMapping)
 
         // Mit return warten bis SocketIOSocket connected ist (TODO geht auch schöner? LiveData?)
-        while (cSocket.isConnected() == false) Thread.sleep(1000)
-
+        while (cSocket.isConnected() == false) {
+            Log.d("initCom::SIOCliHandler", "hängt in while schleife")
+            Thread.sleep(1000)
+        }
+        Log.d("initCom::SIOCliHandler", "connectionEstablished")
         return true
     }
 
     override fun endCommunication(): Boolean {
+        Log.d("initCom::SIOCliHandler", "reached")
         cSocket.releaseConnection()
         return true
     }
 
     override fun newCodeEntered(slotCode: String) {
+        Log.d("newCEntr::SIOCliHandler", "reached")
         val event: Event = Event.LISTEN_SLOT
         val data: JSONObjectWrapper = JSONSlotCodeWrapper(slotCode)
 
@@ -131,6 +136,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     }
 
     private fun onInvalidCode(wrappedJSONData: JSONEmptyWrapper) {
+        Log.d("onInvC::SIOCliHandler", "server antw.")
         //TODO 1 Fehlermeldung oder LiveData um Repo zu benachrichtigen?
         // -> mit Benni abklären
         // TODO 2 Soll nochmal der invalide Code vom Server geschickt werden?

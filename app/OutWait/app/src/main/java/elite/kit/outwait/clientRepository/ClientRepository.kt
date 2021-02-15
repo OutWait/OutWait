@@ -9,6 +9,7 @@ import elite.kit.outwait.remoteDataSource.ClientHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,14 +19,16 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao, priva
     private val activeSlots = MutableLiveData<List<ClientInfo>>()
     private val errorNotifications = MutableLiveData<List<ClientErrors>>()
 
-    fun newCodeEntered(code : String?){
-        var ccode = "abc"
-        if (code !== null){
-            ccode = code
-        }
-        Log.d("newCodeEntered::cRepo", "entered code: $ccode")
-        CoroutineScope(IO).launch {
-            remote.initCommunication()
+    suspend fun newCodeEntered(code : String?) {
+        withContext(IO){
+            var ccode = "abc"
+            if (code !== null){
+                ccode = code
+            }
+            Log.d("newCodeEntered::cRepo", "entered code: $ccode")
+            if(remote.initCommunication()){
+                remote.newCodeEntered("code")
+            }
         }
     }
     fun refreshWaitingTime(code : String){
