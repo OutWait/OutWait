@@ -6,6 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.remoteDataSource.ClientHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,7 +20,9 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao, priva
 
     fun newCodeEntered(code : String){
         Log.d("newCodeEntered::cRepo", "entered code: $code")
-        remote.initCommunication()
+        CoroutineScope(IO).launch {
+            remote.initCommunication()
+        }
     }
     fun refreshWaitingTime(code : String){
 
