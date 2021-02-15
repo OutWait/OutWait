@@ -132,6 +132,8 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     }
 
     private fun onInvalidCode(wrappedJSONData: JSONEmptyWrapper) {
+        Log.d("onInvlCd::SIOCliHandler", "server answer")
+
         //TODO 1 Fehlermeldung oder LiveData um Repo zu benachrichtigen?
         // -> mit Benni abklären
         // TODO 2 Soll nochmal der invalide Code vom Server geschickt werden?
