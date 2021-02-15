@@ -8,7 +8,7 @@ class JSONSlotCodeWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
         jsonObj.put(SLOT_CODE, slotCode)
     }
 
-    fun getSlotCode() {
-        jsonObj.getString(SLOT_CODE)
+    fun getSlotCode(): String {
+        return jsonObj.getString(SLOT_CODE)
     }
 }

@@ -28,16 +28,15 @@ const val NOTIFICATION_TIME = "notificationTime"
 const val DEFAULT_SLOT_DURATION = "defaultSlotDuration"
 
 const val APPROX_TIME = "approxTime"
-const val NAME = "name"
+const val INSTITUTE_NAME = "instituteName"
 
 const val ERROR_MESSAGE = "errorMessage"
 
 const val CURRENT_SLOT_STARTED_TIME = "currentSlotStartedTime"
 const val SLOT_ORDER = "slotOrder"
-const val SPONTANEOUS_SLOTS = "spontanSlots"
-const val SPONTAN_SLOT = "spontanSlot"
+const val SPONTANEOUS_SLOTS = "spontaneousSlots"
 const val FIXED_SLOTS = "fixedSlots"
-const val FIX_SLOT = "fixedSlot"
+
 
 
 

@@ -10,14 +10,15 @@ import org.json.JSONObject
 import java.net.URI
 
 
-//TODO Fehler werfen bei Verbindungsfehler/Abbruch (inkl. der Listener)
-//oder generell wann müssen/sollen Fehlermeldungen geworfen werden?
+//TODO Fehler werfen bei Verbindungsfehler/Abbruch (inkl. der Listener) usw. ?
 //TODO Was ist Socket.IO mäßig noch zu beachten?
-//TODO Was noch um alle Ressourcen freizugeben?
+//TODO Welche Zustände sollen/müssen alles hier gehalten werden?
 
 class SocketAdapter(private val namespace: String) {
 
     private val serverURI: String = "http://127.0.0.1:8080"
+
+    private var connected = false
 
     private val socketIOSocket: Socket? = null
 
@@ -31,26 +32,37 @@ class SocketAdapter(private val namespace: String) {
     /*
     Intialisiere Verbindung mit Server
     Uund registriere die EventListener (in private Methode ausgelagert)
-    //TODO Was ist Socket.IO mäßig noch zu beachten?
      */
-    fun initializeConnection(mapEventToCallback: HashMap<Event,
-                (event: Event, wrappedJSONData: JSONObjectWrapper) -> Unit>) {
+    fun initializeConnection(
+        mapEventToCallback: HashMap<Event,
+                (wrappedJSONData: JSONObjectWrapper) -> Unit>
+    ) {
 
         registerEventListeners(mapEventToCallback)
 
-        //TODO Was ist mit on(CONNECT) und on(DISCONNECT) Event (-listeners) ?
-        //TODO Testlog falls Socket erfolgreich connected
+        /*
+        Im Folgednen Implementierung von Listener für die ganzen Socket.IO seitigen Events
+        wobei entweder Zustand gesetzt (CONNECT) oder Fehlermeldungen (DISCONNECT, ERROR)
+        geworfen werden sollen
+         */
+
         socketIOSocket?.on(Socket.EVENT_CONNECT, Emitter.Listener {
+            // TODO Was soll hier getan werden?
             Log.i("SocketAdapter", "Socket is connected")
         }
         )
 
-        //TODO Testlog falls Socket disconnected
+        //TODO Hierfür Exception werfen sinnvoll? -> erst wenn auch reconnect endgültig failed!!!!
         socketIOSocket?.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
+            //TODO Was soll hier getan werden?
             Log.i("SocketAdapter", "Socket is disconnected")
         }
         )
 
+        //TODO Was ist mit EVENT_DISCONNECT, EVENT_CONNECT_TIMEOUT, EVENT_ERROR, EVENT_RECONNECT etc?
+        // soll Fehler geworfen werden, wenn Verbindung dauerhaft nicht möglich?
+
+        // open the socket connection
         socketIOSocket?.connect()
     }
 
@@ -64,17 +76,18 @@ class SocketAdapter(private val namespace: String) {
 
     /*
     Methode um die EventListener auf dem Socket zu registrieren, aus dem übergebenen
-    Mapping von EventNamen:String und Callbacks
+    Mapping von Event: Event und Callbacks
      */
     private fun registerEventListeners(
         mapEventsToCallback: HashMap<Event,
-                (event: Event, wrappedJSONData: JSONObjectWrapper) -> Unit>
+                (wrappedJSONData: JSONObjectWrapper) -> Unit>
     ) {
         for (k in mapEventsToCallback.keys) {
 
             socketIOSocket?.on(k.getEventString(), Emitter.Listener {
 
-                // parse the received data string into JSONObject (
+                // parse the received data string into JSONObject
+                // TODO Test ob das wirklich so funktioniert
                 val jsonData: JSONObject = JSONObject(it[0].toString())
 
                 // wrap the parsed JSONObject with appropriate JSONObjectWrapper
@@ -82,15 +95,23 @@ class SocketAdapter(private val namespace: String) {
 
                 // Invoke the given callback with the parsed data
                 //TODO Funktioniert der Aufruf der Callback Methode richtig?
-                mapEventsToCallback[k]?.invoke(k, wrappedJSONData)
+                mapEventsToCallback[k]?.invoke(wrappedJSONData)
             })
         }
+    }
 
-        fun releaseConnection() {
-            //TODO Was noch um alle Ressourcen freizugeben?
-            socketIOSocket?.close()
-        }
+    /*
+    Gibt die von SocketIOSocket gehaltene Verbindung frei //TODO Muss noch was gemacht/freigegeben werden?
+     */
+    fun releaseConnection() {
+        socketIOSocket?.close()
+    }
 
+    /*
+    Gibt Auskunft ob die SOcketIOSocket Instanz momentan mit Server verbunden ist oder nicht
+     */
+    fun isConnected(): Boolean? {
+        return socketIOSocket?.connected()
     }
 
 }
