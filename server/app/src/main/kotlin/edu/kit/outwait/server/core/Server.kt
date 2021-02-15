@@ -35,7 +35,7 @@ class Server {
         println("Hello World from server!")
 
         // DEBUG terminate the server after 10 seconds
-        java.util
+        /*java.util
             .Timer()
             .schedule(
                 object : java.util.TimerTask() {
@@ -45,7 +45,7 @@ class Server {
                     }
                 },
                 10000
-            )
+            )*/
 
         server.start()
     }

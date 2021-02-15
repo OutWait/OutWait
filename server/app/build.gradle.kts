@@ -49,4 +49,14 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClass.set("edu.kit.outwait.server.core.ServerKt")
+
+    // Add dependencies
+    tasks.withType<Jar>() {
+        configurations["compileClasspath"].forEach { file: File ->
+            from(zipTree(file.absoluteFile))
+        }
+        manifest {
+            attributes(mapOf("Main-Class" to "edu.kit.outwait.server.core.ServerKt"))
+        }
+    }
 }
