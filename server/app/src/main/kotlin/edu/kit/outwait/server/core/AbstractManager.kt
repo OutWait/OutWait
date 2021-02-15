@@ -24,6 +24,7 @@ abstract class AbstractManager(
             object : ConnectListener {
                 override fun onConnect(client: SocketIOClient) {
                     val socketFacade = SocketFacade(client, socketAdapter);
+                    println("New socket connection established")
                     bindSocket(client, socketFacade);
                 }
             }

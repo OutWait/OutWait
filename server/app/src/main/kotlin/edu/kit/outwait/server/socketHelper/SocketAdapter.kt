@@ -22,7 +22,7 @@ class SocketAdapter(val namespace: SocketIONamespace) {
                         dat:String,
                         ackRequest: AckRequest
                     ) {
-                        println("New socket connection established")
+                        println("New message received. Type" + e.getEventTag())
                         val jsonWrapper = e.createWrapper(dat)
                         val facade = facades[client]
                         if (facade != null) {
