@@ -1,11 +1,19 @@
 package elite.kit.outwait.remoteDataSource
 
 import elite.kit.outwait.networkProtocol.*
-import org.json.JSONObject
 
 class SocketIOClientHandler : ClientHandler {
 
     private val namespaceClient: String = "/client"
+
+    /*
+    HashMap mapped Events und passende Callbacks der ClientHandler Instanz
+    //TODO Soll nur (zentrale) processIncoming übergeben werden, oder die einzelnen Methoden?
+     */
+    private val clientEventToCallbackMapping: HashMap<Event,
+            (wrappedJSONData: JSONObjectWrapper) -> Unit> = hashMapOf()
+
+    private var serverReady = false
 
     private val cSocket: SocketAdapter
 
@@ -13,14 +21,43 @@ class SocketIOClientHandler : ClientHandler {
 
     init {
         cSocket = SocketAdapter(namespaceClient)
+
+        // map receiving events to callbacks
+        clientEventToCallbackMapping[Event.UPDATE_MANAGEMENT_INFORMATION] = { receivedData ->
+            onUpdateManagementInformation(receivedData as JSONUpdateManagementInformationWrapper)
+        }
+        clientEventToCallbackMapping[Event.READY_TO_SERVE] = { receivedData ->
+            onReadyToServe(receivedData as JSONEmptyWrapper)
+        }
+        clientEventToCallbackMapping[Event.SEND_SLOT_APPROX] = { receivedData ->
+            onSendSlotApprox(receivedData as JSONSlotApproxWrapper)
+        }
+        clientEventToCallbackMapping[Event.END_SLOT] = { receivedData ->
+            onEndSlot(receivedData as JSONSlotCodeWrapper)
+        }
+        clientEventToCallbackMapping[Event.DELETE_SLOT] = { receivedData ->
+            onDeleteSlot(receivedData as JSONSlotCodeWrapper)
+        }
+        clientEventToCallbackMapping[Event.INVALID_CODE] = { receivedData ->
+            onInvalidCode(receivedData as JSONEmptyWrapper)
+        }
+        clientEventToCallbackMapping[Event.INVALID_REQUEST] = { receivedData ->
+            onInvalidRequest(receivedData as JSONInvalidRequestWrapper)
+        }
     }
 
-    //TODO Mit ObjectWrappern die Daten zum versenden verpacken
-    //TODO Mit Strategie (oder internen Methoden, da net so viele) die incomingEvents verarbeiten
-    //Falls nur interne Methoden, dann diese direkt in Event-Callback-Mapping einfügen?
 
+        //TODO Hier solang mit Rückgabe warten bis Server "readyToServe" geschickt hat (Zustandsvariable)
     override fun initCommunication(): Boolean {
-        TODO("Not yet implemented")
+
+        cSocket.initializeConnection(clientEventToCallbackMapping)
+
+        // Mit return warten bis SocketIOSocket connected ist
+        while (!cSocket.isConnected()!!) {
+            Thread.sleep(1000)
+        }
+
+        return true
     }
 
     override fun endCommunication(): Boolean {
@@ -42,10 +79,59 @@ class SocketIOClientHandler : ClientHandler {
         cSocket.emitEventToServer(event.getEventString(), data)
     }
 
-    private fun processIncomingEvent(event: Event, wrappedJSONData: JSONObjectWrapper) {
+    private fun onUpdateManagementInformation(wrappedJSONData: JSONUpdateManagementInformationWrapper) {
+        val slotCode = wrappedJSONData.getSlotCode()
+        val notificationTime = wrappedJSONData.getNotificationTime()
+        val delayNotificationTime = wrappedJSONData.getDelayNotificationTime()
+        val name = wrappedJSONData.getName()
 
-        //TODO Strategie verwenden um Daten zu verarbeiten
+        TODO("Issue: Werden sendSlotApprox und updateManagementInformation zusammengefasst?")
 
     }
+
+    private fun onSendSlotApprox(wrappedJSONData: JSONSlotApproxWrapper) {
+        val slotCode = wrappedJSONData.getSlotCode()
+        val approxTime = wrappedJSONData.getApproxTime()
+
+        TODO("Issue: Werden sendSlotApprox und updateManagementInformation zusammengefasst?")
+    }
+
+    /*
+    Server erlaubt uns jetzt erst, dass wir weitere Events schicken dürfen
+     */
+    private fun onReadyToServe(wrappedJSONData: JSONEmptyWrapper) {
+        this.serverReady = true
+    }
+
+    private fun onEndSlot(wrappedJSONData: JSONSlotCodeWrapper) {
+        val endedSlotCode = wrappedJSONData.getSlotCode()
+        // TODO entsprechenden Slot aus der ClientDB löschen
+    }
+
+    private fun onDeleteSlot(wrappedJSONData: JSONSlotCodeWrapper) {
+        val deletedSlotCode = wrappedJSONData.getSlotCode()
+        // TODO entsprechenden Slot aus der ClientDB löschen
+    }
+
+    private fun onInvalidCode(wrappedJSONData: JSONEmptyWrapper) {
+
+        //TODO Fehlermeldung oder LiveData um Repo zu benachrichtigen?
+        // TODO Soll nochmal der invalide Code vom Server geschickt werden?
+        // -> mit Benni abklären
+    }
+
+    private fun onInvalidRequest(wrappedJSONData: JSONInvalidRequestWrapper) {
+        val errorMessage = wrappedJSONData.getErrorMessage()
+
+        //TODO Fehlermeldung werfen
+    }
+
+    private fun onInvalidRequest2(event: Event, wrappedJSONData: JSONInvalidRequestWrapper) {
+        val errorMessage = wrappedJSONData.getErrorMessage()
+
+        //TODO Fehlermeldung werfen
+    }
+
+
 
 }

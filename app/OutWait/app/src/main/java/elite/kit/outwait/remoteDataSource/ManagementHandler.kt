@@ -15,14 +15,14 @@ interface ManagementHandler {
 
     fun login(username: String, password: String): Boolean
 
-    fun logout(): Boolean
+    fun logout()
 
     fun resetPassword(username: String)
 
     fun changePreferences(newPreferences: Preferences)
 
 
-    fun startTransaction()
+    fun startTransaction(): Boolean
 
     fun abortTransaction()
 
@@ -55,11 +55,6 @@ interface ManagementHandler {
 
     fun getUpdatedPreferences(): LiveData<Preferences>
 
-
-    /*
-   LiveData um Events zu signalisieren? Eingeloggt, Ausgeloggt usw.
-   //TODO Was wird hier gebraucht? Am besten mit LiveData?
-   //Wie im AndroidKurs muss man dann auch sicherstellen, dass onEventFinish() aufgerufen wird!!
-    */
+    // TODO Welche LiveData bräuchte man noch (Bspw. bei Callbacks für Events vom Server)
 
 }
