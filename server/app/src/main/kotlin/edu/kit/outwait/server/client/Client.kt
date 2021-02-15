@@ -32,6 +32,7 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
     private fun configureReceives() {
         socketFacade.onReceive(Event.LISTEN_SLOT, {receivedData ->
             val slotCode = (receivedData as JSONSlotCodeWrapper).getSlotCode()
+            println("Listen slot code '"+slotCode+"'")
             addSlot(slotCode)
         })
 
