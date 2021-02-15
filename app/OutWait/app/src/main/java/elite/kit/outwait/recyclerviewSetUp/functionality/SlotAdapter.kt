@@ -18,10 +18,17 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
     ItemTouchHelperAdapter {
     private lateinit var itemTouchHelper: ItemTouchHelper
     var slotList = slotList
-       /* set {
-            field =
-            notifyDataSetChanged()
-        }*/
+
+
+       fun updateSlots(newTimeSlotList: MutableList<TimeSlot>?) {
+           slotList.clear()
+           notifyDataSetChanged()
+           if (newTimeSlotList != null) {
+               slotList.addAll(newTimeSlotList)
+           }
+           notifyDataSetChanged()
+       }
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {

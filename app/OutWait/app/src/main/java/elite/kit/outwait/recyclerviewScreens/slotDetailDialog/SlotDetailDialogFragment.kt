@@ -3,6 +3,7 @@ package elite.kit.outwait.recyclerviewScreens.slotDetailDialog
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -26,12 +27,14 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        //TODO Fragment design wrong, appointmenttime not showing
         val builder = AlertDialog.Builder(activity)
         binding = SlotDetailDialogFragmentBinding.inflate(LayoutInflater.from(context))
         binding.viewModel = this.viewModel
         binding.lifecycleOwner=this
 
         viewModel.isFixedSlot.value = isFixedSlot()
+        Log.i("ss","${viewModel.isFixedSlot.value}")
         displayProperties(clientTimeSlot)
 
         builder.apply {
@@ -73,6 +76,6 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
         viewModel.appointmentTime.value=TransformationOutput.appointmentToString(fixedSlot.appointmentTime)
         viewModel.qrCode.value=qrCodeGenerator.generateQRCode(fixedSlot.slotCode)
         binding.ivQRCode.setImageBitmap(viewModel.qrCode.value)
-
+        Log.i("sss","${viewModel.appointmentTime.value}")
     }
 }

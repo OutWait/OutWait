@@ -82,7 +82,7 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
         return slot.getType().ordinal == Type.FIXED_SLOT.ordinal
     }
 
-    private fun displaySpotaneousSlotTimes(slot: SpontaneousTimeSlot) {
+    private fun displaySpontaneousSlotTimes(slot: SpontaneousTimeSlot) {
         viewModel.identifier.value = slot.auxiliaryIdentifier
         viewModel.interval.value = slot.interval
         binding.timeDurationInput.duration = slot.interval.toDurationMillis()
@@ -100,7 +100,7 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
     private fun setValuesOfScreen(slot: ClientTimeSlot) {
         when (slot.getType().ordinal) {
             Type.FIXED_SLOT.ordinal -> displayFixedSlotTimes(slot as FixedTimeSlot)
-            else -> displaySpotaneousSlotTimes(slot as SpontaneousTimeSlot)
+            else -> displaySpontaneousSlotTimes(slot as SpontaneousTimeSlot)
         }
     }
 

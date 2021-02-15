@@ -32,6 +32,8 @@ class ConfigDialogViewModel @Inject constructor( val repo: InstituteRepository) 
     }
 
     fun saveConfigValues(){
+        //TODO check data on validation
         repo.changePreferences(standardSlotDauer.value!!,notificationTime.value!!,delayNotificationTime.value!!,prioritizationTime.value!!,isModusTwo.value!!)
+
     }
 }

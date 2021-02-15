@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ManagmentViewViewModel @Inject constructor(
-    private val repo: InstituteRepository,
+     val repo: InstituteRepository,
     private val coordinator: ManagementViewCoordinator,
 ) : ViewModel() {
 

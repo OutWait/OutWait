@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -29,7 +30,6 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
     private val viewModel: ManagmentViewViewModel by viewModels()
     private lateinit var binding: ManagmentViewFragmentBinding
     private lateinit var slotAdapter: SlotAdapter
-    private var isFirstBackPressed = false
 
 
     override fun onCreateView(
@@ -45,7 +45,12 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         binding.slotList.layoutManager = LinearLayoutManager(activity)
         binding.slotList.setHasFixedSize(true)
 
-        //TODO change for slotList
+        //TODO check except
+        viewModel.repo.getObservableTimeSlotList().observe(viewLifecycleOwner, Observer { list->
+            slotAdapter.updateSlots(list.toMutableList())
+
+        })
+
 //        viewModel.weatherLocations.observe(viewLifecycleOwner) {
 //            weatherOverviewAdapter.updateWeatherLocations(it)
 //        }
@@ -58,36 +63,14 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         itemTouchHelper.attachToRecyclerView(binding.slotList)
         binding.slotList.adapter = slotAdapter
 
-        //TODO double back press to exit app not to close
-        exitApp()
+
 
         setHasOptionsMenu(true)
 
         return binding.root
     }
 
-    private fun exitApp() {
-        val callback: OnBackPressedCallback =
-            object : OnBackPressedCallback(true) {
 
-                override fun handleOnBackPressed() {
-                    if (childFragmentManager.backStackEntryCount !== 0) {
-                    } else {
-                        if (isFirstBackPressed) {
-                        } else {
-                            Log.i("back press", "Double clicked")
-
-                            isFirstBackPressed = true
-                            Toast.makeText(context, "Press back again to exit", Toast.LENGTH_LONG).show()
-                            Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                isFirstBackPressed = false
-                            }, 1500)
-                        }
-                    }
-                }
-            }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-    }
 
     private fun fakeSlotList(): MutableList<TimeSlot> {
         var slotList = mutableListOf<TimeSlot>()
