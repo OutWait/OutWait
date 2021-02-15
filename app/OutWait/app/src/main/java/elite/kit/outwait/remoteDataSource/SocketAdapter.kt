@@ -18,8 +18,6 @@ class SocketAdapter(private val namespace: String) {
 
     private val serverURI: String = "http://127.0.0.1:8080"
 
-    private var connected = false
-
     private val socketIOSocket: Socket? = null
 
     init {
