@@ -28,7 +28,6 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
 
     /**
      * Configuration of onReceives through SocketFacade.
-     * TODO: Lambdas korrekt?
      */
     private fun configureReceives() {
         socketFacade.onReceive(Event.LISTEN_SLOT, {receivedData ->
