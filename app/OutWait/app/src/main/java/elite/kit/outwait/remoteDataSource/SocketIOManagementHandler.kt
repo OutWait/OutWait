@@ -23,6 +23,7 @@ class SocketIOManagementHandler : ManagementHandler {
     private var loginDenied = false
     private var transactionStarted = false
     private var transactionDenied = false
+
     /*
     TODO Variable die anzeigt, ob Manager gerade eingeloggt ist oder nicht -> LiveData machen??
      */
@@ -38,8 +39,30 @@ class SocketIOManagementHandler : ManagementHandler {
     init {
         mSocket = SocketAdapter(namespaceManagement)
 
+        // configure HashMap that maps receiving events to callbacks
         managementEventToCallbackMapping[Event.TRANSACTION_STARTED] = { receivedData ->
             onTransactionStarted(receivedData as JSONEmptyWrapper)
+        }
+        managementEventToCallbackMapping[Event.TRANSACTION_DENIED] = { receivedData ->
+            onTransactionDenied(receivedData as JSONEmptyWrapper)
+        }
+        managementEventToCallbackMapping[Event.LOGIN_REQUEST] = { receivedData ->
+            onLoginRequest(receivedData as JSONEmptyWrapper)
+        }
+        managementEventToCallbackMapping[Event.INVALID_REQUEST] = { receivedData ->
+            onInvalidRequest(receivedData as JSONInvalidRequestWrapper)
+        }
+        managementEventToCallbackMapping[Event.MANAGEMENT_LOGIN_SUCCESS] = { receivedData ->
+            onLoginSuccess(receivedData as JSONEmptyWrapper)
+        }
+        managementEventToCallbackMapping[Event.MANAGEMENT_LOGIN_DENIED] = { receivedData ->
+            onLoginDenied(receivedData as JSONEmptyWrapper)
+        }
+        managementEventToCallbackMapping[Event.UPDATE_MANAGEMENT_SETTINGS] = { receivedData ->
+            onUpdateManagementSettings(receivedData as JSONManagementSettingsWrapper)
+        }
+        managementEventToCallbackMapping[Event.UPDATE_QUEUE] = { receivedData ->
+            onUpdateQueue(receivedData as JSONQueueWrapper)
         }
     }
 
@@ -62,7 +85,7 @@ class SocketIOManagementHandler : ManagementHandler {
      */
 
     private val currentList = MutableLiveData<ReceivedList>()
-    private val _currentList : LiveData<ReceivedList>
+    private val _currentList: LiveData<ReceivedList>
         get() = currentList
 
 
@@ -74,7 +97,7 @@ class SocketIOManagementHandler : ManagementHandler {
      */
 
     private val currentPrefs = MutableLiveData<Preferences>()
-    private val _currentPrefs : LiveData<Preferences>
+    private val _currentPrefs: LiveData<Preferences>
         get() = currentPrefs
 
 
@@ -86,8 +109,10 @@ class SocketIOManagementHandler : ManagementHandler {
     override fun login(username: String, password: String): Boolean {
         // TODO warte bis wir einen Login-Request vom Server verarbeitet haben
         while (!this.loginRequested) {
-            Log.i("SocketIOManagementHandl",
-                "Waiting on server LoginRequest for LoginAttempt")
+            Log.i(
+                "SocketIOManagementHandl",
+                "Waiting on server LoginRequest for LoginAttempt"
+            )
             Thread.sleep(1_000)
         }
 
@@ -96,22 +121,30 @@ class SocketIOManagementHandler : ManagementHandler {
 
         mSocket.emitEventToServer(event.getEventString(), data)
 
-        Log.i("SocketIOManagementHandl",
-            "Login attempted")
+        Log.i(
+            "SocketIOManagementHandl",
+            "Login attempted"
+        )
 
         while (!this.loggedIn and !this.loginDenied) {
-            Log.i("SocketIOManagementHandl",
-                "Waiting on server for LoginResponse")
+            Log.i(
+                "SocketIOManagementHandl",
+                "Waiting on server for LoginResponse"
+            )
             Thread.sleep(1_000)
         }
 
         if (this.loggedIn) {
-            Log.i("SocketIOManagementHandl",
-                "Login was successful")
+            Log.i(
+                "SocketIOManagementHandl",
+                "Login was successful"
+            )
             return true
         } else if (this.loginDenied) {
-            Log.i("SocketIOManagementHandl",
-                "Login was denied")
+            Log.i(
+                "SocketIOManagementHandl",
+                "Login was denied"
+            )
         }
 
         return false
@@ -150,8 +183,10 @@ class SocketIOManagementHandler : ManagementHandler {
         mSocket.emitEventToServer(event.getEventString(), data)
 
         while (!transactionDenied and !transactionStarted) {
-            Log.i("SocketIOManagementHandl",
-                "Waiting on server response for transactionStart")
+            Log.i(
+                "SocketIOManagementHandl",
+                "Waiting on server response for transactionStart"
+            )
             Thread.sleep(1_000)
         }
 
@@ -235,34 +270,21 @@ class SocketIOManagementHandler : ManagementHandler {
         return _currentList
     }
 
-    override fun getUpdatedPreferences() : LiveData<Preferences> {
+    override fun getUpdatedPreferences(): LiveData<Preferences> {
         return _currentPrefs
     }
 
     /*
-    private fun processIncomingEvent(event: Event, wrappedJSONData: JSONObjectWrapper) {
-
-        //TODO Strategie verwenden um Daten zu verarbeiten
-
-    }
-
+    Die Callback Methoden die gemäß Mapping bei einem eingeheneden Event aufgerufen werden
      */
 
-    //TODO Transaction Callbacks auseinanderziehen
-    private fun onTransaction(event: Event, wrappedJSONData: JSONEmptyWrapper) {
-        if (event == Event.TRANSACTION_STARTED) {
-            this.transactionStarted = true
-        }
-        if (event == Event.TRANSACTION_DENIED) {
-            this.transactionDenied = true
-        }
+    private fun onTransactionStarted(wrappedJSONData: JSONEmptyWrapper) {
+        this.transactionStarted = true
+        // TODO Zustandsvariable wieder zurücksetzen? Wann?
     }
 
-    private fun onTransactionStarted(wrappedJSONData: JSONEmptyWrapper) {
-        TODO("Not yet decided how to implement")
-    }
-    private fun onTransactionDenied(wrappedJSONData: JSONEmptyWrapper)  {
-        TODO("Not yet decided how to implement")
+    private fun onTransactionDenied(wrappedJSONData: JSONEmptyWrapper) {
+        this.transactionDenied = true
     }
 
     private fun onLoginRequest(wrappedJSONData: JSONEmptyWrapper) {
@@ -271,31 +293,29 @@ class SocketIOManagementHandler : ManagementHandler {
 
     private fun onInvalidRequest(wrappedJSONData: JSONInvalidRequestWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
-        TODO("Fehlermeldung hochreichen? Was (noch) tun??")
+        TODO("Fehlermeldung werfen")
+        // TODO Was noch?
     }
 
-    /* TODO Login Callbacks auseinanderziehen
-    private fun onLogin(wrappedJSONData: JSONEmptyWrapper) {
-        if (event == Event.MANAGEMENT_LOGIN_SUCCESS) {
-            this.loggedIn = true
-        }
-        if (event == Event.MANAGEMENT_LOGIN_DENIED) {
-            this.loginDenied = true
-        }
-        //TODO Alternativ jedes der Events hat eigenen Callback
+    private fun onLoginSuccess(wrappedJSONData: JSONEmptyWrapper) {
+        this.loggedIn = true
     }
 
-     */
+    private fun onLoginDenied(wrappedJSONData: JSONEmptyWrapper) {
+        this.loginDenied = true
+        TODO("Server will hier Verbindung abbrechen!! Was tun?")
+    }
+
 
     private fun onUpdateManagementSettings(wrappedJSONData: JSONManagementSettingsWrapper) {
         val newPrefs = wrappedJSONData.getPreferences()
-        TODO("Hier die Prefs in die LiveData reinschreiben")
+        TODO("Preferences Object mit neuen Preferences in LiveData aktualisieren")
 
     }
 
     private fun onUpdateQueue(wrappedJSONData: JSONQueueWrapper) {
         val receivedList = wrappedJSONData.getQueue()
-        TODO("Hier die received List in die LiveData schreiben")
+        TODO("ReceivedList Object mit neuer ReceivedList in LiveData aktualisieren")
     }
 
 

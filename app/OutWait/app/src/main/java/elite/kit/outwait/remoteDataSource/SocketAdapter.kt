@@ -12,12 +12,11 @@ import java.net.URI
 
 //TODO Fehler werfen bei Verbindungsfehler/Abbruch (inkl. der Listener) usw. ?
 //TODO Was ist Socket.IO mäßig noch zu beachten?
+//TODO Welche Zustände sollen/müssen alles hier gehalten werden?
 
 class SocketAdapter(private val namespace: String) {
 
     private val serverURI: String = "http://127.0.0.1:8080"
-
-    //TODO Welche Zustände sollen hier gehalten werden?
 
     private var connected = false
 
@@ -34,8 +33,10 @@ class SocketAdapter(private val namespace: String) {
     Intialisiere Verbindung mit Server
     Uund registriere die EventListener (in private Methode ausgelagert)
      */
-    fun initializeConnection(mapEventToCallback: HashMap<Event,
-                (wrappedJSONData: JSONObjectWrapper) -> Unit>) {
+    fun initializeConnection(
+        mapEventToCallback: HashMap<Event,
+                (wrappedJSONData: JSONObjectWrapper) -> Unit>
+    ) {
 
         registerEventListeners(mapEventToCallback)
 
@@ -46,23 +47,20 @@ class SocketAdapter(private val namespace: String) {
          */
 
         socketIOSocket?.on(Socket.EVENT_CONNECT, Emitter.Listener {
-            this.connected = true
+            // TODO Was soll hier getan werden?
             Log.i("SocketAdapter", "Socket is connected")
         }
         )
 
         //TODO Hierfür Exception werfen sinnvoll? -> erst wenn auch reconnect endgültig failed!!!!
         socketIOSocket?.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
-            this.connected = false
+            //TODO Was soll hier getan werden?
             Log.i("SocketAdapter", "Socket is disconnected")
         }
         )
 
         //TODO Was ist mit EVENT_DISCONNECT, EVENT_CONNECT_TIMEOUT, EVENT_ERROR, EVENT_RECONNECT etc?
-        // -> Auf jeden Fall Exception werfen, wenn Verbindung (dauerhaft) einfach nicht aufgebaut
-        // Werden kann, Handler soll dann weiterreichen, damit auf GUI eine Fehlermeldung/Warnung angzeigbar
-
-        // TODO Mit Benni besprechen
+        // soll Fehler geworfen werden, wenn Verbindung dauerhaft nicht möglich?
 
         // open the socket connection
         socketIOSocket?.connect()
@@ -100,16 +98,18 @@ class SocketAdapter(private val namespace: String) {
                 mapEventsToCallback[k]?.invoke(wrappedJSONData)
             })
         }
-
-
-        fun releaseConnection() {
-            socketIOSocket?.close()
-
-            //TODO Muss noch irgendwas socket-seitig freigegeben werden?
-        }
-
     }
 
+    /*
+    Gibt die von SocketIOSocket gehaltene Verbindung frei //TODO Muss noch was gemacht/freigegeben werden?
+     */
+    fun releaseConnection() {
+        socketIOSocket?.close()
+    }
+
+    /*
+    Gibt Auskunft ob die SOcketIOSocket Instanz momentan mit Server verbunden ist oder nicht
+     */
     fun isConnected(): Boolean? {
         return socketIOSocket?.connected()
     }

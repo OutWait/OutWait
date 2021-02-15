@@ -22,15 +22,18 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     init {
         cSocket = SocketAdapter(namespaceClient)
 
-        // map receiving events to callbacks
+        // configure HashMap that maps receiving events to callbacks
+        // TODO Mit SEND_SLOT_APPROX zusammenfassen (Siehe issue auf gitlab)
         clientEventToCallbackMapping[Event.UPDATE_MANAGEMENT_INFORMATION] = { receivedData ->
             onUpdateManagementInformation(receivedData as JSONUpdateManagementInformationWrapper)
         }
-        clientEventToCallbackMapping[Event.READY_TO_SERVE] = { receivedData ->
-            onReadyToServe(receivedData as JSONEmptyWrapper)
-        }
         clientEventToCallbackMapping[Event.SEND_SLOT_APPROX] = { receivedData ->
             onSendSlotApprox(receivedData as JSONSlotApproxWrapper)
+        }
+
+
+        clientEventToCallbackMapping[Event.READY_TO_SERVE] = { receivedData ->
+            onReadyToServe(receivedData as JSONEmptyWrapper)
         }
         clientEventToCallbackMapping[Event.END_SLOT] = { receivedData ->
             onEndSlot(receivedData as JSONSlotCodeWrapper)
@@ -80,17 +83,17 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         cSocket.emitEventToServer(event.getEventString(), data)
     }
 
+    /*
+    Die Callback Methoden die gemäß Mapping bei einem eingeheneden Event aufgerufen werden
+     */
+
     //TODO Mit onSendSloxApprox zusammenfassen (siehe gitlab issue)
     private fun onUpdateManagementInformation(wrappedJSONData: JSONUpdateManagementInformationWrapper) {
         val slotCode = wrappedJSONData.getSlotCode()
         val notificationTime = wrappedJSONData.getNotificationTime()
         val delayNotificationTime = wrappedJSONData.getDelayNotificationTime()
         val name = wrappedJSONData.getName()
-
-
-
     }
-
     //TODO Mit onUpdateManagementInformation zusammenfassen (siehe gitlab issue)
     private fun onSendSlotApprox(wrappedJSONData: JSONSlotApproxWrapper) {
         val slotCode = wrappedJSONData.getSlotCode()
@@ -106,19 +109,21 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
     private fun onEndSlot(wrappedJSONData: JSONSlotCodeWrapper) {
         val endedSlotCode = wrappedJSONData.getSlotCode()
-        // TODO entsprechenden Slot aus der ClientDB löschen
+        TODO ("Entsprechenden Slot aus der ClientDB löschen")
     }
 
     private fun onDeleteSlot(wrappedJSONData: JSONSlotCodeWrapper) {
         val deletedSlotCode = wrappedJSONData.getSlotCode()
-        // TODO entsprechenden Slot aus der ClientDB löschen
+        TODO ("Entsprechenden Slot aus der ClientDB löschen")
     }
 
     private fun onInvalidCode(wrappedJSONData: JSONEmptyWrapper) {
 
-        //TODO Fehlermeldung oder LiveData um Repo zu benachrichtigen?
-        // TODO Soll nochmal der invalide Code vom Server geschickt werden?
+        //TODO 1 Fehlermeldung oder LiveData um Repo zu benachrichtigen?
         // -> mit Benni abklären
+
+        // TODO 2 Soll nochmal der invalide Code vom Server geschickt werden?
+
     }
 
     private fun onInvalidRequest(wrappedJSONData: JSONInvalidRequestWrapper) {
@@ -126,12 +131,5 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
         //TODO Fehlermeldung werfen
     }
-
-    private fun onInvalidRequest2(event: Event, wrappedJSONData: JSONInvalidRequestWrapper) {
-        val errorMessage = wrappedJSONData.getErrorMessage()
-
-        //TODO Fehlermeldung werfen
-    }
-
 
 }
