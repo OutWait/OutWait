@@ -115,7 +115,12 @@ class SocketAdapter(private val namespace: String) {
 
                 // parse the received data string into JSONObject
                 // TODO Test ob das wirklich so funktioniert
-                val jsonData: JSONObject = JSONObject(it[0].toString())
+
+
+                val data = it[1] as String
+                val jsonData = JSONObject(data)
+
+                //val jsonData: JSONObject = JSONObject(it[0].toString())
 
                 // wrap the parsed JSONObject with appropriate JSONObjectWrapper
                 val wrappedJSONData = k.createWrapper(jsonData)
