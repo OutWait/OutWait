@@ -53,6 +53,24 @@ class SocketAdapter(private val namespace: String) {
         }
         )
 
+        socketIOSocket?.on(Socket.EVENT_CONNECT_ERROR, Emitter.Listener {
+            // TODO Was soll hier getan werden?
+            Log.i("SocketAdapter", "EVENT_CONNECT_ERROR")
+        }
+        )
+
+        socketIOSocket?.on(Socket.EVENT_ERROR, Emitter.Listener {
+            // TODO Was soll hier getan werden?
+            Log.i("SocketAdapter", "EVENT_ERROR")
+        }
+        )
+        socketIOSocket?.on(Socket.EVENT_CONNECT_TIMEOUT, Emitter.Listener {
+            // TODO Was soll hier getan werden?
+            Log.i("SocketAdapter", "EVENT_ERROR")
+        }
+        )
+
+
         //TODO Hierfür Exception werfen sinnvoll? -> erst wenn auch reconnect endgültig failed!!!!
         socketIOSocket?.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
             //TODO Was soll hier getan werden?
@@ -64,7 +82,12 @@ class SocketAdapter(private val namespace: String) {
         // soll Fehler geworfen werden, wenn Verbindung dauerhaft nicht möglich?
 
         // open the socket connection
-        socketIOSocket?.connect()
+        if(socketIOSocket.open() == null){
+            Log.d("jkdfjagl", "isNull")
+        }else{
+            Log.d("jkdfjagl", "is not Null")
+        }
+        //socketIOSocket?.connect()
 
         Log.i("SocketAdapter", "SocketIOSocket.connect() was called")
     }

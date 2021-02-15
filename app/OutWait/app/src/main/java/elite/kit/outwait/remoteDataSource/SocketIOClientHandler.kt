@@ -50,12 +50,15 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         cSocket.initializeConnection(clientEventToCallbackMapping)
 
         // Mit return warten bis SocketIOSocket connected ist (TODO geht auch schöner? LiveData?)
-        while (cSocket.isConnected() == false) Thread.sleep(1000)
+        while (cSocket.isConnected() == false){
+            Log.d("initCom::SIOCliHandler", "in der 1 Whileschleife")
+            Thread.sleep(1000)
+        }
 
         // Mit return warten bis Server readyToServe signalisiert (TODO geht auch schöner? LiveData?)
         while (!this.serverReady) {
             Thread.sleep(1000)
-            Log.d("initCom::SIOCliHandler", "in der Whileschleife")
+            Log.d("initCom::SIOCliHandler", "in der 2 Whileschleife")
         }
 
         return true
