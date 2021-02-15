@@ -10,7 +10,6 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
     /*
     HashMap mapped Events und passende Callbacks der ClientHandler Instanz
-    //TODO Soll nur (zentrale) processIncoming übergeben werden, oder die einzelnen Methoden?
      */
     private val clientEventToCallbackMapping: HashMap<Event,
             (wrappedJSONData: JSONObjectWrapper) -> Unit> = hashMapOf()
@@ -18,7 +17,6 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     private var serverReady = false
 
     private val cSocket: SocketAdapter
-
 
 
     init {
@@ -49,9 +47,10 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     }
 
 
-        //TODO Hier solang mit Rückgabe warten bis Server "readyToServe" geschickt hat (Zustandsvariable)
+    //TODO Hier solang mit Rückgabe warten bis Server "readyToServe" geschickt hat (Zustandsvariable)
     override fun initCommunication(): Boolean {
 
+        Log.d("initCom::SIOCliHandler", "reached")
         cSocket.initializeConnection(clientEventToCallbackMapping)
 
         // Mit return warten bis SocketIOSocket connected ist
@@ -59,9 +58,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
             Thread.sleep(1000)
         }
 
-        Log.d("initCom::SIOCliHandler", "reached")
         return true
-        //TODO("Not yet implemented")
     }
 
     override fun endCommunication(): Boolean {
@@ -83,21 +80,21 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         cSocket.emitEventToServer(event.getEventString(), data)
     }
 
+    //TODO Mit onSendSloxApprox zusammenfassen (siehe gitlab issue)
     private fun onUpdateManagementInformation(wrappedJSONData: JSONUpdateManagementInformationWrapper) {
         val slotCode = wrappedJSONData.getSlotCode()
         val notificationTime = wrappedJSONData.getNotificationTime()
         val delayNotificationTime = wrappedJSONData.getDelayNotificationTime()
         val name = wrappedJSONData.getName()
 
-        TODO("Issue: Werden sendSlotApprox und updateManagementInformation zusammengefasst?")
+
 
     }
 
+    //TODO Mit onUpdateManagementInformation zusammenfassen (siehe gitlab issue)
     private fun onSendSlotApprox(wrappedJSONData: JSONSlotApproxWrapper) {
         val slotCode = wrappedJSONData.getSlotCode()
         val approxTime = wrappedJSONData.getApproxTime()
-
-        TODO("Issue: Werden sendSlotApprox und updateManagementInformation zusammengefasst?")
     }
 
     /*
@@ -135,7 +132,6 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
         //TODO Fehlermeldung werfen
     }
-
 
 
 }
