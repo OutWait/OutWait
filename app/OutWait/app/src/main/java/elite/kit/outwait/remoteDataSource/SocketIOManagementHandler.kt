@@ -188,6 +188,7 @@ class SocketIOManagementHandler : ManagementHandler {
                 "Waiting on server response for transactionStart"
             )
             Thread.sleep(1_000)
+
         }
 
         if (transactionStarted) {
