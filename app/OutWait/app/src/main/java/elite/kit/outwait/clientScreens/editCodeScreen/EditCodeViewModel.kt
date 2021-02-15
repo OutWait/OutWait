@@ -1,5 +1,6 @@
 package elite.kit.outwait.clientScreens.editCodeScreen
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,8 +18,10 @@ class EditCodeViewModel @Inject constructor(private val repo : ClientRepository,
     val clientSlotCode= MutableLiveData<String>()
 
 
-    fun loginTried(){
+    fun enterSlotCode(code: String?){
         //TODO repo call expected
+        Log.d("enterSCode::EditCodeVM", "reached")
+        repo.newCodeEntered(code)
         coordinator.navigateToRemainingTimeFragment()
     }
 

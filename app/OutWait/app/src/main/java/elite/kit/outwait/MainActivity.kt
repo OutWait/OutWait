@@ -40,10 +40,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.instituteErrorNotifications().observe(this, Observer {
-            Toast.makeText(this, it[it.lastIndex], Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(it.last().message), Toast.LENGTH_LONG).show()
         })
         viewModel.clientErrorNotifications().observe(this, Observer {
-            Toast.makeText(this, it[it.lastIndex], Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(it.last().message), Toast.LENGTH_LONG).show()
         })
     }
 

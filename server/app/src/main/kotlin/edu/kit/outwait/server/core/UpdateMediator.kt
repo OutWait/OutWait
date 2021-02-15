@@ -17,8 +17,7 @@ class UpdateMediator {
         receivers.getOrPut(slotCode) { mutableSetOf<SlotInformationReceiver>() }.add(receiver)
 
         // Update information
-        setManagementInformation(listOf(slotCode), slotManagementInformation)
-        setSlotApprox(slotCode, slotApprox)
+        setSlotData(slotCode, slotApprox, slotManagementInformation)
     }
 
     fun unsubscribeSlotInformationReceiver(slotCode: SlotCode, receiver: SlotInformationReceiver) {
@@ -31,8 +30,22 @@ class UpdateMediator {
         }
     }
 
+    /**
+     * Unlike successive calls to setSlotApprox and setManagementInformation, calling this method
+     * will only send one message to the client.
+     */
+    fun setSlotData(
+        slotCode: SlotCode,
+        slotApprox: Date,
+        slotManagementInformation: SlotManagementInformation
+    ) {
+        receivers[slotCode]?.forEach() { it.setSlotData(slotApprox, slotManagementInformation) }
+            ?: println("Unknown slot requested (" + slotCode + ") in UpdateMediator")
+    }
+
     fun setSlotApprox(slotCode: SlotCode, slotApprox: Date) {
-        receivers[slotCode]?.forEach() { it.setSlotApprox(slotApprox) }
+        receivers[slotCode]
+            ?.forEach() { it.setSlotData(slotApprox, it.getSlotManagementInformation()) }
             ?: println("Unknown slot requested (" + slotCode + ") in UpdateMediator")
     }
 
@@ -42,7 +55,7 @@ class UpdateMediator {
     ) {
         for ( code in slotCodes ) {
             receivers[code]
-                ?.forEach() { it.setSlotManagementInformation(slotManagementInformation) }
+                ?.forEach() { it.setSlotData(it.getSlotApprox(), slotManagementInformation) }
                 ?: println("Unknown slot requested (" + code + ") in UpdateMediator")
         }
     }

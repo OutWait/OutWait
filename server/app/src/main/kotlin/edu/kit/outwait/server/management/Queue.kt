@@ -7,11 +7,7 @@ import edu.kit.outwait.server.slot.SlotCode
 import java.time.Duration
 import java.util.Date
 
-class Queue(
-    val managementId: ManagementId,
-    val queueId: QueueId,
-    databaseWrapper: DatabaseWrapper
-) {
+class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     private var slots = mutableListOf<Slot>()
     private var delayChangeTime: Date? = null
 
@@ -137,11 +133,22 @@ class Queue(
     }
     fun moveSlotAfterAnother(slotToMove: SlotCode, otherSlot: SlotCode) {
         // TODO this implementation will not work (updateQueue will revert the change)
+        // TODO maybe we should use a more stable approach to store the slots in the queue (maybe
+        //  multiple lists and spontaneous slots are sorted by index instead of creation time)
         val slot = slots.find { it.slotCode == slotToMove }
-        if (slot != null) {
+        val targetSlot = slots.find { it.slotCode == otherSlot }
+
+        if (slot != null && targetSlot != null) {
             slots.remove(slot)
-            val targetIndex = slots.indexOfFirst { it.slotCode == otherSlot }
-            slots.add(targetIndex + 1, slot)
+            val newDate = Date.from(targetSlot.constructorTime.toInstant() + Duration.ofSeconds(1))
+            val conflictingSlot = slots.find { it.constructorTime == newDate }
+
+            slots.add(slot.copy(constructorTime=newDate))
+
+            if (conflictingSlot != null) {
+                // Move the conflicting slots recursively
+                moveSlotAfterAnother(conflictingSlot.slotCode, slot.slotCode)
+            }
         }
     }
 

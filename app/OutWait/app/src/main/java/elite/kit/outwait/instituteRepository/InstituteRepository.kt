@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.customDataTypes.Preferences
+import elite.kit.outwait.waitingQueue.gravityQueue.FixedGravitySlot
+import elite.kit.outwait.waitingQueue.gravityQueue.SpontaneousGravitySlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
@@ -23,11 +25,13 @@ class InstituteRepository @Inject constructor() {
 
     private val preferences = MutableLiveData<Preferences>()
     private val timeSlotList = MutableLiveData<List<TimeSlot>>()
-    private val errorNotifications = MutableLiveData<List<String>>()
+    private val errorNotifications = MutableLiveData<List<InstituteErrors>>()
+    private val inTransaction = MutableLiveData<Boolean>(false)
 
     fun getObservablePreferences() = preferences as LiveData<Preferences>
     fun getObservableTimeSlotList() = timeSlotList as LiveData<List<TimeSlot>>
-    fun getErrorNotifications() = errorNotifications as LiveData<List<String>>
+    fun getErrorNotifications() = errorNotifications as LiveData<List<InstituteErrors>>
+    fun isInTransaction() = inTransaction as LiveData<Boolean>
 
     suspend fun loginCo(username: String, password: String): Boolean{
         withContext(IO){
@@ -42,8 +46,20 @@ class InstituteRepository @Inject constructor() {
         Log.d("login::InstiRepo", "before liveData changed running in ${Thread.currentThread().name}")
         preferences.value = Preferences(d, d, d, d, Mode.TWO)
         Log.d("login::InstiRepo", "after liveData changed")
-        val l = listOf("Fehler")
+        val l = listOf(InstituteErrors.TRANSACTION_DENIED)
         errorNotifications.value = l
+
+        Log.d("login::InstiRepo", "DateTime-Test-start")
+        var dd = DateTime(118800000) //2.1.1970 9:00 UTC
+        var slot = FixedGravitySlot("abc", Duration.standardMinutes(20), DateTime.now()-Duration.standardMinutes(10), "Hans")
+        val interval = slot.interval(DateTime.now())
+        val begin = interval.start
+        val end = interval.end
+        Log.d("login::InstiRepo", "slotBegin: ${begin.toString()}")
+        Log.d("login::InstiRepo", "slotEnd: ${end.toString()}")
+        Log.d("login::InstiRepo", "DateTime-Test-end")
+
+
         return true
     }
 

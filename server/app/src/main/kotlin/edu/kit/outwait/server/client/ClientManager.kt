@@ -27,9 +27,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
      * in super class.
      */
     init {
-        val eventList = listOf<Event>(Event.LISTEN_SLOT, Event.REFRESH_SLOT_APPROX,
-            Event.READY_TO_SERVE, Event.UPDATE_MANAGEMENT_INFORMATION, Event.SEND_SLOT_APPROX,
-            Event.SLOT_ENDED, Event.SLOT_DELETED, Event.INVALID_CODE, Event.INVALID_CLIENT_REQUEST)
+        val eventList = listOf<Event>(Event.LISTEN_SLOT, Event.REFRESH_SLOT_APPROX)
         super.configureEventListeners(eventList)
     }
 

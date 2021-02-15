@@ -1,8 +1,10 @@
 package elite.kit.outwait.remoteDataSource
 
+import android.util.Log
+import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.networkProtocol.*
 
-class SocketIOClientHandler : ClientHandler {
+class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
     private val namespaceClient: String = "/client"
 
@@ -57,7 +59,9 @@ class SocketIOClientHandler : ClientHandler {
             Thread.sleep(1000)
         }
 
+        Log.d("initCom::SIOCliHandler", "reached")
         return true
+        //TODO("Not yet implemented")
     }
 
     override fun endCommunication(): Boolean {

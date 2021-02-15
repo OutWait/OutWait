@@ -21,31 +21,24 @@ class SlotInformationReceiver(val client: Client, val slotCode: SlotCode) {
         SlotManagementInformation(ManagementDetails(""), Duration.ZERO, Duration.ZERO)
 
     /**
-     * Called by UpdateMediator on change of Slot ETA TODO: Überprüfung auf Änderung Ja/Nein?
+     * Called by UpdateMediator on change of Slot data TODO: Überprüfung auf Änderung Ja/Nein?
      *
      * @param slotApprox new Slot ETA
+     * @param slotManagementInformation new SlotManagementInformation
      */
-    fun setSlotApprox(slotApprox: Date) {
-        if (this.slotApprox != slotApprox) {
+    fun setSlotData(slotApprox: Date, slotManagementInformation: SlotManagementInformation) {
+        if (this.slotApprox != slotApprox ||
+            this.slotManagementInformation != slotManagementInformation
+        ) {
             this.slotApprox = slotApprox
-            client.sendSlotApprox(slotCode, this.slotApprox)
+            this.slotManagementInformation = slotManagementInformation
+            client.sendSlotData(slotCode, slotApprox, slotManagementInformation)
         }
     }
 
     /** Getter for Slot ETA f. ex. for "REFRESH_SLOT_APPROX"-Event */
     fun getSlotApprox(): Date {
         return this.slotApprox
-    }
-
-    /**
-     * Called by UpdateMediator on change of SlotManagementInformation TODO: Überprüfung auf
-     * Änderung Ja/Nein?
-     *
-     * @param slotManagementInformation new SlotManagementInformation
-     */
-    fun setSlotManagementInformation(slotManagementInformation: SlotManagementInformation) {
-        this.slotManagementInformation = slotManagementInformation
-        this.client.sendManagementInformation(slotCode, slotManagementInformation)
     }
 
     fun getSlotManagementInformation() : SlotManagementInformation {

@@ -28,19 +28,32 @@ class Management(
 
     init {
         // Configure the event callbacks
+        configureReceivers(databaseWrapper)
+
+        // Send settings
+        managementInformation = databaseWrapper.getManagementById(managementId)
+        sendUpdatedManagementSettings(managementInformation.settings)
+
+        // Send queue
+        val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
+        val queue = Queue(queueId, databaseWrapper)
+        sendUpdatedQueue(queue)
+    }
+
+    private fun configureReceivers(databaseWrapper: DatabaseWrapper) {
         socketFacade.onReceive(Event.MANAGEMENT_LOGOUT) { logout() }
         socketFacade.onReceive(Event.START_TRANSACTION) { beginNewTransaction() }
         socketFacade.onReceive(Event.ABORT_TRANSACTION) { abortCurrentTransaction() }
         socketFacade.onReceive(Event.SAVE_TRANSACTION) { saveCurrentTransaction() }
         socketFacade.onReceive(Event.DELETE_SLOT) { json ->
             if (checkTransactionStarted()) {
-                queue?.deleteSlot((json as JSONSlotCodeWrapper).getSlotCode())
+                queue!!.deleteSlot((json as JSONSlotCodeWrapper).getSlotCode())
                 updateAndSendQueue()
             }
         }
         socketFacade.onReceive(Event.END_CURRENT_SLOT) {
             if (checkTransactionStarted()) {
-                queue?.endCurrentSlot()
+                queue!!.endCurrentSlot()
                 updateAndSendQueue()
             }
         }
@@ -50,67 +63,58 @@ class Management(
         socketFacade.onReceive(Event.MOVE_SLOT_AFTER_ANOTHER) { json ->
             if (checkTransactionStarted()) {
                 val wrapper = json as JSONSlotMovementWrapper
-                queue?.moveSlotAfterAnother(wrapper.getMovedSlot(), wrapper.getOtherSlot())
+                queue!!.moveSlotAfterAnother(wrapper.getMovedSlot(), wrapper.getOtherSlot())
                 updateAndSendQueue()
             }
         }
         socketFacade.onReceive(Event.CHANGE_FIXED_SLOT_TIME) { json ->
             if (checkTransactionStarted()) {
                 val wrapper = json as JSONChangeSlotTimeWrapper
-                queue?.changeAppointmentTime(wrapper.getSlotCode(), wrapper.getNewTime())
+                queue!!.changeAppointmentTime(wrapper.getSlotCode(), wrapper.getNewTime())
                 updateAndSendQueue()
             }
         }
         socketFacade.onReceive(Event.ADD_SPONTANEOUS_SLOT) { json ->
             if (checkTransactionStarted()) {
                 val wrapper = json as JSONAddSpontaneousSlotWrapper
-                // TODO fix the slot code creation...
                 val slot =
                     Slot(
-                        SlotCode(""),
+                        SlotCode(""), // will be set by the database
                         Priority.NORMAL,
                         wrapper.getCreationTime(),
                         // The creation time is the expected time for new slots
                         wrapper.getDuration(),
                         wrapper.getCreationTime()
                     )
-                queue?.addSpontaneousSlot(slot)
+                databaseWrapper.addTemporarySlot(slot, queue!!.queueId)
+                queue!!.addSpontaneousSlot(slot)
                 updateAndSendQueue()
             }
         }
         socketFacade.onReceive(Event.ADD_FIXED_SLOT) { json ->
             if (checkTransactionStarted()) {
                 val wrapper = json as JSONAddFixedSlotWrapper
-                // TODO fix the slot code creation...
                 val slot =
                     Slot(
-                        SlotCode(""),
+                        SlotCode(""), // will be set by the database
                         Priority.NORMAL,
                         wrapper.getAppointmentTime(),
                         // The creation time is the expected time for new slots
                         wrapper.getDuration(),
                         wrapper.getAppointmentTime()
                     )
-                queue?.addFixedSlot(slot)
+                databaseWrapper.addTemporarySlot(slot, queue!!.queueId)
+                queue!!.addFixedSlot(slot)
                 updateAndSendQueue()
             }
         }
         socketFacade.onReceive(Event.CHANGE_SLOT_DURATION) { json ->
             if (checkTransactionStarted()) {
                 val wrapper = json as JSONChangeSlotDurationWrapper
-                queue?.updateSlotLength(wrapper.getSlotCode(), wrapper.getNewDuration())
+                queue!!.updateSlotLength(wrapper.getSlotCode(), wrapper.getNewDuration())
                 updateAndSendQueue()
             }
         }
-
-        // Send settings
-        managementInformation = databaseWrapper.getManagementById(managementId)
-        sendUpdatedManagementSettings(managementInformation.settings)
-
-        // Send queue
-        val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
-        val queue = Queue(managementId, queueId, databaseWrapper)
-        sendUpdatedQueue(queue)
     }
 
     /**
@@ -132,7 +136,7 @@ class Management(
 
     private fun updateAndSendQueue() {
         if (queue != null) {
-            queue?.updateQueue(managementInformation.settings.prioritizationTime)
+            queue!!.updateQueue(managementInformation.settings.prioritizationTime)
             sendUpdatedQueue(queue!!)
         }
     }
