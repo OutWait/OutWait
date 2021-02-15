@@ -128,7 +128,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         managementId: ManagementId,
         managementSettings: ManagementSettings
     ) {
-        databaseWrapper.saveManagementSettings(managementSettings)
+        databaseWrapper.saveManagementSettings(managementId, managementSettings)
 
         for (management in managements) {
             if (management.managementId == managementId)
