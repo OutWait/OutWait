@@ -65,6 +65,8 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     }
 
     override fun newCodeEntered(slotCode: String) {
+
+        Log.d("newC::SIOCliHandler", "newCodeEntered was called")
         val event: Event = Event.LISTEN_SLOT
         val data: JSONObjectWrapper = JSONSlotCodeWrapper(slotCode)
 

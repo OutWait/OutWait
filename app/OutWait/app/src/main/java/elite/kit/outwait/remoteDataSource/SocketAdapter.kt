@@ -16,13 +16,12 @@ import java.net.URI
 
 class SocketAdapter(private val namespace: String) {
 
-    private val serverURI: String = "http://161.97.168.24"
+    private val serverURI: String = "http://161.97.168.24:567"
 
     private val socketIOSocket: Socket? = null
 
     init {
         val options = IO.Options()
-        options.port = 567
         options.reconnection = true
 
         val mSocket = IO.socket(URI.create(serverURI + namespace), options)
