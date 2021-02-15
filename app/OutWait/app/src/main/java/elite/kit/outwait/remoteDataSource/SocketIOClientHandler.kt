@@ -1,9 +1,11 @@
 package elite.kit.outwait.remoteDataSource
 
+import android.util.Log
+import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.networkProtocol.*
 import org.json.JSONObject
 
-class SocketIOClientHandler : ClientHandler {
+class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
     private val namespaceClient: String = "/client"
 
@@ -20,7 +22,9 @@ class SocketIOClientHandler : ClientHandler {
     //Falls nur interne Methoden, dann diese direkt in Event-Callback-Mapping einfügen?
 
     override fun initCommunication(): Boolean {
-        TODO("Not yet implemented")
+        Log.d("initCom::SIOCliHandler", "reached")
+        return true
+        //TODO("Not yet implemented")
     }
 
     override fun endCommunication(): Boolean {
