@@ -24,6 +24,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
         // configure HashMap that maps receiving events to callbacks
         // TODO Mit SEND_SLOT_APPROX zusammenfassen (Siehe issue auf gitlab)
+       /*
         clientEventToCallbackMapping[Event.UPDATE_MANAGEMENT_INFORMATION] = { receivedData ->
             onUpdateManagementInformation(receivedData as JSONUpdateManagementInformationWrapper)
         }
@@ -31,6 +32,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
             onSendSlotApprox(receivedData as JSONSlotApproxWrapper)
         }
 
+        */
 
         clientEventToCallbackMapping[Event.READY_TO_SERVE] = { receivedData ->
             onReadyToServe(receivedData as JSONEmptyWrapper)
@@ -57,15 +59,14 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         cSocket.initializeConnection(clientEventToCallbackMapping)
 
         // Mit return warten bis SocketIOSocket connected ist
-        while (!cSocket.isConnected()!!) {
-            Thread.sleep(1000)
-        }
+        while (cSocket.isConnected() == false) Thread.sleep(1000)
 
         return true
     }
 
     override fun endCommunication(): Boolean {
-        TODO("Not yet implemented")
+        cSocket.releaseConnection()
+        return true
     }
 
     override fun newCodeEntered(slotCode: String) {
@@ -109,26 +110,28 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
     private fun onEndSlot(wrappedJSONData: JSONSlotCodeWrapper) {
         val endedSlotCode = wrappedJSONData.getSlotCode()
-        TODO ("Entsprechenden Slot aus der ClientDB löschen")
+        val endedClientInfo = dao.getClientInfo(endedSlotCode)
+
+        // delete ClientInfo from ClientDB
+        dao.deleteClientInfo(endedClientInfo)
     }
 
     private fun onDeleteSlot(wrappedJSONData: JSONSlotCodeWrapper) {
         val deletedSlotCode = wrappedJSONData.getSlotCode()
-        TODO ("Entsprechenden Slot aus der ClientDB löschen")
+        val deletedClientInfo = dao.getClientInfo(deletedSlotCode)
+
+        // delete ClientInfo from ClientDB
+        dao.deleteClientInfo(deletedClientInfo)
     }
 
     private fun onInvalidCode(wrappedJSONData: JSONEmptyWrapper) {
-
         //TODO 1 Fehlermeldung oder LiveData um Repo zu benachrichtigen?
         // -> mit Benni abklären
-
         // TODO 2 Soll nochmal der invalide Code vom Server geschickt werden?
-
     }
 
     private fun onInvalidRequest(wrappedJSONData: JSONInvalidRequestWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
-
         //TODO Fehlermeldung werfen
     }
 

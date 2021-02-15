@@ -33,6 +33,6 @@ class JSONUpdateManagementInformationWrapper(jsonObj: JSONObject) : JSONObjectWr
     }
 
     fun getName(): String {
-        return jsonObj.getString(NAME)
+        return jsonObj.getString(INSTITUTE_NAME)
     }
 }
