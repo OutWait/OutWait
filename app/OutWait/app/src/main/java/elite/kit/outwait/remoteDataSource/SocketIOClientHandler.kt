@@ -44,32 +44,27 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         }
     }
 
-
-    //TODO Hier solang mit Rückgabe warten bis Server "readyToServe" geschickt hat (Zustandsvariable)
     override fun initCommunication(): Boolean {
         Log.d("initCom::SIOCliHandler", "reached")
 
-        // Mit emit warten bis Server readyToServe signalisiert (TODO geht auch schöner? LiveData?)
-        while (!this.serverReady) Thread.sleep(1000)
         cSocket.initializeConnection(clientEventToCallbackMapping)
 
         // Mit return warten bis SocketIOSocket connected ist (TODO geht auch schöner? LiveData?)
-        while (cSocket.isConnected() == false) {
-            Log.d("initCom::SIOCliHandler", "hängt in while schleife")
-            Thread.sleep(1000)
-        }
-        Log.d("initCom::SIOCliHandler", "connectionEstablished")
+        while (cSocket.isConnected() == false) Thread.sleep(1000)
+
+        // Mit return warten bis Server readyToServe signalisiert (TODO geht auch schöner? LiveData?)
+        while (!this.serverReady) Thread.sleep(1000)
+
         return true
     }
 
     override fun endCommunication(): Boolean {
-        Log.d("initCom::SIOCliHandler", "reached")
         cSocket.releaseConnection()
+        this.serverReady = false
         return true
     }
 
     override fun newCodeEntered(slotCode: String) {
-        Log.d("newCEntr::SIOCliHandler", "reached")
         val event: Event = Event.LISTEN_SLOT
         val data: JSONObjectWrapper = JSONSlotCodeWrapper(slotCode)
 
@@ -96,6 +91,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         val delayNotificationTime = wrappedJSONData.getDelayNotificationTime()
 
         // check if clientInfo existed already and has to be updated or inserted for the first time
+        // TODO will getClientInfo always return not null ? (see gitlab issues)
         if (dao.getClientInfo(slotCode) != null) {
 
             // get originalAppointmentTime of existing clientInfo object
@@ -136,7 +132,6 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     }
 
     private fun onInvalidCode(wrappedJSONData: JSONEmptyWrapper) {
-        Log.d("onInvC::SIOCliHandler", "server antw.")
         //TODO 1 Fehlermeldung oder LiveData um Repo zu benachrichtigen?
         // -> mit Benni abklären
         // TODO 2 Soll nochmal der invalide Code vom Server geschickt werden?

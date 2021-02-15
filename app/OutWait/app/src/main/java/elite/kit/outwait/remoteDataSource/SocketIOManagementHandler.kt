@@ -12,22 +12,27 @@ import org.joda.time.Duration
 
 class SocketIOManagementHandler : ManagementHandler {
 
-    /* TODO Keine LiveData machen, da intern und Repo soll nix von Komm Impl wissen
-    Variable die anzeigt, ob der Server einen Login zulässt (Event.LOGIN_REQUEST wurde
-    empfangen und verarbeitet) vorherige Login-Anfragen durch das Repo
-        a) werfen Fehlermeldung o.ä   oder    b) lassen den Thread warten?
-     */
+    // Ein Haufen unschöner Zustandsvariablen (-> TODO LiveData schöner?)
     private var loginRequested = false
-
     private var loggedIn = false
     private var loginDenied = false
     private var transactionStarted = false
     private var transactionDenied = false
 
     /*
-    TODO Variable die anzeigt, ob Manager gerade eingeloggt ist oder nicht -> LiveData machen??
+    External and internal LiveData (encapsulated with backing property) for current WaitingQueue
+    */
+    private val _currentList = MutableLiveData<ReceivedList>()
+    private val currentList: LiveData<ReceivedList>
+        get() = _currentList
+
+
+    /*
+    External and internal LiveData (encapsulated with backing property) for current Preferences
      */
-    private var managerLoggedIn = false
+    private val _currentPrefs = MutableLiveData<Preferences>()
+    private val currentPrefs: LiveData<Preferences>
+        get() = _currentPrefs
 
     private val namespaceManagement: String = "/management"
 
@@ -38,6 +43,10 @@ class SocketIOManagementHandler : ManagementHandler {
 
     init {
         mSocket = SocketAdapter(namespaceManagement)
+
+        // initialize the observable LiveData with nulls, so they are immediately gettable
+        _currentList.value = null
+        _currentPrefs.value = null
 
         // configure HashMap that maps receiving events to callbacks
         managementEventToCallbackMapping[Event.TRANSACTION_STARTED] = { receivedData ->
@@ -66,39 +75,17 @@ class SocketIOManagementHandler : ManagementHandler {
         }
     }
 
-    //TODO Mit ObjectWrappern die Daten zum versenden verpacken
-    //TODO Mit Strategie (oder internen Methoden, da net so viele) die incomingEvents verarbeiten
-    //Falls nur interne Methoden, dann diese direkt in Event-Callback-Mapping einfügen?
-
     override fun initCommunication(): Boolean {
         TODO("Not yet implemented")
     }
 
     override fun endCommunication(): Boolean {
-        TODO("Not yet implemented")
+        mSocket.releaseConnection()
+        resetTransactionState()
+        resetLoginState()
+        this.loginRequested = false
+        return true
     }
-
-    /*
-    Live Data um die aktuelle WaitingQueue lesbar zu machen, einmal Mutable für intern und
-    plain LiveData für READ_ONLY
-    TODO Die LiveData bzw. die darunter liegenden Werte zu Beginn mit Null init, damit die BEnni schon getten kann
-     */
-
-    private val currentList = MutableLiveData<ReceivedList>()
-    private val _currentList: LiveData<ReceivedList>
-        get() = currentList
-
-
-    /*
-    Live Data um die aktuellen ManagementEinstellungen (Preferences)
-    lesbar zu machen, einmal Mutable für intern und plain
-    LiveData für READ_ONLY
-    TODO Die LiveData bzw. die darunter liegenden Werte zu Beginn mit Null init, damit die BEnni schon getten kann
-     */
-
-    private val currentPrefs = MutableLiveData<Preferences>()
-    private val _currentPrefs: LiveData<Preferences>
-        get() = currentPrefs
 
 
     /*
@@ -107,7 +94,6 @@ class SocketIOManagementHandler : ManagementHandler {
     und Boolsche Rückgabe wird erst nach entspr. Event des Servers geschickt
      */
     override fun login(username: String, password: String): Boolean {
-        // TODO warte bis wir einen Login-Request vom Server verarbeitet haben
         while (!this.loginRequested) {
             Log.i(
                 "SocketIOManagementHandl",
@@ -118,7 +104,6 @@ class SocketIOManagementHandler : ManagementHandler {
 
         val event: Event = Event.MANAGEMENT_LOGIN
         val data: JSONObjectWrapper = JSONLoginWrapper(username, password)
-
         mSocket.emitEventToServer(event.getEventString(), data)
 
         Log.i(
@@ -145,8 +130,8 @@ class SocketIOManagementHandler : ManagementHandler {
                 "SocketIOManagementHandl",
                 "Login was denied"
             )
+            resetLoginState()
         }
-
         return false
     }
 
@@ -155,6 +140,7 @@ class SocketIOManagementHandler : ManagementHandler {
         val data: JSONObjectWrapper = JSONEmptyWrapper()
 
         mSocket.emitEventToServer(event.getEventString(), data)
+        this.loggedIn = false
 
     }
 
@@ -177,9 +163,10 @@ class SocketIOManagementHandler : ManagementHandler {
    gemacht nachdem Server auf den StartVersuch geantwortet hat (mit TransactionSuccess oder Denied)
      */
     override fun startTransaction(): Boolean {
+        //TODO Muss geprüft werden, ob grad noch Transaction läuft?
+
         val event: Event = Event.START_TRANSACTION
         val data: JSONObjectWrapper = JSONEmptyWrapper()
-
         mSocket.emitEventToServer(event.getEventString(), data)
 
         while (!transactionDenied and !transactionStarted) {
@@ -188,7 +175,6 @@ class SocketIOManagementHandler : ManagementHandler {
                 "Waiting on server response for transactionStart"
             )
             Thread.sleep(1_000)
-
         }
 
         if (transactionStarted) {
@@ -196,23 +182,25 @@ class SocketIOManagementHandler : ManagementHandler {
             return true
         } else if (transactionDenied) {
             Log.i("SocketIOManagementHandl", "Transaction was denied")
+            resetTransactionState()
         }
-
         return false
     }
 
     override fun abortTransaction() {
         val event: Event = Event.ABORT_TRANSACTION
         val data: JSONObjectWrapper = JSONEmptyWrapper()
-
         mSocket.emitEventToServer(event.getEventString(), data)
+
+        resetTransactionState()
     }
 
     override fun saveTransaction() {
         val event: Event = Event.SAVE_TRANSACTION
         val data: JSONObjectWrapper = JSONEmptyWrapper()
-
         mSocket.emitEventToServer(event.getEventString(), data)
+
+        resetTransactionState()
     }
 
     override fun addSpontaneousSlot(duration: Duration, timeOfCreation: DateTime) {
@@ -264,15 +252,25 @@ class SocketIOManagementHandler : ManagementHandler {
         mSocket.emitEventToServer(event.getEventString(), data)
     }
 
+    private fun  resetLoginState() {
+        this.loggedIn = false
+        this.loginDenied = false
+    }
+
+    private fun resetTransactionState() {
+        this.transactionDenied = false
+        this.transactionStarted = false
+    }
+
     /*
-    Getter für die LiveData Attribute TODO Welche LiveData fehlt noch?
+    Getter für die LiveData Attribute
      */
     override fun getReceivedList(): LiveData<ReceivedList> {
-        return _currentList
+        return currentList
     }
 
     override fun getUpdatedPreferences(): LiveData<Preferences> {
-        return _currentPrefs
+        return currentPrefs
     }
 
     /*
@@ -281,7 +279,6 @@ class SocketIOManagementHandler : ManagementHandler {
 
     private fun onTransactionStarted(wrappedJSONData: JSONEmptyWrapper) {
         this.transactionStarted = true
-        // TODO Zustandsvariable wieder zurücksetzen? Wann?
     }
 
     private fun onTransactionDenied(wrappedJSONData: JSONEmptyWrapper) {
@@ -304,19 +301,19 @@ class SocketIOManagementHandler : ManagementHandler {
 
     private fun onLoginDenied(wrappedJSONData: JSONEmptyWrapper) {
         this.loginDenied = true
-        TODO("Server will hier Verbindung abbrechen!! Was tun?")
+        TODO("Server will hier Verbindung abbrechen!! Was tun? (siehe gitlab issue)")
     }
 
 
     private fun onUpdateManagementSettings(wrappedJSONData: JSONManagementSettingsWrapper) {
         val newPrefs = wrappedJSONData.getPreferences()
-        TODO("Preferences Object mit neuen Preferences in LiveData aktualisieren")
+        this._currentPrefs.value = newPrefs
 
     }
 
     private fun onUpdateQueue(wrappedJSONData: JSONQueueWrapper) {
         val receivedList = wrappedJSONData.getQueue()
-        TODO("ReceivedList Object mit neuer ReceivedList in LiveData aktualisieren")
+        this._currentList.value = receivedList
     }
 
 

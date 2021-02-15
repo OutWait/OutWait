@@ -16,15 +16,17 @@ import java.net.URI
 
 class SocketAdapter(private val namespace: String) {
 
-    private val serverURI: String = "http://127.0.0.1:8080"
+    private val serverURI: String = "http://161.97.168.24"
 
     private val socketIOSocket: Socket? = null
 
     init {
         val options = IO.Options()
+        options.port = 567
         options.reconnection = true
 
         val mSocket = IO.socket(URI.create(serverURI + namespace), options)
+        Log.i("SocketAdapter", "SocketIOSocket was created")
     }
 
     /*
@@ -37,6 +39,8 @@ class SocketAdapter(private val namespace: String) {
     ) {
 
         registerEventListeners(mapEventToCallback)
+
+        Log.i("SocketAdapter", "All listeners were registered")
 
         /*
         Im Folgednen Implementierung von Listener für die ganzen Socket.IO seitigen Events
@@ -62,6 +66,8 @@ class SocketAdapter(private val namespace: String) {
 
         // open the socket connection
         socketIOSocket?.connect()
+
+        Log.i("SocketAdapter", "SocketIOSocket.connect() was called")
     }
 
 
@@ -70,6 +76,7 @@ class SocketAdapter(private val namespace: String) {
      */
     fun emitEventToServer(event: String, wrappedJSONData: JSONObjectWrapper) {
         socketIOSocket?.emit(event, wrappedJSONData.getJSONString())
+        Log.i("SocketAdapter", "Event was emitted to server on SocketIOSocket")
     }
 
     /*
@@ -99,7 +106,8 @@ class SocketAdapter(private val namespace: String) {
     }
 
     /*
-    Gibt die von SocketIOSocket gehaltene Verbindung frei //TODO Muss noch was gemacht/freigegeben werden?
+    Gibt die von SocketIOSocket gehaltene Verbindung frei
+    //TODO Muss noch was gemacht/freigegeben werden?
      */
     fun releaseConnection() {
         socketIOSocket?.close()
