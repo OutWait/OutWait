@@ -44,23 +44,23 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         }
     }
 
-
-    //TODO Hier solang mit Rückgabe warten bis Server "readyToServe" geschickt hat (Zustandsvariable)
     override fun initCommunication(): Boolean {
         Log.d("initCom::SIOCliHandler", "reached")
 
-        // Mit emit warten bis Server readyToServe signalisiert (TODO geht auch schöner? LiveData?)
-        while (!this.serverReady) Thread.sleep(1000)
         cSocket.initializeConnection(clientEventToCallbackMapping)
 
         // Mit return warten bis SocketIOSocket connected ist (TODO geht auch schöner? LiveData?)
         while (cSocket.isConnected() == false) Thread.sleep(1000)
+
+        // Mit return warten bis Server readyToServe signalisiert (TODO geht auch schöner? LiveData?)
+        while (!this.serverReady) Thread.sleep(1000)
 
         return true
     }
 
     override fun endCommunication(): Boolean {
         cSocket.releaseConnection()
+        this.serverReady = false
         return true
     }
 
@@ -91,6 +91,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         val delayNotificationTime = wrappedJSONData.getDelayNotificationTime()
 
         // check if clientInfo existed already and has to be updated or inserted for the first time
+        // TODO will getClientInfo always return not null ? (see gitlab issues)
         if (dao.getClientInfo(slotCode) != null) {
 
             // get originalAppointmentTime of existing clientInfo object
