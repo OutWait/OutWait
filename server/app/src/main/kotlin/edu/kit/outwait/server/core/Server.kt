@@ -17,7 +17,7 @@ class Server {
         // Now the io server
         val config = Configuration();
         config.setHostname("127.0.0.1");
-        config.setPort(8080);
+        config.setPort(567);
         config.setBossThreads(1);
         config.setWorkerThreads(1);
 
