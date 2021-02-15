@@ -43,7 +43,8 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
             }
             else {
                 val slotApprox = receivers.get(slotCode)!!.getSlotApprox()
-                this.sendSlotApprox(slotCode, slotApprox)
+                val slotManagementInformation = receivers.get(slotCode)!!.getSlotManagementInformation()
+                this.sendSlotData(slotCode, slotApprox, slotManagementInformation)
             }
         })
     }
@@ -106,31 +107,17 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
     }
 
     /**
-     * Send slotApprox to Client for a specific Slot
-     * Called for updates or initialization of the EAT of a Slot
+     * Send slotApprox and Management Information to Client for a specific Slot
+     * Called for updates or initialization of a Slot
      * @param slotApprox ETA of Slot
      * @param slotCode SlotCode of Slot
+     * @param slotManagementInformation Management Information of Slot
      */
-    fun sendSlotApprox(slotCode: SlotCode, slotApprox: Date) {
-        val toSend = JSONSlotApproxWrapper()
+    fun sendSlotData(slotCode: SlotCode, slotApprox: Date,slotManagementInformation: SlotManagementInformation) {
+        val toSend = JSONSlotDataWrapper()
         toSend.setSlotApprox(slotApprox)
         toSend.setSlotCode(slotCode)
-        socketFacade.send(Event.SEND_SLOT_APPROX, toSend)
-    }
-
-    /**
-     * Send Management Information to Client for a specific Slot
-     * Called for updates or initialization of management information
-     * @param slotManagementInformation Management Information of Slot
-     * @param slotCode SlotCode of Slot
-     */
-    fun sendManagementInformation(
-        slotCode: SlotCode,
-        slotManagementInformation: SlotManagementInformation
-    ) {
-        val toSend = JSONSlotManagementInformationWrapper()
-        toSend.setSlotCode(slotCode)
         toSend.setInformation(slotManagementInformation)
-        socketFacade.send(Event.UPDATE_MANAGEMENT_INFORMATION, toSend)
+        socketFacade.send(Event.SEND_SLOT_DATA, toSend)
     }
 }
