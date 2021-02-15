@@ -18,7 +18,7 @@ class EditCodeViewModel @Inject constructor(private val repo : ClientRepository,
     val clientSlotCode= MutableLiveData<String>()
 
 
-    fun enterSlotCode(code: String){
+    fun enterSlotCode(code: String?){
         //TODO repo call expected
         Log.d("enterSCode::EditCodeVM", "reached")
         repo.newCodeEntered(code)

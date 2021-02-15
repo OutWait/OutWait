@@ -18,8 +18,12 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao, priva
     private val activeSlots = MutableLiveData<List<ClientInfo>>()
     private val errorNotifications = MutableLiveData<List<ClientErrors>>()
 
-    fun newCodeEntered(code : String){
-        Log.d("newCodeEntered::cRepo", "entered code: $code")
+    fun newCodeEntered(code : String?){
+        var ccode = "abc"
+        if (code !== null){
+            ccode = code
+        }
+        Log.d("newCodeEntered::cRepo", "entered code: $ccode")
         CoroutineScope(IO).launch {
             remote.initCommunication()
         }
