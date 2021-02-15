@@ -10,8 +10,7 @@ enum class ClientEvents(private val eventString: String, private val wrapper: (J
     REFRESH_SLOT_APPROX("refreshSlotApprox@S", { JSONSlotCodeWrapper(it) }),
 
     READY_TO_SERVE("readyToServe@C", { JSONEmptyWrapper(it) }),
-    UPDATE_MANAGEMENT_INFORMATION("updateManagementInformation@C", { JSONUpdateManagementInformationWrapper(it) }),
-    SEND_SLOT_APPROX("sendSlotApprox@C", { JSONSlotApproxWrapper(it) }),
+    SEND_SLOT_DATA("sendSlotData@C", { JSONSlotDataWrapper(it) }),
     END_SLOT("endSlot@C", { JSONSlotCodeWrapper(it) }),
     DELETE_SLOT("deleteSlot@C", { JSONSlotCodeWrapper(it) }),
     INVALID_CODE("invalidCode@C", { JSONEmptyWrapper(it) }),

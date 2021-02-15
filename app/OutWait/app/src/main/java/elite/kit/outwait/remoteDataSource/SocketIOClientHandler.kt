@@ -1,6 +1,7 @@
 package elite.kit.outwait.remoteDataSource
 
 import android.util.Log
+import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.networkProtocol.*
 
@@ -23,17 +24,9 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         cSocket = SocketAdapter(namespaceClient)
 
         // configure HashMap that maps receiving events to callbacks
-        // TODO Mit SEND_SLOT_APPROX zusammenfassen (Siehe issue auf gitlab)
-       /*
-        clientEventToCallbackMapping[Event.UPDATE_MANAGEMENT_INFORMATION] = { receivedData ->
-            onUpdateManagementInformation(receivedData as JSONUpdateManagementInformationWrapper)
+        clientEventToCallbackMapping[Event.SEND_SLOT_DATA] = { receivedData ->
+            onSendSlotData(receivedData as JSONSlotDataWrapper)
         }
-        clientEventToCallbackMapping[Event.SEND_SLOT_APPROX] = { receivedData ->
-            onSendSlotApprox(receivedData as JSONSlotApproxWrapper)
-        }
-
-        */
-
         clientEventToCallbackMapping[Event.READY_TO_SERVE] = { receivedData ->
             onReadyToServe(receivedData as JSONEmptyWrapper)
         }
@@ -54,11 +47,13 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
     //TODO Hier solang mit Rückgabe warten bis Server "readyToServe" geschickt hat (Zustandsvariable)
     override fun initCommunication(): Boolean {
-
         Log.d("initCom::SIOCliHandler", "reached")
+
+        // Mit emit warten bis Server readyToServe signalisiert (TODO geht auch schöner? LiveData?)
+        while (!this.serverReady) Thread.sleep(1000)
         cSocket.initializeConnection(clientEventToCallbackMapping)
 
-        // Mit return warten bis SocketIOSocket connected ist
+        // Mit return warten bis SocketIOSocket connected ist (TODO geht auch schöner? LiveData?)
         while (cSocket.isConnected() == false) Thread.sleep(1000)
 
         return true
@@ -88,17 +83,28 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     Die Callback Methoden die gemäß Mapping bei einem eingeheneden Event aufgerufen werden
      */
 
-    //TODO Mit onSendSloxApprox zusammenfassen (siehe gitlab issue)
-    private fun onUpdateManagementInformation(wrappedJSONData: JSONUpdateManagementInformationWrapper) {
-        val slotCode = wrappedJSONData.getSlotCode()
-        val notificationTime = wrappedJSONData.getNotificationTime()
-        val delayNotificationTime = wrappedJSONData.getDelayNotificationTime()
-        val name = wrappedJSONData.getName()
-    }
-    //TODO Mit onUpdateManagementInformation zusammenfassen (siehe gitlab issue)
-    private fun onSendSlotApprox(wrappedJSONData: JSONSlotApproxWrapper) {
+    private fun onSendSlotData(wrappedJSONData: JSONSlotDataWrapper) {
         val slotCode = wrappedJSONData.getSlotCode()
         val approxTime = wrappedJSONData.getApproxTime()
+        val instituteName = wrappedJSONData.getInstituteName()
+        val notificationTime = wrappedJSONData.getNotificationTime()
+        val delayNotificationTime = wrappedJSONData.getDelayNotificationTime()
+
+        // check if clientInfo existed already and has to be updated or inserted for the first time
+        if (dao.getClientInfo(slotCode) != null) {
+
+            // get originalAppointmentTime of existing clientInfo object
+            val originalAppointmentTime = dao.getClientInfo(slotCode).originalAppointmentTime
+            //  // create new ClientInfo with same originalAppointmentTime as the existing one
+            val newClientInfo = ClientInfo(slotCode, instituteName, approxTime, originalAppointmentTime,
+                notificationTime, delayNotificationTime)
+            dao.update(newClientInfo)
+        } else {
+            // create new ClientInfo with originalAppointmentTime as the current (and first) approxTime
+            val newClientInfo = ClientInfo(slotCode, instituteName, approxTime, approxTime,
+                notificationTime, delayNotificationTime)
+            dao.insert(newClientInfo)
+        }
     }
 
     /*
