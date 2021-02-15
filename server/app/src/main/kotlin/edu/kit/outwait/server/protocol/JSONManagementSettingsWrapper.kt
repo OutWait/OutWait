@@ -7,13 +7,19 @@ import org.json.JSONObject
 
 class JSONManagementSettingsWrapper(obj: JSONObject) : JSONObjectWrapper(obj) {
     constructor() : this(JSONObject())
-    fun setSettings(settings: ManagementSettings) {}
+    fun setSettings(settings: ManagementSettings) {
+        obj.put("defaultSlotDuration", settings.defaultSlotDuration.getSeconds())
+        obj.put("notificationTime", settings.notificationTime.getSeconds())
+        obj.put("delayNotificationTime", settings.delayNotificationTime.getSeconds())
+        obj.put("mode", if (settings.mode == Mode.ONE) "one" else "two")
+        obj.put("prioritizationTime", settings.prioritizationTime.getSeconds())
+    }
     fun getSettings(): ManagementSettings {
         return ManagementSettings(
-            Mode.ONE,
-            Duration.ZERO,
-            Duration.ZERO,
-            Duration.ZERO,
-            Duration.ZERO
+            if (obj.getString("mode") == "one") Mode.ONE else Mode.TWO,
+            Duration.ofSeconds(obj.getLong("defaultSlotDuration")),
+            Duration.ofSeconds(obj.getLong("notificationTime")),
+            Duration.ofSeconds(obj.getLong("delayNotificationTime")),
+            Duration.ofSeconds(obj.getLong("prioritizationTime"))
         )}
 }
