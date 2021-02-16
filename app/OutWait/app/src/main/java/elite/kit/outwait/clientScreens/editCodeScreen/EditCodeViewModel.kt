@@ -29,13 +29,14 @@ class EditCodeViewModel @Inject constructor(private val repo : ClientRepository,
             repo.newCodeEntered(code)
             //coordinator.navigateToRemainingTimeFragment()
         }
-    }
-
-    fun startScan(){
-        //TODO start scan in fragment
+        //TODO forward by valid slotCode to remainingTimeFragment
     }
 
     fun navigateToInstitutLogin(){
         coordinator.navigateToInstitutLoginFragment()
+    }
+
+    fun navigateToRemainingTimeFragment(){
+        coordinator.navigateToRemainingTimeFragment()
     }
 }

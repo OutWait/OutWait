@@ -87,5 +87,9 @@ dependencies {
     //Dependency for progress bar
     implementation 'com.mikhaellopez:circularprogressbar:3.0.3'
 
+    //Dependency for qr scan
+    implementation('com.journeyapps:zxing-android-embedded:4.1.0') { transitive = false }
+
+
 
 }
