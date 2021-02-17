@@ -22,7 +22,7 @@ class SocketAdapter(val namespace: SocketIONamespace) {
                         dat:String,
                         ackRequest: AckRequest
                     ) {
-                        println("New message received. Type" + e.getEventTag())
+                        println("New message received. Type " + e.getEventTag())
                         val jsonWrapper = e.createWrapper(dat)
                         val facade = facades[client]
                         if (facade != null) {
@@ -40,6 +40,7 @@ class SocketAdapter(val namespace: SocketIONamespace) {
         namespace.addDisconnectListener(
             object : DisconnectListener {
                 override fun onDisconnect(client: SocketIOClient) {
+                    println("Client disconnected")
                     val facade = facades[client]
                     if (facade != null) {
                         removeFacade(facade)
