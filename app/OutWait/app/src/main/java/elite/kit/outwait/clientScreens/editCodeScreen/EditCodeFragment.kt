@@ -46,6 +46,7 @@ class EditCodeFragment : Fragment() {
             checkForPermission(android.Manifest.permission.CAMERA, "camera", CAMERA_RQ)
         }
 
+
         return binding.root
     }
 

@@ -26,10 +26,11 @@ class InstitutLoginViewModel @Inject constructor(
 
 
     fun loginTried(){
-        CoroutineScope(Main).launch {
+       /* CoroutineScope(Main).launch {
             _isinstitutLogged.value= repo.loginCo("bla", "bla")
             if(_isinstitutLogged.value!!) coordinator.navigateToManagementView()  else repo.doSomething()
-        }
+        }*/
+        coordinator.navigateToManagementView()
 
     }
 

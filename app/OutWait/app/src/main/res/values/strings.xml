@@ -40,4 +40,5 @@
     <string name="TRANSACTION_DENIED">Transaction denied!</string>
     <!-- Strings for Error-Notifications (Client) -->
     <string name="EXAMPLE_ERROR">Example Error!</string>
+    <string name="process_title">Process</string>
 </resources>

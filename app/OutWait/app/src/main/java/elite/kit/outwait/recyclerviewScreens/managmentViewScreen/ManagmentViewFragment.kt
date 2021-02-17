@@ -1,5 +1,6 @@
 package elite.kit.outwait.recyclerviewScreens.managmentViewScreen
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,18 +12,26 @@ import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
+import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding
 import elite.kit.outwait.databinding.ManagmentViewFragmentBinding
 import elite.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFragment
 import elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.joda.time.*
+import kotlin.time.ExperimentalTime
+import kotlin.time.milliseconds
 
 @AndroidEntryPoint
 class ManagmentViewFragment : Fragment(), ItemActionListener {
@@ -30,6 +39,7 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
     private val viewModel: ManagmentViewViewModel by viewModels()
     private lateinit var binding: ManagmentViewFragmentBinding
     private lateinit var slotAdapter: SlotAdapter
+    private lateinit var builder: AlertDialog.Builder
 
 
     override fun onCreateView(
@@ -39,15 +49,25 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.managment_view_fragment, container, false)
         binding.viewModel = this.viewModel
-        binding.lifecycleOwner=this
+        binding.lifecycleOwner = this
 
         //RecyclerView SetUp
         binding.slotList.layoutManager = LinearLayoutManager(activity)
         binding.slotList.setHasFixedSize(true)
 
+        builder = AlertDialog.Builder(activity)
+        builder.apply {
+            setView(R.layout.full_screen_progress_bar)
+            setTitle(getString(R.string.process_title))
+            setCancelable(true)
+        }
+        builder.create()
+        builder.setCancelable(true)
+
         //TODO check except
-        viewModel.repo.getObservableTimeSlotList().observe(viewLifecycleOwner, Observer { list->
+        viewModel.repo.getObservableTimeSlotList().observe(viewLifecycleOwner, Observer { list ->
             slotAdapter.updateSlots(list.toMutableList())
+            //TODO dismiss progress bar dialog
 
         })
 
@@ -63,13 +83,13 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         itemTouchHelper.attachToRecyclerView(binding.slotList)
         binding.slotList.adapter = slotAdapter
 
-
-
+        //Add action bar icon
         setHasOptionsMenu(true)
+
+
 
         return binding.root
     }
-
 
 
     private fun fakeSlotList(): MutableList<TimeSlot> {
@@ -78,10 +98,10 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
 
         var start = DateTime(DateTime.now()).plusHours(1)
         var end = start.plusMinutes(33)
-       /* Log.i("datetime", "${TransformationInput.formatDateTime(20,15)}")
-        Log.i("duration", "${TransformationInput.formatDuration(6000)}")
-        Log.i("interval", "${TransformationInput.formatInterval(6000)}")
-        Log.i("interval", "${Duration(200L).toIntervalFrom(DateTime.now())}")*/
+        /* Log.i("datetime", "${TransformationInput.formatDateTime(20,15)}")
+         Log.i("duration", "${TransformationInput.formatDuration(6000)}")
+         Log.i("interval", "${TransformationInput.formatInterval(6000)}")
+         Log.i("interval", "${Duration(200L).toIntervalFrom(DateTime.now())}")*/
 
         for (i in 1..1) {
 
@@ -114,20 +134,27 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
     }
 
     override fun onItemClicked(position: Int) {
-        var detailDialog= SlotDetailDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
-        detailDialog.show(childFragmentManager,"ssss")
+        var detailDialog =
+            SlotDetailDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
+        detailDialog.show(childFragmentManager, "ssss")
     }
 
-    override fun onItemSwiped(position: Int, removedSlot: TimeSlot) {
 
-        Snackbar.make(binding.slotList, "${getIdentifier(removedSlot)}", Snackbar.LENGTH_LONG)
-            .setAction(getString(
-                R.string.undo)) {
-                slotAdapter.slotList.add(position, removedSlot)
-                slotAdapter.notifyItemInserted(position)
-                slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 1)
+    override  fun onItemSwiped(position: Int, removedSlot: TimeSlot) {
 
-            }.show()
+        var resetDelete =
+            Snackbar.make(binding.slotList, "${getIdentifier(removedSlot)}", Snackbar.LENGTH_LONG)
+                .setAction(getString(
+                    R.string.undo)) {
+                    slotAdapter.slotList.add(position, removedSlot)
+                    slotAdapter.notifyItemInserted(position)
+                    slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 1)
+                    builder.show()
+                }
+        resetDelete.show()
+
+        //TODO popup after showing of snackbar
+//        builder.show()
     }
 
     private fun getIdentifier(slot: TimeSlot): String {
@@ -136,9 +163,11 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
     }
 
     override fun editTimeSlot(position: Int) {
-        var editDialog= EditTimeSlotDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
-        editDialog.show(childFragmentManager,"aaa")
-       // viewModel.navigateToEditDialog(slotAdapter.slotList[position] as ClientTimeSlot)
+        var editDialog =
+            EditTimeSlotDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
+        editDialog.show(childFragmentManager, "aaa")
+        editDialog.exitTransition
+        builder.show()
     }
 
 

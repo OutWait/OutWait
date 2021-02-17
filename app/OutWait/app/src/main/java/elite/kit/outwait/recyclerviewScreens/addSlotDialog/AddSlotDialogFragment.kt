@@ -53,7 +53,6 @@ class AddSlotDialogFragment : DialogFragment() {
         })*/
         defaultValues()
         builder.apply {
-
             setView(binding.root)
             setTitle(getString(R.string.title_add_slot))
             setPositiveButton(getString(R.string.confirm)) { dialog, which ->
