@@ -23,8 +23,7 @@ class SpontaneousSlotViewHolder(
     private var icon = itemView.findViewById<ImageView>(R.id.ivEditIcon)
     private var container = itemView.findViewById<TextView>(R.id.tvSpoSlotContainer)
 
-
-    val gestureDetector: GestureDetector = GestureDetector(itemView.context, this)
+    private val gestureDetector: GestureDetector = GestureDetector(itemView.context, this)
 
     init {
         itemView.setOnTouchListener(this)
