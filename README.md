@@ -10,7 +10,7 @@ cd outwait
 
 # App
 cd app/OutWait
-gradle build
+./gradlew build
 
 cd ../..
 
