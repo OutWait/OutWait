@@ -41,4 +41,7 @@
     <!-- Strings for Error-Notifications (Client) -->
     <string name="EXAMPLE_ERROR">Example Error!</string>
     <string name="process_title">Process</string>
+    <!-- Strings related to timerService -->
+    <string name="permanentChannel">PERM_CHANNEL_ID</string>
+    <string name="secondChannel">SEC_CHANNEL_ID</string>
 </resources>
