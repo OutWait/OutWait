@@ -1,12 +1,16 @@
 package edu.kit.outwait.server.protocol
 
-import edu.kit.outwait.server.core.DatabaseWrapper
 import edu.kit.outwait.server.management.Queue
-import edu.kit.outwait.server.management.QueueId
 import org.json.JSONObject
 
+/**
+ * NOTE: This class does not implement a queue-getter, because the server will not receive a queue
+ * (as it is the single source of truth) and the server does not implement the "gravity-queue"
+ * algorithm to parse a json into a valid queue.
+ */
 class JSONQueueWrapper(obj: JSONObject) : JSONObjectWrapper(obj) {
     constructor() : this(JSONObject())
-    fun setQueue(queue: Queue) {}
-    fun getQueue(): Queue { return Queue(QueueId(0), DatabaseWrapper()) }
+    fun setQueue(queue: Queue) {
+        queue.storeToJSON(obj)
+    }
 }
