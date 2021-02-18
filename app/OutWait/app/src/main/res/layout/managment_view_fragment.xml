@@ -7,38 +7,48 @@
             name="viewModel"
             type="elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ManagmentViewViewModel" />
     </data>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".recyclerviewScreens.managmentViewScreen.ManagmentViewFragment">
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/slotList"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rv_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        tools:context=".recyclerviewScreens.managmentViewScreen.ManagmentViewFragment">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
-        android:onClick="@{()->viewModel.navigateToAddSlotDialog()}"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.881"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.976"
-        app:srcCompat="@drawable/ic_clear" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ProgressBar
+            android:id="@+id/pbTransaction"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:indeterminate="true">
+
+        </ProgressBar>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/slotList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:onClick="@{()->viewModel.navigateToAddSlotDialog()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.881"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.976"
+            app:srcCompat="@drawable/ic_clear" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

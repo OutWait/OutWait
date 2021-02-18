@@ -1,37 +1,30 @@
 package elite.kit.outwait.recyclerviewScreens.managmentViewScreen
 
+import android.app.ActionBar
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
+import android.widget.Toolbar
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.Callback
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
-import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding
 import elite.kit.outwait.databinding.ManagmentViewFragmentBinding
 import elite.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFragment
 import elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.android.synthetic.main.config_dialog_fragment.*
 import org.joda.time.*
-import kotlin.time.ExperimentalTime
-import kotlin.time.milliseconds
 
 @AndroidEntryPoint
 class ManagmentViewFragment : Fragment(), ItemActionListener {
@@ -40,6 +33,7 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
     private lateinit var binding: ManagmentViewFragmentBinding
     private lateinit var slotAdapter: SlotAdapter
     private lateinit var builder: AlertDialog.Builder
+    private lateinit var displayingDialog: AlertDialog
 
 
     override fun onCreateView(
@@ -62,14 +56,17 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
             setCancelable(true)
         }
         builder.create()
-        builder.setCancelable(true)
+        //        binding.slotList.visibility=View.INVISIBLE
+//        binding.floatingActionButton.visibility=View.INVISIBLE
 
         //TODO check except
         viewModel.repo.getObservableTimeSlotList().observe(viewLifecycleOwner, Observer { list ->
             slotAdapter.updateSlots(list.toMutableList())
             //TODO dismiss progress bar dialog
-
+            displayingDialog.cancel()
         })
+
+        binding.pbTransaction.visibility = View.INVISIBLE
 
 //        viewModel.weatherLocations.observe(viewLifecycleOwner) {
 //            weatherOverviewAdapter.updateWeatherLocations(it)
@@ -85,12 +82,18 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
 
         //Add action bar icon
         setHasOptionsMenu(true)
+        var actionbar= requireActivity().actionBar
+
+        viewModel.isFragmentShowing.observe(viewLifecycleOwner){
+            if(it){
+                displayingDialog = builder.show()
+            }
+        }
 
 
 
         return binding.root
     }
-
 
     private fun fakeSlotList(): MutableList<TimeSlot> {
         var slotList = mutableListOf<TimeSlot>()
@@ -140,7 +143,7 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
     }
 
 
-    override  fun onItemSwiped(position: Int, removedSlot: TimeSlot) {
+    override fun onItemSwiped(position: Int, removedSlot: TimeSlot) {
 
         var resetDelete =
             Snackbar.make(binding.slotList, "${getIdentifier(removedSlot)}", Snackbar.LENGTH_LONG)
@@ -149,12 +152,18 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
                     slotAdapter.slotList.add(position, removedSlot)
                     slotAdapter.notifyItemInserted(position)
                     slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 1)
-                    builder.show()
-                }
-        resetDelete.show()
+                    displayingDialog = builder.show()
 
-        //TODO popup after showing of snackbar
-//        builder.show()
+                }
+        resetDelete.addCallback(object : Callback() {
+            override fun onDismissed(snackbar: Snackbar, event: Int) {
+                super.onDismissed(snackbar, event)
+                if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                    displayingDialog = builder.show()
+                }
+            }
+        })
+        resetDelete.show()
     }
 
     private fun getIdentifier(slot: TimeSlot): String {
@@ -167,17 +176,26 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
             EditTimeSlotDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
         editDialog.show(childFragmentManager, "aaa")
         editDialog.exitTransition
-        builder.show()
+        displayingDialog = builder.show()
     }
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.overflow, menu)
+
     }
+
+    override fun onOptionsMenuClosed(menu: Menu) {
+
+    }
+
+
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         viewModel.navigateToConfigDialog()
+        //TODO dismiss by changed preferences
         return true
     }
 }

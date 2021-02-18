@@ -45,12 +45,14 @@ class AddSlotDialogFragment : DialogFragment() {
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
         setUpPicker()
-        //TODO fetch mode of vm of managementView
+
         viewModel.isModeTwo.value = true
-     /*   viewModel.repo.getObservablePreferences().observe(viewLifecycleOwner, Observer {
-            viewModel.interval.value = Interval(0L, it.defaultSlotDuration.millis)
-            viewModel.isModeTwo.value=it.mode==Mode.TWO
-        })*/
+        //TODO
+        /*   viewModel.repo.getObservablePreferences().observe(viewLifecycleOwner, Observer {
+               viewModel.interval.value = Interval(0L, it.defaultSlotDuration.millis)
+               viewModel.isModeTwo.value=it.mode==Mode.TWO
+           })*/
+
         defaultValues()
         builder.apply {
             setView(binding.root)
