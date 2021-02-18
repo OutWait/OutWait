@@ -1,5 +1,6 @@
 package elite.kit.outwait.recyclerviewScreens.configurationsScreen
 
+import android.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -25,7 +26,8 @@ class ConfigDialogFragment : Fragment() {
 
     private lateinit var binding: ConfigDialogFragmentBinding
     private val viewModel: ConfigDialogViewModel by viewModels()
-
+    private lateinit var builder: AlertDialog.Builder
+    private lateinit var displayingDialog: AlertDialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -40,6 +42,14 @@ class ConfigDialogFragment : Fragment() {
         //Setup format
         setUpFormat()
 
+        builder = AlertDialog.Builder(activity)
+        builder.apply {
+            setView(R.layout.full_screen_progress_bar)
+            setTitle(getString(R.string.process_title))
+            setCancelable(true)
+        }
+        builder.create()
+
         //TODO check queue empty to switch mode
         //get default values from sever
         viewModel.repo.getObservablePreferences().observe(viewLifecycleOwner, Observer {
@@ -48,7 +58,10 @@ class ConfigDialogFragment : Fragment() {
             viewModel.notificationTime.value=it.notificationTime
             viewModel.prioritizationTime.value=it.prioritizationTime
             viewModel.isModusTwo.value=it.mode.ordinal== Mode.TWO.ordinal
+            displayingDialog.cancel()
         })
+
+        //TODO check problems to late pass data
         //pass new default values from user to server
         binding.btnSave.setOnClickListener {
             viewModel.standardSlotDauer.value= Duration(binding.durationStandardSlot.duration)
@@ -56,7 +69,11 @@ class ConfigDialogFragment : Fragment() {
             viewModel.notificationTime.value=Duration(binding.durationNotification.duration)
             viewModel.prioritizationTime.value=Duration(binding.durationPrioritization.duration)
             viewModel.isModusTwo.value=binding.sMode.isChecked
+            viewModel.saveConfigValues()
+            displayingDialog= builder.show()
         }
+
+
 
         return binding.root
     }

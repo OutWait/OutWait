@@ -53,6 +53,8 @@ class AddSlotDialogFragment : DialogFragment() {
                viewModel.isModeTwo.value=it.mode==Mode.TWO
            })*/
 
+        //TODO observe slotlist if changed then dismiss dialog
+
         defaultValues()
         builder.apply {
             setView(binding.root)
@@ -62,13 +64,19 @@ class AddSlotDialogFragment : DialogFragment() {
                 if (viewModel.isModeTwo.value!! && viewModel.isFixedSlot.value!!) {
                     setFixedSlotValues()
 
-                    if (isDefaultAppointmentTime()) Toast.makeText(context,
-                        "Failed: Please enter an appointmentTime",
-                        Toast.LENGTH_LONG).show() else viewModel.notifyAddFixedSlot()
+                    if (isDefaultAppointmentTime()) {
+                        Toast.makeText(context,
+                            "Failed: Please enter an appointmentTime",
+                            Toast.LENGTH_LONG).show()
+                    } else {
+                        viewModel.notifyAddFixedSlot()
+                        //TODO show dialog
+                    }
 
                 } else {
                     setSpontaneousSlotValues()
                     viewModel.notifyAddSpontaneousSlot()
+                    //TODO show dialog
                 }
             }
             setNegativeButton(getString(R.string.cancel)) { dialog, which ->

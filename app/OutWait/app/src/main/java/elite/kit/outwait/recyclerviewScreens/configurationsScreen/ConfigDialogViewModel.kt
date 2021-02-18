@@ -1,5 +1,6 @@
 package elite.kit.outwait.recyclerviewScreens.configurationsScreen
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +19,9 @@ class ConfigDialogViewModel @Inject constructor( val repo: InstituteRepository) 
     * - standardduration show in addslotfragment
     * */
 
+    private val _isFragmentShowing = MutableLiveData(false)
+    val isFragmentShowing: LiveData<Boolean> get() = _isFragmentShowing
+
     //TODO check queue is emtpy to switch mode
 
     val standardSlotDauer = MutableLiveData<Duration>()
@@ -34,6 +38,6 @@ class ConfigDialogViewModel @Inject constructor( val repo: InstituteRepository) 
     fun saveConfigValues(){
         //TODO check data on validation
         repo.changePreferences(standardSlotDauer.value!!,notificationTime.value!!,delayNotificationTime.value!!,prioritizationTime.value!!,isModusTwo.value!!)
-
+        _isFragmentShowing.value=true
     }
 }

@@ -15,8 +15,7 @@ class ManagmentViewViewModel @Inject constructor(
     private val coordinator: ManagementViewCoordinator,
 ) : ViewModel() {
 
-    private val _isFragmentShowing = MutableLiveData(false)
-    val isFragmentShowing: LiveData<Boolean> get() = _isFragmentShowing
+
 
 
     /*
@@ -28,7 +27,6 @@ class ManagmentViewViewModel @Inject constructor(
 
     fun navigateToAddSlotDialog() {
         coordinator.navigateToAddDialogFragment()
-        _isFragmentShowing.value=true
     }
 
     fun navigateToConfigDialog() {

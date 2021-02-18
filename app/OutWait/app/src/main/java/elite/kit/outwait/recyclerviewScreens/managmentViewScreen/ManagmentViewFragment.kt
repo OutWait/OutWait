@@ -84,11 +84,6 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         setHasOptionsMenu(true)
         var actionbar= requireActivity().actionBar
 
-        viewModel.isFragmentShowing.observe(viewLifecycleOwner){
-            if(it){
-                displayingDialog = builder.show()
-            }
-        }
 
 
 
