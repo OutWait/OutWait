@@ -1,9 +1,11 @@
 package elite.kit.outwait.networkProtocol
 
-import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.json.JSONObject
 
+/*
+Has no getters, as we only emit the wrapped JSONObject
+ */
 class JSONChangeSlotDurationWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
 
     constructor(slotCode: String, newDuration: Duration) : this(JSONObject()) {
@@ -14,16 +16,4 @@ class JSONChangeSlotDurationWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jso
         jsonObj.put(NEW_DURATION, timeStampDuration)
     }
 
-    /*
-    TODO Eigentlich brauchen wir diese getter nicht, da wir das Objekt nur versenden, nie erhalten
-
-    fun getSlotCode(): String {
-        return jsonObj.getString(SLOT_CODE)
-    }
-
-    fun getNewDuration(): Duration {
-        //TODO json UNIX Timestamp in Duration konvertieren
-    }
-
-     */
 }

@@ -7,12 +7,10 @@ import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.json.JSONObject
 
-
+/*
+Has no secondary constructor, as we only receive the wrapped JSONObject
+ */
 class JSONQueueWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
-
-    /* Secondary Constructor nicht nötig, da wir dieses Objekt nur erhalten,
-       aber nie selbst verschicken
-    */
 
     fun getQueue(): ReceivedList {
         val currentSlotStartedTime: DateTime = DateTime(jsonObj.getLong(CURRENT_SLOT_STARTED_TIME))
