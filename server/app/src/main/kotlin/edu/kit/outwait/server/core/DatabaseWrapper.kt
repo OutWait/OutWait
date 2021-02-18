@@ -281,7 +281,7 @@ class DatabaseWrapper() {
         try {
             checkIfSlotExistsQuery =
                 connection.prepareStatement(
-                    "SELECT code, username, password " +
+                    "SELECT code " +
                         "FROM Slot " +
                         "WHERE Slot.code = ?"
                 )
