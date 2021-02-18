@@ -23,12 +23,13 @@ abstract class AbstractManager(
         namespace.addConnectListener(
             object : ConnectListener {
                 override fun onConnect(client: SocketIOClient) {
-                    val socketFacade = SocketFacade(client, socketAdapter);
                     println("New socket connection established")
+                    val socketFacade = SocketFacade(client, socketAdapter);
                     bindSocket(client, socketFacade);
                 }
             }
         );
+        println("Configured welcome socket in "+this.javaClass.typeName);
     }
 
     fun configureEventListeners(events: List<Event>) {
