@@ -20,6 +20,8 @@ class Server {
         config.setPort(567);
         config.setBossThreads(1);
         config.setWorkerThreads(1);
+        config.pingInterval = 5000;
+        config.pingTimeout = 120000;
 
         server = SocketIOServer(config);
 
