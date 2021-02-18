@@ -1,10 +1,10 @@
 package edu.kit.outwait.server.socketHelper
 
-import com.corundumstudio.socketio.AckRequest;
+import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.SocketIONamespace
-import com.corundumstudio.socketio.listener.DataListener;
-import com.corundumstudio.socketio.listener.DisconnectListener;
+import com.corundumstudio.socketio.listener.DataListener
+import com.corundumstudio.socketio.listener.DisconnectListener
 import edu.kit.outwait.server.protocol.Event
 
 class SocketAdapter(val namespace: SocketIONamespace) {

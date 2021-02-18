@@ -21,7 +21,7 @@ class DatabaseWrapper() {
         this.connectionProps["password"] = "OurOutwaitDB"
         try {
             connection =
-                DriverManager.getConnection("jdbc:mysql://localhost:3306/", connectionProps)!!
+                DriverManager.getConnection("jdbc:mysql://localhost:3306/OutwaitDB", connectionProps)!!
             println("Connected to Database!")
         } catch (e : SQLException) {
             e.printStackTrace()
