@@ -44,6 +44,9 @@ dependencies {
 
     // Use the Kotlin JUnit integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+
+    // Create a client mock
+    testImplementation("io.socket:socket.io-client:1.0.0")
 }
 
 application {
