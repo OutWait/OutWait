@@ -34,7 +34,7 @@ enum class Event(private val tag: String, private val wrapper: (String) -> JSONO
         "invalidRequest@M",
         { JSONInvalidRequestMessageWrapper(JSONObject(it)) }
     ),
-    LISTEN_SLOT("listenSLot@S", { JSONSlotCodeWrapper(JSONObject(it)) }),
+    LISTEN_SLOT("listenSlot@S", { JSONSlotCodeWrapper(JSONObject(it)) }),
     REFRESH_SLOT_APPROX("refreshSlotApprox@S", { JSONSlotCodeWrapper(JSONObject(it)) }),
     READY_TO_SERVE("readyToServe@C", { JSONEmptyWrapper(JSONObject(it)) }),
     SEND_SLOT_DATA("sendSlotData@C", { JSONSlotDataWrapper(JSONObject(it)) }),
