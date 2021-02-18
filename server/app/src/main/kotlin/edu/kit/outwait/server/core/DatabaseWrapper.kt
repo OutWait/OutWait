@@ -21,7 +21,10 @@ class DatabaseWrapper() {
         this.connectionProps["password"] = "OurOutwaitDB"
         try {
             connection =
-                DriverManager.getConnection("jdbc:mysql://localhost:3306/OutwaitDB", connectionProps)!!
+                DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/OutwaitDB",
+                    connectionProps
+                )!!
             println("Connected to Database!")
         } catch (e : SQLException) {
             e.printStackTrace()
@@ -63,8 +66,7 @@ class DatabaseWrapper() {
         try {
             getSlotApproxQuery =
                 connection.prepareStatement(
-                    "SELECT approx_time " +
-                        "FROM Slot " +
+                    "SELECT approx_time " + "FROM Slot " +
                         "WHERE Slot.code = ? AND Slot.is_temporary = 0"
                 )
             getSlotApproxQuery.setString(1, slotCode.code)
@@ -82,9 +84,7 @@ class DatabaseWrapper() {
         try {
             setSlotApproxUpdate =
                 connection.prepareStatement(
-                    "UPDATE Slot " +
-                        "SET approx_time = ? " +
-                        "WHERE Slot.code = ?"
+                    "UPDATE Slot " + "SET approx_time = ? " + "WHERE Slot.code = ?"
                 )
             setSlotApproxUpdate.setTimestamp(1, Timestamp(slotApprox.time))
             setSlotApproxUpdate.setString(2, slotCode.code)
@@ -103,9 +103,7 @@ class DatabaseWrapper() {
                 connection.prepareStatement(
                     "INSERT INTO Slot " +
                         "(priority, approx_time, expected_duration, constructor_time, " +
-                        "is_temporary) " +
-                        "OUTPUT INSERTED.code " +
-                        "VALUES (?, ?, ?, ?, ?)"
+                        "is_temporary) " + "OUTPUT INSERTED.code " + "VALUES (?, ?, ?, ?, ?)"
                 )
             addTemporarySlotQuery.setString(1, slot.priority.toString())
             addTemporarySlotQuery.setTimestamp(2, Timestamp(slot.approxTime.time))
@@ -125,8 +123,7 @@ class DatabaseWrapper() {
         try {
             deleteAllTemporarySlotsUpdate =
                 connection.prepareStatement(
-                    "DELETE FROM Slot " +
-                        "WHERE queue_id = ? AND is_temporary = 1"
+                    "DELETE FROM Slot " + "WHERE queue_id = ? AND is_temporary = 1"
                 )
             deleteAllTemporarySlotsUpdate.setLong(1, queueId.id)
             deleteAllTemporarySlotsUpdate.executeUpdate()
@@ -165,8 +162,7 @@ class DatabaseWrapper() {
             getManagementByIdQuery =
                 connection.prepareStatement(
                     "SELECT name, mode, default_slot_duration, notification_time, " +
-                        "delay_notification_time, prioritization_time " +
-                        "FROM Management " +
+                        "delay_notification_time, prioritization_time " + "FROM Management " +
                         "WHERE Management.id = ?"
                 )
             getManagementByIdQuery.setLong(1, managementId.id)
@@ -204,8 +200,8 @@ class DatabaseWrapper() {
         try {
             getSlotManagementInformationQuery =
                 connection.prepareStatement(
-                    "SELECT management.name, management.notification_time, management.delay_notification_time " +
-                        "FROM Slot " +
+                    "SELECT management.name, management.notification_time, " +
+                        "management.delay_notification_time " + "FROM Slot " +
                         "INNER JOIN Queue ON Slot.queue_id = Queue.queue_id " +
                         "INNER JOIN Management ON Queue.management_id = Queue.management_id " +
                         "WHERE Slot.code = ?"
@@ -235,9 +231,7 @@ class DatabaseWrapper() {
         try {
             getQueueIdOfManagementQuery =
                 connection.prepareStatement(
-                    "SELECT queue_id " +
-                        "FROM Queue " +
-                        "WHERE Queue.management_id = ?"
+                    "SELECT queue_id " + "FROM Queue " + "WHERE Queue.management_id = ?"
                 )
             getQueueIdOfManagementQuery.setLong(1, managementId.id)
             val rs = getQueueIdOfManagementQuery.executeQuery()
@@ -256,8 +250,7 @@ class DatabaseWrapper() {
         try {
             getManagementByUsernameQuery =
                 connection.prepareStatement(
-                    "SELECT id, username, password " +
-                        "FROM Management " +
+                    "SELECT id, username, password " + "FROM Management " +
                         "WHERE Management.username = ?"
                 )
             getManagementByUsernameQuery.setString(1, username)
@@ -280,18 +273,13 @@ class DatabaseWrapper() {
         //TODO: Null Fall?
         try {
             checkIfSlotExistsQuery =
-                connection.prepareStatement(
-                    "SELECT code " +
-                        "FROM Slot " +
-                        "WHERE Slot.code = ?"
-                )
+                connection.prepareStatement("SELECT code " + "FROM Slot " + "WHERE Slot.code = ?")
             checkIfSlotExistsQuery.setString(1, slotCode.code)
             val rs = checkIfSlotExistsQuery.executeQuery()
             return rs.next()
         } catch (e: SQLException) {
             e.printStackTrace()
             return false
-
         }
     }
 
@@ -299,42 +287,41 @@ class DatabaseWrapper() {
         var saveManagementSettingsUpdate: PreparedStatement
         var getSlotsByManagementIdQuery: PreparedStatement
         try {
-                saveManagementSettingsUpdate =
-                    connection.prepareStatement(
-                        "UPDATE Management " +
-                            "SET mode = ?, default_slot_duration = ?, notification_time = ?, " +
-                            "delay_notification_time = ?, prioritization_time = ? " +
-                            "WHERE id = ?"
-                    )
-                saveManagementSettingsUpdate.setString(1, managementSettings.mode.toString())
-                saveManagementSettingsUpdate.setLong(2, managementSettings.defaultSlotDuration.seconds)
-                saveManagementSettingsUpdate.setLong(3, managementSettings.notificationTime.seconds)
-                saveManagementSettingsUpdate.setLong(4, managementSettings.delayNotificationTime.seconds)
-                saveManagementSettingsUpdate.setLong(5, managementSettings.prioritizationTime.seconds)
-                saveManagementSettingsUpdate.setLong(6, managementId.id)
-                saveManagementSettingsUpdate.executeUpdate()
+            saveManagementSettingsUpdate =
+                connection.prepareStatement(
+                    "UPDATE Management " +
+                        "SET mode = ?, default_slot_duration = ?, notification_time = ?, " +
+                        "delay_notification_time = ?, prioritization_time = ? " + "WHERE id = ?"
+                )
+            saveManagementSettingsUpdate.setString(1, managementSettings.mode.toString())
+            saveManagementSettingsUpdate.setLong(2, managementSettings.defaultSlotDuration.seconds)
+            saveManagementSettingsUpdate.setLong(3, managementSettings.notificationTime.seconds)
+            saveManagementSettingsUpdate.setLong(
+                4,
+                managementSettings.delayNotificationTime.seconds
+            )
+            saveManagementSettingsUpdate.setLong(5, managementSettings.prioritizationTime.seconds)
+            saveManagementSettingsUpdate.setLong(6, managementId.id)
+            saveManagementSettingsUpdate.executeUpdate()
 
-                getSlotsByManagementIdQuery =
-                    connection.prepareStatement(
-                        "SELECT Slot.code " +
-                            "FROM Management " +
-                            "INNER JOIN Queue ON Management.id = Queue.management_id " +
-                            "INNER JOIN Slot on Queue.queue_id = Slot.queue_id " +
-                            "WHERE Management.id = ?"
-                    )
-                getSlotsByManagementIdQuery.setLong(1, managementId.id)
-                val rs = getSlotsByManagementIdQuery.executeQuery()
-                val slotCodes = mutableListOf<SlotCode>()
-                while (rs.next()) {
-                    slotCodes.add(SlotCode(rs.getString("Slot.code")))
-                }
-                if (slotCodes.isEmpty()) {
-
-                }
-                else {
-                    val slotManagementInformation = this.getSlotManagementInformation(slotCodes.first())
-                    updateMediator.setManagementInformation(slotCodes, slotManagementInformation)
-                }
+            getSlotsByManagementIdQuery =
+                connection.prepareStatement(
+                    "SELECT Slot.code " + "FROM Management " +
+                        "INNER JOIN Queue ON Management.id = Queue.management_id " +
+                        "INNER JOIN Slot on Queue.queue_id = Slot.queue_id " +
+                        "WHERE Management.id = ?"
+                )
+            getSlotsByManagementIdQuery.setLong(1, managementId.id)
+            val rs = getSlotsByManagementIdQuery.executeQuery()
+            val slotCodes = mutableListOf<SlotCode>()
+            while (rs.next()) {
+                slotCodes.add(SlotCode(rs.getString("Slot.code")))
+            }
+            if (slotCodes.isEmpty()) {
+            } else {
+                val slotManagementInformation = this.getSlotManagementInformation(slotCodes.first())
+                updateMediator.setManagementInformation(slotCodes, slotManagementInformation)
+            }
         } catch (e: SQLException) {
             e.printStackTrace()
         }
@@ -349,8 +336,7 @@ class DatabaseWrapper() {
                 this.getSlotManagementInformation(slotCode)
             )
             return true
-        }
-        else {
+        } else {
             return false
         }
     }
@@ -366,9 +352,7 @@ class DatabaseWrapper() {
         try {
             changeManagementPasswordQuery =
                 connection.prepareStatement(
-                    "UPDATE Management " +
-                        "SET password = ? " +
-                        "WHERE Management.username = ?"
+                    "UPDATE Management " + "SET password = ? " + "WHERE Management.username = ?"
                 )
             changeManagementPasswordQuery.setString(1, password)
             changeManagementPasswordQuery.setString(2, username)
@@ -381,9 +365,7 @@ class DatabaseWrapper() {
     fun endSlot(slotCode: SlotCode) {
         val endSlotQuery: PreparedStatement
         try {
-            endSlotQuery = connection.prepareStatement(
-                "DELETE FROM Slot " +
-                    "WHERE Slot.code = ?")
+            endSlotQuery = connection.prepareStatement("DELETE FROM Slot " + "WHERE Slot.code = ?")
             endSlotQuery.setString(1, slotCode.code)
             endSlotQuery.executeUpdate()
         } catch (e: SQLException) {
@@ -396,9 +378,7 @@ class DatabaseWrapper() {
         val deleteSlotQuery: PreparedStatement
         try {
             deleteSlotQuery =
-                connection.prepareStatement(
-                    "DELETE FROM Slot " +
-                        "WHERE Slot.code = ?")
+                connection.prepareStatement("DELETE FROM Slot " + "WHERE Slot.code = ?")
             deleteSlotQuery.setString(1, slotCode.code)
             deleteSlotQuery.executeUpdate()
         } catch (e: SQLException) {

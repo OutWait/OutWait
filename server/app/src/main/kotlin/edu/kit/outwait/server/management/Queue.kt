@@ -6,6 +6,7 @@ import edu.kit.outwait.server.slot.Slot
 import edu.kit.outwait.server.slot.SlotCode
 import java.time.Duration
 import java.util.Date
+import org.json.JSONObject
 
 class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     private var slots = mutableListOf<Slot>()
@@ -117,6 +118,34 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     fun storeToDB(databaseWrapper: DatabaseWrapper) {
         databaseWrapper.saveSlots(slots, queueId)
     }
+    fun storeToJSON(json: JSONObject) {
+        if (slots.isEmpty()) return // noting to save
+
+        json.put("currentSlotStartedTime", slots[0].expectedDuration.getSeconds())
+        json.put("slotOrder", slots.map { it.slotCode.code })
+        json.put(
+            "spontaneousSlots",
+            slots.filter { it.priority != Priority.FIX_APPOINTMENT }
+                .map {
+                    val tmp = JSONObject()
+                    tmp.put("slotCode", it.slotCode.code)
+                    tmp.put("duration", it.expectedDuration.getSeconds())
+                    tmp
+                }
+        )
+        json.put(
+            "fixedSlots",
+            slots.filter { it.priority != Priority.FIX_APPOINTMENT }
+                .map {
+                    val tmp = JSONObject()
+                    tmp.put("slotCode", it.slotCode.code)
+                    tmp.put("appointmentTime", it.approxTime.getTime())
+                    tmp.put("duration", it.expectedDuration.getSeconds())
+                    tmp
+                }
+        )
+    }
+
     fun addSpontaneousSlot(slot: Slot) {
         slots.add(slot);
     }
