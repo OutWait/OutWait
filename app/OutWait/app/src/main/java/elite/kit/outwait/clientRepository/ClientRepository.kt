@@ -27,7 +27,7 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao, priva
             }
             Log.d("newCodeEntered::cRepo", "entered code: $ccode")
             if(remote.initCommunication()){
-                remote.newCodeEntered("code")
+                remote.newCodeEntered(ccode)
             }
         }
     }
