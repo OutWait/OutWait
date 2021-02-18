@@ -7,9 +7,8 @@ Has no getters, as we only emit the wrapped JSONObject
  */
 class JSONResetPasswordWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
 
-    constructor(username: String, password: String) : this(JSONObject()) {
+    constructor(username: String) : this(JSONObject()) {
         jsonObj.put(USERNAME, username)
-        jsonObj.put(PASSWORD, password)
     }
 
 }
