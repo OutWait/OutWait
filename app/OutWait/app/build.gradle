@@ -77,6 +77,9 @@ dependencies {
     implementation('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }
+    //implementation('io.socket:socket.io-client:0.9.0') {
+    //    exclude group: 'org.json', module: 'json'
+    //}
 
     //Dependency for timepicker android 21
     implementation 'com.github.ifr0z:timepickercompact:1.0'

@@ -98,7 +98,7 @@ class SocketAdapter(private val namespace: String) {
      */
     fun emitEventToServer(event: String, wrappedJSONData: JSONObjectWrapper) {
         socketIOSocket?.emit(event, wrappedJSONData.getJSONString())
-        Log.i("SocketAdapter", "Event was emitted to server on SocketIOSocket")
+        Log.i("SocketAdapter", "Event $event was emitted to server on SocketIOSocket")
     }
 
     /*
@@ -118,6 +118,7 @@ class SocketAdapter(private val namespace: String) {
 
 
                 val data = it[1] as String
+                Log.d("incoming event:", k.getEventString())
                 val jsonData = JSONObject(data)
 
                 //val jsonData: JSONObject = JSONObject(it[0].toString())
