@@ -2,11 +2,11 @@ package edu.kit.outwait.server.protocol
 
 import edu.kit.outwait.server.management.ManagementDetails
 import edu.kit.outwait.server.management.SlotManagementInformation
-import org.json.JSONObject
 import java.time.Duration
 import java.util.*
+import org.json.JSONObject
 
-class JSONSlotDataWrapper (obj: JSONObject) : JSONSlotCodeWrapper(obj){
+class JSONSlotDataWrapper(obj: JSONObject) : JSONSlotCodeWrapper(obj) {
     constructor() : this(JSONObject())
     fun setSlotApprox(slotApprox: Date) {
         obj.put("approxTime", slotApprox.getTime() / 1000)

@@ -29,7 +29,7 @@ abstract class AbstractManager(
                 }
             }
         );
-        println("Configured welcome socket in "+this.javaClass.typeName);
+        println("Configured welcome socket in " + this.javaClass.typeName);
     }
 
     fun configureEventListeners(events: List<Event>) {

@@ -34,7 +34,7 @@ class SocketAdapter(val namespace: SocketIONamespace) {
                     }
                 }
             )
-            println("Registered listener for event " + e.getEventTag() + " in "+javaClass.name)
+            println("Registered listener for event " + e.getEventTag() + " in " + javaClass.name)
         }
 
         // Configure disconnect listener

@@ -55,11 +55,8 @@ application {
 
     // Add dependencies
     tasks.withType<Jar>() {
-        configurations["compileClasspath"].forEach { file: File ->
-            from(zipTree(file.absoluteFile))
-        }
-        manifest {
-            attributes(mapOf("Main-Class" to "edu.kit.outwait.server.core.ServerKt"))
-        }
+        configurations["compileClasspath"]
+            .forEach { file: File -> from(zipTree(file.absoluteFile)) }
+        manifest { attributes(mapOf("Main-Class" to "edu.kit.outwait.server.core.ServerKt")) }
     }
 }
