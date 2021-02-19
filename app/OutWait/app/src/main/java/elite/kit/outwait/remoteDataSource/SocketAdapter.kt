@@ -174,6 +174,7 @@ class SocketAdapter(private val namespace: String) {
                     }
 
             socketIOSocket.on(k.getEventString(), onEventListenerCallback)
+
         }
     }
 
