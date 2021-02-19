@@ -1,9 +1,10 @@
 package elite.kit.outwait.remoteDataSource
 
 import android.util.Log
-import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.networkProtocol.*
+
+
 
 class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
@@ -140,6 +141,8 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         // delete ClientInfo from ClientDB
         dao.deleteClientInfo(deletedClientInfo)
     }
+
+
 
     private fun onInvalidCode(wrappedJSONData: JSONEmptyWrapper) {
         Log.d("onInvlCd::SIOCliHandler", "server answer")

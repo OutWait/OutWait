@@ -16,7 +16,7 @@ class Converter {
     }
 
     @TypeConverter
-    fun toTimeStamp(dateTime : DateTime?): Long{
+    fun toTimeStamp(dateTime : DateTime?): Long {
         if (dateTime != null) {
             return dateTime.millis
         }
@@ -26,7 +26,7 @@ class Converter {
     }
 
    @TypeConverter
-    fun fromTimeStampDuration(stamp : Long) : Duration?{
+    fun fromTimeStampDuration(stamp : Long) : Duration? {
        if (stamp != 0L){
            return Duration.millis(stamp)
        } else {
@@ -35,7 +35,7 @@ class Converter {
     }
 
     @TypeConverter
-    fun toTimeStampDuration(dateTime : Duration?) : Long{
+    fun toTimeStampDuration(dateTime : Duration?) : Long {
         if (dateTime != null) {
             return dateTime.millis
         } else {
