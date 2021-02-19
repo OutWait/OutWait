@@ -2,6 +2,7 @@ package elite.kit.outwait.remoteDataSource
 
 import android.util.Log
 import elite.kit.outwait.networkProtocol.Event
+import elite.kit.outwait.networkProtocol.JSONInvalidRequestWrapper
 import elite.kit.outwait.networkProtocol.JSONObjectWrapper
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -37,7 +38,10 @@ class SocketAdapter(private val namespace: String) {
                 (wrappedJSONData: JSONObjectWrapper) -> Unit>
     ) {
 
-        registerEventListeners(mapEventToCallback)
+       // registerEventListeners(mapEventToCallback)
+
+        // TEST with second method
+        registerEventListenersTEST(mapEventToCallback)
 
         Log.i("SocketAdapter", "All listeners were registered")
 
@@ -148,5 +152,31 @@ class SocketAdapter(private val namespace: String) {
     fun isConnected(): Boolean {
         return socketIOSocket.connected()
     }
+
+    /*
+    Testmethode um Listener zu registrieren
+     */
+    private fun registerEventListenersTEST(
+        mapEventsToCallback: HashMap<Event,
+                (wrappedJSONData: JSONObjectWrapper) -> Unit>
+    ) {
+        for (k in mapEventsToCallback.keys) {
+
+            val onEventListenerCallback =
+                Emitter.Listener { args ->
+                    val data = args[1] as String
+                    val jsonData = JSONObject(data)
+                    val wrappedJSONData = k.createWrapper(jsonData)
+
+                    Log.d("incoming event:", k.getEventString())
+
+                    mapEventsToCallback[k]?.invoke(wrappedJSONData)
+                }
+
+            socketIOSocket.on(k.getEventString(), onEventListenerCallback)
+
+        }
+    }
+
 
 }
