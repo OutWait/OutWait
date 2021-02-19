@@ -38,7 +38,7 @@ class SocketMock {
             mSocket.on(
                 e.getEventTag(),
                 Emitter.Listener {
-                    println("Incomming event " + e.getEventTag())
+                    println("Incoming event " + e.getEventTag() + " with data of size " + args.size + ":")
 
                     // The mocking stuff
                     if (e == Event.READY_TO_SERVE) {
