@@ -163,14 +163,18 @@ class SocketAdapter(private val namespace: String) {
         for (k in mapEventsToCallback.keys) {
 
             val onEventListenerCallback =
-                Emitter.Listener { args ->
-                    val data = args[1] as String
-                    val jsonData = JSONObject(data)
-                    val wrappedJSONData = k.createWrapper(jsonData)
 
-                    Log.d("incoming event:", k.getEventString())
+                Emitter.Listener {
+                    fun call(vararg args: Any) {
+                        val data = args[1] as String
+                        val jsonData = JSONObject(data)
+                        val wrappedJSONData = k.createWrapper(jsonData)
 
-                    mapEventsToCallback[k]?.invoke(wrappedJSONData)
+                        Log.d("incoming event:", k.getEventString())
+
+                        mapEventsToCallback[k]?.invoke(wrappedJSONData)
+                    }
+
                 }
 
             socketIOSocket.on(k.getEventString(), onEventListenerCallback)
