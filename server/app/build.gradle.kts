@@ -7,7 +7,7 @@ plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.4.20"
 
-    id("tech.formatter-kt.formatter") version "0.7.0"
+    id("tech.formatter-kt.formatter") version "0.7.1"
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
