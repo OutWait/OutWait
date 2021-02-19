@@ -4,6 +4,7 @@ import elite.kit.outwait.customDataTypes.Mode
 import org.json.JSONObject
 import elite.kit.outwait.customDataTypes.Preferences
 import org.joda.time.Duration
+import java.util.*
 
 class JSONManagementSettingsWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
 
@@ -14,8 +15,9 @@ class JSONManagementSettingsWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jso
         jsonObj.put(NOTIFICATION_TIME, prefs.notificationTime.millis)
         jsonObj.put(DELAY_NOTIFICATION_TIME, prefs.delayNotificationTime.millis)
 
-        //TODO Wie verschicken wir den Mode als String oder Int? -> Entsprechend das Enum anpassen
-        // jsonObj.put(MODE, prefs.mode)
+        //TODO Anstelle toLowerCase einfach ein String Attribut im Enum einführen?
+        // -> Benni fragen
+        jsonObj.put(MODE, prefs.mode.toString().toLowerCase(Locale.getDefault()))
         jsonObj.put(PRIORITIZATION_TIME, prefs.prioritizationTime.millis)
     }
 
@@ -27,11 +29,15 @@ class JSONManagementSettingsWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jso
         val delayNotificationTime: Duration = Duration(jsonObj.getLong(DELAY_NOTIFICATION_TIME))
         val prioritizationTime: Duration = Duration(jsonObj.getLong(PRIORITIZATION_TIME))
 
-        // TODO Mode Enum Objekt zurück parsen
-        // val mode: Mode = josn
-
+        // parse mode param to enum
+        val mode: Mode = when (jsonObj.getString(MODE)) {
+            "one" -> Mode.ONE
+            "two" -> Mode.TWO
+            //TODO Fehlermeldung werfen im else fall
+            else -> Mode.ONE
+        }
         // Create and return Preferences Object
         return Preferences(defaultSlotDuration, notificationTime, delayNotificationTime,
-        prioritizationTime, Mode.ONE)
+        prioritizationTime, mode)
     }
 }
