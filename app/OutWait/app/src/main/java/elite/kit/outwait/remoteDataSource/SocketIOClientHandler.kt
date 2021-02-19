@@ -50,7 +50,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         cSocket.initializeConnection(clientEventToCallbackMapping)
 
         // Mit return warten bis SocketIOSocket connected ist (TODO geht auch schöner? LiveData?)
-        while (cSocket.isConnected() == false){
+        while (!cSocket.isConnected()){
             Log.d("initCom::SIOCliHandler", "in der 1 Whileschleife")
             Thread.sleep(1000)
         }
@@ -60,6 +60,9 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
             Thread.sleep(1000)
             Log.d("initCom::SIOCliHandler", "in der 2 Whileschleife")
         }
+
+        // reset serverReady for next connection procedure
+        this.serverReady = false
 
         return true
     }
@@ -77,7 +80,6 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         val data: JSONObjectWrapper = JSONSlotCodeWrapper(slotCode)
 
         cSocket.emitEventToServer(event.getEventString(), data)
-
     }
 
     override fun refreshWaitingTime(slotCode: String) {

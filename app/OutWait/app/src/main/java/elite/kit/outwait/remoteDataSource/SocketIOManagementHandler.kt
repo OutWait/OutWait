@@ -75,8 +75,23 @@ class SocketIOManagementHandler : ManagementHandler {
         }
     }
 
+    //TODO initComm was noch zu tun?
     override fun initCommunication(): Boolean {
-        TODO("Not yet implemented")
+        mSocket.initializeConnection(managementEventToCallbackMapping)
+
+        // wait until connection is established
+        while(!mSocket.isConnected()) {
+            Log.i("SocketIOManagHand", "While loop until Socket.isConnected() == true")
+            Thread.sleep(1000)
+        }
+
+        // wait until server requested a login try
+        while(!loginRequested) {
+            Log.i("SocketIOManagHand", "While loop until loginRequested == true")
+            Thread.sleep(1000)
+        }
+
+        return true
     }
 
     override fun endCommunication(): Boolean {
@@ -291,8 +306,7 @@ class SocketIOManagementHandler : ManagementHandler {
 
     private fun onInvalidRequest(wrappedJSONData: JSONInvalidRequestWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
-        TODO("Fehlermeldung werfen")
-        // TODO Was noch?
+        TODO("Fehlermeldung werfen (sonst noch was?)")
     }
 
     private fun onLoginSuccess(wrappedJSONData: JSONEmptyWrapper) {
@@ -308,13 +322,10 @@ class SocketIOManagementHandler : ManagementHandler {
     private fun onUpdateManagementSettings(wrappedJSONData: JSONManagementSettingsWrapper) {
         val newPrefs = wrappedJSONData.getPreferences()
         this._currentPrefs.value = newPrefs
-
     }
 
     private fun onUpdateQueue(wrappedJSONData: JSONQueueWrapper) {
         val receivedList = wrappedJSONData.getQueue()
         this._currentList.value = receivedList
     }
-
-
 }

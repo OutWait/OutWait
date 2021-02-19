@@ -47,24 +47,24 @@ class SocketAdapter(private val namespace: String) {
         geworfen werden sollen
          */
 
-        socketIOSocket?.on(Socket.EVENT_CONNECT, Emitter.Listener {
+        socketIOSocket.on(Socket.EVENT_CONNECT, Emitter.Listener {
             // TODO Was soll hier getan werden?
             Log.i("SocketAdapter", "Socket is connected")
         }
         )
 
-        socketIOSocket?.on(Socket.EVENT_CONNECT_ERROR, Emitter.Listener {
+        socketIOSocket.on(Socket.EVENT_CONNECT_ERROR, Emitter.Listener {
             // TODO Was soll hier getan werden?
             Log.i("SocketAdapter", "EVENT_CONNECT_ERROR")
         }
         )
 
-        socketIOSocket?.on(Socket.EVENT_ERROR, Emitter.Listener {
+        socketIOSocket.on(Socket.EVENT_ERROR, Emitter.Listener {
             // TODO Was soll hier getan werden?
             Log.i("SocketAdapter", "EVENT_ERROR")
         }
         )
-        socketIOSocket?.on(Socket.EVENT_CONNECT_TIMEOUT, Emitter.Listener {
+        socketIOSocket.on(Socket.EVENT_CONNECT_TIMEOUT, Emitter.Listener {
             // TODO Was soll hier getan werden?
             Log.i("SocketAdapter", "EVENT_ERROR")
         }
@@ -72,7 +72,7 @@ class SocketAdapter(private val namespace: String) {
 
 
         //TODO Hierfür Exception werfen sinnvoll? -> erst wenn auch reconnect endgültig failed!!!!
-        socketIOSocket?.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
+        socketIOSocket.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
             //TODO Was soll hier getan werden?
             Log.i("SocketAdapter", "Socket is disconnected")
         }
@@ -92,12 +92,12 @@ class SocketAdapter(private val namespace: String) {
         Log.i("SocketAdapter", "SocketIOSocket.connect() was called")
     }
 
-
+                // TODO Fürs parsen hier eine JSON Exception werfen, falls es nicht klappt
     /*
     Emitte Event mit Daten zum Server
      */
     fun emitEventToServer(event: String, wrappedJSONData: JSONObjectWrapper) {
-        socketIOSocket?.emit(event, wrappedJSONData.getJSONString())
+        socketIOSocket.emit(event, wrappedJSONData.getJSONString())
         Log.i("SocketAdapter", "Event $event was emitted to server on SocketIOSocket")
     }
 
@@ -111,7 +111,7 @@ class SocketAdapter(private val namespace: String) {
     ) {
         for (k in mapEventsToCallback.keys) {
 
-            socketIOSocket?.on(k.getEventString(), Emitter.Listener {
+            socketIOSocket.on(k.getEventString(), Emitter.Listener {
 
                 // parse the received data string into JSONObject
                 // TODO Test ob das wirklich so funktioniert
@@ -133,19 +133,20 @@ class SocketAdapter(private val namespace: String) {
         }
     }
 
+
     /*
     Gibt die von SocketIOSocket gehaltene Verbindung frei
     //TODO Muss noch was gemacht/freigegeben werden?
      */
     fun releaseConnection() {
-        socketIOSocket?.close()
+        socketIOSocket.close()
     }
 
     /*
     Gibt Auskunft ob die SOcketIOSocket Instanz momentan mit Server verbunden ist oder nicht
      */
-    fun isConnected(): Boolean? {
-        return socketIOSocket?.connected()
+    fun isConnected(): Boolean {
+        return socketIOSocket.connected()
     }
 
 }
