@@ -1,6 +1,7 @@
 package elite.kit.outwait.remoteDataSource
 
 import android.util.Log
+import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.networkProtocol.*
 
