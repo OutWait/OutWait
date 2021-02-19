@@ -2,7 +2,6 @@ package elite.kit.outwait.remoteDataSource
 
 import android.util.Log
 import elite.kit.outwait.networkProtocol.Event
-import elite.kit.outwait.networkProtocol.JSONInvalidRequestWrapper
 import elite.kit.outwait.networkProtocol.JSONObjectWrapper
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -164,8 +163,7 @@ class SocketAdapter(private val namespace: String) {
 
             val onEventListenerCallback =
 
-                Emitter.Listener {
-                    fun call(vararg args: Any) {
+                Emitter.Listener { args ->
                         val data = args[1] as String
                         val jsonData = JSONObject(data)
                         val wrappedJSONData = k.createWrapper(jsonData)
@@ -175,10 +173,7 @@ class SocketAdapter(private val namespace: String) {
                         mapEventsToCallback[k]?.invoke(wrappedJSONData)
                     }
 
-                }
-
             socketIOSocket.on(k.getEventString(), onEventListenerCallback)
-
         }
     }
 
