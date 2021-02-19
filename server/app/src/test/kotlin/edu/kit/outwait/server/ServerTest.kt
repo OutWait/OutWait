@@ -38,8 +38,8 @@ class SocketMock {
             mSocket.on(
                 e.getEventTag(),
                 Emitter.Listener {
-                    println("Incoming event " + e.getEventTag() + " with data of size " + args.size + ":")
-
+                    println("Incoming event " + e.getEventTag() + " with data of size " + it.size + ":")
+                    for(d in it) println(d)
                     // The mocking stuff
                     if (e == Event.READY_TO_SERVE) {
                         val wrapper = JSONSlotCodeWrapper()
