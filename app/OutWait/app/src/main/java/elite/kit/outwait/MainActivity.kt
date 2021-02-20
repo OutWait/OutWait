@@ -14,8 +14,11 @@ import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.clientScreens.editCodeScreen.EditCodeViewModel
 import elite.kit.outwait.navigation.Navigator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -40,10 +43,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.instituteErrorNotifications().observe(this, Observer {
-            Toast.makeText(this, getString(it.last().message), Toast.LENGTH_LONG).show()
+            val context = this
+            CoroutineScope(Main).launch {
+                Toast.makeText(context, getString(it.last().message), Toast.LENGTH_LONG).show()
+            }
         })
         viewModel.clientErrorNotifications().observe(this, Observer {
-            Toast.makeText(this, getString(it.last().message), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(it.last().message), Toast.LENGTH_LONG).show()
         })
     }
 

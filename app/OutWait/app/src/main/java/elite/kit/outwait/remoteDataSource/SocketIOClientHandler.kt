@@ -1,6 +1,8 @@
 package elite.kit.outwait.remoteDataSource
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.networkProtocol.*
@@ -8,6 +10,9 @@ import elite.kit.outwait.networkProtocol.*
 
 
 class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
+
+    private val _errors = MutableLiveData<List<ClientServerErrors>>()
+    override fun getErrors() = _errors as LiveData<List<ClientServerErrors>>
 
     private val namespaceClient: String = "/client"
 
@@ -147,6 +152,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
     private fun onInvalidCode(wrappedJSONData: JSONEmptyWrapper) {
         Log.d("onInvlCd::SIOCliHandler", "server answer")
+        pushError(ClientServerErrors.INVALID_SLOT_CODE)
 
         //TODO 1 Fehlermeldung oder LiveData um Repo zu benachrichtigen?
         // -> mit Benni abklären
@@ -156,6 +162,15 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     private fun onInvalidRequest(wrappedJSONData: JSONInvalidRequestWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
         //TODO Fehlermeldung werfen
+    }
+
+    fun pushError(error: ClientServerErrors){
+        if (_errors.value !== null){
+            val newList = _errors.value!!.plus(error).toMutableList()
+            _errors.postValue(newList)
+        }else{
+            _errors.postValue(listOf(error))
+        }
     }
 
 }

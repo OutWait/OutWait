@@ -1,5 +1,7 @@
 package elite.kit.outwait.remoteDataSource
 
+import androidx.lifecycle.LiveData
+
 interface ClientHandler {
 
     // Methoden um Verbindung zum Server aufzubauen/abzubauen
@@ -19,4 +21,5 @@ interface ClientHandler {
 
     fun refreshWaitingTime(slotCode: String)
 
+    fun getErrors() : LiveData<List<ClientServerErrors>>
 }

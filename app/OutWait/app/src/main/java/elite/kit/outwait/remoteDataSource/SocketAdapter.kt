@@ -164,7 +164,7 @@ class SocketAdapter(private val namespace: String) {
             val onEventListenerCallback =
 
                 Emitter.Listener { args ->
-                        val data = args[1] as String
+                        val data = args.last() as String
                         val jsonData = JSONObject(data)
                         val wrappedJSONData = k.createWrapper(jsonData)
 
