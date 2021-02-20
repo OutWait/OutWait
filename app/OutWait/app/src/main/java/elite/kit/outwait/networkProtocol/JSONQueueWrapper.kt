@@ -12,7 +12,8 @@ Has no secondary constructor, as we only receive the wrapped JSONObject
  */
 class JSONQueueWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
 
-    //TODO Mills und Sekunden umzuwandeln?
+    // Todo aussagekräftige Bezeichner für die (lokalen) Variablen
+
     fun getQueue(): ReceivedList {
         val currentSlotStartedTime: DateTime = DateTime(jsonObj.getLong(CURRENT_SLOT_STARTED_TIME))
         val order: MutableList<String> = mutableListOf()
@@ -48,14 +49,12 @@ class JSONQueueWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
         return ReceivedList(currentSlotStartedTime, order, spontaneousSlots, fixedSlots)
     }
 
-    //TODO Sekunden und Millis mit JJODA Time Bib checken!!?
     private fun getSpontSlotFromJSON(spontJSON: JSONObject): SpontaneousSlot {
         val duration = Duration(spontJSON.getLong(DURATION))
         val slotCode = spontJSON.getString(SLOT_CODE)
         return SpontaneousSlot(duration, slotCode)
     }
 
-    //TODO Mills und Sekunden umzuwandeln?
     private fun getFixSlotFromJSON(fixJSON: JSONObject): FixedSlot {
         val duration = Duration(fixJSON.getLong(DURATION))
         val slotCode = fixJSON.getString(SLOT_CODE)

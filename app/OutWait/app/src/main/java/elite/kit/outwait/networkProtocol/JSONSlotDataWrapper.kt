@@ -13,7 +13,6 @@ class JSONSlotDataWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
         return jsonObj.getString(SLOT_CODE)
     }
 
-    // TODO parse seconds but Joda DateTime takes millis?
     fun getApproxTime(): DateTime {
         // Creates a DateTime object from a timestamp of type Long
         return DateTime(jsonObj.getLong(APPROX_TIME))
@@ -23,13 +22,11 @@ class JSONSlotDataWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
         return jsonObj.getString(INSTITUTE_NAME)
     }
 
-    // TODO parse seconds but Joda DateTime takes millis?
     fun getNotificationTime(): Duration {
         // Creates a Duration object from a timestamp of type Long
         return Duration(jsonObj.getLong(NOTIFICATION_TIME))
     }
 
-    // TODO parse seconds but Joda DateTime takes millis?
     fun getDelayNotificationTime(): Duration {
         // Creates a Duration object from a timestamp of type Long
         return Duration(jsonObj.getLong(DELAY_NOTIFICATION_TIME))

@@ -10,7 +10,7 @@ Has no getters, as we only emit the wrapped JSONObject
 class JSONAddSpontaneousSlotWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
 
     constructor(duration: Duration, timeOfCreation: DateTime) : this(JSONObject()) {
-       //TODO JODA Einheiten in Millis aber wir brauchen Sekunden?
+
         val timeStampDuration: Long = duration.millis
         val timeStampCreation: Long = timeOfCreation.millis
 

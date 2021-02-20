@@ -11,7 +11,6 @@ class JSONAddFixedSlotWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) 
 
     constructor(duration: Duration, appointmentTime: DateTime) : this(JSONObject()) {
 
-        //TODO Wir empfangen (und müssen parsen) Sekunden!
         val timeStamp: Long = appointmentTime.millis
 
         jsonObj.put(DURATION, duration)
