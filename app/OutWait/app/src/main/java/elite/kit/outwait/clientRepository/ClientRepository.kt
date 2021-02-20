@@ -27,15 +27,18 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao, priva
     private val activeSlots = MutableLiveData<List<ClientInfo>>()
     private val errorNotifications = MutableLiveData<List<ClientErrors>>()
 
+    private var remoteConnected = false
+
     suspend fun newCodeEntered(code : String?) {
+        if (code === null || code == ""){
+            pushError(ClientErrors.INVALID_SLOT_CODE)
+            return
+        }
         withContext(IO){
-            var ccode = "abc"
-            if (code !== null){
-                ccode = code
-            }
-            Log.d("newCodeEntered::cRepo", "entered code: $ccode")
-            if(remote.initCommunication()){
-                remote.newCodeEntered(ccode)
+            Log.d("newCodeEntered::cRepo", "entered code: $code")
+            if(remoteConnected || remote.initCommunication()){
+                remoteConnected = true
+                remote.newCodeEntered(code)
             }
         }
     }
