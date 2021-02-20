@@ -107,12 +107,11 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         val notificationTime = wrappedJSONData.getNotificationTime()
         val delayNotificationTime = wrappedJSONData.getDelayNotificationTime()
 
-        // check if clientInfo existed already and has to be updated or inserted for the first time
-        // TODO will getClientInfo always return not null ? (see gitlab issues)
+        // check if clientInfo existed already and has to be updated or else inserted for the first time
         if (dao.getClientInfo(slotCode) != null) {
 
-            // get originalAppointmentTime of existing clientInfo object
-            val originalAppointmentTime = dao.getClientInfo(slotCode).originalAppointmentTime
+            // get originalAppointmentTime of existing clientInfo object (not-null assertion)
+            val originalAppointmentTime = dao.getClientInfo(slotCode)!!.originalAppointmentTime
             //  // create new ClientInfo with same originalAppointmentTime as the existing one
             val newClientInfo = ClientInfo(slotCode, instituteName, approxTime, originalAppointmentTime,
                 notificationTime, delayNotificationTime)
@@ -136,35 +135,34 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         val endedSlotCode = wrappedJSONData.getSlotCode()
         val endedClientInfo = dao.getClientInfo(endedSlotCode)
 
-        // delete ClientInfo from ClientDB
-        dao.deleteClientInfo(endedClientInfo)
+        // delete ClientInfo from ClientDB if it exists
+        if (endedClientInfo != null) {
+            dao.deleteClientInfo(endedClientInfo)
+        }
     }
 
     private fun onDeleteSlot(wrappedJSONData: JSONSlotCodeWrapper) {
         val deletedSlotCode = wrappedJSONData.getSlotCode()
         val deletedClientInfo = dao.getClientInfo(deletedSlotCode)
 
-        // delete ClientInfo from ClientDB
-        dao.deleteClientInfo(deletedClientInfo)
+        // delete ClientInfo from ClientDB if it exists
+        if (deletedClientInfo != null) {
+            dao.deleteClientInfo(deletedClientInfo)
+        }
     }
-
-
 
     private fun onInvalidCode(wrappedJSONData: JSONEmptyWrapper) {
         Log.d("onInvlCd::SIOCliHandler", "server answer")
         pushError(ClientServerErrors.INVALID_SLOT_CODE)
 
-        //TODO 1 Fehlermeldung oder LiveData um Repo zu benachrichtigen?
-        // -> mit Benni abklären
-        // TODO 2 Soll nochmal der invalide Code vom Server geschickt werden?
     }
 
     private fun onInvalidRequest(wrappedJSONData: JSONInvalidRequestWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
-        //TODO Fehlermeldung werfen
+        //TODO Fehlermeldung werfen? LiveData Error? Welche Fehlermeldung kommen rein und wie verarbeiten?
     }
 
-    fun pushError(error: ClientServerErrors){
+    private fun pushError(error: ClientServerErrors){
         if (_errors.value !== null){
             val newList = _errors.value!!.plus(error).toMutableList()
             _errors.postValue(newList)
