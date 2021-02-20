@@ -7,6 +7,27 @@ import org.joda.time.Duration
 
 class Converter {
     @TypeConverter
+    fun fromTimeStamp(stamp: Long): DateTime {
+        return DateTime(stamp)
+    }
+
+    @TypeConverter
+    fun toTimeStamp(dateTime : DateTime): Long {
+        return dateTime.millis
+    }
+
+   @TypeConverter
+    fun fromTimeStampDuration(stamp : Long) : Duration {
+       return Duration.millis(stamp)
+    }
+
+    @TypeConverter
+    fun toTimeStampDuration(dateTime : Duration) : Long {
+        return dateTime.millis
+    }
+
+    /*
+        @TypeConverter
     fun fromTimeStamp(stamp: Long): DateTime? {
         if (stamp != 0L){
             return DateTime(stamp)
@@ -42,4 +63,5 @@ class Converter {
             return 0
         }
     }
+     */
 }

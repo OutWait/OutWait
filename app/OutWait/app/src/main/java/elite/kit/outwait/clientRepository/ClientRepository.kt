@@ -25,7 +25,7 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao, priva
             }
         }
     }
-    private val activeSlots = MutableLiveData<List<ClientInfo>>()//dao.getAllClientInfoObservable()
+    private val activeSlots = dao.getAllClientInfoObservable()// MutableLiveData<List<ClientInfo>>()//
     private val errorNotifications = MutableLiveData<List<ClientErrors>>()
 
     private var remoteConnected = false
