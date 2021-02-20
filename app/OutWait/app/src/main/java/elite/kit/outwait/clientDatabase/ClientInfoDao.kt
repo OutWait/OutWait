@@ -22,10 +22,10 @@ interface ClientInfoDao {
     fun getClientInfoObservable(slotCode: String): LiveData<ClientInfo?>
 
     @Query("Select * From client_table")
-    fun getAllClientInfo(): List<ClientInfo?>
+    fun getAllClientInfo(): List<ClientInfo>
 
     @Query("Select * From client_table")
-    fun getAllClientInfoObservable(): LiveData<List<ClientInfo?>>
+    fun getAllClientInfoObservable(): LiveData<List<ClientInfo>>
 
     @Query("DELETE FROM client_table")
     fun clearTable()
