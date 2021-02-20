@@ -49,7 +49,7 @@ class DatabaseWrapper() {
                         constructorTime = Date(rs.getTimestamp("constructor_time").time),
                         approxTime = Date(rs.getTimestamp("approx_time").time),
                         expectedDuration =
-                            Duration.ofSeconds(rs.getInt("expected_duration").toLong()),
+                            Duration.ofMillis(rs.getInt("expected_duration").toLong()),
                         priority = Priority.valueOf(rs.getString("priority"))
                     )
                 slots.add(s)
@@ -107,7 +107,7 @@ class DatabaseWrapper() {
                 )
             addTemporarySlotQuery.setString(1, slot.priority.toString())
             addTemporarySlotQuery.setTimestamp(2, Timestamp(slot.approxTime.time))
-            addTemporarySlotQuery.setLong(3, slot.expectedDuration.seconds)
+            addTemporarySlotQuery.setLong(3, slot.expectedDuration.toMillis())
             addTemporarySlotQuery.setInt(4, 1)
             val rs = addTemporarySlotQuery.executeQuery()
             rs.next()
@@ -143,7 +143,7 @@ class DatabaseWrapper() {
                             "SET expected_duration = ?, priority = ?, approx_time = ?, " +
                             "is_temporary = 0 " + "WHERE queue_id = ? AND code = ?"
                     )
-                saveSlotsUpdate.setLong(1, slot.expectedDuration.seconds)
+                saveSlotsUpdate.setLong(1, slot.expectedDuration.toMillis())
                 saveSlotsUpdate.setString(2, slot.priority.toString())
                 saveSlotsUpdate.setTimestamp(3, Timestamp(slot.approxTime.time))
                 saveSlotsUpdate.setLong(4, queueId.id)
@@ -172,10 +172,10 @@ class DatabaseWrapper() {
                 ManagementDetails(rs.getString("name")),
                 ManagementSettings(
                     Mode.valueOf(rs.getString("mode")),
-                    Duration.ofSeconds(rs.getLong("default_slot_duration")),
-                    Duration.ofSeconds(rs.getLong("notification_time")),
-                    Duration.ofSeconds(rs.getLong("delay_notification_time")),
-                    Duration.ofSeconds(rs.getLong("prioritization_time"))
+                    Duration.ofMillis(rs.getLong("default_slot_duration")),
+                    Duration.ofMillis(rs.getLong("notification_time")),
+                    Duration.ofMillis(rs.getLong("delay_notification_time")),
+                    Duration.ofMillis(rs.getLong("prioritization_time"))
                 )
             )
         } catch (e: SQLException) {
@@ -211,15 +211,15 @@ class DatabaseWrapper() {
             rs.next()
             return SlotManagementInformation(
                 ManagementDetails(rs.getString("management.name")),
-                Duration.ofSeconds(rs.getLong("management.notification_time")),
-                Duration.ofSeconds(rs.getLong("management.delay_notification_time"))
+                Duration.ofMillis(rs.getLong("management.notification_time")),
+                Duration.ofMillis(rs.getLong("management.delay_notification_time"))
             )
         } catch (e: SQLException) {
             e.printStackTrace()
             return SlotManagementInformation(
                 ManagementDetails(""),
-                Duration.ofSeconds(0),
-                Duration.ofSeconds(0)
+                Duration.ofMillis(0),
+                Duration.ofMillis(0)
             )
         }
     }
@@ -294,13 +294,13 @@ class DatabaseWrapper() {
                         "delay_notification_time = ?, prioritization_time = ? " + "WHERE id = ?"
                 )
             saveManagementSettingsUpdate.setString(1, managementSettings.mode.toString())
-            saveManagementSettingsUpdate.setLong(2, managementSettings.defaultSlotDuration.seconds)
-            saveManagementSettingsUpdate.setLong(3, managementSettings.notificationTime.seconds)
+            saveManagementSettingsUpdate.setLong(2, managementSettings.defaultSlotDuration.toMillis())
+            saveManagementSettingsUpdate.setLong(3, managementSettings.notificationTime.toMillis())
             saveManagementSettingsUpdate.setLong(
                 4,
-                managementSettings.delayNotificationTime.seconds
+                managementSettings.delayNotificationTime.toMillis()
             )
-            saveManagementSettingsUpdate.setLong(5, managementSettings.prioritizationTime.seconds)
+            saveManagementSettingsUpdate.setLong(5, managementSettings.prioritizationTime.toMillis())
             saveManagementSettingsUpdate.setLong(6, managementId.id)
             saveManagementSettingsUpdate.executeUpdate()
 

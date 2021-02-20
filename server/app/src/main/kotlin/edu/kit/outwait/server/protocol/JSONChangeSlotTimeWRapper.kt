@@ -6,9 +6,9 @@ import org.json.JSONObject
 class JSONChangeSlotTimeWrapper(obj: JSONObject) : JSONSlotCodeWrapper(obj) {
     constructor() : this(JSONObject())
     fun setNewTime(time: Date) {
-        obj.put("newTime", time.getTime() / 1000)
+        obj.put("newTime", time.getTime())
     }
     fun getNewTime(): Date {
-        return Date(obj.getLong("newTime") * 1000)
+        return Date(obj.getLong("newTime"))
     }
 }

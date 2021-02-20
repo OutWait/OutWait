@@ -7,15 +7,15 @@ import org.json.JSONObject
 class JSONAddFixedSlotWrapper(obj: JSONObject) : JSONObjectWrapper(obj) {
     constructor() : this(JSONObject())
     fun setAppointmentTime(time: Date) {
-        obj.put("appointmentTime", time.getTime() / 1000)
+        obj.put("appointmentTime", time.getTime())
     }
     fun setDuration(duration: Duration) {
-        obj.put("duration", duration.getSeconds())
+        obj.put("duration", duration.toMillis())
     }
     fun getAppointmentTime(): Date {
-        return Date(obj.getLong("appointmentTime") * 1000)
+        return Date(obj.getLong("appointmentTime"))
     }
     fun getDuration(): Duration {
-        return Duration.ofSeconds(obj.getLong("duration"))
+        return Duration.ofMillis(obj.getLong("duration"))
     }
 }

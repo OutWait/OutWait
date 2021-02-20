@@ -6,9 +6,9 @@ import org.json.JSONObject
 class JSONChangeSlotDurationWrapper(obj: JSONObject) : JSONSlotCodeWrapper(obj) {
     constructor() : this(JSONObject())
     fun setNewDuration(duration: Duration) {
-        obj.put("newDuration", duration.getSeconds())
+        obj.put("newDuration", duration.toMillis())
     }
     fun getNewDuration(): Duration {
-        return Duration.ofSeconds(obj.getLong("newDuration"))
+        return Duration.ofMillis(obj.getLong("newDuration"))
     }
 }

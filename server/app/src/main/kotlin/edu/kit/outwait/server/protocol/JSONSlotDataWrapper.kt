@@ -9,21 +9,21 @@ import org.json.JSONObject
 class JSONSlotDataWrapper(obj: JSONObject) : JSONSlotCodeWrapper(obj) {
     constructor() : this(JSONObject())
     fun setSlotApprox(slotApprox: Date) {
-        obj.put("approxTime", slotApprox.getTime() / 1000)
+        obj.put("approxTime", slotApprox.getTime())
     }
     fun setInformation(information: SlotManagementInformation) {
         obj.put("instituteName", information.details.name)
-        obj.put("notificationTime", information.notificationTime.getSeconds())
-        obj.put("delayNotificationTime", information.delayNotificationTime.getSeconds())
+        obj.put("notificationTime", information.notificationTime.toMillis())
+        obj.put("delayNotificationTime", information.delayNotificationTime.toMillis())
     }
     fun getSlotApprox(): Date {
-        return Date(obj.getLong("approxTime") * 1000)
+        return Date(obj.getLong("approxTime"))
     }
     fun getInformation(): SlotManagementInformation {
         return SlotManagementInformation(
             ManagementDetails(obj.getString("instituteName")),
-            Duration.ofSeconds(obj.getLong("notificationTime")),
-            Duration.ofSeconds(obj.getLong("delayNotificationTime"))
+            Duration.ofMillis(obj.getLong("notificationTime")),
+            Duration.ofMillis(obj.getLong("delayNotificationTime"))
         )
     }
 }

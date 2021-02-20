@@ -121,7 +121,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     fun storeToJSON(json: JSONObject) {
         if (slots.isEmpty()) return // noting to save
 
-        json.put("currentSlotStartedTime", slots[0].expectedDuration.getSeconds())
+        json.put("currentSlotStartedTime", slots[0].expectedDuration.toMillis())
         json.put("slotOrder", slots.map { it.slotCode.code })
         json.put(
             "spontaneousSlots",
@@ -129,7 +129,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                 .map {
                     val tmp = JSONObject()
                     tmp.put("slotCode", it.slotCode.code)
-                    tmp.put("duration", it.expectedDuration.getSeconds())
+                    tmp.put("duration", it.expectedDuration.toMillis())
                     tmp
                 }
         )
@@ -140,7 +140,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                     val tmp = JSONObject()
                     tmp.put("slotCode", it.slotCode.code)
                     tmp.put("appointmentTime", it.approxTime.getTime())
-                    tmp.put("duration", it.expectedDuration.getSeconds())
+                    tmp.put("duration", it.expectedDuration.toMillis())
                     tmp
                 }
         )
@@ -169,7 +169,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
 
         if (slot != null && targetSlot != null) {
             slots.remove(slot)
-            val newDate = Date.from(targetSlot.constructorTime.toInstant() + Duration.ofSeconds(1))
+            val newDate = Date.from(targetSlot.constructorTime.toInstant() + Duration.ofMillis(1))
             val conflictingSlot = slots.find { it.constructorTime == newDate }
 
             slots.add(slot.copy(constructorTime=newDate))
