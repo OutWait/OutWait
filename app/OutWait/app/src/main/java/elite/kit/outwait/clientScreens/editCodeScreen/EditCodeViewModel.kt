@@ -20,7 +20,11 @@ class EditCodeViewModel @Inject constructor(private val repo : ClientRepository,
     val clientSlotCode= MutableLiveData<String>()
 
     init{
-        //repo.
+        repo.getActiveSlots().observeForever {
+            if (it.isNotEmpty()){
+                coordinator.navigateToRemainingTimeFragment()
+            }
+        }
     }
     fun enterSlotCode(code: String?){
         //TODO repo call expected

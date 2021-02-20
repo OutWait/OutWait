@@ -18,13 +18,14 @@ import javax.inject.Singleton
 class ClientRepository @Inject constructor(private val dao: ClientInfoDao, private val remote: ClientHandler) {
 
     init {
+        //Get notified with server errors
         remote.getErrors().observeForever {
             if (it.last() == ClientServerErrors.INVALID_SLOT_CODE){
                 pushError(ClientErrors.INVALID_SLOT_CODE)
             }
         }
     }
-    private val activeSlots = MutableLiveData<List<ClientInfo>>()
+    private val activeSlots = MutableLiveData<List<ClientInfo>>()//dao.getAllClientInfoObservable()
     private val errorNotifications = MutableLiveData<List<ClientErrors>>()
 
     private var remoteConnected = false
@@ -35,6 +36,7 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao, priva
             return
         }
         withContext(IO){
+            dao.clearTable()
             Log.d("newCodeEntered::cRepo", "entered code: $code")
             if(remoteConnected || remote.initCommunication()){
                 remoteConnected = true
@@ -48,7 +50,7 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao, priva
     fun getActiveSlots() : LiveData<List<ClientInfo>> = activeSlots
     fun getErrorNotifications() = errorNotifications as LiveData<List<ClientErrors>>
 
-    fun pushError(error: ClientErrors){
+    private fun pushError(error: ClientErrors){
         if (errorNotifications.value !== null){
             val newList = errorNotifications.value!!.plus(error).toMutableList()
             errorNotifications.value = newList
