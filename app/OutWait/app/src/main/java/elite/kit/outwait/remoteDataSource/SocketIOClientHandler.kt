@@ -74,6 +74,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         return true
     }
 
+    // TODO Hier listener der HashMap entfernen? Oder im SocketAdapter eine Methdoe? -> Docs von SOcketIO
     override fun endCommunication(): Boolean {
         cSocket.releaseConnection()
         this.serverReady = false
