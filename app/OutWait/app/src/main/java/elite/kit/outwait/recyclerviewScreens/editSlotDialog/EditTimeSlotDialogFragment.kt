@@ -17,6 +17,7 @@ import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.FixedTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.Type
+import kotlinx.android.synthetic.main.full_screen_progress_bar.*
 import kotlinx.android.synthetic.main.remaining_time_fragment.*
 import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.joda.time.DateTime
@@ -57,6 +58,8 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
                     setSpontaneousSlotValues()
                     viewModel.notifyEditSpontaneousSlot()
                 }
+                ManagmentViewFragment.displayingDialog.show()
+                ManagmentViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode =true
             }
 
             setNegativeButton(getString(R.string.cancel)) { dialog, which ->

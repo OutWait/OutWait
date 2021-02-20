@@ -22,6 +22,7 @@ import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding
 import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ManagmentViewFragment
 import elite.kit.outwait.utils.TransformationInput
 import elite.kit.outwait.waitingQueue.timeSlotModel.FixedTimeSlot
+import kotlinx.android.synthetic.main.full_screen_progress_bar.*
 import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.joda.time.DateTime
 import org.joda.time.DateTimeFieldType.hourOfDay
@@ -78,6 +79,7 @@ class AddSlotDialogFragment : DialogFragment() {
                     setSpontaneousSlotValues()
                     viewModel.notifyAddSpontaneousSlot()
                     ManagmentViewFragment.displayingDialog.show()
+                    ManagmentViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode =true
                 }
             }
             setNegativeButton(getString(R.string.cancel)) { dialog, which ->

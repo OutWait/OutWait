@@ -166,7 +166,6 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         var editDialog =
             EditTimeSlotDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
         editDialog.show(childFragmentManager, "aaa")
-        displayingDialog.show()
     }
 
 
