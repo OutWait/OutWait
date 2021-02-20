@@ -11,11 +11,13 @@ import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.EditTimeSlotDialogFragmentBinding
+import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ManagmentViewFragment
 import elite.kit.outwait.utils.TransformationInput
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.FixedTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.Type
+import kotlinx.android.synthetic.main.remaining_time_fragment.*
 import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.joda.time.DateTime
 import org.joda.time.Interval
@@ -59,6 +61,7 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
 
             setNegativeButton(getString(R.string.cancel)) { dialog, which ->
                 dialog.cancel()
+                ManagmentViewFragment.displayingDialog.dismiss()
             }
 
         }

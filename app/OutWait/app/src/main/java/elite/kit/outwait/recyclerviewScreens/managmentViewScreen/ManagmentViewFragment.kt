@@ -29,12 +29,14 @@ import org.joda.time.*
 @AndroidEntryPoint
 class ManagmentViewFragment : Fragment(), ItemActionListener {
 
+    companion object{
+        lateinit var displayingDialog: AlertDialog
+    }
+
     private val viewModel: ManagmentViewViewModel by viewModels()
     private lateinit var binding: ManagmentViewFragmentBinding
     private lateinit var slotAdapter: SlotAdapter
-    private lateinit var builder: AlertDialog.Builder
-    private lateinit var displayingDialog: AlertDialog
-
+    private lateinit var builder:AlertDialog.Builder
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,15 +57,14 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
             setTitle(getString(R.string.process_title))
             setCancelable(true)
         }
-        builder.create()
-        //        binding.slotList.visibility=View.INVISIBLE
-//        binding.floatingActionButton.visibility=View.INVISIBLE
+        displayingDialog=builder.create()
+
 
         //TODO check except
         viewModel.repo.getObservableTimeSlotList().observe(viewLifecycleOwner, Observer { list ->
             slotAdapter.updateSlots(list.toMutableList())
             //TODO dismiss progress bar dialog
-            displayingDialog.cancel()
+            displayingDialog.dismiss()
         })
 
         binding.pbTransaction.visibility = View.INVISIBLE
@@ -82,11 +83,6 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
 
         //Add action bar icon
         setHasOptionsMenu(true)
-        var actionbar= requireActivity().actionBar
-
-
-
-
         return binding.root
     }
 
@@ -147,14 +143,14 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
                     slotAdapter.slotList.add(position, removedSlot)
                     slotAdapter.notifyItemInserted(position)
                     slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 1)
-                    displayingDialog = builder.show()
+                    displayingDialog.show()
 
                 }
         resetDelete.addCallback(object : Callback() {
             override fun onDismissed(snackbar: Snackbar, event: Int) {
                 super.onDismissed(snackbar, event)
                 if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
-                    displayingDialog = builder.show()
+                    displayingDialog.show()
                 }
             }
         })
@@ -170,8 +166,7 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         var editDialog =
             EditTimeSlotDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
         editDialog.show(childFragmentManager, "aaa")
-        editDialog.exitTransition
-        displayingDialog = builder.show()
+        displayingDialog.show()
     }
 
 
@@ -181,16 +176,9 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
 
     }
 
-    override fun onOptionsMenuClosed(menu: Menu) {
-
-    }
-
-
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         viewModel.navigateToConfigDialog()
-        //TODO dismiss by changed preferences
         return true
     }
 }

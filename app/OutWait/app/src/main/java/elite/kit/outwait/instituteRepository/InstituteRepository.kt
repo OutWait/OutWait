@@ -19,9 +19,7 @@ import javax.inject.Singleton
 @Singleton
 class InstituteRepository @Inject constructor() {
 
-    init {
 
-    }
 
     private val preferences = MutableLiveData<Preferences>()
     private val timeSlotList = MutableLiveData<List<TimeSlot>>()
@@ -32,6 +30,11 @@ class InstituteRepository @Inject constructor() {
     fun getObservableTimeSlotList() = timeSlotList as LiveData<List<TimeSlot>>
     fun getErrorNotifications() = errorNotifications as LiveData<List<InstituteErrors>>
     fun isInTransaction() = inTransaction as LiveData<Boolean>
+
+    init {
+        preferences.value=Preferences(Duration(300000L),Duration(3000L),Duration(3000L),Duration(3000L),Mode.ONE)
+
+    }
 
     suspend fun loginCo(username: String, password: String): Boolean{
         withContext(IO){
@@ -72,13 +75,15 @@ class InstituteRepository @Inject constructor() {
     }
 
     fun changePreferences(
-        defaultSlotDuration: Duration,
-        notificationTime: Duration,
-        delayNotificationTime: Duration,
-        prioritizationTime: Duration,
-        mode2Active: Boolean
+        defaultSlotDurations: Duration,
+        notificationTimes: Duration,
+        delayNotificationTimes: Duration,
+        prioritizationTimes: Duration,
+        mode2Actives: Boolean
     ){
-
+       preferences.value!!.mode=Mode.TWO
+        preferences.value!!.defaultSlotDuration=defaultSlotDurations
+        Log.i("change","${preferences.value!!.defaultSlotDuration.millis}")
     }
 
     fun newSpontaneousSlot(auxiliaryIdentifier : String, duration : Duration){

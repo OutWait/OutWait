@@ -19,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding
+import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ManagmentViewFragment
 import elite.kit.outwait.utils.TransformationInput
 import elite.kit.outwait.waitingQueue.timeSlotModel.FixedTimeSlot
 import mobi.upod.timedurationpicker.TimeDurationPicker
@@ -70,13 +71,13 @@ class AddSlotDialogFragment : DialogFragment() {
                             Toast.LENGTH_LONG).show()
                     } else {
                         viewModel.notifyAddFixedSlot()
-                        //TODO show dialog
+                        ManagmentViewFragment.displayingDialog.show()
                     }
 
                 } else {
                     setSpontaneousSlotValues()
                     viewModel.notifyAddSpontaneousSlot()
-                    //TODO show dialog
+                    ManagmentViewFragment.displayingDialog.show()
                 }
             }
             setNegativeButton(getString(R.string.cancel)) { dialog, which ->

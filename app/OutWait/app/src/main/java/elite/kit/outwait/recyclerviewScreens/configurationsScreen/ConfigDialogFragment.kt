@@ -15,7 +15,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.R
 import elite.kit.outwait.customDataTypes.Mode
+import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.databinding.ConfigDialogFragmentBinding
+import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ManagmentViewFragment
 import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.joda.time.Duration
 import kotlin.time.DurationUnit
@@ -28,6 +30,8 @@ class ConfigDialogFragment : Fragment() {
     private val viewModel: ConfigDialogViewModel by viewModels()
     private lateinit var builder: AlertDialog.Builder
     private lateinit var displayingDialog: AlertDialog
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -35,10 +39,8 @@ class ConfigDialogFragment : Fragment() {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.config_dialog_fragment, container, false)
         binding.viewModel = this.viewModel
-        binding.lifecycleOwner=this
+        binding.lifecycleOwner=viewLifecycleOwner
 
-        //Setup Dialog
-//        displayValues()
         //Setup format
         setUpFormat()
 
@@ -48,18 +50,31 @@ class ConfigDialogFragment : Fragment() {
             setTitle(getString(R.string.process_title))
             setCancelable(true)
         }
-        builder.create()
+        displayingDialog= builder.create()
 
         //TODO check queue empty to switch mode
         //get default values from sever
-        viewModel.repo.getObservablePreferences().observe(viewLifecycleOwner, Observer {
+        viewModel.repo.getObservablePreferences().observe(viewLifecycleOwner, Observer<Preferences> {
             viewModel.standardSlotDauer.value=it.defaultSlotDuration
             viewModel.delayNotificationTime.value=it.delayNotificationTime
             viewModel.notificationTime.value=it.notificationTime
             viewModel.prioritizationTime.value=it.prioritizationTime
-            viewModel.isModusTwo.value=it.mode.ordinal== Mode.TWO.ordinal
+            viewModel.isModusTwo.value=it.mode== Mode.TWO
+
+            binding.durationStandardSlot.duration=it.defaultSlotDuration.millis
+            binding.durationDelay.duration=it.delayNotificationTime.millis
+            binding.durationPrioritization.duration=it.prioritizationTime.millis
+            binding.durationNotification.duration=it.notificationTime.millis
+            binding.sMode.isChecked= it.mode==Mode.TWO
+
+            Log.i("viewModel","${viewModel.standardSlotDauer.value}")
+            Log.i("observation","trueeeeeeeeee")
             displayingDialog.cancel()
         })
+
+
+        //Setup Dialog
+//        displayValues()
 
         //TODO check problems to late pass data
         //pass new default values from user to server
@@ -70,9 +85,8 @@ class ConfigDialogFragment : Fragment() {
             viewModel.prioritizationTime.value=Duration(binding.durationPrioritization.duration)
             viewModel.isModusTwo.value=binding.sMode.isChecked
             viewModel.saveConfigValues()
-            displayingDialog= builder.show()
+            displayingDialog.show()
         }
-
 
 
         return binding.root
@@ -86,11 +100,7 @@ class ConfigDialogFragment : Fragment() {
     }
 
     private fun displayValues() {
-        binding.durationStandardSlot.duration=viewModel.standardSlotDauer.value!!.millis
-        binding.durationDelay.duration=viewModel.delayNotificationTime.value!!.millis
-        binding.durationPrioritization.duration=viewModel.prioritizationTime.value!!.millis
-        binding.durationNotification.duration=viewModel.notificationTime.value!!.millis
-        binding.sMode.isChecked= viewModel.isModusTwo.value!!
+
     }
 
 
