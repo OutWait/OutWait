@@ -26,6 +26,7 @@ class DatabaseWrapper() {
     /**
      * Setting connection properties and trying to connect to the database.
      */
+
     init {
         this.connectionProps["user"] = "outwait"
         this.connectionProps["password"] = "OurOutwaitDB"
@@ -322,7 +323,8 @@ class DatabaseWrapper() {
     }
 
     /**
-     * Verifies that a Slot with specified SlotCode exists in Database
+     * Verifies that a Slot with specified SlotCode exists in Database.
+     *      Helper method for registerReceiver method.
      * @param slotCode SlotCode of Slot
      * @return true if Slot exists else false
      */
