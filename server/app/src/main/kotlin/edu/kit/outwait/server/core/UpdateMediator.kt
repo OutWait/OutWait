@@ -20,7 +20,8 @@ class UpdateMediator {
         setSlotData(slotCode, slotApprox, slotManagementInformation)
     }
 
-    fun unsubscribeSlotInformationReceiver(slotCode: SlotCode, receiver: SlotInformationReceiver) {
+    fun unsubscribeSlotInformationReceiver(receiver: SlotInformationReceiver) {
+        val slotCode = receiver.slotCode
         if (receivers[slotCode] != null) {
             receivers[slotCode]?.remove(receiver)
             if (receivers[slotCode]?.isEmpty() ?: false) {
