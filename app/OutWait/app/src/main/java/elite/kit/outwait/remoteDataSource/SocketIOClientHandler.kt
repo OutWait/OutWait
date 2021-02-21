@@ -7,7 +7,8 @@ import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.networkProtocol.*
 
-
+// TODO Falsche Zugriffe durch Repo abfangen (bspw.2x initComm hintereinander)
+// TODO InvalidRequest adäquat handlen (oder error pushen?) Welche Fehler sind möglich?
 
 class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
@@ -56,25 +57,23 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
         cSocket.initializeConnection(clientEventToCallbackMapping)
 
-        // Mit return warten bis SocketIOSocket connected ist (TODO geht auch schöner? LiveData?)
+        // Mit return warten bis SocketIOSocket connected ist
+        // TODO geht auch schöner? LiveData?
         while (!cSocket.isConnected()){
             Log.d("initCom::SIOCliHandler", "in der 1 Whileschleife")
             Thread.sleep(1000)
         }
 
-        // Mit return warten bis Server readyToServe signalisiert (TODO geht auch schöner? LiveData?)
+        // Mit return warten bis Server readyToServe signalisiert
+        // TODO geht auch schöner? LiveData?
         while (!this.serverReady) {
             Thread.sleep(1000)
             Log.d("initCom::SIOCliHandler", "in der 2 Whileschleife")
         }
 
-        // reset serverReady for next connection procedure
-        this.serverReady = false
-
         return true
     }
 
-    // TODO Hier listener der HashMap entfernen? Oder im SocketAdapter eine Methdoe? -> Docs von SOcketIO
     override fun endCommunication(): Boolean {
         cSocket.releaseConnection()
         this.serverReady = false
@@ -100,7 +99,6 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     /*
     Die Callback Methoden die gemäß Mapping bei einem eingeheneden Event aufgerufen werden
      */
-
     private fun onSendSlotData(wrappedJSONData: JSONSlotDataWrapper) {
         val slotCode = wrappedJSONData.getSlotCode()
         val approxTime = wrappedJSONData.getApproxTime()
@@ -155,12 +153,11 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     private fun onInvalidCode(wrappedJSONData: JSONEmptyWrapper) {
         Log.d("onInvlCd::SIOCliHandler", "server answer")
         pushError(ClientServerErrors.INVALID_SLOT_CODE)
-
     }
 
+    //TODO Fehlermeldung werfen? LiveData Error? Welche Fehlermeldung kommen rein und wie verarbeiten?
     private fun onInvalidRequest(wrappedJSONData: JSONInvalidRequestWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
-        //TODO Fehlermeldung werfen? LiveData Error? Welche Fehlermeldung kommen rein und wie verarbeiten?
     }
 
     private fun pushError(error: ClientServerErrors){
