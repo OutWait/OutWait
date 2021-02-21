@@ -101,29 +101,6 @@ class DatabaseWrapper() {
         }
     }
 
-    /**
-     * Sets the approximated "time of arrival" for a slot from the database.
-     *      F. ex. after calculating a new approximated time
-     * @param slotCode code of the slot which approximated "time of arrival" is set.
-     * @param slotApprox new approximated time to be set
-     * @return true if successful else false
-     */
-    fun setSlotApprox(slotCode: SlotCode, slotApprox: Date): Boolean {
-        try {
-            val setSlotApproxUpdate =
-                connection.prepareStatement(
-                    "UPDATE Slot " + "SET approx_time = ? " + "WHERE Slot.code = ?"
-                )
-            setSlotApproxUpdate.setTimestamp(1, Timestamp(slotApprox.time))
-            setSlotApproxUpdate.setString(2, slotCode.code)
-            setSlotApproxUpdate.executeUpdate()
-            updateMediator.setSlotApprox(slotCode, slotApprox)
-            return true
-        } catch (e: SQLException) {
-            e.printStackTrace()
-            return false
-        }
-    }
 
     /**
      * Adds a new temporary Slot to a specified queue of a management.
@@ -201,7 +178,6 @@ class DatabaseWrapper() {
                 saveSlotsUpdate.setLong(4, queueId.id)
                 saveSlotsUpdate.setString(5, slot.slotCode.code)
                 saveSlotsUpdate.executeUpdate()
-                updateMediator.setSlotApprox(slot.slotCode, slot.approxTime)
             }
             return true
         } catch (e: SQLException) {

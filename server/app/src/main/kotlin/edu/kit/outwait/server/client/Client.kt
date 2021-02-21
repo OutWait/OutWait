@@ -39,7 +39,7 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
         socketFacade.onReceive(Event.REFRESH_SLOT_APPROX, {receivedData ->
             val slotCode = (receivedData as JSONSlotCodeWrapper).getSlotCode()
             if (receivers[slotCode] == null) {
-                this.socketFacade.send(Event.INVALID_CODE, JSONEmptyWrapper())
+                this.socketFacade.send(Event.INVALID_CLIENT_REQUEST, JSONEmptyWrapper())
             }
             else {
                 val slotApprox = receivers.get(slotCode)!!.getSlotApprox()
