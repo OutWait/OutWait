@@ -47,11 +47,11 @@ class EditCodeFragment : Fragment() {
             checkForPermission(android.Manifest.permission.CAMERA, "camera", CAMERA_RQ)
         }
 
-        viewModel.loginResponse.observe(viewLifecycleOwner){
+        /*viewModel.loginResponse.observe(viewLifecycleOwner){
             Log.i("check","${it.isEmpty()}")
 
 //            Navigation.findNavController(binding.root).navigate(R.id.remainingTimeFragment)
-        }
+        }*/
 
 
         return binding.root

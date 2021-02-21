@@ -13,7 +13,6 @@ import javax.inject.Inject
 class EditCodeViewModel @Inject constructor(private val repo : ClientRepository, private val coordinator: EditCodeCoordinator) : ViewModel() {
 
     val clientSlotCode= MutableLiveData<String>()
-    val clientSlotCodes= MutableLiveData<String>()
 
     /*val users: LiveData<List<ClientInfo>> = Transformations.switchMap(clientSlotCode){
         repo.getActiveSlots()
@@ -26,11 +25,13 @@ class EditCodeViewModel @Inject constructor(private val repo : ClientRepository,
     }
 
     init{
-       /* repo.getActiveSlots().observeForever {
+        repo.getActiveSlots().observeForever {
             if (it.isNotEmpty()){
+                //test to see whether object is created
+                Log.i("object","${it.component1().slotCode}")
                 coordinator.navigateToRemainingTimeFragment()
             }
-        }*/
+        }
     }
     fun enterSlotCode(code: String?){
         Log.d("enterSCode::EditCodeVM", "reached")
