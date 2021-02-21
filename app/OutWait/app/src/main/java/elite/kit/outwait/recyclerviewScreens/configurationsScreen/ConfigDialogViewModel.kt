@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.customDataTypes.Mode
+import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import org.joda.time.DateTime
 import org.joda.time.Duration
@@ -15,11 +16,7 @@ import javax.inject.Inject
 class ConfigDialogViewModel @Inject constructor( val repo: InstituteRepository) :
     ViewModel() {
 
-    /*
-    * - preferences never null, values first from server
-    * - standardduration show in addslotfragment
-    * */
-
+     val preferences : LiveData<Preferences> =repo.getObservablePreferences()
 
     //TODO check queue is emtpy to switch mode
 

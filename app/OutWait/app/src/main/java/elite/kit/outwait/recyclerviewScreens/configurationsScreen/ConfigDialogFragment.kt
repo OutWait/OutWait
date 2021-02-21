@@ -54,7 +54,27 @@ class ConfigDialogFragment : Fragment() {
 
         //TODO check queue empty to switch mode
         //get default values from sever
-        viewModel.repo.getObservablePreferences().observe(viewLifecycleOwner, Observer<Preferences> {
+        viewModel.preferences.observe(viewLifecycleOwner){
+            viewModel.standardSlotDauer.value=it.defaultSlotDuration
+            viewModel.delayNotificationTime.value=it.delayNotificationTime
+            viewModel.notificationTime.value=it.notificationTime
+            viewModel.prioritizationTime.value=it.prioritizationTime
+            viewModel.isModusTwo.value=it.mode== Mode.TWO
+
+            binding.durationStandardSlot.duration=it.defaultSlotDuration.millis
+            binding.durationDelay.duration=it.delayNotificationTime.millis
+            binding.durationPrioritization.duration=it.prioritizationTime.millis
+            binding.durationNotification.duration=it.notificationTime.millis
+            binding.sMode.isChecked= it.mode==Mode.TWO
+
+            Log.i("viewModel","${viewModel.standardSlotDauer.value}")
+            Log.i("observation","trueeeeeeeeee")
+            displayingDialog.dismiss()
+        }
+
+
+
+       /* viewModel.repo.getObservablePreferences().observe(viewLifecycleOwner, Observer<Preferences> {
             viewModel.standardSlotDauer.value=it.defaultSlotDuration
             viewModel.delayNotificationTime.value=it.delayNotificationTime
             viewModel.notificationTime.value=it.notificationTime
@@ -71,7 +91,7 @@ class ConfigDialogFragment : Fragment() {
             Log.i("observation","trueeeeeeeeee")
             displayingDialog.cancel()
         })
-
+*/
 
         //Setup Dialog
 //        displayValues()
