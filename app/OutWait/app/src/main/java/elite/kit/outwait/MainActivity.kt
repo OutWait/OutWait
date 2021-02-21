@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),androidx.lifecycle.ViewModelStoreOwner {
 
     @Inject
     lateinit var navigator: Navigator

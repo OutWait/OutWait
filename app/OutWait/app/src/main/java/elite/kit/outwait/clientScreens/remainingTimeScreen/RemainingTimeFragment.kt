@@ -25,7 +25,6 @@ class RemainingTimeFragment : Fragment() {
 
     private val viewModel: RemainingTimeViewModel by viewModels()
     private lateinit var binding: RemainingTimeFragmentBinding
-    private var isFirstBackPressed = false
     private lateinit var counterDownTimer: CountDownTimer
 
     companion object {
