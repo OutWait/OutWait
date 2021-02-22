@@ -24,6 +24,9 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao, priva
                 pushError(ClientErrors.INVALID_SLOT_CODE)
             }
         }
+        CoroutineScope(IO).launch {
+            dao.clearTable()
+        }
     }
     private val activeSlots = dao.getAllClientInfoObservable()// MutableLiveData<List<ClientInfo>>()//
     private val errorNotifications = MutableLiveData<List<ClientErrors>>()
@@ -36,7 +39,6 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao, priva
             return
         }
         withContext(IO){
-            dao.clearTable()
             Log.d("newCodeEntered::cRepo", "entered code: $code")
             if(remoteConnected || remote.initCommunication()){
                 remoteConnected = true
