@@ -51,13 +51,11 @@ class EditCodeFragment : Fragment() {
         viewModel.loginResponse.observe(viewLifecycleOwner){
             if(it.isEmpty()){
                 Toast.makeText(context,"Failed",Toast.LENGTH_SHORT)
-            }
-            if(it.component1() is ClientInfo) {
+            }else if(it.component1() is ClientInfo) {
                 Log.i("check","${it.component1().toString()}")
                 Navigation.findNavController(binding.root).navigate(R.id.remainingTimeFragment)
             }
         }
-
 
         return binding.root
     }

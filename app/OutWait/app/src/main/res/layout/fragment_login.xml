@@ -18,11 +18,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="108dp"
         android:ems="10"
+        android:text="@={viewModel.clientSlotCode}"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/btnLoginFrag" />
 
     <EditText
         android:id="@+id/etName"
@@ -30,6 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="96dp"
         android:ems="10"
+        android:text="@={viewModel.instituteName}"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -42,17 +44,19 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:ems="10"
+        android:text="@={viewModel.institutePassword}"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etName" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnLoginFrag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
-        android:text="Button"
+        android:text="@string/sign_in"
+        android:onClick="@{()->viewModel.login()}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etPasswordInstitute" />
@@ -61,7 +65,8 @@
         android:id="@+id/btnEnteCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:text="Enter Code"
+        android:onClick="@{()-> viewModel.enterSlotCode()}"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

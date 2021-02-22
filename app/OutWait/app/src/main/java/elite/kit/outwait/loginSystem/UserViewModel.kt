@@ -5,12 +5,13 @@ import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientRepository.ClientRepository
+import elite.kit.outwait.clientScreens.editCodeScreen.EditCodeFragmentDirections
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class UserViewModel @Inject constructor(private val repoClient : ClientRepository, private val repoInstitute: InstituteRepository): ViewModel() {
+class UserViewModel @Inject constructor(private val repoClient : ClientRepository, private val repoInstitute: InstituteRepository, private val coordinator:LoginCoordinator): ViewModel() {
 
     val clientSlotCode= MutableLiveData<String>()
     val instituteName= MutableLiveData<String>()
@@ -26,17 +27,28 @@ class UserViewModel @Inject constructor(private val repoClient : ClientRepositor
         }
     }
 
-    fun enterSlotCode(code: String?){
+    fun enterSlotCode(){
         Log.d("enterSCode::EditCodeVM", "reached")
         viewModelScope.launch {
-            repoClient.newCodeEntered(code)
+            repoClient.newCodeEntered(clientSlotCode.value)
         }
     }
 
     fun login(){
-        viewModelScope.launch {
-            repoInstitute.login(instituteName.value!!, institutePassword.value!!)
-        }
+     repoInstitute.login(instituteName.value!!, institutePassword.value!!)
+
+    }
+
+    fun navigateToRemainingTimeFragment() {
+        coordinator.navigateToRemainingTimeFragment()
+    }
+
+    fun navigateToManagementViewFragment() {
+        coordinator.navigateToManagementViewFragment()
+    }
+
+    fun navigateToLoginFragment() {
+        coordinator.navigateToLoginFragment()
     }
 
 

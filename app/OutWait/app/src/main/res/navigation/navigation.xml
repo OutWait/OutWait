@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/navigation"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
     app:startDestination="@id/editCodeFragment">
 
     <fragment
@@ -67,4 +69,23 @@
             android:name="editSlot"
             app:argType="elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot" />-->
     </dialog>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="elite.kit.outwait.loginSystem.LoginFragment"
+        android:label="LoginFragment" />
+    <fragment
+        android:id="@+id/forwarderFragment"
+        android:name="elite.kit.outwait.loginSystem.ForwarderFragment"
+        android:label="fragment_forwarder"
+        tools:layout="@layout/fragment_forwarder" >
+        <action
+            android:id="@+id/action_forwarderFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_forwarderFragment_to_remainingTimeFragment"
+            app:destination="@id/remainingTimeFragment" />
+        <action
+            android:id="@+id/action_forwarderFragment_to_managmentViewFragment"
+            app:destination="@id/managmentViewFragment" />
+    </fragment>
 </navigation>

@@ -25,19 +25,22 @@ class ForwarderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val navController = findNavController()
-
-        /*userViewModel.users.observe(viewLifecycleOwner) { listOfUsers ->
-            if (listOfUsers.isEmpty()) {
-//                navController.navigate(R.id.loginFragment)
-            } else if (listOfUsers.component1() == false) {
-                //                navController.navigate(R.id.loginFragment)
-            } else if (listOfUsers.component1() == true) {
-                navController.navigate(R.id.managmentViewFragment)
-            } else if (listOfUsers.component1() is ClientInfo) {
-                navController.navigate(R.id.remainingTimeFragment)
+        userViewModel.loginResponse.observe(viewLifecycleOwner) { listOfUsers ->
+            when {
+                listOfUsers.isEmpty() -> {
+                    userViewModel.navigateToLoginFragment()
+                }
+                listOfUsers.component1() == false -> {
+                    userViewModel.navigateToLoginFragment()
+                }
+                listOfUsers.component1() == true -> {
+                    userViewModel.navigateToManagementViewFragment()
+                }
+                listOfUsers.component1() is ClientInfo -> {
+                    userViewModel.navigateToRemainingTimeFragment()
+                }
             }
-        }*/
+        }
 
     }
 }

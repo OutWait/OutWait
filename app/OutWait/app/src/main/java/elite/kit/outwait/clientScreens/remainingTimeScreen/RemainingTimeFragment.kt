@@ -75,7 +75,7 @@ class RemainingTimeFragment : Fragment() {
 
             // Other
             roundBorder = true
-            startAngle = MINIMUM_INTERVAL
+            startAngle = 0F
             progressDirection = CircularProgressBar.ProgressDirection.TO_LEFT
         }
 
@@ -96,7 +96,7 @@ class RemainingTimeFragment : Fragment() {
 
             override fun onFinish() {
                 binding.tvRemainingTime.text = "Please go to your institute"
-                binding.circularProgressBar.progress = MINIMUM_INTERVAL
+                binding.circularProgressBar.progress = 0F
             }
         }.start()
 
