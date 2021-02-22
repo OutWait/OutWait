@@ -13,7 +13,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     private var delayChangeTime: Date? = null
 
     init {
-        slots = databaseWrapper.getSlots(queueId).toMutableList()
+        slots = databaseWrapper.getSlots(queueId)!!.toMutableList() // queueId must exist
     }
     fun updateQueue(prioritizationTime: Duration) {
         delayChangeTime = null
