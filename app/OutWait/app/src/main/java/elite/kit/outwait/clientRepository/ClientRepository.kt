@@ -22,6 +22,7 @@ class ClientRepository @Inject constructor(
     private val serviceHandler: ServiceHandler) {
 
     init {
+        serviceHandler.startTimerService()
         //Get notified with server errors
         remote.getErrors().observeForever {
             if (it.last() == ClientServerErrors.INVALID_SLOT_CODE){
@@ -42,7 +43,6 @@ class ClientRepository @Inject constructor(
             pushError(ClientErrors.INVALID_SLOT_CODE)
             return
         }
-        serviceHandler.startTimerService()
         withContext(IO){
             Log.d("newCodeEntered::cRepo", "entered code: $code")
             if(remoteConnected || remote.initCommunication()) {
