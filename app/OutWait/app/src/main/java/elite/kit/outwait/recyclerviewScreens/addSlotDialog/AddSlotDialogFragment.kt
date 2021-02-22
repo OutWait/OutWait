@@ -73,6 +73,7 @@ class AddSlotDialogFragment : DialogFragment() {
                     } else {
                         viewModel.notifyAddFixedSlot()
                         ManagmentViewFragment.displayingDialog.show()
+                        ManagmentViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode =true
                     }
 
                 } else {

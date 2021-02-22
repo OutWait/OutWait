@@ -64,7 +64,6 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
 
             setNegativeButton(getString(R.string.cancel)) { dialog, which ->
                 dialog.cancel()
-                ManagmentViewFragment.displayingDialog.dismiss()
             }
 
         }

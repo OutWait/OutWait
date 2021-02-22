@@ -1,6 +1,7 @@
 package elite.kit.outwait.recyclerviewScreens.managmentViewScreen
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,14 +16,14 @@ class ManagmentViewViewModel @Inject constructor(
     private val coordinator: ManagementViewCoordinator,
 ) : ViewModel() {
 
-
-
-
-    /*
-    * - zuerst gebewgter slot dann der feste
-    * - both delete and endCurrent
-    * */
     val slotList = repo.getObservableTimeSlotList()
+
+    var isInTransaction= MediatorLiveData<Boolean>().apply {
+        addSource(repo.isInTransaction()){it ->
+
+            }
+
+    }
 
 
     fun navigateToAddSlotDialog() {
@@ -37,6 +38,24 @@ class ManagmentViewViewModel @Inject constructor(
         coordinator.navigateToEditDialogFragment(timeSlot)
     }
 
+    fun moveSlotAfterAnother(movedSlot: String, otherSlot: String) {
+        repo.moveSlotAfterAnother(movedSlot,otherSlot)
+    }
+
+    fun deleteSlot(slotCode:String){
+        repo.deleteSlot(slotCode)
+    }
+    fun endCurrendSlot(){
+        repo.endCurrentSlot()
+    }
+
+    fun saveTransaction() {
+        repo.saveTransaction()
+    }
+
+    fun abortTransaction() {
+        repo.abortTransaction()
+    }
 
 
 }

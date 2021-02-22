@@ -14,14 +14,6 @@
         android:layout_height="match_parent"
         tools:context=".recyclerviewScreens.managmentViewScreen.ManagmentViewFragment">
 
-        <ProgressBar
-            android:id="@+id/pbTransaction"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:indeterminate="true">
-
-        </ProgressBar>
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/slotList"

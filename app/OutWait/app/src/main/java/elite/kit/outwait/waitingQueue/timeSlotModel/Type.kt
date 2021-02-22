@@ -4,5 +4,5 @@ enum class Type {
     PAUSE,
     FIXED_SLOT,
     SPONTANEOUS_SLOT,
-    DEFAULT
+    HEADER
 }

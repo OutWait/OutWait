@@ -1,15 +1,12 @@
 package elite.kit.outwait.recyclerviewScreens.managmentViewScreen
 
-import android.app.ActionBar
 import android.app.AlertDialog
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,21 +19,30 @@ import elite.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFr
 import elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
+import elite.kit.outwait.recyclerviewSetUp.viewHolder.HeaderTransaction
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
-import kotlinx.android.synthetic.main.config_dialog_fragment.*
+import kotlinx.android.synthetic.main.full_screen_progress_bar.*
+import kotlinx.android.synthetic.main.managment_view_fragment.*
+import okhttp3.internal.http2.Header
 import org.joda.time.*
 
 @AndroidEntryPoint
 class ManagmentViewFragment : Fragment(), ItemActionListener {
+    private val viewModel: ManagmentViewViewModel by viewModels()
 
     companion object{
         lateinit var displayingDialog: AlertDialog
-    }
+        var movementInfo = MutableLiveData<MutableList<String>>()
+        }
 
-    private val viewModel: ManagmentViewViewModel by viewModels()
     private lateinit var binding: ManagmentViewFragmentBinding
     private lateinit var slotAdapter: SlotAdapter
     private lateinit var builder:AlertDialog.Builder
+    private var CURREND_SLOT1=0
+    private var CURREND_SLOT2=1
+    private var FIRST_POSITION=0
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,7 +73,17 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
             displayingDialog.dismiss()
         })
 
-        binding.pbTransaction.visibility = View.INVISIBLE
+        movementInfo.observe(viewLifecycleOwner){
+            viewModel.moveSlotAfterAnother(it.first(),it.last())
+        }
+
+        viewModel.isInTransaction.observe(viewLifecycleOwner){
+            if(it){
+                //TODO easy way with layout above recyclerview layout
+//               slotAdapter.updateSlots(slotAdapter.slotList.add(FIRST_POSITION,HeaderTransaction()).toMutableList())
+            }
+        }
+
 
 //        viewModel.weatherLocations.observe(viewLifecycleOwner) {
 //            weatherOverviewAdapter.updateWeatherLocations(it)
@@ -84,6 +100,10 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         //Add action bar icon
         setHasOptionsMenu(true)
         return binding.root
+    }
+
+    private fun forwarderMove(movedSlot: String, otherSlot: String){
+        viewModel.moveSlotAfterAnother(movedSlot, otherSlot)
     }
 
     private fun fakeSlotList(): MutableList<TimeSlot> {
@@ -144,17 +164,30 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
                     slotAdapter.notifyItemInserted(position)
                     slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 1)
                     displayingDialog.show()
+                    displayingDialog.fullScreenProgressBar.indeterminateMode =true
+
 
                 }
         resetDelete.addCallback(object : Callback() {
             override fun onDismissed(snackbar: Snackbar, event: Int) {
                 super.onDismissed(snackbar, event)
-                if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                if (event == DISMISS_EVENT_TIMEOUT) {
+                    notifyDeleteSlot(position,removedSlot)
                     displayingDialog.show()
+                    displayingDialog.fullScreenProgressBar.indeterminateMode =true
                 }
             }
         })
         resetDelete.show()
+    }
+
+    private fun notifyDeleteSlot(position: Int, removedSlot: TimeSlot) {
+        var removedClientSlot=removedSlot as ClientTimeSlot
+        when(position){
+            //TODO check delete slot first then after header slot (also first)
+            CURREND_SLOT1,CURREND_SLOT2 -> viewModel.endCurrendSlot()
+            else -> viewModel.deleteSlot(removedClientSlot.slotCode)
+        }
     }
 
     private fun getIdentifier(slot: TimeSlot): String {
@@ -166,6 +199,14 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         var editDialog =
             EditTimeSlotDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
         editDialog.show(childFragmentManager, "aaa")
+    }
+
+    override fun saveTransaction() {
+        viewModel.saveTransaction()
+    }
+
+    override fun abortTransaction() {
+        viewModel.abortTransaction()
     }
 
 
