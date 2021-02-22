@@ -11,6 +11,9 @@ import elite.kit.outwait.R
 import android.app.*
 import android.os.Build
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -100,6 +103,41 @@ class TimerService @Inject constructor(): Service() {
     private fun doWork() {
         Log.i("ForegroundService", "backkgroundWork was started")
 
-        // Todo Datenbank access holen und NotifLogic
+        // TODO Aktuellsten Termin bzw ClientInfo aus DB holen, bereits sortiert?
+        // TODO Observer auf LiveData Änderungen
+        val allClientInfoAsLiveData = db.getAllClientInfoObservable()
+        val allDBEntries = allClientInfoAsLiveData.value
+        if (allDBEntries == null) stopSelf()
+
+        var nextClientInfo: ClientInfo = getNextClientInfo(allDBEntries!!)
+
+        val nextAppointmentTime = nextClientInfo.approximatedTime
+        val nextOriginalTime = nextClientInfo.originalAppointmentTime
+
+        // TODO String Resources in xml für Notif Text, dann hier joinen mit aktuellen Daten
+
+        //TODO notification erzeugen mit aktuellen Daten auf Channel 2
+
+        // TODO While loop mit LiveData observen um Notification upzudaten
+
+        /*
+        //TODO Muss um LiveData zu oberserven das Lifecycle Interface implementiert werden?
+        allClientInfoAsLiveData.observe(this, Observer { data ->
+            nextClientInfo = getNextClientInfo(data)
+            // TODO notif updaten (in extra methode?)
+        } )
+         */
+    }
+
+    private fun getNextClientInfo(allClientInfo: List<ClientInfo>) : ClientInfo {
+        var nextClientInfo = allClientInfo.first()
+        val iterator = allClientInfo.iterator()
+
+        while (iterator.hasNext()) {
+            val next = iterator.next()
+
+            if (nextClientInfo.approximatedTime > next.approximatedTime) nextClientInfo = next
+        }
+        return nextClientInfo
     }
 }
