@@ -116,7 +116,8 @@ class SocketAdapter(private val namespace: String) {
     /*
         Im Folgednen Implementierung von Listener für die ganzen Socket.IO seitigen Events
         wobei entweder Zustand gesetzt (CONNECT) oder Fehlermeldungen (DISCONNECT, ERROR)
-        geworfen werden sollen and keep track of all registred listeners for later removal
+        geworfen werden sollen
+        //TODO Sollen hier Fehlermeldungen auch ans repo hoch zum gui display für Nutzer
          */
     private fun registerSocketIOListeners() {
 

@@ -36,6 +36,11 @@ object MainModule {
 
     @Provides
     @Singleton
+    fun provideManagementHandler()
+        = SocketIOHandlerFactory().buildManagementHandler()
+
+    @Provides
+    @Singleton
     fun provideServiceHandler(@ApplicationContext context: Context)
         = ServiceHandler(context)
 }

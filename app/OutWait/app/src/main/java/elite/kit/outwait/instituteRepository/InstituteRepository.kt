@@ -5,22 +5,29 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.customDataTypes.Preferences
+import elite.kit.outwait.remoteDataSource.ManagementHandler
 import elite.kit.outwait.waitingQueue.gravityQueue.FixedGravitySlot
 import elite.kit.outwait.waitingQueue.gravityQueue.SpontaneousGravitySlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.CoroutineContext
 
 @Singleton
-class InstituteRepository @Inject constructor() {
+class InstituteRepository @Inject constructor(private val remote: ManagementHandler) {
 
     init {
+        remote.getErrors().observeForever {
 
+        }
     }
 
     private val preferences = MutableLiveData<Preferences>()
@@ -67,8 +74,28 @@ class InstituteRepository @Inject constructor() {
         return true
     }
 
-    fun login(username: String, password: String){
+    private var communicationEstablished = false
 
+    fun login(username: String, password: String){
+        CoroutineScope(IO).launch {
+            if(communicationEstablished || remote.initCommunication()){
+                if(remote.login(username, password)){
+                    withContext(Main){
+                        observeRemote()
+                        loggedIn.value = true
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeRemote(){
+        remote.getReceivedList().observeForever {
+            Log.d("InstiRepo", "receivedList empfangen")
+        }
+        remote.getUpdatedPreferences().observeForever {
+            preferences.value = it
+        }
     }
 
     fun logout(){
