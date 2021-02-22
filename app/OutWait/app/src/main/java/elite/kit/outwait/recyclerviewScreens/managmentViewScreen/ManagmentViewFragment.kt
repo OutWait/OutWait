@@ -86,7 +86,7 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         //Add action bar icon
         setHasOptionsMenu(true)
 
-
+        exitApp()
 
         return binding.root
     }
@@ -153,8 +153,7 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
                 }
         resetDelete.show()
 
-        //TODO popup after showing of snackbar
-//        builder.show()
+
     }
 
     private fun getIdentifier(slot: TimeSlot): String {
@@ -180,4 +179,21 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         viewModel.navigateToConfigDialog()
         return true
     }
+
+    private fun exitApp() {
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+
+                override fun handleOnBackPressed() {
+
+
+                        Toast.makeText(context, "Please only possibility to logout", Toast.LENGTH_LONG)
+                            .show()
+
+                }
+            }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
 }

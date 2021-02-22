@@ -325,7 +325,9 @@ class SocketIOManagementHandler : ManagementHandler {
 
     private fun onLoginDenied(wrappedJSONData: JSONEmptyWrapper) {
         this.loginDenied = true
-        TODO("Server will hier Verbindung abbrechen?!! Was tun? (siehe gitlab issue)")
+        //pushError()
+        //hab hier mal einen push ans Repo eingefügt (B)
+        //TODO("Server will hier Verbindung abbrechen?!! Was tun? (siehe gitlab issue)")
 
         //TODO Bisher Rückeldung ans Repo über Return Type von login()
     }

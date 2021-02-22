@@ -5,7 +5,6 @@ import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientRepository.ClientRepository
-import elite.kit.outwait.clientScreens.editCodeScreen.EditCodeFragmentDirections
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject

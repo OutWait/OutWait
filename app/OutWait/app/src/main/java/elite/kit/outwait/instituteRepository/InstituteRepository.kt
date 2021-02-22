@@ -79,6 +79,7 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
         CoroutineScope(IO).launch {
             remote.logout()
         }
+        loggedIn.value=false
     }
 
     fun changePreferences(
