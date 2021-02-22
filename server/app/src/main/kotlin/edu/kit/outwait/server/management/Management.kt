@@ -31,13 +31,20 @@ class Management(
         configureReceivers(databaseWrapper)
 
         // Send settings
-        managementInformation = databaseWrapper.getManagementById(managementId)
+        val tmpInfo = databaseWrapper.getManagementById(managementId)!!
+        // passed managementId must exist
+        managementInformation = tmpInfo
         sendUpdatedManagementSettings(managementInformation.settings)
 
         // Send queue
         val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
-        val queue = Queue(queueId, databaseWrapper)
-        sendUpdatedQueue(queue)
+        if (queueId == null) {
+            println("INTERNAL ERROR: management has no Queue!")
+            // Don't crash the server by a exception. This is just a log.
+        } else {
+            val queue = Queue(queueId, databaseWrapper)
+            sendUpdatedQueue(queue)
+        }
     }
 
     private fun configureReceivers(databaseWrapper: DatabaseWrapper) {
@@ -134,6 +141,8 @@ class Management(
         }
     }
 
+    internal fun isTransactionRunning(): Boolean = queue != null
+
     private fun updateAndSendQueue() {
         if (queue != null) {
             queue!!.updateQueue(managementInformation.settings.prioritizationTime)
@@ -169,10 +178,12 @@ class Management(
             }
         }
     }
-    private fun abortCurrentTransaction () {
+    internal fun abortCurrentTransaction () {
         if (checkTransactionStarted()) {
             val original_queue = managementManager.abortTransaction(managementId)
-            sendUpdatedQueue(original_queue)
+            if (original_queue != null) {
+                sendUpdatedQueue(original_queue)
+            }
             queue = null // transaction ended
         }
     }

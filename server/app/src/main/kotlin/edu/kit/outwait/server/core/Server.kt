@@ -20,6 +20,8 @@ class Server {
         config.setPort(567);
         config.setBossThreads(1);
         config.setWorkerThreads(1);
+        config.pingInterval = 5000;
+        config.pingTimeout = 120000;
 
         server = SocketIOServer(config);
 
@@ -35,17 +37,17 @@ class Server {
         println("Hello World from server!")
 
         // DEBUG terminate the server after 10 seconds
-        /*java.util
-            .Timer()
-            .schedule(
-                object : java.util.TimerTask() {
-                    override fun run() {
-                        stop()
-                        System.exit(0)
-                    }
-                },
-                10000
-            )*/
+        /* java.util
+         *            .Timer()
+         *            .schedule(
+         *                object : java.util.TimerTask() {
+         *                    override fun run() {
+         *                        stop()
+         *                        System.exit(0)
+         *                    }
+         *                },
+         *                10000
+         *            ) */
 
         server.start()
     }

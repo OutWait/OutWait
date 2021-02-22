@@ -38,10 +38,6 @@ const val SPONTANEOUS_SLOTS = "spontaneousSlots"
 const val FIXED_SLOTS = "fixedSlots"
 
 
-
-
-
-
 abstract class JSONObjectWrapper(protected val jsonObj: JSONObject) {
 
     fun getJSONObject(): JSONObject {

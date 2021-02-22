@@ -39,7 +39,7 @@ class EditTimeSlotDialogViewModel @Inject constructor(private val repo: Institut
 
 
     fun notifyEditFixedSlot() {
-        repo.changeFixedSlotAppointmentTime(slotCode.value!!,
+        repo.changeFixedSlotInfo(slotCode.value!!,
             interval.value!!.toDuration(),
             identifier.value!!,
             appointmentTime.value!!)

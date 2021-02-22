@@ -16,11 +16,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
+import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientScreens.remainingTimeScreen.RemainingTimeViewModel
 import elite.kit.outwait.databinding.EditCodeFragmentBinding
 import elite.kit.outwait.qrCode.scanner.CaptureAct
@@ -46,6 +49,16 @@ class EditCodeFragment : Fragment() {
             checkForPermission(android.Manifest.permission.CAMERA, "camera", CAMERA_RQ)
         }
 
+        viewModel.loginResponse.observe(viewLifecycleOwner){
+            if(it.isEmpty()){
+                Toast.makeText(context,"Failed",Toast.LENGTH_SHORT)
+            }else if(it.component1() is ClientInfo) {
+                Log.i("forward back","${it.component1().toString()}")
+                Navigation.findNavController(binding.root).navigate(R.id.remainingTimeFragment)
+//                val response= findNavController().popBackStack()
+//                Log.i("ss","$response")
+            }
+        }
 
         return binding.root
     }

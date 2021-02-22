@@ -3,6 +3,8 @@ package elite.kit.outwait.recyclerviewScreens.managmentViewScreen
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -99,6 +101,12 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
 
         //Add action bar icon
         setHasOptionsMenu(true)
+
+
+
+
+        exitApp()
+
         return binding.root
     }
 
@@ -182,43 +190,63 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
     }
 
     private fun notifyDeleteSlot(position: Int, removedSlot: TimeSlot) {
-        var removedClientSlot=removedSlot as ClientTimeSlot
-        when(position){
+        var removedClientSlot = removedSlot as ClientTimeSlot
+        when (position) {
             //TODO check delete slot first then after header slot (also first)
-            CURREND_SLOT1,CURREND_SLOT2 -> viewModel.endCurrendSlot()
+            CURREND_SLOT1, CURREND_SLOT2 -> viewModel.endCurrendSlot()
             else -> viewModel.deleteSlot(removedClientSlot.slotCode)
         }
     }
 
-    private fun getIdentifier(slot: TimeSlot): String {
-        //Guarantee slot is only fixed or spo by GUI
-        return (slot as ClientTimeSlot).auxiliaryIdentifier
-    }
 
-    override fun editTimeSlot(position: Int) {
-        var editDialog =
-            EditTimeSlotDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
-        editDialog.show(childFragmentManager, "aaa")
-    }
+        private fun getIdentifier(slot: TimeSlot): String {
+            //Guarantee slot is only fixed or spo by GUI
+            return (slot as ClientTimeSlot).auxiliaryIdentifier
+        }
 
-    override fun saveTransaction() {
-        viewModel.saveTransaction()
-    }
+        override fun editTimeSlot(position: Int) {
+            var editDialog =
+                EditTimeSlotDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
+            editDialog.show(childFragmentManager, "aaa")
+        }
 
-    override fun abortTransaction() {
-        viewModel.abortTransaction()
-    }
+        override fun saveTransaction() {
+            viewModel.saveTransaction()
+        }
 
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater?.inflate(R.menu.overflow, menu)
-
-    }
+        override fun abortTransaction() {
+            viewModel.abortTransaction()
+        }
 
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        viewModel.navigateToConfigDialog()
-        return true
-    }
+        override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+            super.onCreateOptionsMenu(menu, inflater)
+            inflater?.inflate(R.menu.overflow, menu)
+
+        }
+
+
+        override fun onOptionsItemSelected(item: MenuItem): Boolean {
+            viewModel.navigateToConfigDialog()
+            return true
+        }
+
+        private fun exitApp() {
+            val callback: OnBackPressedCallback =
+                object : OnBackPressedCallback(true) {
+
+                    override fun handleOnBackPressed() {
+
+
+                        Toast.makeText(context,
+                            "Please only possibility to logout",
+                            Toast.LENGTH_LONG)
+                            .show()
+
+                    }
+                }
+
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        }
+
 }

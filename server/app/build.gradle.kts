@@ -7,7 +7,7 @@ plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.4.20"
 
-    id("tech.formatter-kt.formatter") version "0.7.0"
+    id("tech.formatter-kt.formatter") version "0.7.1"
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
@@ -44,6 +44,9 @@ dependencies {
 
     // Use the Kotlin JUnit integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+
+    // Create a client mock
+    testImplementation("io.socket:socket.io-client:1.0.0")
 }
 
 application {
@@ -52,11 +55,8 @@ application {
 
     // Add dependencies
     tasks.withType<Jar>() {
-        configurations["compileClasspath"].forEach { file: File ->
-            from(zipTree(file.absoluteFile))
-        }
-        manifest {
-            attributes(mapOf("Main-Class" to "edu.kit.outwait.server.core.ServerKt"))
-        }
+        configurations["compileClasspath"]
+            .forEach { file: File -> from(zipTree(file.absoluteFile)) }
+        manifest { attributes(mapOf("Main-Class" to "edu.kit.outwait.server.core.ServerKt")) }
     }
 }

@@ -34,7 +34,6 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
         binding.lifecycleOwner=this
 
         viewModel.isFixedSlot.value = isFixedSlot()
-        Log.i("ss","${viewModel.isFixedSlot.value}")
         displayProperties(clientTimeSlot)
 
         builder.apply {

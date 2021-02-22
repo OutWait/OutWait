@@ -10,29 +10,48 @@ import java.time.Duration
 import java.util.Date
 import java.util.Properties
 
+/**
+ *  This class encapsulates all communication to the Database.
+ *  @property updateMediator reference to the updateMediator which redirects changes to Receivers
+ *      (f.ex. for Slot-Changes)
+ *  @property connection holds connection
+ *  @property connectionProps properties of connection
+ */
 class DatabaseWrapper() {
     private val updateMediator = UpdateMediator()
     private lateinit var connection: Connection
     private val connectionProps: Properties = Properties()
 
-    //TODO: Sicherstellen dass geladen
+
+    /**
+     * Setting connection properties and trying to connect to the database.
+     */
+
     init {
         this.connectionProps["user"] = "outwait"
         this.connectionProps["password"] = "OurOutwaitDB"
         try {
             connection =
-                DriverManager.getConnection("jdbc:mysql://localhost:3306/", connectionProps)!!
+                DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/OutwaitDB",
+                    connectionProps
+                )!!
             println("Connected to Database!")
         } catch (e : SQLException) {
             e.printStackTrace()
         }
     }
 
-    fun getSlots(queueId: QueueId): List<Slot> {
-        val getSlotsQuery: PreparedStatement
-        val slots = mutableListOf<Slot>()
+    /**
+     * Retrieves a list of slots of a specified queue from the database.
+     *      F. ex. for the initialization of a queue in the manager.
+     * @param queueId Id der Queue dessen Slots zurückgegeben werden.
+     * @return List of Slots of Queue with queueId
+     */
+    fun getSlots(queueId: QueueId): List<Slot>? {
         try {
-            getSlotsQuery =
+            val slots = mutableListOf<Slot>()
+            val getSlotsQuery =
                 connection.prepareStatement(
                     "SELECT code, expected_duration, priority, constructor_time, approx_time " +
                         "FROM Slot " + "WHERE Slot.queue_id = ? AND Slot.is_temporary = 0"
@@ -46,99 +65,106 @@ class DatabaseWrapper() {
                         constructorTime = Date(rs.getTimestamp("constructor_time").time),
                         approxTime = Date(rs.getTimestamp("approx_time").time),
                         expectedDuration =
-                            Duration.ofSeconds(rs.getInt("expected_duration").toLong()),
+                            Duration.ofMillis(rs.getInt("expected_duration").toLong()),
                         priority = Priority.valueOf(rs.getString("priority"))
                     )
                 slots.add(s)
             }
+            return slots
         } catch (e: SQLException) {
             e.printStackTrace()
+            return null
         }
-        return slots
+
     }
 
-    fun getSlotApprox(slotCode: SlotCode): Date {
-        val getSlotApproxQuery: PreparedStatement
-        var slotApprox = Date()
+    /**
+     * Retrieves the approximated "time of arrival" for a slot from the database.
+     * @param slotCode code of the slot which approximated "time of arrival" is retrieved.
+     * @return approximated "time of arrival" in Date type,
+     */
+    fun getSlotApprox(slotCode: SlotCode): Date? {
         try {
-            getSlotApproxQuery =
+            val getSlotApproxQuery =
                 connection.prepareStatement(
-                    "SELECT approx_time " +
-                        "FROM Slot " +
+                    "SELECT approx_time " + "FROM Slot " +
                         "WHERE Slot.code = ? AND Slot.is_temporary = 0"
                 )
             getSlotApproxQuery.setString(1, slotCode.code)
             val rs = getSlotApproxQuery.executeQuery()
             rs.next()
-            slotApprox = Date(rs.getTimestamp("approx_time").time)
+            val slotApprox = Date(rs.getTimestamp("approx_time").time)
+            return slotApprox
         } catch (e: SQLException) {
             e.printStackTrace()
-        }
-        return slotApprox
-    }
-
-    fun setSlotApprox(slotCode: SlotCode, slotApprox: Date) {
-        val setSlotApproxUpdate: PreparedStatement
-        try {
-            setSlotApproxUpdate =
-                connection.prepareStatement(
-                    "UPDATE Slot " +
-                        "SET approx_time = ? " +
-                        "WHERE Slot.code = ?"
-                )
-            setSlotApproxUpdate.setTimestamp(1, Timestamp(slotApprox.time))
-            setSlotApproxUpdate.setString(2, slotCode.code)
-            setSlotApproxUpdate.executeUpdate()
-            updateMediator.setSlotApprox(slotCode, slotApprox)
-        } catch (e: SQLException) {
-            e.printStackTrace()
+            return null
         }
     }
 
-    fun addTemporarySlot(slot : Slot, queueId: QueueId) : Slot {
-        val addTemporarySlotQuery: PreparedStatement
-        var slotCopy = slot.copy()
+
+    /**
+     * Adds a new temporary Slot to a specified queue of a management.
+     *      A temporary Slot, is a Slot which is created during a transaction without saving the transaction.
+     *      So that it is not shown for other managements until the transaction is saved.
+     * @param slot temporary Slot to be added.
+     * @param queueId Queue in which the Slot has to be added
+     * @return slot of param with an assigned SlotCode.
+     */
+    fun addTemporarySlot(slot : Slot, queueId: QueueId) : Slot? {
         try {
-            addTemporarySlotQuery =
+            val addTemporarySlotQuery =
                 connection.prepareStatement(
                     "INSERT INTO Slot " +
-                        "(priority, approx_time, expected_duration, constructor_time, " +
-                        "is_temporary) " +
-                        "OUTPUT INSERTED.code " +
-                        "VALUES (?, ?, ?, ?, ?)"
+                        "(queue_id, priority, approx_time, expected_duration, constructor_time, " +
+                        "is_temporary) " + "OUTPUT INSERTED.code " + "VALUES (?, ?, ?, ?, ?, ?)"
                 )
-            addTemporarySlotQuery.setString(1, slot.priority.toString())
-            addTemporarySlotQuery.setTimestamp(2, Timestamp(slot.approxTime.time))
-            addTemporarySlotQuery.setLong(3, slot.expectedDuration.seconds)
-            addTemporarySlotQuery.setInt(4, 1)
+            addTemporarySlotQuery.setLong(1, queueId.id)
+            addTemporarySlotQuery.setString(2, slot.priority.toString())
+            addTemporarySlotQuery.setTimestamp(3, Timestamp(slot.approxTime.time))
+            addTemporarySlotQuery.setLong(4, slot.expectedDuration.toMillis())
+            addTemporarySlotQuery.setInt(5, 1)
             val rs = addTemporarySlotQuery.executeQuery()
             rs.next()
-            slotCopy = slot.copy(slotCode = SlotCode(rs.getString("code")))
+            return slot.copy(slotCode = SlotCode(rs.getString("code")))
         } catch (e: SQLException) {
             e.printStackTrace()
+            return null
         }
-        return slotCopy
     }
 
-    fun deleteAllTemporarySlots(queueId: QueueId) {
+    /**
+     * Deletes all temporary Slots of a specific Queue.
+     *      F. ex. after a transaction is aborted.
+     * @param queueId Id of specified Queue
+     * @return true if successful else false
+     */
+    fun deleteAllTemporarySlots(queueId: QueueId): Boolean {
         val deleteAllTemporarySlotsUpdate: PreparedStatement
         try {
             deleteAllTemporarySlotsUpdate =
                 connection.prepareStatement(
-                    "DELETE FROM Slot " +
-                        "WHERE queue_id = ? AND is_temporary = 1"
+                    "DELETE FROM Slot " + "WHERE queue_id = ? AND is_temporary = 1"
                 )
             deleteAllTemporarySlotsUpdate.setLong(1, queueId.id)
             deleteAllTemporarySlotsUpdate.executeUpdate()
+            return true
         } catch (e: SQLException) {
             e.printStackTrace()
+            return false
         }
     }
 
-    fun saveSlots(slots: List<Slot>, queueId: QueueId) {
-        //Update (autom. dass slot nicht mehr temporär)
-        var saveSlotsUpdate: PreparedStatement
+    /**
+     * Saves (updates) all slots with their slot data in the Slot entries of the database.
+     *      All temporary slots will be fixed!
+     *      F. ex. after a transaction is saved.
+     * @param slots list of slots to be saved (updated)
+     * @param queueId Queue in which the Slot has to be saved (updated)
+     * @return true if successful else false
+     */
+    fun saveSlots(slots: List<Slot>, queueId: QueueId): Boolean {
         try {
+            var saveSlotsUpdate: PreparedStatement
             for (slot in slots) {
                 saveSlotsUpdate =
                     connection.prepareStatement(
@@ -146,27 +172,31 @@ class DatabaseWrapper() {
                             "SET expected_duration = ?, priority = ?, approx_time = ?, " +
                             "is_temporary = 0 " + "WHERE queue_id = ? AND code = ?"
                     )
-                saveSlotsUpdate.setLong(1, slot.expectedDuration.seconds)
+                saveSlotsUpdate.setLong(1, slot.expectedDuration.toMillis())
                 saveSlotsUpdate.setString(2, slot.priority.toString())
                 saveSlotsUpdate.setTimestamp(3, Timestamp(slot.approxTime.time))
                 saveSlotsUpdate.setLong(4, queueId.id)
                 saveSlotsUpdate.setString(5, slot.slotCode.code)
                 saveSlotsUpdate.executeUpdate()
-                updateMediator.setSlotApprox(slot.slotCode, slot.approxTime)
             }
+            return true
         } catch (e: SQLException) {
             e.printStackTrace()
+            return false
         }
     }
 
-    fun getManagementById(managementId: ManagementId): ManagementInformation {
-        val getManagementByIdQuery: PreparedStatement
+    /**
+     * Retrieves ManagementInformation by managementId from Database.
+     * @param managementId id of management
+     * @return ManagementInformation with information about management
+     */
+    fun getManagementById(managementId: ManagementId): ManagementInformation? {
         try {
-            getManagementByIdQuery =
+            val getManagementByIdQuery =
                 connection.prepareStatement(
                     "SELECT name, mode, default_slot_duration, notification_time, " +
-                        "delay_notification_time, prioritization_time " +
-                        "FROM Management " +
+                        "delay_notification_time, prioritization_time " + "FROM Management " +
                         "WHERE Management.id = ?"
                 )
             getManagementByIdQuery.setLong(1, managementId.id)
@@ -176,36 +206,29 @@ class DatabaseWrapper() {
                 ManagementDetails(rs.getString("name")),
                 ManagementSettings(
                     Mode.valueOf(rs.getString("mode")),
-                    Duration.ofSeconds(rs.getLong("default_slot_duration")),
-                    Duration.ofSeconds(rs.getLong("notification_time")),
-                    Duration.ofSeconds(rs.getLong("delay_notification_time")),
-                    Duration.ofSeconds(rs.getLong("prioritization_time"))
+                    Duration.ofMillis(rs.getLong("default_slot_duration")),
+                    Duration.ofMillis(rs.getLong("notification_time")),
+                    Duration.ofMillis(rs.getLong("delay_notification_time")),
+                    Duration.ofMillis(rs.getLong("prioritization_time"))
                 )
             )
         } catch (e: SQLException) {
             e.printStackTrace()
-            // TODO return something useful on error (or handle the error in the calling functions)
-            return ManagementInformation(
-                ManagementDetails(""),
-                ManagementSettings(
-                    Mode.ONE,
-                    Duration.ZERO,
-                    Duration.ZERO,
-                    Duration.ZERO,
-                    Duration.ZERO
-                )
-            )
+            return null
         }
     }
 
-    fun getSlotManagementInformation(slotCode: SlotCode) : SlotManagementInformation {
-        val getSlotManagementInformationQuery: PreparedStatement
-        //TODO: Null Fall?
+    /**
+     * Retrieves SlotManagementInformation for a Slot by its Code from Database.
+     * @param slotCode code of Slot
+     * @return SlotManagementInformation with information about management of Slot
+     */
+    fun getSlotManagementInformation(slotCode: SlotCode) : SlotManagementInformation? {
         try {
-            getSlotManagementInformationQuery =
+            val getSlotManagementInformationQuery =
                 connection.prepareStatement(
-                    "SELECT management.name, management.notification_time, management.delay_notification_time " +
-                        "FROM Slot " +
+                    "SELECT management.name, management.notification_time, " +
+                        "management.delay_notification_time " + "FROM Slot " +
                         "INNER JOIN Queue ON Slot.queue_id = Queue.queue_id " +
                         "INNER JOIN Management ON Queue.management_id = Queue.management_id " +
                         "WHERE Slot.code = ?"
@@ -215,195 +238,237 @@ class DatabaseWrapper() {
             rs.next()
             return SlotManagementInformation(
                 ManagementDetails(rs.getString("management.name")),
-                Duration.ofSeconds(rs.getLong("management.notification_time")),
-                Duration.ofSeconds(rs.getLong("management.delay_notification_time"))
+                Duration.ofMillis(rs.getLong("management.notification_time")),
+                Duration.ofMillis(rs.getLong("management.delay_notification_time"))
             )
         } catch (e: SQLException) {
             e.printStackTrace()
-            return SlotManagementInformation(
-                ManagementDetails(""),
-                Duration.ofSeconds(0),
-                Duration.ofSeconds(0)
-            )
+            return null
         }
     }
 
-    fun getQueueIdOfManagement(managementId: ManagementId) : QueueId {
-        val getQueueIdOfManagementQuery: PreparedStatement
-        //TODO: Null Fall?
-        var queueId = QueueId(-1)
+    /**
+     * Retrieves QueueId for specified managementId from Database.
+     *      Note: This only works, for managements with one Queue.
+     * @param managementId Id of Management
+     * @return QueueId
+     */
+    fun getQueueIdOfManagement(managementId: ManagementId) : QueueId? {
         try {
-            getQueueIdOfManagementQuery =
+            val getQueueIdOfManagementQuery =
                 connection.prepareStatement(
-                    "SELECT queue_id " +
-                        "FROM Queue " +
-                        "WHERE Queue.management_id = ?"
+                    "SELECT queue_id " + "FROM Queue " + "WHERE Queue.management_id = ?"
                 )
             getQueueIdOfManagementQuery.setLong(1, managementId.id)
             val rs = getQueueIdOfManagementQuery.executeQuery()
             rs.next()
-            queueId = QueueId(rs.getLong("queue_id"))
+            val queueId = QueueId(rs.getLong("queue_id"))
+            return queueId
         } catch (e: SQLException) {
             e.printStackTrace()
+            return null
         }
-        return queueId
     }
 
-    fun getManagementByUsername(username: String): ManagementCredentials {
-        val getManagementByUsernameQuery: PreparedStatement
-        //TODO: Null Fall?
-        var managementCredentials = ManagementCredentials(ManagementId(0), "", "")
+    /**
+     * Retrieves credentials of management specified by username from Database
+     * @param username Username of specified management
+     * @return ManagementCredentials of specified management
+     */
+    fun getManagementByUsername(username: String): ManagementCredentials? {
         try {
-            getManagementByUsernameQuery =
+            val getManagementByUsernameQuery =
                 connection.prepareStatement(
-                    "SELECT id, username, password " +
-                        "FROM Management " +
+                    "SELECT id, username, password " + "FROM Management " +
                         "WHERE Management.username = ?"
                 )
             getManagementByUsernameQuery.setString(1, username)
             val rs = getManagementByUsernameQuery.executeQuery()
             rs.next()
-            managementCredentials =
+            val managementCredentials =
                 ManagementCredentials(
                     ManagementId(rs.getLong("id")),
                     rs.getString("username"),
                     rs.getString("password")
                 )
+            return managementCredentials
         } catch (e: SQLException) {
             e.printStackTrace()
+            return null
         }
-        return managementCredentials
     }
 
+    /**
+     * Verifies that a Slot with specified SlotCode exists in Database.
+     *      Helper method for registerReceiver method.
+     * @param slotCode SlotCode of Slot
+     * @return true if Slot exists else false
+     */
     fun checkIfSlotExists (slotCode: SlotCode) : Boolean {
-        val checkIfSlotExistsQuery: PreparedStatement
-        //TODO: Null Fall?
         try {
-            checkIfSlotExistsQuery =
-                connection.prepareStatement(
-                    "SELECT code, username, password " +
-                        "FROM Slot " +
-                        "WHERE Slot.code = ?"
-                )
+            val checkIfSlotExistsQuery =
+                connection.prepareStatement("SELECT code " + "FROM Slot " + "WHERE Slot.code = ?")
             checkIfSlotExistsQuery.setString(1, slotCode.code)
             val rs = checkIfSlotExistsQuery.executeQuery()
             return rs.next()
         } catch (e: SQLException) {
             e.printStackTrace()
             return false
-
         }
     }
 
-    fun saveManagementSettings(managementId: ManagementId, managementSettings: ManagementSettings) {
-        var saveManagementSettingsUpdate: PreparedStatement
-        var getSlotsByManagementIdQuery: PreparedStatement
+    /**
+     * Saves (updates) settings for a management with specified managementId in Database.
+     * @param managementId Id of management to be updated
+     * @param managementSettings new managementSetting for management
+     * @return true if successful else false
+     */
+    fun saveManagementSettings(managementId: ManagementId, managementSettings: ManagementSettings): Boolean {
         try {
-                saveManagementSettingsUpdate =
-                    connection.prepareStatement(
-                        "UPDATE Management " +
-                            "SET mode = ?, default_slot_duration = ?, notification_time = ?, " +
-                            "delay_notification_time = ?, prioritization_time = ? " +
-                            "WHERE id = ?"
-                    )
-                saveManagementSettingsUpdate.setString(1, managementSettings.mode.toString())
-                saveManagementSettingsUpdate.setLong(2, managementSettings.defaultSlotDuration.seconds)
-                saveManagementSettingsUpdate.setLong(3, managementSettings.notificationTime.seconds)
-                saveManagementSettingsUpdate.setLong(4, managementSettings.delayNotificationTime.seconds)
-                saveManagementSettingsUpdate.setLong(5, managementSettings.prioritizationTime.seconds)
-                saveManagementSettingsUpdate.setLong(6, managementId.id)
-                saveManagementSettingsUpdate.executeUpdate()
+            val saveManagementSettingsUpdate =
+                connection.prepareStatement(
+                    "UPDATE Management " +
+                        "SET mode = ?, default_slot_duration = ?, notification_time = ?, " +
+                        "delay_notification_time = ?, prioritization_time = ? " + "WHERE id = ?"
+                )
+            saveManagementSettingsUpdate.setString(1, managementSettings.mode.toString())
+            saveManagementSettingsUpdate.setLong(2, managementSettings.defaultSlotDuration.toMillis())
+            saveManagementSettingsUpdate.setLong(3, managementSettings.notificationTime.toMillis())
+            saveManagementSettingsUpdate.setLong(
+                4,
+                managementSettings.delayNotificationTime.toMillis()
+            )
+            saveManagementSettingsUpdate.setLong(5, managementSettings.prioritizationTime.toMillis())
+            saveManagementSettingsUpdate.setLong(6, managementId.id)
+            saveManagementSettingsUpdate.executeUpdate()
 
-                getSlotsByManagementIdQuery =
-                    connection.prepareStatement(
-                        "SELECT Slot.code " +
-                            "FROM Management " +
-                            "INNER JOIN Queue ON Management.id = Queue.management_id " +
-                            "INNER JOIN Slot on Queue.queue_id = Slot.queue_id " +
-                            "WHERE Management.id = ?"
-                    )
-                getSlotsByManagementIdQuery.setLong(1, managementId.id)
-                val rs = getSlotsByManagementIdQuery.executeQuery()
-                val slotCodes = mutableListOf<SlotCode>()
-                while (rs.next()) {
-                    slotCodes.add(SlotCode(rs.getString("Slot.code")))
-                }
-                if (slotCodes.isEmpty()) {
-
-                }
-                else {
-                    val slotManagementInformation = this.getSlotManagementInformation(slotCodes.first())
+            val getSlotsByManagementIdQuery =
+                connection.prepareStatement(
+                    "SELECT Slot.code " + "FROM Management " +
+                        "INNER JOIN Queue ON Management.id = Queue.management_id " +
+                        "INNER JOIN Slot on Queue.queue_id = Slot.queue_id " +
+                        "WHERE Management.id = ?"
+                )
+            getSlotsByManagementIdQuery.setLong(1, managementId.id)
+            val rs = getSlotsByManagementIdQuery.executeQuery()
+            val slotCodes = mutableListOf<SlotCode>()
+            while (rs.next()) {
+                slotCodes.add(SlotCode(rs.getString("Slot.code")))
+            }
+            if (!slotCodes.isEmpty()) {
+                val slotManagementInformation = this.getSlotManagementInformation(slotCodes.first())
+                if (slotManagementInformation != null) {
                     updateMediator.setManagementInformation(slotCodes, slotManagementInformation)
                 }
+                else {
+                    return false
+                }
+            }
+            return true
         } catch (e: SQLException) {
             e.printStackTrace()
-        }
-    }
-
-    fun registerReceiver(receiver: SlotInformationReceiver, slotCode: SlotCode): Boolean {
-        if (checkIfSlotExists(slotCode)) {
-            updateMediator.subscribeReceiver(
-                receiver,
-                slotCode,
-                this.getSlotApprox(slotCode),
-                this.getSlotManagementInformation(slotCode)
-            )
-            return true
-        }
-        else {
             return false
         }
     }
 
-    //TODO: Ungeschickt, dass slotCode aus dem receiver gezogen wird? UpdateMediator vielleicht nur
-    // receiver übergeben?
-    fun unregisterReceiver(receiver: SlotInformationReceiver) {
-        updateMediator.unsubscribeSlotInformationReceiver(receiver.slotCode, receiver)
+    /**
+     * Registers (SlotInformation)receiver in updateMediator.
+     *      Calls getSlotApprox, getSlotManagementInformation method for specified Slot(code) and passes results
+     *      to the updateMediator.
+     *      Called after Client listens to a Slot.
+     * @param receiver SlotInformationReceiver to be registered
+     * @param slotCode SlotCode of SlotInformationReceivers Slot
+     * @return true if successful else false
+     */
+    fun registerReceiver(receiver: SlotInformationReceiver, slotCode: SlotCode): Boolean {
+        if (checkIfSlotExists(slotCode)) {
+            val slotApprox = this.getSlotApprox(slotCode)
+            val slotManagementInformation = this.getSlotManagementInformation(slotCode)
+            if (slotApprox == null || slotManagementInformation == null) {
+                return false
+            }
+            else {
+                updateMediator.subscribeReceiver(
+                    receiver,
+                    slotCode,
+                    slotApprox,
+                    slotManagementInformation
+                )
+                return true
+            }
+        } else {
+            return false
+        }
     }
 
-    fun changeManagementPassword(username: String, password: String) {
-        val changeManagementPasswordQuery: PreparedStatement
+    /**
+     * Unegisters (SlotInformation)receiver in updateMediator.
+     *      Called after Client stops listening to a Slot (f.ex. after disconnect)
+     * @param receiver SlotInformationReceiver to be registered
+     * @return true if successful else false
+     */
+    fun unregisterReceiver(receiver: SlotInformationReceiver) {
+        updateMediator.unsubscribeSlotInformationReceiver(receiver)
+    }
+
+    /**
+     * Changes password for a management specified by username in Database.
+     * @param username username of management
+     * @param password new password to be assigned
+     * @return true if successful else false
+     */
+    fun changeManagementPassword(username: String, password: String): Boolean {
         try {
-            changeManagementPasswordQuery =
+            val changeManagementPasswordQuery =
                 connection.prepareStatement(
-                    "UPDATE Management " +
-                        "SET password = ? " +
-                        "WHERE Management.username = ?"
+                    "UPDATE Management " + "SET password = ? " + "WHERE Management.username = ?"
                 )
             changeManagementPasswordQuery.setString(1, password)
             changeManagementPasswordQuery.setString(2, username)
             changeManagementPasswordQuery.executeUpdate()
+            return true
         } catch (e: SQLException) {
             e.printStackTrace()
+            return false
         }
     }
 
-    fun endSlot(slotCode: SlotCode) {
+    /**
+     * Deletes a Slot from Database by specified SlotCode and calls endSlot with SlotCode on updateMediator.
+     * @param slotCode SlotCode of Slot
+     * @return true if successful else false
+     */
+    fun endSlot(slotCode: SlotCode): Boolean {
         val endSlotQuery: PreparedStatement
         try {
-            endSlotQuery = connection.prepareStatement(
-                "DELETE FROM Slot " +
-                    "WHERE Slot.code = ?")
+            endSlotQuery = connection.prepareStatement("DELETE FROM Slot " + "WHERE Slot.code = ?")
             endSlotQuery.setString(1, slotCode.code)
             endSlotQuery.executeUpdate()
         } catch (e: SQLException) {
             e.printStackTrace()
+            return false
         }
         updateMediator.endSlot(slotCode)
+        return true
     }
 
-    fun deleteSlot(slotCode: SlotCode) {
+    /**
+     * Deletes a Slot from Database by specified SlotCode and calls deleteSlot with SlotCode on updateMediator.
+     * @param slotCode SlotCode of Slot
+     * @return true if successful else false
+     */
+    fun deleteSlot(slotCode: SlotCode): Boolean {
         val deleteSlotQuery: PreparedStatement
         try {
             deleteSlotQuery =
-                connection.prepareStatement(
-                    "DELETE FROM Slot " +
-                        "WHERE Slot.code = ?")
+                connection.prepareStatement("DELETE FROM Slot " + "WHERE Slot.code = ?")
             deleteSlotQuery.setString(1, slotCode.code)
             deleteSlotQuery.executeUpdate()
         } catch (e: SQLException) {
             e.printStackTrace()
+            return false
         }
         updateMediator.deleteSlot(slotCode)
+        return true
     }
 }

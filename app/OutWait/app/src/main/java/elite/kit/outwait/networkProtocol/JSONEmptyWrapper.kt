@@ -4,7 +4,7 @@ import org.json.JSONObject
 
 class JSONEmptyWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
 
-    // Secondary Constructor erzeugt einen EmptyWrapper ohne übergebenes JSONObject
+    // secondary constructor creates EmptyWrapper without a JSONObject
     constructor() : this(JSONObject())
 
 }

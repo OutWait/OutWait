@@ -8,80 +8,86 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import elite.kit.outwait.MainActivity
 import elite.kit.outwait.R
+import android.app.*
+import android.os.Build
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import elite.kit.outwait.clientDatabase.ClientInfo
+import elite.kit.outwait.clientDatabase.ClientInfoDao
+import javax.inject.Inject
+import javax.inject.Singleton
 
-    /*
-    TODO Create Notification Channel with this ID
-    */
-const val CHANNEL_ID = "ExampleServiceChannel"
 
-class TimerService : Service() {
+// TODO: Wie Zugriff oder Referenz aufs Repo halten?
+class TimerService @Inject constructor(): Service() {
 
-    // Return null as one cannot bind on this services
+    @Inject
+    lateinit var db : ClientInfoDao
+
+    /**
+     * Called by the system when the service is first created.  Do not call this method directly.
+     */
+    override fun onCreate() {
+        super.onCreate()
+
+        // TODO NotifChannel konfigurieren (Sound, Buzz etc)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val serviceChannel1 = NotificationChannel(
+                getString(R.string.permanentChannel),
+                "Example Service Channel 1",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(serviceChannel1)
+        }
+        Log.i( "ForegroundService", "Permanent notifChannel was created")
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val serviceChannel2 = NotificationChannel(
+                getString(R.string.secondChannel),
+                "Example Service Channel 2",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(serviceChannel2)
+        }
+        Log.i("ForegroundService", "Second NotifChannel was created")
+
+
+    }
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
-    /**
-     * Called by the system every time a client explicitly starts the service by calling
-     * [android.content.Context.startService], providing the arguments it supplied and a
-     * unique integer token representing the start request.  Do not call this method directly.
-     *
-     *
-     * For backwards compatibility, the default implementation calls
-     * [.onStart] and returns either [.START_STICKY]
-     * or [.START_STICKY_COMPATIBILITY].
-     *
-     *
-     * Note that the system calls this on your
-     * service's main thread.  A service's main thread is the same
-     * thread where UI operations take place for Activities running in the
-     * same process.  You should always avoid stalling the main
-     * thread's event loop.  When doing long-running operations,
-     * network calls, or heavy disk I/O, you should kick off a new
-     * thread, or use [android.os.AsyncTask].
-     *
-     * @param intent The Intent supplied to [android.content.Context.startService],
-     * as given.  This may be null if the service is being restarted after
-     * its process has gone away, and it had previously returned anything
-     * except [.START_STICKY_COMPATIBILITY].
-     * @param flags Additional data about this start request.
-     * @param startId A unique integer representing this specific request to
-     * start.  Use with [.stopSelfResult].
-     *
-     * @return The return value indicates what semantics the system should
-     * use for the service's current started state.  It may be one of the
-     * constants associated with the [.START_CONTINUATION_MASK] bits.
-     *
-     * @see .stopSelfResult
-     */
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
 
-        //Create (Pending) Intent for the Notification to start the MainActivity if User
-        //Clicks on (ForegroundService) Notification
-        val notificationIntent: Intent = Intent(this, MainActivity::class.java)
-
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this,
+        // Pending Intent für die Notification
+        val notificationIntent = Intent(this, MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this,
             0, notificationIntent, 0)
 
-        //Create the (permanent) Notification that will be displayed while ForegroundService is running
-        //TODO Create the corresponding notification channel with its CHANNEL_ID
-        var notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Outwait")
-            .setContentText("Ihr nächster Termin ist in:")      //TODO Setze hier Daten aus ClientDB
-            .setSmallIcon(R.drawable.ic_baseline_av_timer_24)
+        // Baue die (permanente) Notification für den ForegroundService
+        val notification: Notification = NotificationCompat.Builder(this, getString(R.string.permanentChannel))
+            .setContentTitle("Example Service")
+            .setContentText("example text")
+            .setSmallIcon(R.drawable.ic_timer)
             .setContentIntent(pendingIntent)
             .build()
 
-        //Start Service, promoting it to the foreground immediately with the notification and its id
-        startForeground(1, notification);
+        startForeground(1, notification)
+        Log.i("ForegroundService", "service was started")
 
-        //TODO: Here goes the heavy work on a background thread
-        //stopSelf();
+        //TODO Background Work auf Nebenthread /susp function
+        //here: do "heavy work" on a background thread
+        //doWork()
+        //TODO loop mit Abfrage wann selbst gestoppt werden soll (Alternativ in workMethode?)
+        //stopSelf()
 
-        // Service wont be started again after System kills it
-        return START_NOT_STICKY;
+        //TODO mit was returnen sticky oder redeliver_intent?
+        return START_REDELIVER_INTENT
     }
-
 
     /**
      * Called by the system to notify a Service that it is no longer used and is being removed.  The
@@ -91,6 +97,47 @@ class TimerService : Service() {
      */
     override fun onDestroy() {
         super.onDestroy()
-        // TODO: Clean up of holded ressources
+        Log.i("ForegroundService", "Service onDestroy was called")
+    }
+
+    private fun doWork() {
+        Log.i("ForegroundService", "backkgroundWork was started")
+
+        // TODO Aktuellsten Termin bzw ClientInfo aus DB holen, bereits sortiert?
+        // TODO Observer auf LiveData Änderungen
+        val allClientInfoAsLiveData = db.getAllClientInfoObservable()
+        val allDBEntries = allClientInfoAsLiveData.value
+        if (allDBEntries == null) stopSelf()
+
+        var nextClientInfo: ClientInfo = getNextClientInfo(allDBEntries!!)
+
+        val nextAppointmentTime = nextClientInfo.approximatedTime
+        val nextOriginalTime = nextClientInfo.originalAppointmentTime
+
+        // TODO String Resources in xml für Notif Text, dann hier joinen mit aktuellen Daten
+
+        //TODO notification erzeugen mit aktuellen Daten auf Channel 2
+
+        // TODO While loop mit LiveData observen um Notification upzudaten
+
+        /*
+        //TODO Muss um LiveData zu oberserven das Lifecycle Interface implementiert werden?
+        allClientInfoAsLiveData.observe(this, Observer { data ->
+            nextClientInfo = getNextClientInfo(data)
+            // TODO notif updaten (in extra methode?)
+        } )
+         */
+    }
+
+    private fun getNextClientInfo(allClientInfo: List<ClientInfo>) : ClientInfo {
+        var nextClientInfo = allClientInfo.first()
+        val iterator = allClientInfo.iterator()
+
+        while (iterator.hasNext()) {
+            val next = iterator.next()
+
+            if (nextClientInfo.approximatedTime > next.approximatedTime) nextClientInfo = next
+        }
+        return nextClientInfo
     }
 }

@@ -20,7 +20,8 @@ class UpdateMediator {
         setSlotData(slotCode, slotApprox, slotManagementInformation)
     }
 
-    fun unsubscribeSlotInformationReceiver(slotCode: SlotCode, receiver: SlotInformationReceiver) {
+    fun unsubscribeSlotInformationReceiver(receiver: SlotInformationReceiver) {
+        val slotCode = receiver.slotCode
         if (receivers[slotCode] != null) {
             receivers[slotCode]?.remove(receiver)
             if (receivers[slotCode]?.isEmpty() ?: false) {
@@ -53,7 +54,7 @@ class UpdateMediator {
         slotCodes: List<SlotCode>,
         slotManagementInformation: SlotManagementInformation
     ) {
-        for ( code in slotCodes ) {
+        for (code in slotCodes) {
             receivers[code]
                 ?.forEach() { it.setSlotData(it.getSlotApprox(), slotManagementInformation) }
                 ?: println("Unknown slot requested (" + code + ") in UpdateMediator")

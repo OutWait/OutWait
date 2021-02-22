@@ -57,4 +57,6 @@ interface ManagementHandler {
 
     // TODO Welche LiveData bräuchte man noch (Bspw. bei Callbacks für Events vom Server)
 
+    fun getErrors() : LiveData<List<ManagementServerErrors>>
+
 }

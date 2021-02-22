@@ -8,18 +8,19 @@ import org.json.JSONObject
 class JSONManagementSettingsWrapper(obj: JSONObject) : JSONObjectWrapper(obj) {
     constructor() : this(JSONObject())
     fun setSettings(settings: ManagementSettings) {
-        obj.put("defaultSlotDuration", settings.defaultSlotDuration.getSeconds())
-        obj.put("notificationTime", settings.notificationTime.getSeconds())
-        obj.put("delayNotificationTime", settings.delayNotificationTime.getSeconds())
+        obj.put("defaultSlotDuration", settings.defaultSlotDuration.toMillis())
+        obj.put("notificationTime", settings.notificationTime.toMillis())
+        obj.put("delayNotificationTime", settings.delayNotificationTime.toMillis())
         obj.put("mode", if (settings.mode == Mode.ONE) "one" else "two")
-        obj.put("prioritizationTime", settings.prioritizationTime.getSeconds())
+        obj.put("prioritizationTime", settings.prioritizationTime.toMillis())
     }
     fun getSettings(): ManagementSettings {
         return ManagementSettings(
             if (obj.getString("mode") == "one") Mode.ONE else Mode.TWO,
-            Duration.ofSeconds(obj.getLong("defaultSlotDuration")),
-            Duration.ofSeconds(obj.getLong("notificationTime")),
-            Duration.ofSeconds(obj.getLong("delayNotificationTime")),
-            Duration.ofSeconds(obj.getLong("prioritizationTime"))
-        )}
+            Duration.ofMillis(obj.getLong("defaultSlotDuration")),
+            Duration.ofMillis(obj.getLong("notificationTime")),
+            Duration.ofMillis(obj.getLong("delayNotificationTime")),
+            Duration.ofMillis(obj.getLong("prioritizationTime"))
+        )
+    }
 }

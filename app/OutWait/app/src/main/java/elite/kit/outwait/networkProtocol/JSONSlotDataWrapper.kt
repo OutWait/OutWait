@@ -4,6 +4,9 @@ import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.json.JSONObject
 
+/*
+Has no secondary constructor, as we only receive the wrapped JSONObject
+ */
 class JSONSlotDataWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
 
     fun getSlotCode(): String {

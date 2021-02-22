@@ -10,6 +10,8 @@ import elite.kit.outwait.clientDatabase.ClientDatabase
 import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.remoteDataSource.HandlerFactory
 import elite.kit.outwait.remoteDataSource.SocketIOHandlerFactory
+import elite.kit.outwait.services.ServiceHandler
+import elite.kit.outwait.services.TimerService
 import javax.inject.Singleton
 
 
@@ -32,4 +34,13 @@ object MainModule {
     fun provideClientHandler(dao: ClientInfoDao)
         = SocketIOHandlerFactory().buildClientHandler(dao)
 
+    @Provides
+    @Singleton
+    fun provideManagementHandler()
+        = SocketIOHandlerFactory().buildManagementHandler()
+
+    @Provides
+    @Singleton
+    fun provideServiceHandler(@ApplicationContext context: Context)
+        = ServiceHandler(context)
 }

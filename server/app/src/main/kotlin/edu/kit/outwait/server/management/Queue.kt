@@ -6,13 +6,14 @@ import edu.kit.outwait.server.slot.Slot
 import edu.kit.outwait.server.slot.SlotCode
 import java.time.Duration
 import java.util.Date
+import org.json.JSONObject
 
 class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     private var slots = mutableListOf<Slot>()
     private var delayChangeTime: Date? = null
 
     init {
-        slots = databaseWrapper.getSlots(queueId).toMutableList()
+        slots = databaseWrapper.getSlots(queueId)!!.toMutableList() // queueId must exist
     }
     fun updateQueue(prioritizationTime: Duration) {
         delayChangeTime = null
@@ -117,6 +118,34 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     fun storeToDB(databaseWrapper: DatabaseWrapper) {
         databaseWrapper.saveSlots(slots, queueId)
     }
+    fun storeToJSON(json: JSONObject) {
+        if (slots.isEmpty()) return // noting to save
+
+        json.put("currentSlotStartedTime", slots[0].expectedDuration.toMillis())
+        json.put("slotOrder", slots.map { it.slotCode.code })
+        json.put(
+            "spontaneousSlots",
+            slots.filter { it.priority != Priority.FIX_APPOINTMENT }
+                .map {
+                    val tmp = JSONObject()
+                    tmp.put("slotCode", it.slotCode.code)
+                    tmp.put("duration", it.expectedDuration.toMillis())
+                    tmp
+                }
+        )
+        json.put(
+            "fixedSlots",
+            slots.filter { it.priority == Priority.FIX_APPOINTMENT }
+                .map {
+                    val tmp = JSONObject()
+                    tmp.put("slotCode", it.slotCode.code)
+                    tmp.put("appointmentTime", it.approxTime.getTime())
+                    tmp.put("duration", it.expectedDuration.toMillis())
+                    tmp
+                }
+        )
+    }
+
     fun addSpontaneousSlot(slot: Slot) {
         slots.add(slot);
     }
@@ -140,7 +169,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
 
         if (slot != null && targetSlot != null) {
             slots.remove(slot)
-            val newDate = Date.from(targetSlot.constructorTime.toInstant() + Duration.ofSeconds(1))
+            val newDate = Date.from(targetSlot.constructorTime.toInstant() + Duration.ofMillis(1))
             val conflictingSlot = slots.find { it.constructorTime == newDate }
 
             slots.add(slot.copy(constructorTime=newDate))

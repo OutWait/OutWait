@@ -36,69 +36,48 @@ class SocketAdapter(private val namespace: String) {
         mapEventToCallback: HashMap<Event,
                 (wrappedJSONData: JSONObjectWrapper) -> Unit>
     ) {
+        // register SocketIO related connection listeners
+        registerSocketIOListeners()
 
+        // register given listeners and their events
         registerEventListeners(mapEventToCallback)
 
         Log.i("SocketAdapter", "All listeners were registered")
 
-        /*
-        Im Folgednen Implementierung von Listener für die ganzen Socket.IO seitigen Events
-        wobei entweder Zustand gesetzt (CONNECT) oder Fehlermeldungen (DISCONNECT, ERROR)
-        geworfen werden sollen
-         */
-
-        socketIOSocket?.on(Socket.EVENT_CONNECT, Emitter.Listener {
-            // TODO Was soll hier getan werden?
-            Log.i("SocketAdapter", "Socket is connected")
-        }
-        )
-
-        socketIOSocket?.on(Socket.EVENT_CONNECT_ERROR, Emitter.Listener {
-            // TODO Was soll hier getan werden?
-            Log.i("SocketAdapter", "EVENT_CONNECT_ERROR")
-        }
-        )
-
-        socketIOSocket?.on(Socket.EVENT_ERROR, Emitter.Listener {
-            // TODO Was soll hier getan werden?
-            Log.i("SocketAdapter", "EVENT_ERROR")
-        }
-        )
-        socketIOSocket?.on(Socket.EVENT_CONNECT_TIMEOUT, Emitter.Listener {
-            // TODO Was soll hier getan werden?
-            Log.i("SocketAdapter", "EVENT_ERROR")
-        }
-        )
-
-
-        //TODO Hierfür Exception werfen sinnvoll? -> erst wenn auch reconnect endgültig failed!!!!
-        socketIOSocket?.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
-            //TODO Was soll hier getan werden?
-            Log.i("SocketAdapter", "Socket is disconnected")
-        }
-        )
-
-        //TODO Was ist mit EVENT_DISCONNECT, EVENT_CONNECT_TIMEOUT, EVENT_ERROR, EVENT_RECONNECT etc?
-        // soll Fehler geworfen werden, wenn Verbindung dauerhaft nicht möglich?
-
         // open the socket connection
-        if(socketIOSocket.open() == null){
+        if (socketIOSocket.open() == null) {
             Log.d("jkdfjagl", "isNull")
-        }else{
+        } else {
             Log.d("jkdfjagl", "is not Null")
         }
-        //socketIOSocket?.connect()
 
-        Log.i("SocketAdapter", "SocketIOSocket.connect() was called")
+        Log.i("SocketAdapter", "SocketIOSocket.open() was called")
     }
 
-
+    // TODO Fürs parsen hier eine JSON Exception werfen, falls es nicht klappt
     /*
     Emitte Event mit Daten zum Server
      */
     fun emitEventToServer(event: String, wrappedJSONData: JSONObjectWrapper) {
-        socketIOSocket?.emit(event, wrappedJSONData.getJSONString())
-        Log.i("SocketAdapter", "Event was emitted to server on SocketIOSocket")
+        socketIOSocket.emit(event, wrappedJSONData.getJSONString())
+        Log.i("SocketAdapter", "Event $event was emitted to server on SocketIOSocket")
+    }
+
+    /*
+    Gibt die von SocketIOSocket gehaltene Verbindung frei und entfernt alle Listener
+     */
+    fun releaseConnection() {
+        socketIOSocket.close()
+
+        // remove all registered listeners
+        socketIOSocket.off()
+    }
+
+    /*
+    Gibt Auskunft ob die SOcketIOSocket Instanz momentan mit Server verbunden ist oder nicht
+     */
+    fun isConnected(): Boolean {
+        return socketIOSocket.connected()
     }
 
     /*
@@ -111,40 +90,66 @@ class SocketAdapter(private val namespace: String) {
     ) {
         for (k in mapEventsToCallback.keys) {
 
-            socketIOSocket?.on(k.getEventString(), Emitter.Listener {
+            val onEventListenerCallback =
 
-                // parse the received data string into JSONObject
-                // TODO Test ob das wirklich so funktioniert
+                Emitter.Listener { args ->
 
+                    // parse the received data string as JSONObject
+                    val data = args.last() as String
+                    val jsonData = JSONObject(data)
 
-                val data = it[1] as String
-                val jsonData = JSONObject(data)
+                    // wrap the parsed JSONObject with appropriate JSONObjectWrapper
+                    val wrappedJSONData = k.createWrapper(jsonData)
 
-                //val jsonData: JSONObject = JSONObject(it[0].toString())
+                    Log.d("incoming event:", k.getEventString())
 
-                // wrap the parsed JSONObject with appropriate JSONObjectWrapper
-                val wrappedJSONData = k.createWrapper(jsonData)
+                    // Invoke the given callback with the parsed data
+                    //TODO Funktioniert der Aufruf der Callback Methode richtig?
+                    mapEventsToCallback[k]?.invoke(wrappedJSONData)
+                }
 
-                // Invoke the given callback with the parsed data
-                //TODO Funktioniert der Aufruf der Callback Methode richtig?
-                mapEventsToCallback[k]?.invoke(wrappedJSONData)
-            })
+            // register the listener
+            socketIOSocket.on(k.getEventString(), onEventListenerCallback)
         }
     }
 
     /*
-    Gibt die von SocketIOSocket gehaltene Verbindung frei
-    //TODO Muss noch was gemacht/freigegeben werden?
-     */
-    fun releaseConnection() {
-        socketIOSocket?.close()
-    }
+        Im Folgednen Implementierung von Listener für die ganzen Socket.IO seitigen Events
+        wobei entweder Zustand gesetzt (CONNECT) oder Fehlermeldungen (DISCONNECT, ERROR)
+        geworfen werden sollen
+        //TODO Sollen hier Fehlermeldungen auch ans repo hoch zum gui display für Nutzer
+         */
+    private fun registerSocketIOListeners() {
 
-    /*
-    Gibt Auskunft ob die SOcketIOSocket Instanz momentan mit Server verbunden ist oder nicht
-     */
-    fun isConnected(): Boolean? {
-        return socketIOSocket?.connected()
+        val onConnectCallback = Emitter.Listener {
+            Log.i("SocketAdapter", "Event" + Socket.EVENT_CONNECT)
+        }
+        socketIOSocket.on(Socket.EVENT_CONNECT, onConnectCallback)
+
+        val onConnectErrorCallback = Emitter.Listener {
+            Log.i("SocketAdapter", "Event" + Socket.EVENT_CONNECT_ERROR)
+        }
+        socketIOSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectErrorCallback)
+
+        val onEventErrorCallback = Emitter.Listener {
+            Log.i("SocketAdapter", "Event" + Socket.EVENT_ERROR)
+        }
+        socketIOSocket.on(Socket.EVENT_ERROR, onEventErrorCallback)
+
+        val onEventConnectTimeoutCallback = Emitter.Listener {
+            Log.i("SocketAdapter", "Event" + Socket.EVENT_CONNECT_TIMEOUT)
+        }
+        socketIOSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onEventConnectTimeoutCallback)
+
+        //TODO Hierfür Exception werfen sinnvoll? -> erst wenn auch reconnect endgültig failed!!!!
+        val onEventDisconnectCallback = Emitter.Listener {
+            Log.i("SocketAdapter", "Event" + Socket.EVENT_DISCONNECT)
+        }
+        socketIOSocket.on(Socket.EVENT_DISCONNECT, onEventDisconnectCallback)
+
+        //TODO Was ist mit EVENT_DISCONNECT, EVENT_CONNECT_TIMEOUT, EVENT_ERROR, EVENT_RECONNECT etc?
+        // soll Fehler geworfen werden, wenn Verbindung dauerhaft nicht möglich?
+
     }
 
 }

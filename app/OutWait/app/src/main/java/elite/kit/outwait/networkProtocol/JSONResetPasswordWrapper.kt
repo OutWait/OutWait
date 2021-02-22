@@ -2,13 +2,13 @@ package elite.kit.outwait.networkProtocol
 
 import org.json.JSONObject
 
+/*
+Has no getters, as we only emit the wrapped JSONObject
+ */
 class JSONResetPasswordWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
 
     constructor(username: String) : this(JSONObject()) {
         jsonObj.put(USERNAME, username)
     }
 
-    /*
-    Eigentlich brauchen wir getter nicht, da wir das Objekt nur versenden, nie erhalten
-     */
 }

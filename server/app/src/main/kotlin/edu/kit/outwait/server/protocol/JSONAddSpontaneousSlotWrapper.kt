@@ -7,15 +7,15 @@ import org.json.JSONObject
 class JSONAddSpontaneousSlotWrapper(obj: JSONObject) : JSONObjectWrapper(obj) {
     constructor() : this(JSONObject())
     fun setCreationTime(time: Date) {
-        obj.put("timeOfCreation", time.getTime() / 1000)
+        obj.put("timeOfCreation", time.getTime())
     }
     fun setDuration(duration: Duration) {
-        obj.put("duration", duration.getSeconds())
+        obj.put("duration", duration.toMillis())
     }
     fun getCreationTime(): Date {
-        return Date(obj.getLong("timeOfCreation") * 1000)
+        return Date(obj.getLong("timeOfCreation"))
     }
     fun getDuration(): Duration {
-        return Duration.ofSeconds(obj.getLong("duration"))
+        return Duration.ofMillis(obj.getLong("duration"))
     }
 }

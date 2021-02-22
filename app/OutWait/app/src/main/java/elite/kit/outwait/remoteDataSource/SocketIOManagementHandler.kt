@@ -9,15 +9,23 @@ import elite.kit.outwait.networkProtocol.*
 import org.joda.time.DateTime
 import org.joda.time.Duration
 
+// TODO Falschen Zugriff durchs Repo verhindern (bspw. Änderung ohne gestartete Transaction)
+// TODO InvalidRequest adäquat handlen (an Repo weiter?) Was für Fehler sind möglich?
+// TODO Interne Zustandsvariablen richtig benutzt? Threading beachtet?
+// insb. login- und transaction- related sachen?
 
 class SocketIOManagementHandler : ManagementHandler {
 
-    // Ein Haufen unschöner Zustandsvariablen (-> TODO LiveData schöner?)
+    // Ein Haufen unschöner (intern, da bisher prozedural) Zustandsvariablen
+    // TODO LiveData schöner?
     private var loginRequested = false
     private var loggedIn = false
     private var loginDenied = false
     private var transactionStarted = false
     private var transactionDenied = false
+
+    private val _errors = MutableLiveData<List<ManagementServerErrors>>()
+    override fun getErrors() = _errors as LiveData<List<ManagementServerErrors>>
 
     /*
     External and internal LiveData (encapsulated with backing property) for current WaitingQueue
@@ -45,8 +53,8 @@ class SocketIOManagementHandler : ManagementHandler {
         mSocket = SocketAdapter(namespaceManagement)
 
         // initialize the observable LiveData with nulls, so they are immediately gettable
-        _currentList.value = null
-        _currentPrefs.value = null
+        this._currentList.value = null
+        this._currentPrefs.value = null
 
         // configure HashMap that maps receiving events to callbacks
         managementEventToCallbackMapping[Event.TRANSACTION_STARTED] = { receivedData ->
@@ -75,12 +83,29 @@ class SocketIOManagementHandler : ManagementHandler {
         }
     }
 
+    //TODO initComm was noch zu tun?
     override fun initCommunication(): Boolean {
-        TODO("Not yet implemented")
+        mSocket.initializeConnection(managementEventToCallbackMapping)
+
+        // wait until connection is established
+        while(!mSocket.isConnected()) {
+            Log.i("SocketIOManagHand", "While loop until Socket.isConnected() == true")
+            Thread.sleep(1000)
+        }
+
+        // wait until server requested a login try
+        while(!loginRequested) {
+            Log.i("SocketIOManagHand", "While loop until loginRequested == true")
+            Thread.sleep(1000)
+        }
+
+        return true
     }
 
     override fun endCommunication(): Boolean {
         mSocket.releaseConnection()
+
+        // interne Zustandsvariablen zurücksetzen
         resetTransactionState()
         resetLoginState()
         this.loginRequested = false
@@ -116,6 +141,7 @@ class SocketIOManagementHandler : ManagementHandler {
                 "SocketIOManagementHandl",
                 "Waiting on server for LoginResponse"
             )
+            pushError(ManagementServerErrors.LOGIN_DENIED)
             Thread.sleep(1_000)
         }
 
@@ -141,7 +167,6 @@ class SocketIOManagementHandler : ManagementHandler {
 
         mSocket.emitEventToServer(event.getEventString(), data)
         this.loggedIn = false
-
     }
 
     override fun resetPassword(username: String) {
@@ -163,12 +188,12 @@ class SocketIOManagementHandler : ManagementHandler {
    gemacht nachdem Server auf den StartVersuch geantwortet hat (mit TransactionSuccess oder Denied)
      */
     override fun startTransaction(): Boolean {
-        //TODO Muss geprüft werden, ob grad noch Transaction läuft?
 
         val event: Event = Event.START_TRANSACTION
         val data: JSONObjectWrapper = JSONEmptyWrapper()
         mSocket.emitEventToServer(event.getEventString(), data)
 
+        // warte in while loop auf Antwort vom Server
         while (!transactionDenied and !transactionStarted) {
             Log.i(
                 "SocketIOManagementHandl",
@@ -266,11 +291,11 @@ class SocketIOManagementHandler : ManagementHandler {
     Getter für die LiveData Attribute
      */
     override fun getReceivedList(): LiveData<ReceivedList> {
-        return currentList
+        return this.currentList
     }
 
     override fun getUpdatedPreferences(): LiveData<Preferences> {
-        return currentPrefs
+        return this.currentPrefs
     }
 
     /*
@@ -291,8 +316,7 @@ class SocketIOManagementHandler : ManagementHandler {
 
     private fun onInvalidRequest(wrappedJSONData: JSONInvalidRequestWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
-        TODO("Fehlermeldung werfen")
-        // TODO Was noch?
+        TODO("Fehlermeldung werfen (sonst noch was?)")
     }
 
     private fun onLoginSuccess(wrappedJSONData: JSONEmptyWrapper) {
@@ -301,20 +325,30 @@ class SocketIOManagementHandler : ManagementHandler {
 
     private fun onLoginDenied(wrappedJSONData: JSONEmptyWrapper) {
         this.loginDenied = true
-        TODO("Server will hier Verbindung abbrechen!! Was tun? (siehe gitlab issue)")
+        //pushError()
+        //hab hier mal einen push ans Repo eingefügt (B)
+        //TODO("Server will hier Verbindung abbrechen?!! Was tun? (siehe gitlab issue)")
+
+        //TODO Bisher Rückeldung ans Repo über Return Type von login()
     }
 
 
     private fun onUpdateManagementSettings(wrappedJSONData: JSONManagementSettingsWrapper) {
         val newPrefs = wrappedJSONData.getPreferences()
-        this._currentPrefs.value = newPrefs
-
+        this._currentPrefs.postValue(newPrefs)
     }
 
     private fun onUpdateQueue(wrappedJSONData: JSONQueueWrapper) {
         val receivedList = wrappedJSONData.getQueue()
-        this._currentList.value = receivedList
+        this._currentList.postValue(receivedList)
     }
 
-
+    private fun pushError(error: ManagementServerErrors){
+        if (_errors.value !== null){
+            val newList = _errors.value!!.plus(error).toMutableList()
+            this._errors.postValue(newList)
+        }else{
+            this._errors.postValue(listOf(error))
+        }
+    }
 }

@@ -13,7 +13,7 @@ import org.joda.time.Interval
 import javax.inject.Inject
 
 @HiltViewModel
-class ConfigDialogViewModel @Inject constructor( val repo: InstituteRepository) :
+class ConfigDialogViewModel @Inject constructor( val repo: InstituteRepository, val coordinator: ConfigCoordinator) :
     ViewModel() {
 
      val preferences : LiveData<Preferences> =repo.getObservablePreferences()
@@ -27,8 +27,9 @@ class ConfigDialogViewModel @Inject constructor( val repo: InstituteRepository) 
     val delayNotificationTime = MutableLiveData<Duration>()
 
     fun logout(){
-        //TODO notify login system
+        //TODO coordiantor to go forwarder fragment
         repo.logout()
+        coordinator.navigateToForwarderFragment()
     }
 
     fun saveConfigValues(){

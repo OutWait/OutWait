@@ -1,10 +1,10 @@
 package edu.kit.outwait.server.socketHelper
 
-import com.corundumstudio.socketio.AckRequest;
+import com.corundumstudio.socketio.AckRequest
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.SocketIONamespace
-import com.corundumstudio.socketio.listener.DataListener;
-import com.corundumstudio.socketio.listener.DisconnectListener;
+import com.corundumstudio.socketio.listener.DataListener
+import com.corundumstudio.socketio.listener.DisconnectListener
 import edu.kit.outwait.server.protocol.Event
 
 class SocketAdapter(val namespace: SocketIONamespace) {
@@ -22,7 +22,7 @@ class SocketAdapter(val namespace: SocketIONamespace) {
                         dat:String,
                         ackRequest: AckRequest
                     ) {
-                        println("New message received. Type" + e.getEventTag())
+                        println("New message received. Type " + e.getEventTag())
                         val jsonWrapper = e.createWrapper(dat)
                         val facade = facades[client]
                         if (facade != null) {
@@ -34,12 +34,14 @@ class SocketAdapter(val namespace: SocketIONamespace) {
                     }
                 }
             )
+            println("Registered listener for event " + e.getEventTag() + " in " + javaClass.name)
         }
 
         // Configure disconnect listener
         namespace.addDisconnectListener(
             object : DisconnectListener {
                 override fun onDisconnect(client: SocketIOClient) {
+                    println("Client disconnected")
                     val facade = facades[client]
                     if (facade != null) {
                         removeFacade(facade)

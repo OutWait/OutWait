@@ -11,4 +11,5 @@ class JSONSlotCodeWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
     fun getSlotCode(): String {
         return jsonObj.getString(SLOT_CODE)
     }
+
 }

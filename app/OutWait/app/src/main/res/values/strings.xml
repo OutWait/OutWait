@@ -38,7 +38,14 @@
     <string name="refresh">Refresh</string>
     <!-- Strings for Error-Notifications (Institute) -->
     <string name="TRANSACTION_DENIED">Transaction denied!</string>
+    <string name="LOGIN_DENIED">Login denied!</string>
     <!-- Strings for Error-Notifications (Client) -->
     <string name="EXAMPLE_ERROR">Example Error!</string>
+    <string name="INVALID_SLOT_CODE">Your code is not valid!</string>
     <string name="process_title">Process</string>
+    <!-- Strings related to timerService -->
+    <string name="permanentChannel">PERM_CHANNEL_ID</string>
+    <string name="secondChannel">SEC_CHANNEL_ID</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
