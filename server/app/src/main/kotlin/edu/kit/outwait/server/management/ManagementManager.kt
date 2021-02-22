@@ -47,7 +47,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             val wrapper = (json as JSONCredentialsWrapper)
             val credentials = databaseWrapper.getManagementByUsername(wrapper.getUsername())
 
-            if (wrapper.getPassword() != credentials.password) {
+            if (credentials == null || wrapper.getPassword() != credentials.password) {
                 socketFacade.send(Event.MANAGEMENT_LOGIN_DENIED, JSONEmptyWrapper())
                 socketFacade.disconnect()
             } else {
@@ -78,22 +78,31 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
             // Load the queue
             val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
-            val queue = Queue(queueId, databaseWrapper)
-
-            return queue
+            if (queueId == null) {
+                println("INTERNAL ERROR: management has no Queue!")
+                // Don't crash the server by a exception. This is just a log.
+                return null
+            } else {
+                return Queue(queueId, databaseWrapper)
+            }
         }
     }
-    fun abortTransaction(managementId: ManagementId): Queue {
+    fun abortTransaction(managementId: ManagementId): Queue? {
         assert(activeTransactions.contains(managementId))
 
         activeTransactions.remove(managementId)
 
         // Re-load the queue with the state before the transaction
         val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
-        databaseWrapper.deleteAllTemporarySlots(queueId) // delete all temporary slots
-        val queue = Queue(queueId, databaseWrapper)
-
-        return queue
+        if (queueId == null) {
+            println("INTERNAL ERROR: management has no Queue!")
+            // Don't crash the server by a exception. This is just a log.
+            return null
+        } else {
+            // delete all temporary slots
+            if (!databaseWrapper.deleteAllTemporarySlots(queueId)) return null
+            return Queue(queueId, databaseWrapper)
+        }
     }
 
     /**
@@ -163,16 +172,24 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
             // Load the queue
             val queueId = databaseWrapper.getQueueIdOfManagement(urgentQueueManagementId)
-            val queue = Queue(queueId, databaseWrapper)
+            if (queueId == null) {
+                println("INTERNAL ERROR: management has no Queue!")
+                // Don't crash the server by a exception. This is just a log.
+            } else {
+                val queue = Queue(queueId, databaseWrapper)
 
-            // Update the queue
-            val prioritizationTime =
-                databaseWrapper.getManagementById(urgentQueueManagementId)
-                    .settings
-                    .prioritizationTime
-            queue.updateQueue(prioritizationTime)
+                // Update the queue
+                val prioritizationTime =
+                    databaseWrapper.getManagementById(urgentQueueManagementId)!!
+                        // managementId must exist
+                        .settings
+                        .prioritizationTime
 
-            handleQueueUpdate(urgentQueueManagementId, queue) // this will also set the next timer
+                queue.updateQueue(prioritizationTime)
+
+                // thi s will also set the next timer
+                handleQueueUpdate(urgentQueueManagementId, queue)
+            }
         } else if (queueDelayTimes.isNotEmpty()) {
             // Reset the next timer, if the trigger was invalid
             nextDelayAlarm.schedule(
