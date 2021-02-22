@@ -13,6 +13,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(private val repoClient : ClientRepository, private val repoInstitute: InstituteRepository, private val coordinator:LoginCoordinator): ViewModel() {
 
+
+
     val clientSlotCode= MutableLiveData<String>()
     val instituteName= MutableLiveData<String>()
     val institutePassword= MutableLiveData<String>()

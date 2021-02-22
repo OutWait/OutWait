@@ -8,26 +8,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.clientDatabase.ClientInfo
-import elite.kit.outwait.databinding.FragmentLoginBinding
+import elite.kit.outwait.databinding.LoginFragmentBinding
 import elite.kit.outwait.managmentLogin.institutLoginScreen.InstitutLoginViewModel
 
-
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
 
-    private lateinit var binding:FragmentLoginBinding
-    private val viewModel: UserViewModel by viewModels()
+    private lateinit var binding:LoginFragmentBinding
+    private val viewModel: UserViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        binding=DataBindingUtil.inflate(inflater,R.layout.fragment_login, container, false)
+        binding=DataBindingUtil.inflate(inflater,R.layout.login_fragment, container, false)
         binding.viewModel=this.viewModel
         binding.lifecycleOwner=viewLifecycleOwner
         val navController = findNavController()

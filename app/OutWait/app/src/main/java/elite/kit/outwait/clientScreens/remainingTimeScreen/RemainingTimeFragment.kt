@@ -86,17 +86,18 @@ class RemainingTimeFragment : Fragment() {
 
     private fun counterDownTimer() {
         //TODO set remainingTime
-        counterDownTimer = object : CountDownTimer(10000 + CORRECTION_TIME, COUNTDOWN_INTERVAL) {
+        counterDownTimer = object : CountDownTimer(viewModel.remainingMinutes.value!! + CORRECTION_TIME, COUNTDOWN_INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
                 binding.circularProgressBar.setProgressWithAnimation(millisUntilFinished.toFloat() - CORRECTION_TIME)
                 binding.tvRemainingTime.text =
-                    ((millisUntilFinished / COUNTDOWN_INTERVAL).toString())
+                    ((millisUntilFinished / 1000L).toString())
             }
 
             override fun onFinish() {
                 binding.tvRemainingTime.text = "Please go to your institute"
                 binding.circularProgressBar.progress = 0F
+
             }
         }.start()
 
