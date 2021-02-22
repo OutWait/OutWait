@@ -24,15 +24,21 @@ class EditCodeViewModel @Inject constructor(private val repo : ClientRepository,
         }
     }
 
-    init{
+    init {
+
+    }
+
+   /* init{
         repo.getActiveSlots().observeForever {
             if (it.isNotEmpty()){
                 //test to see whether object is created
                 Log.i("object","${it.component1().slotCode}")
                 coordinator.navigateToRemainingTimeFragment()
             }
+            Log.i("object","${it.isEmpty()}")
         }
-    }
+    }*/
+
     fun enterSlotCode(code: String?){
         Log.d("enterSCode::EditCodeVM", "reached")
         viewModelScope.launch {

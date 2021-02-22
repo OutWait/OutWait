@@ -20,24 +20,11 @@ class UserViewModel @Inject constructor(private val repoClient : ClientRepositor
         addSource(repoClient.getActiveSlots()){
             value=it
         }
-    }
 
-
-     var users: LiveData<List<ClientInfo>> = Transformations.switchMap(loginResponse){
-         repoClient.getActiveSlots()
-     }
-
-    fun signInUser(){
-        loginResponse.addSource(repoClient.getActiveSlots()){
-            loginResponse.value=it
+        addSource(repoInstitute.isLoggedIn()){
+            value= listOf(it)
         }
-
-        /*loginResponse.addSource(LIVEDATA LOGIN INSTITUTE){
-            loginResponse.value=it
-        }*/
-
     }
-
 
     fun enterSlotCode(code: String?){
         Log.d("enterSCode::EditCodeVM", "reached")
@@ -47,7 +34,9 @@ class UserViewModel @Inject constructor(private val repoClient : ClientRepositor
     }
 
     fun login(){
-        repoInstitute.login(instituteName.value!!,institutePassword.value!!)
+        viewModelScope.launch {
+            repoInstitute.login(instituteName.value!!, institutePassword.value!!)
+        }
     }
 
 

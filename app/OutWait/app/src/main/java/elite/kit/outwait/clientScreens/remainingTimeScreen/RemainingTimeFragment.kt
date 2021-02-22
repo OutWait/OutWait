@@ -31,8 +31,6 @@ class RemainingTimeFragment : Fragment() {
         private const val CORRECTION_TIME = 1000L
         private const val COUNTDOWN_INTERVAL = 1000L
         private const val MINIMUM_INTERVAL = 1000f
-
-
     }
 
 
@@ -97,7 +95,7 @@ class RemainingTimeFragment : Fragment() {
             }
 
             override fun onFinish() {
-                binding.tvRemainingTime.text = "Please go to your institut"
+                binding.tvRemainingTime.text = "Please go to your institute"
                 binding.circularProgressBar.progress = MINIMUM_INTERVAL
             }
         }.start()
