@@ -7,6 +7,7 @@ import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.remoteDataSource.ClientHandler
 import elite.kit.outwait.remoteDataSource.ClientServerErrors
+import elite.kit.outwait.services.ServiceHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
@@ -15,7 +16,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ClientRepository @Inject constructor(private val dao: ClientInfoDao, private val remote: ClientHandler) {
+class ClientRepository @Inject constructor(
+    private val dao: ClientInfoDao,
+    private val remote: ClientHandler,
+    private val serviceHandler: ServiceHandler) {
 
     init {
         //Get notified with server errors
@@ -38,9 +42,10 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao, priva
             pushError(ClientErrors.INVALID_SLOT_CODE)
             return
         }
+        serviceHandler.startTimerService()
         withContext(IO){
             Log.d("newCodeEntered::cRepo", "entered code: $code")
-            if(remoteConnected || remote.initCommunication()){
+            if(remoteConnected || remote.initCommunication()) {
                 remoteConnected = true
                 remote.newCodeEntered(code)
             }
