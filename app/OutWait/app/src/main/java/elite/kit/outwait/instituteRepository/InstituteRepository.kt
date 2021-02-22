@@ -27,11 +27,13 @@ class InstituteRepository @Inject constructor() {
     private val timeSlotList = MutableLiveData<List<TimeSlot>>()
     private val errorNotifications = MutableLiveData<List<InstituteErrors>>()
     private val inTransaction = MutableLiveData<Boolean>(false)
+    private val loggedIn = MutableLiveData<Boolean>(false)
 
     fun getObservablePreferences() = preferences as LiveData<Preferences>
     fun getObservableTimeSlotList() = timeSlotList as LiveData<List<TimeSlot>>
     fun getErrorNotifications() = errorNotifications as LiveData<List<InstituteErrors>>
     fun isInTransaction() = inTransaction as LiveData<Boolean>
+    fun isLoggedIn() = loggedIn as LiveData<Boolean>
 
     suspend fun loginCo(username: String, password: String): Boolean{
         withContext(IO){
