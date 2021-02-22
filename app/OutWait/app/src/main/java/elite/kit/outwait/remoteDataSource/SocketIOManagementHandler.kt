@@ -167,7 +167,6 @@ class SocketIOManagementHandler : ManagementHandler {
 
         mSocket.emitEventToServer(event.getEventString(), data)
         this.loggedIn = false
-
     }
 
     override fun resetPassword(username: String) {

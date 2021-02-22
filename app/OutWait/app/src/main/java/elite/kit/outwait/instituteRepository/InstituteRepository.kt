@@ -3,10 +3,12 @@ package elite.kit.outwait.instituteRepository
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import elite.kit.outwait.clientRepository.ClientErrors
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.remoteDataSource.ManagementHandler
 import elite.kit.outwait.waitingQueue.gravityQueue.FixedGravitySlot
+import elite.kit.outwait.waitingQueue.gravityQueue.GravityQueueConverter
 import elite.kit.outwait.waitingQueue.gravityQueue.SpontaneousGravitySlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 import kotlinx.coroutines.CoroutineScope
@@ -44,35 +46,7 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
     fun isLoggedIn() = loggedIn as LiveData<Boolean>
 
 
-    suspend fun loginCo(username: String, password: String): Boolean{
-        withContext(IO){
-            //Server Request
-            Log.d("login::InstiRepo", "before server connect running in ${Thread.currentThread().name}")
-            delay(2000)
-            Log.d("login::InstiRepo", "after server connect")
-        }
-        //change Live Data
-        delay(2000)
-        var d = Duration(2999999)
-        Log.d("login::InstiRepo", "before liveData changed running in ${Thread.currentThread().name}")
-        preferences.value = Preferences(d, d, d, d, Mode.TWO)
-        Log.d("login::InstiRepo", "after liveData changed")
-        val l = listOf(InstituteErrors.TRANSACTION_DENIED)
-        errorNotifications.value = l
 
-        Log.d("login::InstiRepo", "DateTime-Test-start")
-        var dd = DateTime(118800000) //2.1.1970 9:00 UTC
-        var slot = FixedGravitySlot("abc", Duration.standardMinutes(20), DateTime.now()-Duration.standardMinutes(10), "Hans")
-        val interval = slot.interval(DateTime.now())
-        val begin = interval.start
-        val end = interval.end
-        Log.d("login::InstiRepo", "slotBegin: ${begin.toString()}")
-        Log.d("login::InstiRepo", "slotEnd: ${end.toString()}")
-        Log.d("login::InstiRepo", "DateTime-Test-end")
-
-
-        return true
-    }
 
     private var communicationEstablished = false
 
@@ -80,26 +54,31 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
         CoroutineScope(IO).launch {
             if(communicationEstablished || remote.initCommunication()){
                 if(remote.login(username, password)){
-                    withContext(Main){
-                        observeRemote()
-                        loggedIn.value = true
-                    }
+                    observeRemote()
+                    loggedIn.postValue(true)
                 }
             }
         }
     }
 
-    private fun observeRemote(){
-        remote.getReceivedList().observeForever {
-            Log.d("InstiRepo", "receivedList empfangen")
-        }
-        remote.getUpdatedPreferences().observeForever {
-            preferences.value = it
+    private suspend fun observeRemote(){
+        withContext(Main){
+            remote.getReceivedList().observeForever {
+                Log.d("InstiRepo", "receivedList empfangen")
+                val converter = GravityQueueConverter()
+                val timeSlots = converter.receivedListToTimeSlotList(it, HashMap<String, String>())
+                timeSlotList.value = timeSlots
+            }
+            remote.getUpdatedPreferences().observeForever {
+                preferences.value = it
+            }
         }
     }
 
     fun logout(){
-
+        CoroutineScope(IO).launch {
+            remote.logout()
+        }
     }
 
     fun changePreferences(
@@ -109,19 +88,47 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
         prioritizationTime: Duration,
         mode2Active: Boolean
     ){
-
+        var mode = Mode.ONE
+        if (mode2Active){
+            mode = Mode.TWO
+        }
+        val pref = Preferences(
+            defaultSlotDuration,
+            notificationTime,
+            delayNotificationTime,
+            prioritizationTime,
+            mode
+        )
+        CoroutineScope(IO).launch{
+            remote.changePreferences(pref)
+        }
     }
 
     fun newSpontaneousSlot(auxiliaryIdentifier : String, duration : Duration){
-
+        //add aux to DB
+        CoroutineScope(IO).launch {
+            if (transaction()){
+                remote.addSpontaneousSlot(duration, DateTime.now())
+            }
+        }
     }
 
     fun newFixedSlot(auxiliaryIdentifier : String, appointmentTime : DateTime, duration : Duration){
-
+        //add aux to db
+        CoroutineScope(IO).launch {
+            if(transaction()){
+                remote.addFixedSlot(duration, appointmentTime)
+            }
+        }
     }
 
     fun changeSpontaneousSlotInfo(slotCode : String, duration : Duration, auxiliaryIdentifier : String){
-
+        //change aux
+        CoroutineScope(IO).launch {
+            if (transaction()){
+                remote.changeSlotDuration(slotCode, duration)
+            }
+        }
     }
 
     fun moveSlotAfterAnother(movedSlot: String, otherSlot: String){
@@ -136,8 +143,13 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
 
     }
 
-    fun changeFixedSlotAppointmentTime(slotCode : String, duration : Duration, auxiliaryIdentifier : String ,newAppointmentTime : DateTime){
-
+    fun changeFixedSlotInfo(slotCode : String, duration : Duration, auxiliaryIdentifier : String ,newAppointmentTime : DateTime){
+        CoroutineScope(IO).launch {
+            if (transaction()){
+                remote.changeFixedSlotTime(slotCode, newAppointmentTime)
+                remote.changeSlotDuration(slotCode, duration)
+            }
+        }
     }
 
     fun saveTransaction(){
@@ -154,5 +166,27 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
 
     fun doSomething(){
         Log.d("InstituteRepo", "method DoSomething is reached in FR2")
+    }
+
+    private suspend fun transaction(): Boolean{
+        if (inTransaction.value == true){
+            return true
+        } else{
+            val transactionEstablished = remote.startTransaction()
+            if (transactionEstablished){
+                inTransaction.postValue(true)
+                return true
+            }
+            pushError(InstituteErrors.TRANSACTION_DENIED)
+            return false
+        }
+    }
+    private fun pushError(error: InstituteErrors){
+        if (errorNotifications.value !== null){
+            val newList = errorNotifications.value!!.plus(error).toMutableList()
+            errorNotifications.postValue(newList)
+        }else{
+            errorNotifications.postValue(listOf(error))
+        }
     }
 }
