@@ -19,13 +19,6 @@
         android:layout_height="match_parent"
         tools:context=".recyclerviewScreens.addSlotDialog.AddSlotDialogFragment">
 
-
-        <!--<mobi.upod.timedurationpicker.TimeDurationPickerPreference
-                android:key="pref_duration"
-                android:title="Reminder"
-                android:summary="Remind me in ${m:ss} minute(s)."
-                android:defaultValue="900000"/>-->
-
         <ru.ifr0z.timepickercompact.TimePickerCompact
             android:id="@+id/tpAppointmentTime"
             style="@style/Widget.TimeDurationPicker.Light"

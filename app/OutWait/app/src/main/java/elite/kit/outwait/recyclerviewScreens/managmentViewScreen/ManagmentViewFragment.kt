@@ -64,19 +64,13 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         builder.create()
         builder.setCancelable(true)
 
-        //TODO check except
-        viewModel.repo.getObservableTimeSlotList().observe(viewLifecycleOwner, Observer { list ->
+        viewModel.slotQueue.observe(viewLifecycleOwner) { list ->
             slotAdapter.updateSlots(list.toMutableList())
             //TODO dismiss progress bar dialog
-
-        })
-
-//        viewModel.weatherLocations.observe(viewLifecycleOwner) {
-//            weatherOverviewAdapter.updateWeatherLocations(it)
-//        }
+        }
 
         //Add listener for recyclerview
-        slotAdapter = SlotAdapter(fakeSlotList(), this)
+        slotAdapter = SlotAdapter(mutableListOf<TimeSlot>(), this)
         var callback: ItemTouchHelper.Callback = SlotItemTouchHelper(slotAdapter)
         var itemTouchHelper: ItemTouchHelper = ItemTouchHelper(callback)
         slotAdapter.setTouchHelper(itemTouchHelper)
@@ -92,16 +86,16 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
     }
 
 
-    private fun fakeSlotList(): MutableList<TimeSlot> {
+   /* private fun fakeSlotList(): MutableList<TimeSlot> {
         var slotList = mutableListOf<TimeSlot>()
 
 
         var start = DateTime(DateTime.now()).plusHours(1)
         var end = start.plusMinutes(33)
-        /* Log.i("datetime", "${TransformationInput.formatDateTime(20,15)}")
+        *//* Log.i("datetime", "${TransformationInput.formatDateTime(20,15)}")
          Log.i("duration", "${TransformationInput.formatDuration(6000)}")
          Log.i("interval", "${TransformationInput.formatInterval(6000)}")
-         Log.i("interval", "${Duration(200L).toIntervalFrom(DateTime.now())}")*/
+         Log.i("interval", "${Duration(200L).toIntervalFrom(DateTime.now())}")*//*
 
         for (i in 1..1) {
 
@@ -131,7 +125,7 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
             slotList!!.add(SpontaneousTimeSlot(Interval(start, end), "2222", "Frank"))
         }
         return slotList
-    }
+    }*/
 
     override fun onItemClicked(position: Int) {
         var detailDialog =
@@ -141,7 +135,6 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
 
 
     override  fun onItemSwiped(position: Int, removedSlot: TimeSlot) {
-
         var resetDelete =
             Snackbar.make(binding.slotList, "${getIdentifier(removedSlot)}", Snackbar.LENGTH_LONG)
                 .setAction(getString(
@@ -153,7 +146,8 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
                 }
         resetDelete.show()
 
-
+//        viewModel.notifyDelteSlot()
+//        viewModel.notifyEndCurrentSlot()
     }
 
     private fun getIdentifier(slot: TimeSlot): String {
@@ -165,8 +159,6 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         var editDialog =
             EditTimeSlotDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
         editDialog.show(childFragmentManager, "aaa")
-        editDialog.exitTransition
-        builder.show()
     }
 
 

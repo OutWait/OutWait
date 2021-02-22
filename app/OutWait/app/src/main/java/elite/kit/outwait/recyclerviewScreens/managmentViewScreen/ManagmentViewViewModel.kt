@@ -1,5 +1,6 @@
 package elite.kit.outwait.recyclerviewScreens.managmentViewScreen
 
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.instituteRepository.InstituteRepository
@@ -12,6 +13,12 @@ class ManagmentViewViewModel @Inject constructor(
      val repo: InstituteRepository,
     private val coordinator: ManagementViewCoordinator,
 ) : ViewModel() {
+
+    val slotQueue= MediatorLiveData<List<TimeSlot>>().apply {
+        addSource(repo.getObservableTimeSlotList()) {
+            value = it
+        }
+    }
 
     /*
     * - zuerst gebewgter slot dann der feste
@@ -28,8 +35,12 @@ class ManagmentViewViewModel @Inject constructor(
         coordinator.navigateToConfigDialog()
     }
 
-    fun navigateToEditDialog(timeSlot: ClientTimeSlot) {
-        coordinator.navigateToEditDialogFragment(timeSlot)
+    fun notifyDeleteSlot(slot:ClientTimeSlot){
+        repo.deleteSlot(slot.slotCode)
+    }
+
+    fun notifyEndCurrentSlot(){
+        repo.endCurrentSlot()
     }
 
 

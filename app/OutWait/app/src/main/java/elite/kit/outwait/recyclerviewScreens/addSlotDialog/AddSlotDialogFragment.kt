@@ -45,13 +45,15 @@ class AddSlotDialogFragment : DialogFragment() {
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
         setUpPicker()
-        //TODO fetch mode of vm of managementView
-        viewModel.isModeTwo.value = true
-     /*   viewModel.repo.getObservablePreferences().observe(viewLifecycleOwner, Observer {
+
+        viewModel.preferences.observe(viewLifecycleOwner) {
             viewModel.interval.value = Interval(0L, it.defaultSlotDuration.millis)
             viewModel.isModeTwo.value=it.mode==Mode.TWO
-        })*/
-        defaultValues()
+            defaultValues()
+        }
+
+
+
         builder.apply {
             setView(binding.root)
             setTitle(getString(R.string.title_add_slot))
@@ -98,9 +100,7 @@ class AddSlotDialogFragment : DialogFragment() {
     private fun defaultValues() {
         binding.tpAppointmentTime.hour = DEFAULT_HOUR
         binding.tpAppointmentTime.minute = DEFAULT_MINUTE
-        //TODO fetch duration from preferences
-//        binding.timeDurationInput.duration=viewModel.interval.value!!.toDurationMillis()
-        binding.timeDurationInput.duration = 3000000L
+        binding.timeDurationInput.duration = viewModel.interval.value!!.toDurationMillis()
     }
 
     private fun setUpPicker() {

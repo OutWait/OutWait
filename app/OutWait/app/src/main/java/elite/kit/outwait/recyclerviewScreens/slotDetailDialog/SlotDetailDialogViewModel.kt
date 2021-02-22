@@ -13,10 +13,8 @@ class SlotDetailDialogViewModel : ViewModel() {
 
     val slotCode = MutableLiveData<String>()
 
-//    var appointmentTime = MutableLiveData<DateTime>()
     var appointmentTime = MutableLiveData<String>()
 
-//    var interval = MutableLiveData<Interval>()
     var interval = MutableLiveData<String>()
 
 

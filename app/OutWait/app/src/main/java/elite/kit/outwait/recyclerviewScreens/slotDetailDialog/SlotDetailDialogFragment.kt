@@ -75,6 +75,5 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
         viewModel.appointmentTime.value=TransformationOutput.appointmentToString(fixedSlot.appointmentTime)
         viewModel.qrCode.value=qrCodeGenerator.generateQRCode(fixedSlot.slotCode)
         binding.ivQRCode.setImageBitmap(viewModel.qrCode.value)
-        Log.i("sss","${viewModel.appointmentTime.value}")
     }
 }

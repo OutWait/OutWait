@@ -98,7 +98,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/fixed_slot"
-            android:checked="@={viewModel.isFixedSlot()}"
+            android:checked="@={viewModel.isFixedSlot}"
             android:visibility="@{viewModel.isModeTwo?View.VISIBLE:View.INVISIBLE}"
             app:layout_constraintBottom_toBottomOf="@+id/tvIdentifierAddDialog"
             app:layout_constraintEnd_toEndOf="parent"

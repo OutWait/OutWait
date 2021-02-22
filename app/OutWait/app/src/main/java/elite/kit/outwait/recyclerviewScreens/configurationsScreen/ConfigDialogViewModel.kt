@@ -22,19 +22,17 @@ class ConfigDialogViewModel @Inject constructor( val repo: InstituteRepository, 
 
     val standardSlotDauer = MutableLiveData<Duration>()
     var notificationTime = MutableLiveData<Duration>()
-    var isModusTwo = MutableLiveData<Boolean>()
+    var isModeTwo = MutableLiveData<Boolean>()
     val prioritizationTime = MutableLiveData<Duration>()
     val delayNotificationTime = MutableLiveData<Duration>()
 
     fun logout(){
-        //TODO coordiantor to go forwarder fragment
         repo.logout()
         coordinator.navigateToForwarderFragment()
     }
 
     fun saveConfigValues(){
-        //TODO check data on validation
-        repo.changePreferences(standardSlotDauer.value!!,notificationTime.value!!,delayNotificationTime.value!!,prioritizationTime.value!!,isModusTwo.value!!)
+        repo.changePreferences(standardSlotDauer.value!!,notificationTime.value!!,delayNotificationTime.value!!,prioritizationTime.value!!,isModeTwo.value!!)
 
     }
 }

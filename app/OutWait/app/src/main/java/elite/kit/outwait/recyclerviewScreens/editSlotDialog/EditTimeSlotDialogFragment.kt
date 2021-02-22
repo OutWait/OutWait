@@ -26,7 +26,6 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
 
     private val viewModel: EditTimeSlotDialogViewModel by viewModels()
     private lateinit var binding: EditTimeSlotDialogFragmentBinding
-    //private val args: EditTimeSlotDialogFragmentArgs by navArgs()
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -41,6 +40,7 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
         setValuesOfScreen(editSlot)
         viewModel.isFixedSlot.value = isFixedSlot(editSlot)
         viewModel.slotCode.value = editSlot.slotCode
+
         builder.apply {
 
             setView(binding.root)

@@ -34,9 +34,6 @@ class ConfigDialogFragment : Fragment() {
         binding.viewModel = this.viewModel
         binding.lifecycleOwner=this
 
-        //Setup Dialog
-//        displayValues()
-        //Setup format
         setUpFormat()
 
         //TODO check queue empty to switch mode
@@ -46,7 +43,8 @@ class ConfigDialogFragment : Fragment() {
             viewModel.delayNotificationTime.value=it.delayNotificationTime
             viewModel.notificationTime.value=it.notificationTime
             viewModel.prioritizationTime.value=it.prioritizationTime
-            viewModel.isModusTwo.value=it.mode.ordinal== Mode.TWO.ordinal
+            viewModel.isModeTwo.value=it.mode.ordinal== Mode.TWO.ordinal
+            displayValues()
         })
         //pass new default values from user to server
         binding.btnSave.setOnClickListener {
@@ -54,7 +52,8 @@ class ConfigDialogFragment : Fragment() {
             viewModel.delayNotificationTime.value=Duration(binding.durationDelay.duration)
             viewModel.notificationTime.value=Duration(binding.durationNotification.duration)
             viewModel.prioritizationTime.value=Duration(binding.durationPrioritization.duration)
-            viewModel.isModusTwo.value=binding.sMode.isChecked
+            viewModel.isModeTwo.value=binding.sMode.isChecked
+            viewModel.saveConfigValues()
         }
 
         return binding.root
@@ -72,7 +71,7 @@ class ConfigDialogFragment : Fragment() {
         binding.durationDelay.duration=viewModel.delayNotificationTime.value!!.millis
         binding.durationPrioritization.duration=viewModel.prioritizationTime.value!!.millis
         binding.durationNotification.duration=viewModel.notificationTime.value!!.millis
-        binding.sMode.isChecked= viewModel.isModusTwo.value!!
+        binding.sMode.isChecked= viewModel.isModeTwo.value!!
     }
 
 

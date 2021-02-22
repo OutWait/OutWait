@@ -2,10 +2,13 @@ package elite.kit.outwait.recyclerviewScreens.addSlotDialog
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.instituteRepository.InstituteRepository
+import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 import org.joda.time.DateTime
 import org.joda.time.Interval
 import javax.inject.Inject
@@ -28,6 +31,12 @@ class AddSlotDialogViewModel @Inject constructor(val repo: InstituteRepository) 
     var isModeTwo = MutableLiveData<Boolean>()
 
 
+    val preferences = MediatorLiveData<Preferences>().apply {
+        addSource(repo.getObservablePreferences()) {
+            value = it
+        }
+    }
+
     fun notifyAddSpontaneousSlot() {
         repo.newSpontaneousSlot(identifier.value!!,
             interval.value!!.toDuration())
@@ -37,7 +46,6 @@ class AddSlotDialogViewModel @Inject constructor(val repo: InstituteRepository) 
             "            ${appointmentTime.value}\n" +
             "            ${interval.value!!.toDurationMillis()}")
     }
-
 
 
     fun notifyAddFixedSlot() {
