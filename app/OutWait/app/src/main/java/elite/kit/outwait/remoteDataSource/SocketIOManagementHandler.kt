@@ -141,6 +141,7 @@ class SocketIOManagementHandler : ManagementHandler {
                 "SocketIOManagementHandl",
                 "Waiting on server for LoginResponse"
             )
+            pushError(ManagementServerErrors.LOGIN_DENIED)
             Thread.sleep(1_000)
         }
 
@@ -333,12 +334,12 @@ class SocketIOManagementHandler : ManagementHandler {
 
     private fun onUpdateManagementSettings(wrappedJSONData: JSONManagementSettingsWrapper) {
         val newPrefs = wrappedJSONData.getPreferences()
-        this._currentPrefs.value = newPrefs
+        this._currentPrefs.postValue(newPrefs)
     }
 
     private fun onUpdateQueue(wrappedJSONData: JSONQueueWrapper) {
         val receivedList = wrappedJSONData.getQueue()
-        this._currentList.value = receivedList
+        this._currentList.postValue(receivedList)
     }
 
     private fun pushError(error: ManagementServerErrors){
