@@ -7,9 +7,9 @@ import javax.inject.Inject
 
 class InstitutCoordinator @Inject constructor(private val navigator: Navigator) {
     fun navigateToManagementView() {
-        navigator.navigate(InstitutLoginFragmentDirections.actionInstitutLoginFragmentToManagmentViewFragment())
+//        navigator.navigate(InstitutLoginFragmentDirections.actionInstitutLoginFragmentToManagmentViewFragment())
     }
     fun navigateToPasswordForgot() {
-        navigator.navigate(InstitutLoginFragmentDirections.actionInstitutLoginFragmentToPasswordForgotFragment())
+//        navigator.navigate(InstitutLoginFragmentDirections.actionInstitutLoginFragmentToPasswordForgotFragment())
     }
 }

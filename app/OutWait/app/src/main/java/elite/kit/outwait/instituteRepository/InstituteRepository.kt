@@ -99,7 +99,7 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
     }
 
     fun logout(){
-
+        loggedIn.value=false
     }
 
     fun changePreferences(
