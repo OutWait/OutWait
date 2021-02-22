@@ -154,11 +154,27 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
     }
 
     fun saveTransaction(){
-
+        if (inTransaction.value == true){
+            CoroutineScope(IO).launch {
+                remote.saveTransaction()
+            }
+            inTransaction.value = false
+        }
+        else{
+            //keine transaktion zu speichern
+        }
     }
 
     fun abortTransaction(){
-
+        if (inTransaction.value == true){
+            CoroutineScope(IO).launch {
+                remote.abortTransaction()
+            }
+            inTransaction.value = false
+        }
+        else{
+            //keine transaktion zu speichern
+        }
     }
 
     fun passwordForgotten(username : String){
