@@ -7,6 +7,7 @@ import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.remoteDataSource.ClientHandler
 import elite.kit.outwait.remoteDataSource.ClientServerErrors
+import elite.kit.outwait.services.ServiceHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
@@ -15,14 +16,21 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ClientRepository @Inject constructor(private val dao: ClientInfoDao, private val remote: ClientHandler) {
+class ClientRepository @Inject constructor(
+    private val dao: ClientInfoDao,
+    private val remote: ClientHandler,
+    private val serviceHandler: ServiceHandler) {
 
     init {
+        serviceHandler.startTimerService()
         //Get notified with server errors
         remote.getErrors().observeForever {
             if (it.last() == ClientServerErrors.INVALID_SLOT_CODE){
                 pushError(ClientErrors.INVALID_SLOT_CODE)
             }
+        }
+        CoroutineScope(IO).launch {
+            dao.clearTable()
         }
     }
     private val activeSlots = dao.getAllClientInfoObservable()// MutableLiveData<List<ClientInfo>>()//
@@ -36,9 +44,8 @@ class ClientRepository @Inject constructor(private val dao: ClientInfoDao, priva
             return
         }
         withContext(IO){
-            dao.clearTable()
             Log.d("newCodeEntered::cRepo", "entered code: $code")
-            if(remoteConnected || remote.initCommunication()){
+            if(remoteConnected || remote.initCommunication()) {
                 remoteConnected = true
                 remote.newCodeEntered(code)
             }

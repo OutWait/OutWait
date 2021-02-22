@@ -11,10 +11,16 @@ import elite.kit.outwait.R
 import android.app.*
 import android.os.Build
 import android.util.Log
+import elite.kit.outwait.clientDatabase.ClientInfoDao
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
 // TODO: Wie Zugriff oder Referenz aufs Repo halten?
-class TimerService : Service() {
+class TimerService @Inject constructor(): Service() {
+
+    @Inject
+    lateinit var db : ClientInfoDao
 
     /**
      * Called by the system when the service is first created.  Do not call this method directly.
