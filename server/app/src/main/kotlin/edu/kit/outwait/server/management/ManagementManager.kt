@@ -68,6 +68,10 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         socketFacade.send(Event.LOGIN_REQUEST, JSONEmptyWrapper())
     }
     fun removeManagement(management: Management) {
+        // Close open transactions
+        if(management.isTransactionRunning())
+            management.abortCurrentTransaction()
+
         managements.remove(management)
     }
     fun beginTransaction(managementId: ManagementId): Queue? {
