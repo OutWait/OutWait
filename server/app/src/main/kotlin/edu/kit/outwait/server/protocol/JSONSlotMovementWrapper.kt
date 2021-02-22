@@ -9,7 +9,8 @@ class JSONSlotMovementWrapper(obj: JSONObject) : JSONObjectWrapper(obj) {
         obj.put("movedSlot", slotCode.code)
     }
     fun setOtherSlot(slotCode: SlotCode) {
-        obj.put("otherSlot", slotCode.code)}
+        obj.put("otherSlot", slotCode.code)
+    }
     fun getMovedSlot(): SlotCode {
         return SlotCode(obj.getString("movedSlot"))
     }

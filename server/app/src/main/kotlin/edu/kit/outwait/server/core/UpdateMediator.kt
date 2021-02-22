@@ -54,7 +54,7 @@ class UpdateMediator {
         slotCodes: List<SlotCode>,
         slotManagementInformation: SlotManagementInformation
     ) {
-        for ( code in slotCodes ) {
+        for (code in slotCodes) {
             receivers[code]
                 ?.forEach() { it.setSlotData(it.getSlotApprox(), slotManagementInformation) }
                 ?: println("Unknown slot requested (" + code + ") in UpdateMediator")

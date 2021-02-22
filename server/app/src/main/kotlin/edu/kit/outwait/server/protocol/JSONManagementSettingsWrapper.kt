@@ -21,5 +21,6 @@ class JSONManagementSettingsWrapper(obj: JSONObject) : JSONObjectWrapper(obj) {
             Duration.ofMillis(obj.getLong("notificationTime")),
             Duration.ofMillis(obj.getLong("delayNotificationTime")),
             Duration.ofMillis(obj.getLong("prioritizationTime"))
-        )}
+        )
+    }
 }
