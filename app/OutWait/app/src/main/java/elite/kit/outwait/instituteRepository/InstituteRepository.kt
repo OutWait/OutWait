@@ -174,7 +174,7 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
             inTransaction.value = false
         }
         else{
-            //keine transaktion zu speichern
+            pushError(InstituteErrors.NOT_IN_TRANSACTION)
         }
     }
 
@@ -186,7 +186,7 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
             inTransaction.value = false
         }
         else{
-            //keine transaktion zu speichern
+            pushError(InstituteErrors.NOT_IN_TRANSACTION)
         }
     }
 
