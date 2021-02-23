@@ -10,10 +10,14 @@ class SocketFacade(val socket: SocketIOClient, adapter: SocketAdapter) {
 
     init {
         adapter.addFacadeForSocket(this, socket)
+        println("SO-FACADE: Facade initialized")
     }
 
     fun send(event: Event, toSend: JSONObjectWrapper) {
-        println("Sending event " + event.getEventTag() + " with data " + toSend.getJSONString());
+        println(
+            "SO-FaCADE: Sending event " + event.getEventTag() + " with data " +
+                toSend.getJSONString()
+        );
         socket.sendEvent(event.getEventTag(), toSend.getJSONString())
     }
     fun onReceive(event: Event, callback: (receivedData: JSONObjectWrapper) -> Unit) {
@@ -25,6 +29,7 @@ class SocketFacade(val socket: SocketIOClient, adapter: SocketAdapter) {
 
     /** Closes the connection */
     fun disconnect() {
+        println("SO-FACADE: Disconnecting socket")
         socket.disconnect()
     }
 }

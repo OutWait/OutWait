@@ -33,6 +33,9 @@ class SlotInformationReceiver(val client: Client, val slotCode: SlotCode) {
             this.slotApprox = slotApprox
             this.slotManagementInformation = slotManagementInformation
             client.sendSlotData(slotCode, slotApprox, slotManagementInformation)
+        println("SLOT-INFO-RECV: Updated slot information")
+        }else{
+        println("SLOT-INFO-RECV: Slot information was not updated (has no changes)")
         }
     }
 
@@ -47,11 +50,13 @@ class SlotInformationReceiver(val client: Client, val slotCode: SlotCode) {
 
     /** Called by UpdateMediator if Slot has been ended by management */
     fun end() {
+        println("SLOT-INFO-RECV: Sending slot end")
         client.endSlot(slotCode)
     }
 
     /** Called by UpdateMediator if Slot has been deleted by management */
     fun delete() {
+        println("SLOT-INFO-RECV: Sending slot deletion")
         client.deleteSlot(slotCode)
     }
 }
