@@ -7,6 +7,7 @@ import elite.kit.outwait.clientRepository.ClientErrors
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.remoteDataSource.ManagementHandler
+import elite.kit.outwait.remoteDataSource.ManagementServerErrors
 import elite.kit.outwait.waitingQueue.gravityQueue.FixedGravitySlot
 import elite.kit.outwait.waitingQueue.gravityQueue.GravityQueueConverter
 import elite.kit.outwait.waitingQueue.gravityQueue.SpontaneousGravitySlot
@@ -28,7 +29,19 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
 
     init {
         remote.getErrors().observeForever {
+            if (it.isNotEmpty()){
+                when (it.last()){
 
+                    ManagementServerErrors.LOGIN_DENIED
+                        -> pushError(InstituteErrors.LOGIN_DENIED)
+
+                    ManagementServerErrors.TRANSACTION_DENIED
+                        -> doSomething()//error wird in Methode transaction() über Rückgabewert behandelt
+
+                    else
+                        -> doSomething()
+                }
+            }
         }
     }
 
@@ -182,7 +195,6 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
     }
 
     fun doSomething(){
-        Log.d("InstituteRepo", "method DoSomething is reached in FR2")
     }
 
     private suspend fun transaction(): Boolean{
