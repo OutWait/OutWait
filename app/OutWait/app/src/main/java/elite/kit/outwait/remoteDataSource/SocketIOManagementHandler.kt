@@ -141,7 +141,9 @@ class SocketIOManagementHandler : ManagementHandler {
                 "SocketIOManagementHandl",
                 "Waiting on server for LoginResponse"
             )
-            pushError(ManagementServerErrors.LOGIN_DENIED)
+            //hab das hier mal rausgemacht - hat auch bei erfolgreichem
+            //login den error gepusht. Dafür bei onLoginDenied() den push.
+            //pushError(ManagementServerErrors.LOGIN_DENIED)
             Thread.sleep(1_000)
         }
 
