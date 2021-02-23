@@ -14,6 +14,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
@@ -43,7 +44,7 @@ class RemainingTimeFragment : Fragment() {
             container,
             false)
         binding.viewModel = this.viewModel
-        binding.lifecycleOwner=this
+        binding.lifecycleOwner = this
 
 
         binding.circularProgressBar.apply {
@@ -80,26 +81,57 @@ class RemainingTimeFragment : Fragment() {
         }
 
         counterDownTimer()
+        exitApp()
 
         return binding.root
     }
 
     private fun counterDownTimer() {
         //TODO set remainingTime
-        counterDownTimer = object : CountDownTimer(10000 + CORRECTION_TIME, COUNTDOWN_INTERVAL) {
+        counterDownTimer = object : CountDownTimer(10000L + CORRECTION_TIME, COUNTDOWN_INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
                 binding.circularProgressBar.setProgressWithAnimation(millisUntilFinished.toFloat() - CORRECTION_TIME)
                 binding.tvRemainingTime.text =
-                    ((millisUntilFinished / COUNTDOWN_INTERVAL).toString())
+                    ((millisUntilFinished / 1000L).toString())
             }
 
             override fun onFinish() {
                 binding.tvRemainingTime.text = "Please go to your institute"
                 binding.circularProgressBar.progress = 0F
+                Toast.makeText(context,
+                    "Press back button to enter a new slot code",
+                    Toast.LENGTH_LONG)
+                    .show()
             }
         }.start()
 
+    }
+
+    private fun exitApp() {
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+
+                override fun handleOnBackPressed() {
+
+
+                    if (binding.circularProgressBar.progress == 0F
+                    ) {
+                        //TODO delete clientinfo object
+                        Log.i("backButton", "go to loginfragment")
+
+
+                        /*Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                            press = false
+                        }, 1500)*/
+                    } else {
+                        Toast.makeText(context, "Click home button to exit", Toast.LENGTH_LONG)
+                            .show()
+                    }
+                }
+            }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
 }

@@ -17,6 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
@@ -52,8 +53,10 @@ class EditCodeFragment : Fragment() {
             if(it.isEmpty()){
                 Toast.makeText(context,"Failed",Toast.LENGTH_SHORT)
             }else if(it.component1() is ClientInfo) {
-                Log.i("check","${it.component1().toString()}")
+                Log.i("forward back","${it.component1().toString()}")
                 Navigation.findNavController(binding.root).navigate(R.id.remainingTimeFragment)
+//                val response= findNavController().popBackStack()
+//                Log.i("ss","$response")
             }
         }
 

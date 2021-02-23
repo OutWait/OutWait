@@ -79,10 +79,15 @@ class GravityQueueConverter {
         = (getSpontaneous(code, receivedList) !== null)
 
     private fun gravitySlotListToTimeSlotList(gravitySlotList : List<ClientGravitySlot>, currentSlotStartedTime: DateTime, now: DateTime) : List <TimeSlot>{
+        //leerer fall
+        if (gravitySlotList.isEmpty()){
+            return listOf<TimeSlot>()
+        }
         //Verspätet sich der aktuelle Slot? -> Dummy anpassen
         var firstTimeSlotDummy = Pause(Interval(currentSlotStartedTime, currentSlotStartedTime))
-        if (currentSlotStartedTime + gravitySlotList[1].duration < now){
-            firstTimeSlotDummy = Pause(Interval(now - gravitySlotList[1].duration, now - gravitySlotList[1].duration))
+        //in first geändert, davor war [1]. so richtig?
+        if (currentSlotStartedTime + gravitySlotList.first().duration < now){
+            firstTimeSlotDummy = Pause(Interval(now - gravitySlotList.first().duration, now - gravitySlotList.first().duration))
         }
 
         val timeSlotList = mutableListOf<TimeSlot>(firstTimeSlotDummy)

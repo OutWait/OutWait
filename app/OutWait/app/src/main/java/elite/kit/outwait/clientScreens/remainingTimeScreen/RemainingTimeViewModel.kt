@@ -25,9 +25,9 @@ class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepos
     //TODO calculation of remaining time
     var clientInfo = MutableLiveData<ClientInfo>()
 
-    private val _remainingMinutes = MutableLiveData<Int>()
+    private val _remainingMinutes = MutableLiveData<Long>()
     val remainingMinutes
-        get() = _remainingMinutes as LiveData<Int>
+        get() = _remainingMinutes as LiveData<Long>
 
 init {
     //clientInfo=ClientRepository.getActiveSlots.value[0]
@@ -35,7 +35,7 @@ init {
     if (slots !== null && slots.isNotEmpty()){
         val approxTime = slots.last().approximatedTime
         val timeLeft = Duration(approxTime.millis - DateTime.now().millis)
-        _remainingMinutes.value = timeLeft.standardMinutes.toInt()
+        _remainingMinutes.value = timeLeft.millis*(-1)
         Log.d("RemTimeVM", "${remainingMinutes.value} minuten verbleibend")
     }
 
@@ -43,7 +43,7 @@ init {
         if (it.isNotEmpty()){
             val approxTime = it.last().approximatedTime
             val timeLeft = Duration(approxTime.millis - DateTime.now().millis)
-            _remainingMinutes.value = timeLeft.standardMinutes.toInt()
+            _remainingMinutes.value = timeLeft.millis*(-1)
             Log.d("RemTimeVM", "${remainingMinutes.value} minuten verbleibend")
         }
     }

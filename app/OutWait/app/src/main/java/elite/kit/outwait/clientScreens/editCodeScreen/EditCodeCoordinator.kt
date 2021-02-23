@@ -6,11 +6,11 @@ import javax.inject.Inject
 class EditCodeCoordinator @Inject constructor(private val navigator: Navigator) {
 
     fun navigateToRemainingTimeFragment() {
-        navigator.navigate(EditCodeFragmentDirections.actionEditCodeFragmentToRemainingTimeFragment2())
+//        navigator.navigate(EditCodeFragmentDirections.actionEditCodeFragmentToRemainingTimeFragment2())
 
     }
 
     fun navigateToInstitutLoginFragment() {
-        navigator.navigate(EditCodeFragmentDirections.actionEditCodeFragmentToInstitutLoginFragment())
+//        navigator.navigate(EditCodeFragmentDirections.actionEditCodeFragmentToInstitutLoginFragment())
     }
 }

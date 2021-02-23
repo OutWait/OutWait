@@ -141,6 +141,8 @@ class Management(
         }
     }
 
+    internal fun isTransactionRunning(): Boolean = queue != null
+
     private fun updateAndSendQueue() {
         if (queue != null) {
             queue!!.updateQueue(managementInformation.settings.prioritizationTime)
@@ -176,7 +178,7 @@ class Management(
             }
         }
     }
-    private fun abortCurrentTransaction () {
+    internal fun abortCurrentTransaction () {
         if (checkTransactionStarted()) {
             val original_queue = managementManager.abortTransaction(managementId)
             if (original_queue != null) {

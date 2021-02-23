@@ -5,13 +5,14 @@ import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientRepository.ClientRepository
-import elite.kit.outwait.clientScreens.editCodeScreen.EditCodeFragmentDirections
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(private val repoClient : ClientRepository, private val repoInstitute: InstituteRepository, private val coordinator:LoginCoordinator): ViewModel() {
+
+
 
     val clientSlotCode= MutableLiveData<String>()
     val instituteName= MutableLiveData<String>()

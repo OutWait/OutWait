@@ -135,7 +135,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         )
         json.put(
             "fixedSlots",
-            slots.filter { it.priority != Priority.FIX_APPOINTMENT }
+            slots.filter { it.priority == Priority.FIX_APPOINTMENT }
                 .map {
                     val tmp = JSONObject()
                     tmp.put("slotCode", it.slotCode.code)

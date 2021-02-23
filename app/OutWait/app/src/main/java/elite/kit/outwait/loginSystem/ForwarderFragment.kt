@@ -7,9 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.clientDatabase.ClientInfo
-
+@AndroidEntryPoint
 class ForwarderFragment : Fragment() {
     private val userViewModel: UserViewModel by activityViewModels()
 
@@ -28,10 +29,12 @@ class ForwarderFragment : Fragment() {
         userViewModel.loginResponse.observe(viewLifecycleOwner) { listOfUsers ->
             when {
                 listOfUsers.isEmpty() -> {
-                    userViewModel.navigateToLoginFragment()
+//                    userViewModel.navigateToLoginFragment()
+                    findNavController().navigate(R.id.loginFragment)
                 }
                 listOfUsers.component1() == false -> {
-                    userViewModel.navigateToLoginFragment()
+//                    userViewModel.navigateToLoginFragment()
+                    findNavController().navigate(R.id.loginFragment)
                 }
                 listOfUsers.component1() == true -> {
                     userViewModel.navigateToManagementViewFragment()
