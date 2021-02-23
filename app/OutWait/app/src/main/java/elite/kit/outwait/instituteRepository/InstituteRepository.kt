@@ -36,10 +36,10 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
                         -> pushError(InstituteErrors.LOGIN_DENIED)
 
                     ManagementServerErrors.TRANSACTION_DENIED
-                        -> doSomething()//error wird in Methode transaction() über Rückgabewert behandelt
+                        -> doNothing()//error wird in Methode transaction() über Rückgabewert behandelt
 
                     else
-                        -> doSomething()
+                        -> doNothing()
                 }
             }
         }
@@ -146,15 +146,27 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
     }
 
     fun moveSlotAfterAnother(movedSlot: String, otherSlot: String){
-
+        CoroutineScope(IO).launch {
+            if (transaction()){
+                remote.moveSlotAfterAnother(movedSlot, otherSlot)
+            }
+        }
     }
 
     fun endCurrentSlot(){
-
+        CoroutineScope(IO).launch {
+            if (transaction()){
+                remote.endCurrentSlot()
+            }
+        }
     }
 
     fun deleteSlot(slotCode : String){
-
+        CoroutineScope(IO).launch {
+            if (transaction()){
+                remote.deleteSlot(slotCode)
+            }
+        }
     }
 
     fun changeFixedSlotInfo(slotCode : String, duration : Duration, auxiliaryIdentifier : String ,newAppointmentTime : DateTime){
@@ -191,10 +203,12 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
     }
 
     fun passwordForgotten(username : String){
-
+        CoroutineScope(IO).launch {
+            remote.resetPassword(username)
+        }
     }
 
-    fun doSomething(){
+    private fun doNothing(){
     }
 
     private suspend fun transaction(): Boolean{
