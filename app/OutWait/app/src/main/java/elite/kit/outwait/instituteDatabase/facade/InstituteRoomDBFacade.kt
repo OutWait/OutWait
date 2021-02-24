@@ -2,8 +2,12 @@ package elite.kit.outwait.instituteDatabase.facade
 
 import elite.kit.outwait.instituteDatabase.rooms.DBAuxiliaryIdentifier
 import elite.kit.outwait.instituteDatabase.rooms.DBAuxiliaryIdentifierDao
+import javax.inject.Inject
 
-class InstituteRoomDBFacade(private val dao: DBAuxiliaryIdentifierDao) : InstituteDBFacade {
+class InstituteRoomDBFacade @Inject constructor(
+    private val dao: DBAuxiliaryIdentifierDao
+    ) : InstituteDBFacade {
+
     //insert or update!
     override fun insertUpdateAux(slotCode: String, aux: String) {
         val auxToInsert = DBAuxiliaryIdentifier(slotCode, aux)

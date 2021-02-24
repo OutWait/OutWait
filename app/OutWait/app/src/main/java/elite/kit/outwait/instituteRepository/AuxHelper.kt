@@ -5,8 +5,9 @@ import elite.kit.outwait.instituteDatabase.facade.InstituteDBFacade
 
 class AuxHelper(private var db : InstituteDBFacade) {
     private var latestAux : String = ""
-    fun newAux(aux: String){
-        latestAux = aux
+
+    fun newAux(aux: String?){
+        latestAux = aux ?: ""
     }
     fun receivedList(receivedList: ReceivedList) {
         if (latestAux != "") {
