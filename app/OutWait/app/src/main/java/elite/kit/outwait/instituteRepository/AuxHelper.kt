@@ -1,4 +1,4 @@
-package elite.kit.outwait.clientRepository
+package elite.kit.outwait.instituteRepository
 
 import elite.kit.outwait.customDataTypes.ReceivedList
 import elite.kit.outwait.instituteDatabase.facade.InstituteDBFacade
@@ -14,7 +14,7 @@ class AuxHelper(private var db : InstituteDBFacade) {
             val slotsInReceived = receivedList.order
             val newSlotCodes = slotsInReceived.subtract(slotsInDB)
             if (newSlotCodes.size == 1) {
-                db.insertAuxiliaryIdentifier(
+                db.insertUpdateAux(
                     newSlotCodes.first(),
                     latestAux
                 )

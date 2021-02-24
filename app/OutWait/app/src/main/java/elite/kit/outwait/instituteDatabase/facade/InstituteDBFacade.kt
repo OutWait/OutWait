@@ -1,7 +1,7 @@
 package elite.kit.outwait.instituteDatabase.facade
 
 interface InstituteDBFacade {
-    fun insertAuxiliaryIdentifier(slotCode: String, aux: String)
-    fun getAuxiliaryIdentifiers() : HashMap<String, String>
+    fun insertUpdateAux(slotCode: String, aux: String)
+    fun getAuxiliaryIdentifiers() : Map<String, String>
     fun deleteAll()
 }
