@@ -33,9 +33,9 @@ class SlotInformationReceiver(val client: Client, val slotCode: SlotCode) {
             this.slotApprox = slotApprox
             this.slotManagementInformation = slotManagementInformation
             client.sendSlotData(slotCode, slotApprox, slotManagementInformation)
-        println("SLOT-INFO-RECV: Updated slot information")
-        }else{
-        println("SLOT-INFO-RECV: Slot information was not updated (has no changes)")
+            println("SLOT-INFO-RECV: Updated slot information")
+        } else {
+            println("SLOT-INFO-RECV: Slot information was not updated (has no changes)")
         }
     }
 

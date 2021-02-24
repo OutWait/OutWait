@@ -6,9 +6,11 @@ import edu.kit.outwait.server.slot.SlotCode
 import java.util.Date
 
 /**
- *  This class represents a mediator object between (changes made in the) Databasewrapper and (SlotInformation)receivers.
- *  (SlotInformation)receivers have to be registered and unregistered.
- *  @property receivers reference to SlotInformationReceivers to call methods in case of f. ex. changes.
+ *  This class represents a mediator object between (changes made in the) Databasewrapper and
+ * (SlotInformation)receivers. (SlotInformation)receivers have to be registered and unregistered.
+ *
+ * @property receivers reference to SlotInformationReceivers to call methods in case of f. ex.
+ *     changes.
  */
 class UpdateMediator {
     private val receivers = hashMapOf<SlotCode, MutableSet<SlotInformationReceiver>>()
@@ -16,9 +18,10 @@ class UpdateMediator {
     /**
      * Adds a SlotInformationReceiver to slots and sends data of Slot to SlotInformationReceiver.
      * Called by DatabaseWrapper with Slot data.
+     *
      * @param receiver SlotInformationReceiver to be added.
-     * @param slotCode Slot Code of SlotInformationReceivers Slot. Needed to identify SlotInformationReceiver in
-     * receivers
+     * @param slotCode Slot Code of SlotInformationReceivers Slot. Needed to identify
+     *     SlotInformationReceiver in receivers
      * @param slotApprox Approximated Time of SlotInformationReceivers Slot.
      * @param slotManagementInformation ManagementInformation about SlotInformationReceivers Slot.
      */
@@ -37,6 +40,7 @@ class UpdateMediator {
 
     /**
      * Removes a SlotInformationReceiver from slots.
+     *
      * @param receiver SlotInformationReceiver to be removed.
      */
     fun unsubscribeSlotInformationReceiver(receiver: SlotInformationReceiver) {
@@ -56,8 +60,9 @@ class UpdateMediator {
     /**
      * Unlike successive calls to setSlotApprox and setManagementInformation, calling this method
      * will only send one message to the client. Combines both.
-     * @param slotCode Slot Code of SlotInformationReceivers Slot. Needed to identify SlotInformationReceiver in
-     * receivers
+     *
+     * @param slotCode Slot Code of SlotInformationReceivers Slot. Needed to identify
+     *     SlotInformationReceiver in receivers
      * @param slotApprox Approximated Time of SlotInformationReceivers Slot.
      * @param slotManagementInformation ManagementInformation about SlotInformationReceivers Slot.
      */
@@ -76,8 +81,9 @@ class UpdateMediator {
 
     /**
      * Backup method to set SlotApprox in SlotInformationReceiver if needed.
-     * @param slotCode Slot Code of SlotInformationReceivers Slot. Needed to identify SlotInformationReceiver in
-     * receivers
+     *
+     * @param slotCode Slot Code of SlotInformationReceivers Slot. Needed to identify
+     *     SlotInformationReceiver in receivers
      * @param slotApprox Approximated Time of SlotInformationReceivers Slot.
      */
     fun setSlotApprox(slotCode: SlotCode, slotApprox: Date) {
@@ -89,8 +95,9 @@ class UpdateMediator {
 
     /**
      * Sets SlotManagementInformation for a list of SlotInformationReceivers.
-     * @param slotCodes Slot Codes of SlotInformationReceivers Slot. Needed to identify SlotInformationReceiver in
-     * receivers
+     *
+     * @param slotCodes Slot Codes of SlotInformationReceivers Slot. Needed to identify
+     *     SlotInformationReceiver in receivers
      * @param slotManagementInformation ManagementInformation about SlotInformationReceivers Slot.
      */
     fun setManagementInformation(
@@ -109,8 +116,9 @@ class UpdateMediator {
 
     /**
      * Calls endSlot on SlotInformationReceiver.
-     * @param slotCode Slot Code of SlotInformationReceivers Slot. Needed to identify SlotInformationReceiver in
-     * receivers
+     *
+     * @param slotCode Slot Code of SlotInformationReceivers Slot. Needed to identify
+     *     SlotInformationReceiver in receivers
      */
     fun endSlot(slotCode: SlotCode) {
         println("UP-MEDI: Ending slot " + slotCode)
@@ -120,8 +128,9 @@ class UpdateMediator {
 
     /**
      * Calls deleteSlot on SlotInformationReceiver.
-     * @param slotCode Slot Code of SlotInformationReceivers Slot. Needed to identify SlotInformationReceiver in
-     * receivers
+     *
+     * @param slotCode Slot Code of SlotInformationReceivers Slot. Needed to identify
+     *     SlotInformationReceiver in receivers
      */
     fun deleteSlot(slotCode: SlotCode) {
         println("UP-MEDI: Deleting slot " + slotCode)
