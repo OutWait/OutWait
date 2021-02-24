@@ -3,9 +3,9 @@ package elite.kit.outwait.waitingQueue.timeSlotModel
 import org.joda.time.Interval
 
 /**
- * This class represents a time slot with starting point and ending point in time
+ * This class represents a time slot with its currently predicted time interval
  *
- * @property interval includes starting- and ending point of the slot
+ * @property interval the time interval that is currently predicted for this slot
  */
 abstract class TimeSlot(val interval: Interval) {
     /**
