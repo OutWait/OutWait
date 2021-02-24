@@ -21,7 +21,7 @@ class SlotInformationReceiver(val client: Client, val slotCode: SlotCode) {
         SlotManagementInformation(ManagementDetails(""), Duration.ZERO, Duration.ZERO)
 
     /**
-     * Called by UpdateMediator on change of Slot data TODO: Überprüfung auf Änderung Ja/Nein?
+     * Called by UpdateMediator on change of Slot data
      *
      * @param slotApprox new Slot ETA
      * @param slotManagementInformation new SlotManagementInformation
