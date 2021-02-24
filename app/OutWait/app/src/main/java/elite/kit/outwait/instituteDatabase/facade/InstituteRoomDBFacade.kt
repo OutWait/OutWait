@@ -8,7 +8,6 @@ class InstituteRoomDBFacade @Inject constructor(
     private val dao: DBAuxiliaryIdentifierDao
     ) : InstituteDBFacade {
 
-    //insert or update!
     override fun insertUpdateAux(slotCode: String, aux: String) {
         val auxToInsert = DBAuxiliaryIdentifier(slotCode, aux)
         if(dao.getAuxIdentifier(slotCode) == null){

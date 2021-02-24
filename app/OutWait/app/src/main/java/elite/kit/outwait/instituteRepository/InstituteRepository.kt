@@ -69,6 +69,7 @@ class InstituteRepository @Inject constructor(
 
     private var communicationEstablished = false
 
+
     fun login(username: String, password: String){
         CoroutineScope(IO).launch {
             if(communicationEstablished || remote.initCommunication()){

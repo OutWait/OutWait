@@ -52,7 +52,9 @@ class ClientRepository @Inject constructor(
         }
     }
     fun refreshWaitingTime(code : String){
-
+        CoroutineScope(IO).launch {
+            remote.refreshWaitingTime(code)
+        }
     }
     fun getActiveSlots() : LiveData<List<ClientInfo>> = activeSlots
     fun getErrorNotifications() = errorNotifications as LiveData<List<ClientErrors>>
