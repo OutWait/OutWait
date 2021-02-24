@@ -26,7 +26,6 @@ class DatabaseWrapper() {
     /**
      * Setting connection properties and trying to connect to the database.
      */
-
     init {
         this.connectionProps["user"] = "outwait"
         this.connectionProps["password"] = "OurOutwaitDB"
