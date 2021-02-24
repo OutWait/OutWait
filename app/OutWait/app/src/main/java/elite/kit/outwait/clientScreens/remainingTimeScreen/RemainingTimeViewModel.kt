@@ -53,6 +53,9 @@ init {
     }
 
     fun refreshWaitingTime(){
-
+        val showingSlot = repo.getActiveSlots().value?.last()?.slotCode ?: ""
+        if (showingSlot != ""){
+            repo.refreshWaitingTime(showingSlot)
+        }
     }
 }

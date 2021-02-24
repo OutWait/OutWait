@@ -26,7 +26,6 @@ class DatabaseWrapper() {
     /**
      * Setting connection properties and trying to connect to the database.
      */
-
     init {
         this.connectionProps["user"] = "outwait"
         this.connectionProps["password"] = "OurOutwaitDB"
@@ -122,7 +121,8 @@ class DatabaseWrapper() {
             addTemporarySlotQuery.setString(2, slot.priority.toString())
             addTemporarySlotQuery.setTimestamp(3, Timestamp(slot.approxTime.time))
             addTemporarySlotQuery.setLong(4, slot.expectedDuration.toMillis())
-            addTemporarySlotQuery.setInt(5, 1)
+            addTemporarySlotQuery.setTimestamp(5, Timestamp(slot.constructorTime.time))
+            addTemporarySlotQuery.setInt(6, 1)
             val rs = addTemporarySlotQuery.executeQuery()
             rs.next()
             return slot.copy(slotCode = SlotCode(rs.getString("code")))

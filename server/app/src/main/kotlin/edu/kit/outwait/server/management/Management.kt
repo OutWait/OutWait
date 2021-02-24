@@ -30,11 +30,15 @@ class Management(
         // Configure the event callbacks
         configureReceivers(databaseWrapper)
 
+        println("MGMT: New management created and receivers registered")
+
         // Send settings
         val tmpInfo = databaseWrapper.getManagementById(managementId)!!
         // passed managementId must exist
         managementInformation = tmpInfo
         sendUpdatedManagementSettings(managementInformation.settings)
+
+        println("MGMT: Sent settings")
 
         // Send queue
         val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
@@ -44,6 +48,7 @@ class Management(
         } else {
             val queue = Queue(queueId, databaseWrapper)
             sendUpdatedQueue(queue)
+            println("MGMT: Sent first queue")
         }
     }
 
@@ -122,6 +127,13 @@ class Management(
                 updateAndSendQueue()
             }
         }
+
+        socketFacade.onDisconnect {
+            logout()
+            println("MGMT: Implicit logout")
+        }
+
+        println("MGMT: Receivers configured")
     }
 
     /**
@@ -131,6 +143,7 @@ class Management(
      */
     private fun checkTransactionStarted() :Boolean {
         if (queue == null) {
+            println("MGMT: Transaction not started! Can't execute command.")
             // Transaction has not been started
             val json = JSONInvalidRequestMessageWrapper();
             json.setMessage("Transaction not started")
@@ -146,30 +159,38 @@ class Management(
     private fun updateAndSendQueue() {
         if (queue != null) {
             queue!!.updateQueue(managementInformation.settings.prioritizationTime)
+            println("MGMT: Queue updated. New queue: " + queue)
             sendUpdatedQueue(queue!!)
+        } else {
+            println("MGMT: Failed to update queue (no queue loaded)")
         }
     }
     internal fun sendUpdatedQueue (queue: Queue):Unit {
         val json = JSONQueueWrapper();
         json.setQueue(queue)
         socketFacade.send(Event.UPDATE_QUEUE, json)
+        println("MGMT: Sent queue")
     }
     internal fun sendUpdatedManagementSettings (managementSettings: ManagementSettings) {
         val json = JSONManagementSettingsWrapper();
         json.setSettings(managementSettings)
         socketFacade.send(Event.UPDATE_MANAGEMENT_SETTINGS, json)
+        println("MGMT: Sent management settings")
     }
     private fun logout () {
         socketFacade.disconnect()
         managementManager.removeManagement(this)
+        println("MGMT: Manual logout completed")
     }
     private fun beginNewTransaction () {
         if (queue != null) {
+            println("MGMT: New transaction could not be started. Loaded queue: " + queue)
             // Cannot start a new transaction, when a transaction is running
             val json = JSONInvalidRequestMessageWrapper();
             json.setMessage("Transaction already running")
             socketFacade.send(Event.INVALID_MANAGEMENT_REQUEST, json)
         } else {
+            println("MGMT: Beginning a new transaction")
             queue = managementManager.beginTransaction(managementId)
             if (queue == null) {
                 socketFacade.send(Event.TRANSACTION_DENIED, JSONEmptyWrapper())
@@ -180,20 +201,27 @@ class Management(
     }
     internal fun abortCurrentTransaction () {
         if (checkTransactionStarted()) {
+            println("MGMT: Aborting transaction")
             val original_queue = managementManager.abortTransaction(managementId)
             if (original_queue != null) {
                 sendUpdatedQueue(original_queue)
             }
             queue = null // transaction ended
+        } else {
+            println("MGMT: Could not abort transaction (none running)")
         }
     }
     private fun saveCurrentTransaction () {
         if (checkTransactionStarted()) {
+            println("MGMT: Saving transaction. Queue: " + queue)
             managementManager.saveTransaction(managementId, queue!!)
             queue = null // transaction ended
+        } else {
+            println("MGMT: Could not save a transaction (none running)")
         }
     }
     private fun changeManagementSettings (managementSettings: ManagementSettings) {
         managementManager.updateManagementSettings(managementId, managementSettings)
+        println("MGMT: Changed management settings")
     }
 }

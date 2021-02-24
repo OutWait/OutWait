@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.clientRepository.ClientErrors
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.customDataTypes.Preferences
+import elite.kit.outwait.instituteDatabase.facade.InstituteDBFacade
 import elite.kit.outwait.remoteDataSource.ManagementHandler
 import elite.kit.outwait.remoteDataSource.ManagementServerErrors
 import elite.kit.outwait.waitingQueue.gravityQueue.FixedGravitySlot
@@ -25,7 +26,12 @@ import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
 @Singleton
-class InstituteRepository @Inject constructor(private val remote: ManagementHandler) {
+class InstituteRepository @Inject constructor(
+    private val remote: ManagementHandler,
+    private val db: InstituteDBFacade
+    ) {
+
+    private val auxHelper = AuxHelper(db)
 
     init {
         remote.getErrors().observeForever {
@@ -62,6 +68,7 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
 
 
     private var communicationEstablished = false
+
 
     fun login(username: String, password: String){
         CoroutineScope(IO).launch {

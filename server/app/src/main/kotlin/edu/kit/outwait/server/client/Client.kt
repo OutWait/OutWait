@@ -24,6 +24,7 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
     init {
         this.configureReceives()
         socketFacade.send(Event.READY_TO_SERVE, JSONEmptyWrapper())
+        println("CLIENT: initialized")
     }
 
     /**
@@ -32,13 +33,15 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
     private fun configureReceives() {
         socketFacade.onReceive(Event.LISTEN_SLOT, {receivedData ->
             val slotCode = (receivedData as JSONSlotCodeWrapper).getSlotCode()
-            println("Listen slot code '"+slotCode+"'")
+            println("CLIENT: Listen to slot code "+slotCode)
             addSlot(slotCode)
         })
 
         socketFacade.onReceive(Event.REFRESH_SLOT_APPROX, {receivedData ->
             val slotCode = (receivedData as JSONSlotCodeWrapper).getSlotCode()
+            println("CLIENT: Refresh slot approx manually, code " + slotCode)
             if (receivers[slotCode] == null) {
+            println("CLIENT: Slot code to refresh was not registered before")
                 this.socketFacade.send(Event.INVALID_CLIENT_REQUEST, JSONEmptyWrapper())
             }
             else {
@@ -56,9 +59,11 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
     private fun addSlot(slotCode: SlotCode) {
         val slotInformationReceiver = SlotInformationReceiver(this, slotCode)
         if (clientManager.registerReceiver(slotCode, slotInformationReceiver)) {
+            println("CLIENT: Adding slot code "+slotCode+ " to receiver list")
             receivers[slotCode] = slotInformationReceiver
         }
         else {
+            println("CLIENT: Slot does not exist (can't add it to receiver list)")
             socketFacade.send(Event.INVALID_CODE, JSONEmptyWrapper())
         }
     }
@@ -70,6 +75,7 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
      *  @param slotCode Slot to remove
      */
     private fun removeSlot(slotCode: SlotCode) : Boolean {
+        println("CLIENT: Removing slot " + slotCode+ " from receiver list")
         val slotInformationReceiver = receivers[slotCode] ?: return false
         clientManager.removeReceiver(slotInformationReceiver)
         receivers.remove(slotCode)
@@ -81,12 +87,15 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
      * @param slotCode Ended Slot
      */
     fun endSlot(slotCode: SlotCode) {
+        println("CLIENT: End slot...")
         if (removeSlot(slotCode)) {
             val toSend = JSONSlotCodeWrapper()
             toSend.setSlotCode(slotCode)
             socketFacade.send(Event.SLOT_ENDED, toSend)
+            println("CLIENT: Slot ended")
         }
         else {
+        println("CLIENT: Could not end slot (code not registered)")
             socketFacade.send(Event.INVALID_CODE, JSONEmptyWrapper())
         }
     }
@@ -96,12 +105,15 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
      * @param slotCode Deleted Slot
      */
     fun deleteSlot(slotCode: SlotCode) {
+        println("CLIENT: Delete slot...")
         if (removeSlot(slotCode)) {
             val toSend = JSONSlotCodeWrapper()
             toSend.setSlotCode(slotCode)
             socketFacade.send(Event.SLOT_DELETED, toSend)
+        println("CLIENT: Slot deleted")
         }
         else {
+        println("CLIENT: Could not delete slot (code not registered)")
             socketFacade.send(Event.INVALID_CODE, JSONEmptyWrapper())
         }
     }
@@ -113,7 +125,8 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
      * @param slotCode SlotCode of Slot
      * @param slotManagementInformation Management Information of Slot
      */
-    fun sendSlotData(slotCode: SlotCode, slotApprox: Date,slotManagementInformation: SlotManagementInformation) {
+    fun sendSlotData(slotCode: SlotCode, slotApprox: Date, slotManagementInformation: SlotManagementInformation) {
+        println("CLIENT: Sending updated slot data  "+slotApprox + " and settings " + slotManagementInformation + " for slot "+slotCode)
         val toSend = JSONSlotDataWrapper()
         toSend.setSlotApprox(slotApprox)
         toSend.setSlotCode(slotCode)

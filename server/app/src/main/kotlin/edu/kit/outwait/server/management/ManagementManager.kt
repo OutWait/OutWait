@@ -39,18 +39,22 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                 Event.RESET_PASSWORD
             )
         socketAdapter.configureEvents(events)
+        println("MGMT-MGR: Management manager initialized")
     }
 
     override fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade) {
         // Handle the login
         socketFacade.onReceive(Event.MANAGEMENT_LOGIN) { json ->
             val wrapper = (json as JSONCredentialsWrapper)
+            println("MGMT-MGR: New login of: " + wrapper)
             val credentials = databaseWrapper.getManagementByUsername(wrapper.getUsername())
 
             if (credentials == null || wrapper.getPassword() != credentials.password) {
+                println("MGMT-MGR: Access denied")
                 socketFacade.send(Event.MANAGEMENT_LOGIN_DENIED, JSONEmptyWrapper())
                 socketFacade.disconnect()
             } else {
+                println("MGMT-MGR: Access granted. Starting management " + credentials.id)
                 socketFacade.send(Event.MANAGEMENT_LOGIN_SUCCESS, JSONEmptyWrapper())
 
                 // Create new management instance
@@ -61,23 +65,29 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
         // Handle the reset password function
         socketFacade.onReceive(Event.RESET_PASSWORD) { json ->
+            println("MGMT-MGR: Password resetting routine started")
             resetManagementPassword((json as JSONResetPasswordWrapper).getUsername())
         }
 
         // Login request
+        println("MGMT-MGR: Starting login routine")
         socketFacade.send(Event.LOGIN_REQUEST, JSONEmptyWrapper())
     }
     fun removeManagement(management: Management) {
+        println("MGMT-MGR: Removing management connection")
         // Close open transactions
-        if(management.isTransactionRunning())
-            management.abortCurrentTransaction()
+        if (management.isTransactionRunning()) management.abortCurrentTransaction()
 
         managements.remove(management)
     }
     fun beginTransaction(managementId: ManagementId): Queue? {
         if (activeTransactions.contains(managementId)) {
+            println(
+                "MGMT-MGR: New transaction denied. Already running in management " + managementId
+            )
             return null;
         } else {
+            println("MGMT-MGR: New transaction granted")
             activeTransactions.add(managementId)
 
             // Load the queue
@@ -87,14 +97,18 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                 // Don't crash the server by a exception. This is just a log.
                 return null
             } else {
+                println("MGMT-MGR: New transaction queue loaded")
                 return Queue(queueId, databaseWrapper)
             }
         }
     }
     fun abortTransaction(managementId: ManagementId): Queue? {
+        println("MGMT-MGR: Aborting transaction of management " + managementId + "...")
         assert(activeTransactions.contains(managementId))
 
         activeTransactions.remove(managementId)
+        println("MGMT-MGR: Transaction aborted.")
+        println("MGMT-MGR: Active transaction removed")
 
         // Re-load the queue with the state before the transaction
         val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
@@ -104,7 +118,9 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             return null
         } else {
             // delete all temporary slots
+            println("MGMT-MGR: Deleting temporary slots...")
             if (!databaseWrapper.deleteAllTemporarySlots(queueId)) return null
+            println("MGMT-MGR: Temporary slots deleted.")
             return Queue(queueId, databaseWrapper)
         }
     }
@@ -114,6 +130,10 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      * the database, inform all Managements and update the next-delay-alarm.
      */
     private fun handleQueueUpdate(managementId: ManagementId, queue: Queue) {
+        println(
+            "MGMT-MGR: Saving updated queue for management " + managementId + ", new queue: " +
+                queue
+        )
         queue.storeToDB(databaseWrapper)
 
         // Distribute the queue
@@ -124,6 +144,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         }
 
         // Create delay timer
+        println("MGMT-MGR: Saving queue delay change for later")
         val nextDelayChange = queue.calculateNextDelayChange();
         if (nextDelayChange != null) {
             keepQueueDelayTime(nextDelayChange, managementId)
@@ -131,16 +152,23 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
     }
 
     fun saveTransaction(managementId: ManagementId, queue: Queue) {
+        println("MGMT-MGR: Saving transaction. Checking...")
         assert(activeTransactions.contains(managementId))
+        println("MGMT-MGR: Check done.")
 
         handleQueueUpdate(managementId, queue)
 
         activeTransactions.remove(managementId)
+        println("MGMT-MGR: Active transaction removed")
     }
     fun updateManagementSettings(
         managementId: ManagementId,
         managementSettings: ManagementSettings
     ) {
+        println(
+            "MGMT-MGR: Updating management settings of " + managementId + " with settings: " +
+                managementSettings
+        )
         databaseWrapper.saveManagementSettings(managementId, managementSettings)
 
         for (management in managements) {
@@ -149,11 +177,15 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         }
     }
     private fun resetManagementPassword(username: String) {
+        println("MGMT-MGR: Reset password routine started")
         // TODO implement the reset password procedure
     }
     fun keepQueueDelayTime(time: Date, managementId: ManagementId) {
         queueDelayTimes.add(Pair(time, managementId))
         queueDelayTimes.sortedBy { it.first }
+        println(
+            "MGMT-MGR: Queue delay change is set to " + time + " for management " + managementId
+        )
 
         nextDelayAlarm.cancel()
         nextDelayAlarm.schedule(
@@ -162,11 +194,18 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             },
             queueDelayTimes.get(0).first.getTime()
         )
+        println(
+            "MGMT-MGR: New delay timer scheduled for " + queueDelayTimes.get(0).second + " to " +
+                queueDelayTimes.get(0).first
+        )
     }
     private fun queueDelayAlarmHandler() {
+        println("MGMT-MGR: Starting delayed queue update routine...")
         if (queueDelayTimes.isEmpty()) return
+        println("MGMT-MGR: Delayed update routine is ready")
 
         val (urgentQueueTime, urgentQueueManagementId) = queueDelayTimes.get(0)
+        println("MGMT-MGR: Delayed update for management " + urgentQueueManagementId)
 
         // Check if the trigger is valid
         if (urgentQueueTime.getTime() >= Date().getTime()) {
@@ -190,11 +229,13 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                         .prioritizationTime
 
                 queue.updateQueue(prioritizationTime)
+                println("MGMT-MGR: Delayed queue refreshed")
 
                 // thi s will also set the next timer
                 handleQueueUpdate(urgentQueueManagementId, queue)
             }
         } else if (queueDelayTimes.isNotEmpty()) {
+            println("MGMT-MGR: Delayed queue is not ready yet")
             // Reset the next timer, if the trigger was invalid
             nextDelayAlarm.schedule(
                 object : java.util.TimerTask() {
@@ -202,6 +243,11 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                 },
                 queueDelayTimes.get(0).first.getTime()
             )
+            println(
+                "MGMT-MGR: Scheduled next queue for " + queueDelayTimes.get(0).second + " to " +
+                    queueDelayTimes.get(0).first
+            )
         }
+        println("MGMT-MGR: Finished delayed queue update routine")
     }
 }

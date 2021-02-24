@@ -29,6 +29,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
     init {
         val eventList = listOf<Event>(Event.LISTEN_SLOT, Event.REFRESH_SLOT_APPROX)
         super.configureEventListeners(eventList)
+        println("CLIENT-MGR: Client manager initialized")
     }
 
     /**
@@ -40,6 +41,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
      * @param socketFacade passed to new client-Object
      */
     override fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade) {
+        println("CLIENT-MGR: Binding new socket")
         val client = Client(socketFacade, this)
         clients.add(client)
     }
@@ -51,6 +53,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
      */
     fun removeClient(client: Client) {
         clients.remove(client)
+        println("CLIENT-MGR: Client removed")
     }
 
     /**
@@ -58,6 +61,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
      * @return false if slotCode is invalid else true.
      */
     fun registerReceiver(slotCode: SlotCode, receiver: SlotInformationReceiver): Boolean {
+        println("CLIENT-MGR: Register new receiver")
         return this.databaseWrapper.registerReceiver(receiver, slotCode)
     }
 
@@ -65,6 +69,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
      * Removes a receiver of Client
      */
     fun removeReceiver(receiver: SlotInformationReceiver) {
+        println("CLIENT-MGR: Remove receiver")
         this.databaseWrapper.unregisterReceiver(receiver)
     }
 }
