@@ -115,7 +115,7 @@ class DatabaseWrapper() {
                 connection.prepareStatement(
                     "INSERT INTO Slot " +
                         "(queue_id, priority, approx_time, expected_duration, constructor_time, " +
-                        "is_temporary) " + "OUTPUT INSERTED.code " + "VALUES (?, ?, ?, ?, ?, ?)"
+                        "is_temporary) " + "VALUES (?, ?, ?, ?, ?, ?)"
                 )
             addTemporarySlotQuery.setLong(1, queueId.id)
             addTemporarySlotQuery.setString(2, slot.priority.toString())
@@ -123,8 +123,21 @@ class DatabaseWrapper() {
             addTemporarySlotQuery.setLong(4, slot.expectedDuration.toMillis())
             addTemporarySlotQuery.setTimestamp(5, Timestamp(slot.constructorTime.time))
             addTemporarySlotQuery.setInt(6, 1)
-            val rs = addTemporarySlotQuery.executeQuery()
+            addTemporarySlotQuery.executeUpdate()
+
+            val getSlotcodeQuery =
+                connection.prepareStatement(
+                    "SELECT code, expected_duration, priority, constructor_time, approx_time, is_temporary " + "FROM Slot " +
+                        "WHERE Slot.queue_id = ? AND Slot.priority = ? AND Slot.approx_time = ? AND Slot.expected_duration = ? AND Slot.constructor_time = ? AND Slot.is_temporary = 1 "
+                )
+            getSlotcodeQuery.setLong(1, queueId.id)
+            getSlotcodeQuery.setString(2, slot.priority.toString())
+            getSlotcodeQuery.setTimestamp(3, Timestamp(slot.approxTime.time))
+            getSlotcodeQuery.setLong(4, slot.expectedDuration.toMillis())
+            getSlotcodeQuery.setTimestamp(5, Timestamp(slot.constructorTime.time))
+            val rs = getSlotcodeQuery.executeQuery()
             rs.next()
+
             return slot.copy(slotCode = SlotCode(rs.getString("code")))
         } catch (e: SQLException) {
             e.printStackTrace()
