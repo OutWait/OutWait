@@ -240,4 +240,6 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
             println("QUEUE: Failed to change slot length (slot does not exist)")
         }
     }
+
+    override fun toString() = slots.toString()
 }

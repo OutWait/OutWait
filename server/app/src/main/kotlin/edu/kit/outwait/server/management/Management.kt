@@ -127,6 +127,12 @@ class Management(
                 updateAndSendQueue()
             }
         }
+
+        socketFacade.onDisconnect {
+            logout()
+            println("MGMT: Implicit logout")
+        }
+
         println("MGMT: Receivers configured")
     }
 
