@@ -7,9 +7,10 @@ import org.joda.time.Interval
  * This class represents a client time slot with its currently predicted time interval
  * for a client who has a fixed appointment.
  *
- * @property appointmentTime originally arranged time of the appointment
+ * @property appointmentTime originally arranged point in time of the appointment
  * @constructor
- * Creates FixedTimeSlot with given [slotCode], [auxiliaryIdentifier], [interval] and [appointmentTime]
+ * Creates FixedTimeSlot with given [slotCode], [auxiliaryIdentifier], [interval]
+ * and [appointmentTime]
  *
  * @param interval see [TimeSlot.interval]
  * @param slotCode see [ClientTimeSlot.slotCode]
