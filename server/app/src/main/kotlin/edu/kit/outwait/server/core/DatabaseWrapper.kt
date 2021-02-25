@@ -128,7 +128,9 @@ class DatabaseWrapper() {
             addTemporarySlotQuery.executeUpdate()
             val keys = addTemporarySlotQuery.getGeneratedKeys()
             keys.next()
-            return slot.copy(slotCode = SlotCode(keys.getString("code")))
+            val slotCopy = slot.copy(slotCode = SlotCode(keys.getString(1)))
+            println ("Inserted new slot and returning Slot with slotCode: "+slotCopy.slotCode)
+            return slotCopy
         } catch (e: SQLException) {
             e.printStackTrace()
             return null
