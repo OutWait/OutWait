@@ -113,9 +113,9 @@ class DatabaseWrapper() {
         try {
             val addTemporarySlotQuery =
                 connection.prepareStatement(
-                    "INSERT INTO Slot " +
+                    "INSERT INTO Slot" +
                         "(queue_id, priority, approx_time, expected_duration, constructor_time, " +
-                        "is_temporary) " + "OUTPUT INSERTED.code " + "VALUES (?, ?, ?, ?, ?, ?)"
+                        "is_temporary) " + "VALUES(?, ?, ?, ?, ?, ?)"
                 )
             addTemporarySlotQuery.setLong(1, queueId.id)
             addTemporarySlotQuery.setString(2, slot.priority.toString())
@@ -123,9 +123,10 @@ class DatabaseWrapper() {
             addTemporarySlotQuery.setLong(4, slot.expectedDuration.toMillis())
             addTemporarySlotQuery.setTimestamp(5, Timestamp(slot.constructorTime.time))
             addTemporarySlotQuery.setInt(6, 1)
-            val rs = addTemporarySlotQuery.executeQuery()
-            rs.next()
-            return slot.copy(slotCode = SlotCode(rs.getString("code")))
+            addTemporarySlotQuery.executeUpdate()
+            val keys = addTemporarySlotQuery.getGeneratedKeys()
+            keys.next()
+            return slot.copy(slotCode = SlotCode(keys.getString("code")))
         } catch (e: SQLException) {
             e.printStackTrace()
             return null
