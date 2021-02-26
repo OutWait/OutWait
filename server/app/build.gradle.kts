@@ -27,17 +27,12 @@ dependencies {
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    implementation("ch.qos.logback:logback-classic:1.2.1")
-
     implementation("org.json:json:20201115")
 
     implementation("com.corundumstudio.socketio:netty-socketio:1.7.18")
 
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation("mysql:mysql-connector-java:8.0.23")
-
-    // This dependency is used by the application.
-    implementation("com.google.guava:guava:29.0-jre")
 
     // Use the Kotlin test library.
     testImplementation("org.jetbrains.kotlin:kotlin-test")
