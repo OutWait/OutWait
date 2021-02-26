@@ -83,7 +83,7 @@ class TimerService @Inject constructor(): Service() {
         //here: do "heavy work" on a background thread
         //doWork()
         //TODO loop mit Abfrage wann selbst gestoppt werden soll (Alternativ in workMethode?)
-        //stopSelf()
+        stopSelf()
 
         //TODO mit was returnen sticky oder redeliver_intent?
         return START_REDELIVER_INTENT
