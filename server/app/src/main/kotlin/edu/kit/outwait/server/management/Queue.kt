@@ -28,8 +28,8 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         val newQueue = mutableListOf<Slot>() // The new queue
 
         val spontaneousSlots =
-            slots.filter { it.priority != Priority.FIX_APPOINTMENT }.toMutableList()
-        val fixSlots = slots.filter { it.priority == Priority.FIX_APPOINTMENT }.toMutableList()
+            slots.filter { !it.isFixedSlot()}.toMutableList()
+        val fixSlots = slots.filter { it.isFixedSlot() }.toMutableList()
 
         // If the first slot has already started, it can not be moved
         slots.sortWith(compareBy { it.approxTime })// Sort the queue, to find the current slot
@@ -142,7 +142,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         json.put("slotOrder", slots.map { it.slotCode.code })
         json.put(
             "spontaneousSlots",
-            slots.filter { it.priority != Priority.FIX_APPOINTMENT }
+            slots.filter { !it.isFixedSlot() }
                 .map {
                     val tmp = JSONObject()
                     tmp.put("slotCode", it.slotCode.code)
@@ -152,7 +152,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         )
         json.put(
             "fixedSlots",
-            slots.filter { it.priority == Priority.FIX_APPOINTMENT }
+            slots.filter { it.isFixedSlot() }
                 .map {
                     val tmp = JSONObject()
                     tmp.put("slotCode", it.slotCode.code)
