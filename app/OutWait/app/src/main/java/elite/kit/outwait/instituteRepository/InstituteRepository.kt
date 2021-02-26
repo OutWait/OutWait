@@ -99,7 +99,13 @@ class InstituteRepository @Inject constructor(
         CoroutineScope(IO).launch {
             remote.logout()
         }
+        //TODO Reset Repo completely
+
         loggedIn.value=false
+        //preferences.value = null
+        //timeSlotList.value = null
+        inTransaction.value = false
+        //communicationEstablished = false
     }
 
     fun changePreferences(

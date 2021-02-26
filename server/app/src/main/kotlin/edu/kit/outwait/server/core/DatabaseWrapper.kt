@@ -111,11 +111,13 @@ class DatabaseWrapper() {
      */
     fun addTemporarySlot(slot : Slot, queueId: QueueId) : Slot? {
         try {
+            val generatedSlotCode = arrayOf("code")
             val addTemporarySlotQuery =
                 connection.prepareStatement(
-                    "INSERT INTO Slot " +
+                    "INSERT INTO Slot" +
                         "(queue_id, priority, approx_time, expected_duration, constructor_time, " +
-                        "is_temporary) " + "OUTPUT INSERTED.code " + "VALUES (?, ?, ?, ?, ?, ?)"
+                        "is_temporary) " + "VALUES(?, ?, ?, ?, ?, ?)",
+                    generatedSlotCode
                 )
             addTemporarySlotQuery.setLong(1, queueId.id)
             addTemporarySlotQuery.setString(2, slot.priority.toString())
@@ -123,9 +125,24 @@ class DatabaseWrapper() {
             addTemporarySlotQuery.setLong(4, slot.expectedDuration.toMillis())
             addTemporarySlotQuery.setTimestamp(5, Timestamp(slot.constructorTime.time))
             addTemporarySlotQuery.setInt(6, 1)
-            val rs = addTemporarySlotQuery.executeQuery()
+            addTemporarySlotQuery.executeUpdate()
+            val keys = addTemporarySlotQuery.getGeneratedKeys()
+            keys.next()
+            val slotId = keys.getLong(1)
+            println ("Inserted new slot with slotId:" +slotId)
+            //Temporary fix
+            val getSlotCodeQuery =
+                connection.prepareStatement(
+                    "SELECT code " +
+                        "FROM Slot " +
+                        "WHERE Slot.id = ?"
+                )
+            getSlotCodeQuery.setLong(1, slotId)
+            val rs = getSlotCodeQuery.executeQuery()
             rs.next()
-            return slot.copy(slotCode = SlotCode(rs.getString("code")))
+            val slotCopy = slot.copy(slotCode = SlotCode(rs.getString("code")))
+            println ("Returning inserted Slot with Slotcode" +slotCopy.slotCode.code)
+            return slotCopy
         } catch (e: SQLException) {
             e.printStackTrace()
             return null
