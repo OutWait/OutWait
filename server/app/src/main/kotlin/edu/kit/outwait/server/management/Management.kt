@@ -113,7 +113,7 @@ class Management(
                 val slot =
                     Slot(
                         SlotCode(""), // will be set by the database
-                        Priority.NORMAL,
+                        Priority.FIX_APPOINTMENT,
                         wrapper.getAppointmentTime(),
                         // The creation time is the expected time for new slots
                         wrapper.getDuration(),

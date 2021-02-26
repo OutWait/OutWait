@@ -15,7 +15,7 @@ class SocketFacade(val socket: SocketIOClient, adapter: SocketAdapter) {
 
     fun send(event: Event, toSend: JSONObjectWrapper) {
         println(
-            "SO-FaCADE: Sending event " + event.getEventTag() + " with data " +
+            "SO-FACADE: Sending event " + event.getEventTag() + " with data " +
                 toSend.getJSONString()
         );
         socket.sendEvent(event.getEventTag(), toSend.getJSONString())
