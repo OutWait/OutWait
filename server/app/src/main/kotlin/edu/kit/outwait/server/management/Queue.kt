@@ -130,9 +130,15 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     }
     fun storeToJSON(json: JSONObject) {
         println("QUEUE: Constructing queue " + queueId + " json...")
-        if (slots.isEmpty()) return // noting to save
 
-        json.put("currentSlotStartedTime", slots[0].expectedDuration.toMillis())
+        var currentSlotStartedTime = Date()
+        if (slots.isNotEmpty() && slots[0].approxTime.before(currentSlotStartedTime) ) {
+            // First slot is currently running
+            currentSlotStartedTime = slots[0].approxTime
+            println("QUEUE: First slot is currently running")
+        }
+
+        json.put("currentSlotStartedTime", currentSlotStartedTime.getTime())
         json.put("slotOrder", slots.map { it.slotCode.code })
         json.put(
             "spontaneousSlots",
