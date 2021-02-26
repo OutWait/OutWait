@@ -23,7 +23,7 @@ abstract class AbstractManager(
         namespace.addConnectListener(
             object : ConnectListener {
                 override fun onConnect(client: SocketIOClient) {
-                    println("New socket connection established")
+                    println("New socket connection established with id " + client.getSessionId())
                     val socketFacade = SocketFacade(client, socketAdapter)
                     bindSocket(client, socketFacade)
                 }

@@ -1,7 +1,6 @@
 package edu.kit.outwait.server.management
 
 import edu.kit.outwait.server.core.DatabaseWrapper
-import edu.kit.outwait.server.slot.Priority
 import edu.kit.outwait.server.slot.Slot
 import edu.kit.outwait.server.slot.SlotCode
 import java.time.Duration
@@ -27,8 +26,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
 
         val newQueue = mutableListOf<Slot>() // The new queue
 
-        val spontaneousSlots =
-            slots.filter { !it.isFixedSlot()}.toMutableList()
+        val spontaneousSlots = slots.filter { !it.isFixedSlot() }.toMutableList()
         val fixSlots = slots.filter { it.isFixedSlot() }.toMutableList()
 
         // If the first slot has already started, it can not be moved
@@ -132,7 +130,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         println("QUEUE: Constructing queue " + queueId + " json...")
 
         var currentSlotStartedTime = Date()
-        if (slots.isNotEmpty() && slots[0].approxTime.before(currentSlotStartedTime) ) {
+        if (slots.isNotEmpty() && slots[0].approxTime.before(currentSlotStartedTime)) {
             // First slot is currently running
             currentSlotStartedTime = slots[0].approxTime
             println("QUEUE: First slot is currently running")

@@ -23,8 +23,9 @@ class SocketAdapter(val namespace: SocketIONamespace) {
                         ackRequest: AckRequest
                     ) {
                         println(
-                            "SO-ADAPTER: New message received. Type " + e.getEventTag() +
-                                ", data: " + dat
+                            "SO-ADAPTER: New message received from socket id " +
+                                client.getSessionId() + ". Type " + e.getEventTag() + ", data: " +
+                                dat
                         )
                         val jsonWrapper = e.createWrapper(dat)
                         val facade = facades[client]
@@ -47,7 +48,7 @@ class SocketAdapter(val namespace: SocketIONamespace) {
         namespace.addDisconnectListener(
             object : DisconnectListener {
                 override fun onDisconnect(client: SocketIOClient) {
-                    println("SO-ADAPTER: Client disconnected")
+                    println("SO-ADAPTER: Client disconnected with id " + client.getSessionId())
                     val facade = facades[client]
                     if (facade != null) {
                         removeFacade(facade)
