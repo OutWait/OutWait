@@ -5,10 +5,12 @@ import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.SocketIONamespace
 import com.corundumstudio.socketio.listener.DataListener
 import com.corundumstudio.socketio.listener.DisconnectListener
+import edu.kit.outwait.server.core.Logger
 import edu.kit.outwait.server.protocol.Event
 
 class SocketAdapter(val namespace: SocketIONamespace) {
     private val facades = hashMapOf<SocketIOClient, SocketFacade>()
+    private val LOG_ID = "SO-ADAPTER"
 
     fun configureEvents(events: List<Event>) {
         // Configure all event listeners
@@ -22,10 +24,10 @@ class SocketAdapter(val namespace: SocketIONamespace) {
                         dat:String,
                         ackRequest: AckRequest
                     ) {
-                        println(
-                            "SO-ADAPTER: New message received from socket id " +
-                                client.getSessionId() + ". Type " + e.getEventTag() + ", data: " +
-                                dat
+                        Logger.debug(
+                            LOG_ID,
+                            "New message received from socket id " + client.getSessionId() +
+                                ". Type " + e.getEventTag() + ", data: " + dat
                         )
                         val jsonWrapper = e.createWrapper(dat)
                         val facade = facades[client]
@@ -38,9 +40,9 @@ class SocketAdapter(val namespace: SocketIONamespace) {
                     }
                 }
             )
-            println(
-                "SO-ADAPTER: Registered listener for event " + e.getEventTag() + " in " +
-                    javaClass.name
+            Logger.debug(
+                LOG_ID,
+                "Registered listener for event " + e.getEventTag() + " in " + javaClass.name
             )
         }
 
@@ -48,7 +50,7 @@ class SocketAdapter(val namespace: SocketIONamespace) {
         namespace.addDisconnectListener(
             object : DisconnectListener {
                 override fun onDisconnect(client: SocketIOClient) {
-                    println("SO-ADAPTER: Client disconnected with id " + client.getSessionId())
+                    Logger.debug(LOG_ID, "Client disconnected with id " + client.getSessionId())
                     val facade = facades[client]
                     if (facade != null) {
                         removeFacade(facade)
@@ -60,11 +62,11 @@ class SocketAdapter(val namespace: SocketIONamespace) {
     }
 
     fun addFacadeForSocket(facade: SocketFacade, socket: SocketIOClient) {
-        println("SO-ADAPTER: Adding new facade")
+        Logger.debug(LOG_ID, "Adding new facade")
         facades.put(socket, facade)
     }
     private fun removeFacade(facade: SocketFacade) {
-        println("SO-ADAPTER: Removing facade")
+        Logger.debug(LOG_ID, "Removing facade")
         facades.values.remove(facade)
     }
 }

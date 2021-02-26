@@ -6,17 +6,18 @@ import edu.kit.outwait.server.client.ClientManager
 import edu.kit.outwait.server.management.ManagementManager
 
 class Server {
-    val server: SocketIOServer
-    val clientManager: ClientManager
-    val managementManager: ManagementManager
+    private val server: SocketIOServer
+    private val clientManager: ClientManager
+    private val managementManager: ManagementManager
+    private val LOG_ID = "SERVER"
 
     init {
         // First The database
-        println("Creating database")
+        Logger.debug(LOG_ID, "Creating database")
         val databaseWrapper = DatabaseWrapper()
 
         // Now the io server
-        println("Creating server (socketIO)")
+        Logger.debug(LOG_ID, "Creating server (socketIO)")
         val config = Configuration()
         config.setHostname("0.0.0.0")
         config.setPort(567)
@@ -27,34 +28,34 @@ class Server {
 
         server = SocketIOServer(config)
 
-        println("Creating namespaces")
+        Logger.debug(LOG_ID, "Creating namespaces")
         val clientNamespace = server.addNamespace("/client")
         val managementNamespace = server.addNamespace("/management")
 
         // Finally our own classes
-        println("Creating managers")
+        Logger.debug(LOG_ID, "Creating managers")
         clientManager = ClientManager(clientNamespace, databaseWrapper)
         managementManager = ManagementManager(managementNamespace, databaseWrapper)
 
-        println("Server initialized")
+        Logger.info(LOG_ID, "Server initialized")
     }
 
     fun run() {
-        println("Starting server...")
+        Logger.info(LOG_ID, "Starting server...")
         server.start()
-        println("Server started.")
+        Logger.info(LOG_ID, "Server started.")
     }
 
     fun stop() {
-        println("Stopping server...")
+        Logger.info(LOG_ID, "Stopping server...")
         server.stop()
-        println("Starting stopped.")
+        Logger.info(LOG_ID, "Starting stopped.")
     }
 }
 
 fun main() {
-    println("Entry point reached")
+    Logger.debug("MAIN", "Entry point reached")
     val server = Server()
     server.run()
-    println("Main terminated")
+    Logger.debug("MAIN", "Main terminated")
 }

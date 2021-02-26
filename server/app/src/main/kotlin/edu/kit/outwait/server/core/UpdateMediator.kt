@@ -14,6 +14,7 @@ import java.util.Date
  */
 class UpdateMediator {
     private val receivers = hashMapOf<SlotCode, MutableSet<SlotInformationReceiver>>()
+    private val LOG_ID = "UP-MEDI"
 
     /**
      * Adds a SlotInformationReceiver to slots and sends data of Slot to SlotInformationReceiver.
@@ -31,7 +32,7 @@ class UpdateMediator {
         slotApprox: Date,
         slotManagementInformation: SlotManagementInformation
     ) {
-        println("UP-MEDI: Subscribing new receiver for code " + slotCode)
+        Logger.debug(LOG_ID, "Subscribing new receiver for code " + slotCode)
         receivers.getOrPut(slotCode) { mutableSetOf<SlotInformationReceiver>() }.add(receiver)
 
         // Update information
@@ -44,7 +45,7 @@ class UpdateMediator {
      * @param receiver SlotInformationReceiver to be removed.
      */
     fun unsubscribeSlotInformationReceiver(receiver: SlotInformationReceiver) {
-        println("UP-MEDI: Unsubscribing receiver for code " + receiver.slotCode)
+        Logger.debug(LOG_ID, "Unsubscribing receiver for code " + receiver.slotCode)
         val slotCode = receiver.slotCode
         if (receivers[slotCode] != null) {
             receivers[slotCode]?.remove(receiver)
@@ -53,7 +54,7 @@ class UpdateMediator {
                 receivers.remove(slotCode)
             }
         } else {
-            println("UP-MEDI: Failed to unsubscribe (not subscribed jet)")
+            Logger.debug(LOG_ID, "Failed to unsubscribe (not subscribed jet)")
         }
     }
 
@@ -71,12 +72,13 @@ class UpdateMediator {
         slotApprox: Date,
         slotManagementInformation: SlotManagementInformation
     ) {
-        println(
-            "UP-MEDI: Update slot data of slot " + slotCode + " to " + slotApprox + " and info " +
+        Logger.debug(
+            LOG_ID,
+            "Update slot data of slot " + slotCode + " to " + slotApprox + " and info " +
                 slotManagementInformation
         )
         receivers[slotCode]?.forEach() { it.setSlotData(slotApprox, slotManagementInformation) }
-            ?: println("Unknown slot requested (" + slotCode + ") in UpdateMediator")
+            ?: Logger.error(LOG_ID, "Unknown slot requested (" + slotCode + ")")
     }
 
     /**
@@ -87,10 +89,10 @@ class UpdateMediator {
      * @param slotApprox Approximated Time of SlotInformationReceivers Slot.
      */
     fun setSlotApprox(slotCode: SlotCode, slotApprox: Date) {
-        println("UP-MEDI: Update slot approx of slot " + slotCode + " to " + slotApprox)
+        Logger.debug(LOG_ID, "Update slot approx of slot " + slotCode + " to " + slotApprox)
         receivers[slotCode]
             ?.forEach() { it.setSlotData(slotApprox, it.getSlotManagementInformation()) }
-            ?: println("Unknown slot requested (" + slotCode + ") in UpdateMediator")
+            ?: Logger.error(LOG_ID, "Unknown slot requested (" + slotCode + ")")
     }
 
     /**
@@ -105,12 +107,13 @@ class UpdateMediator {
         slotManagementInformation: SlotManagementInformation
     ) {
         for (code in slotCodes) {
-            println(
-                "UP-MEDI: Update slot info of slot " + code + " to " + slotManagementInformation
+            Logger.debug(
+                LOG_ID,
+                "Update slot info of slot " + code + " to " + slotManagementInformation
             )
             receivers[code]
                 ?.forEach() { it.setSlotData(it.getSlotApprox(), slotManagementInformation) }
-                ?: println("Unknown slot requested (" + code + ") in UpdateMediator")
+                ?: Logger.debug(LOG_ID, "Unknown slot requested (" + code + ")")
         }
     }
 
@@ -121,9 +124,9 @@ class UpdateMediator {
      *     SlotInformationReceiver in receivers
      */
     fun endSlot(slotCode: SlotCode) {
-        println("UP-MEDI: Ending slot " + slotCode)
+        Logger.debug(LOG_ID, "Ending slot " + slotCode)
         receivers[slotCode]?.forEach() { it.end() }
-            ?: println("Unknown slot requested (" + slotCode + ") in UpdateMediator")
+            ?: Logger.debug(LOG_ID, "Unknown slot requested (" + slotCode + ")")
     }
 
     /**
@@ -133,8 +136,8 @@ class UpdateMediator {
      *     SlotInformationReceiver in receivers
      */
     fun deleteSlot(slotCode: SlotCode) {
-        println("UP-MEDI: Deleting slot " + slotCode)
+        Logger.debug(LOG_ID, "Deleting slot " + slotCode)
         receivers[slotCode]?.forEach() { it.delete() }
-            ?: println("Unknown slot requested (" + slotCode + ") in UpdateMediator")
+            ?: Logger.debug(LOG_ID, "Unknown slot requested (" + slotCode + ")")
     }
 }

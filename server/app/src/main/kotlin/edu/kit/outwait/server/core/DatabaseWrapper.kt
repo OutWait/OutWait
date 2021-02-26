@@ -21,7 +21,7 @@ class DatabaseWrapper() {
     private val updateMediator = UpdateMediator()
     private lateinit var connection: Connection
     private val connectionProps: Properties = Properties()
-
+    private val LOG_ID = "DB"
 
     /**
      * Setting connection properties and trying to connect to the database.
@@ -35,7 +35,7 @@ class DatabaseWrapper() {
                     "jdbc:mysql://localhost:3306/OutwaitDB",
                     connectionProps
                 )!!
-            println("Connected to Database!")
+            Logger.info(LOG_ID, "Connected to Database")
         } catch (e : SQLException) {
             e.printStackTrace()
         }
@@ -129,7 +129,7 @@ class DatabaseWrapper() {
             val keys = addTemporarySlotQuery.getGeneratedKeys()
             keys.next()
             val slotId = keys.getLong(1)
-            println ("Inserted new slot with slotId:" +slotId)
+            Logger.debug(LOG_ID, "Inserted new slot with slotId:" +slotId)
             //Temporary fix
             val getSlotCodeQuery =
                 connection.prepareStatement(
@@ -141,7 +141,7 @@ class DatabaseWrapper() {
             val rs = getSlotCodeQuery.executeQuery()
             rs.next()
             val slotCopy = slot.copy(slotCode = SlotCode(rs.getString("code")))
-            println ("Returning inserted Slot with Slotcode" +slotCopy.slotCode.code)
+            Logger.debug(LOG_ID, "Returning inserted Slot with Slotcode" +slotCopy.slotCode.code)
             return slotCopy
         } catch (e: SQLException) {
             e.printStackTrace()
