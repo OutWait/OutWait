@@ -1,17 +1,17 @@
 package edu.kit.outwait.server
 
-import edu.kit.outwait.server.core.Server;
-import edu.kit.outwait.server.protocol.*;
-import edu.kit.outwait.server.protocol.Event;
-import edu.kit.outwait.server.slot.SlotCode;
+import edu.kit.outwait.server.core.Server
+import edu.kit.outwait.server.protocol.*
+import edu.kit.outwait.server.protocol.Event
+import edu.kit.outwait.server.slot.SlotCode
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import java.net.URI
 
 class SocketMock {
-    val options = IO.Options ();
-    val mSocket = IO.socket(URI.create("http://127.0.0.1:8080/client"), options);
+    val options = IO.Options ()
+    val mSocket = IO.socket(URI.create("http://127.0.0.1:8080/client"), options)
 
     init {
         mSocket.on(Socket.EVENT_CONNECT, Emitter.Listener { println("Callback EVENT_CONNECT") })
@@ -53,7 +53,7 @@ class SocketMock {
             )
         }
 
-        mSocket.connect();
+        mSocket.connect()
     }
 }
 

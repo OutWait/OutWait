@@ -166,11 +166,11 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
 
     fun addSpontaneousSlot(slot: Slot) {
         println("QUEUE: Adding spontaneous slot " + slot + " to " + queueId)
-        slots.add(slot);
+        slots.add(slot)
     }
     fun addFixedSlot(slot: Slot) {
         println("QUEUE: Adding fixed slot " + slot + " to queue " + queueId)
-        slots.add(slot);
+        slots.add(slot)
     }
     fun deleteSlot(slotCode: SlotCode) {
         println("QUEUE: Deleting slot " + slotCode + " from queue " + queueId)

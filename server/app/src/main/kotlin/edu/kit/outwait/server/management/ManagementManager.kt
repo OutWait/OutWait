@@ -85,7 +85,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             println(
                 "MGMT-MGR: New transaction denied. Already running in management " + managementId
             )
-            return null;
+            return null
         } else {
             println("MGMT-MGR: New transaction granted")
             activeTransactions.add(managementId)
@@ -145,7 +145,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
         // Create delay timer
         println("MGMT-MGR: Saving queue delay change for later")
-        val nextDelayChange = queue.calculateNextDelayChange();
+        val nextDelayChange = queue.calculateNextDelayChange()
         if (nextDelayChange != null) {
             keepQueueDelayTime(nextDelayChange, managementId)
         }

@@ -17,19 +17,19 @@ class Server {
 
         // Now the io server
         println("Creating server (socketIO)")
-        val config = Configuration();
-        config.setHostname("0.0.0.0");
-        config.setPort(567);
-        config.setBossThreads(1);
-        config.setWorkerThreads(1);
-        config.pingInterval = 5000;
-        config.pingTimeout = 120000;
+        val config = Configuration()
+        config.setHostname("0.0.0.0")
+        config.setPort(567)
+        config.setBossThreads(1)
+        config.setWorkerThreads(1)
+        config.pingInterval = 5000
+        config.pingTimeout = 120000
 
-        server = SocketIOServer(config);
+        server = SocketIOServer(config)
 
         println("Creating namespaces")
-        val clientNamespace = server.addNamespace("/client");
-        val managementNamespace = server.addNamespace("/management");
+        val clientNamespace = server.addNamespace("/client")
+        val managementNamespace = server.addNamespace("/management")
 
         // Finally our own classes
         println("Creating managers")

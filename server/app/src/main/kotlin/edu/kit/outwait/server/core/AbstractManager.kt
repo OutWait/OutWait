@@ -2,7 +2,7 @@ package edu.kit.outwait.server.core
 
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.SocketIONamespace
-import com.corundumstudio.socketio.listener.ConnectListener;
+import com.corundumstudio.socketio.listener.ConnectListener
 import edu.kit.outwait.server.protocol.Event
 import edu.kit.outwait.server.socketHelper.SocketAdapter
 import edu.kit.outwait.server.socketHelper.SocketFacade
@@ -24,12 +24,12 @@ abstract class AbstractManager(
             object : ConnectListener {
                 override fun onConnect(client: SocketIOClient) {
                     println("New socket connection established")
-                    val socketFacade = SocketFacade(client, socketAdapter);
-                    bindSocket(client, socketFacade);
+                    val socketFacade = SocketFacade(client, socketAdapter)
+                    bindSocket(client, socketFacade)
                 }
             }
-        );
-        println("Configured welcome socket in " + this.javaClass.typeName);
+        )
+        println("Configured welcome socket in " + this.javaClass.typeName)
     }
 
     fun configureEventListeners(events: List<Event>) {

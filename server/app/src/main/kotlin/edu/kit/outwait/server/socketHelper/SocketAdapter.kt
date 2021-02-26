@@ -55,7 +55,7 @@ class SocketAdapter(val namespace: SocketIONamespace) {
                     }
                 }
             }
-        );
+        )
     }
 
     fun addFacadeForSocket(facade: SocketFacade, socket: SocketIOClient) {

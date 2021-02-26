@@ -153,7 +153,7 @@ class Management(
         if (queue == null) {
             println("MGMT: Transaction not started! Can't execute command.")
             // Transaction has not been started
-            val json = JSONInvalidRequestMessageWrapper();
+            val json = JSONInvalidRequestMessageWrapper()
             json.setMessage("Transaction not started")
             socketFacade.send(Event.INVALID_MANAGEMENT_REQUEST, json)
             return false
@@ -174,13 +174,13 @@ class Management(
         }
     }
     internal fun sendUpdatedQueue (queue: Queue):Unit {
-        val json = JSONQueueWrapper();
+        val json = JSONQueueWrapper()
         json.setQueue(queue)
         socketFacade.send(Event.UPDATE_QUEUE, json)
         println("MGMT: Sent queue")
     }
     internal fun sendUpdatedManagementSettings (managementSettings: ManagementSettings) {
-        val json = JSONManagementSettingsWrapper();
+        val json = JSONManagementSettingsWrapper()
         json.setSettings(managementSettings)
         socketFacade.send(Event.UPDATE_MANAGEMENT_SETTINGS, json)
         println("MGMT: Sent management settings")
@@ -194,7 +194,7 @@ class Management(
         if (queue != null) {
             println("MGMT: New transaction could not be started. Loaded queue: " + queue)
             // Cannot start a new transaction, when a transaction is running
-            val json = JSONInvalidRequestMessageWrapper();
+            val json = JSONInvalidRequestMessageWrapper()
             json.setMessage("Transaction already running")
             socketFacade.send(Event.INVALID_MANAGEMENT_REQUEST, json)
         } else {
