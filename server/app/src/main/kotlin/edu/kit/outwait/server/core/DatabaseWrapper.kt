@@ -38,6 +38,8 @@ class DatabaseWrapper() {
             Logger.info(LOG_ID, "Connected to Database")
         } catch (e : SQLException) {
             e.printStackTrace()
+            println("Failed connecting to database. Server stopped.")
+            throw e
         }
     }
 
