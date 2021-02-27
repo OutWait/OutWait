@@ -3,14 +3,19 @@ package elite.kit.outwait.recyclerviewScreens.managementViewScreen
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.Callback
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.ManagementViewFragmentBinding
@@ -19,15 +24,29 @@ import elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogFr
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.android.synthetic.main.full_screen_progress_bar.*
+import kotlinx.android.synthetic.main.management_view_fragment.*
 import org.joda.time.*
 
 @AndroidEntryPoint
 class ManagementViewFragment : Fragment(), ItemActionListener {
 
+
     private val viewModel: ManagmentViewViewModel by viewModels()
     private lateinit var binding: ManagementViewFragmentBinding
+
+    companion object {
+        lateinit var displayingDialog: AlertDialog
+        var movementInfo = MutableLiveData<MutableList<String>>()
+    }
+
     private lateinit var slotAdapter: SlotAdapter
     private lateinit var builder: AlertDialog.Builder
+    private var FIRST_POSITION = 0
 
 
     override fun onCreateView(
@@ -49,13 +68,25 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             setTitle(getString(R.string.process_title))
             setCancelable(true)
         }
-        builder.create()
-        builder.setCancelable(true)
+        displayingDialog = builder.create()
+
 
         viewModel.slotQueue.observe(viewLifecycleOwner) { list ->
             slotAdapter.updateSlots(list.toMutableList())
             //TODO dismiss progress bar dialog
+            displayingDialog.dismiss()
         }
+
+        movementInfo.observe(viewLifecycleOwner) {
+            viewModel.moveSlotAfterAnother(it.first(), it.last())
+        }
+
+        viewModel.isInTransaction.observe(viewLifecycleOwner) {
+            if (it) {
+                //TODO easy way with layout above recyclerview layout
+            }
+        }
+
 
         //Add listener for recyclerview
         slotAdapter = SlotAdapter(mutableListOf<TimeSlot>(), this)
@@ -68,52 +99,17 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         //Add action bar icon
         setHasOptionsMenu(true)
 
+
+
+
         exitApp()
 
         return binding.root
     }
 
-
-   /* private fun fakeSlotList(): MutableList<TimeSlot> {
-        var slotList = mutableListOf<TimeSlot>()
-
-
-        var start = DateTime(DateTime.now()).plusHours(1)
-        var end = start.plusMinutes(33)
-        *//* Log.i("datetime", "${TransformationInput.formatDateTime(20,15)}")
-         Log.i("duration", "${TransformationInput.formatDuration(6000)}")
-         Log.i("interval", "${TransformationInput.formatInterval(6000)}")
-         Log.i("interval", "${Duration(200L).toIntervalFrom(DateTime.now())}")*//*
-
-        for (i in 1..1) {
-
-            slotList!!.add(FixedTimeSlot(Interval(start, end),
-                "4444",
-                "Müller",
-                DateTime(DateTime.now().year,
-                    DateTime.now().monthOfYear, DateTime.now().dayOfWeek, 22, 33)))
-        }
-
-        for (i in 1..3) {
-            slotList!!.add(Pause(Interval(start, end)))
-        }
-
-        for (i in 1..1) {
-            slotList!!.add(FixedTimeSlot(Interval(start, end),
-                "111",
-                "Hans",
-                DateTime(DateTime.now().year,
-                    DateTime.now().monthOfYear,
-                    DateTime.now().dayOfWeek,
-                    22,
-                    33)))
-        }
-
-        for (i in 1..3) {
-            slotList!!.add(SpontaneousTimeSlot(Interval(start, end), "2222", "Frank"))
-        }
-        return slotList
-    }*/
+    private fun forwarderMove(movedSlot: String, otherSlot: String) {
+        viewModel.moveSlotAfterAnother(movedSlot, otherSlot)
+    }
 
     override fun onItemClicked(position: Int) {
         var detailDialog =
@@ -122,7 +118,8 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
     }
 
 
-    override  fun onItemSwiped(position: Int, removedSlot: TimeSlot) {
+    override fun onItemSwiped(position: Int, removedSlot: TimeSlot) {
+
         var resetDelete =
             Snackbar.make(binding.slotList, "${getIdentifier(removedSlot)}", Snackbar.LENGTH_LONG)
                 .setAction(getString(
@@ -130,17 +127,29 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
                     slotAdapter.slotList.add(position, removedSlot)
                     slotAdapter.notifyItemInserted(position)
                     slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 1)
-                    builder.show()
+                    displayingDialog.show()
+                    displayingDialog.fullScreenProgressBar.indeterminateMode = true
                 }
-        resetDelete.show()
 
-//        viewModel.notifyDelteSlot()
-//        viewModel.notifyEndCurrentSlot()
+        resetDelete.addCallback(object : Callback() {
+            override fun onDismissed(snackbar: Snackbar, event: Int) {
+                super.onDismissed(snackbar, event)
+                if (event == DISMISS_EVENT_TIMEOUT) {
+                    notifyDeleteSlot(position, removedSlot)
+                    displayingDialog.show()
+                    displayingDialog.fullScreenProgressBar.indeterminateMode = true
+                }
+            }
+        })
+        resetDelete.show()
     }
 
-    private fun getIdentifier(slot: TimeSlot): String {
-        //Guarantee slot is only fixed or spo by GUI
-        return (slot as ClientTimeSlot).auxiliaryIdentifier
+    private fun notifyDeleteSlot(position: Int, removedSlot: TimeSlot) {
+        var removedClientSlot = removedSlot as ClientTimeSlot
+        when (position) {
+            FIRST_POSITION -> viewModel.endCurrendSlot()
+            else -> viewModel.deleteSlot(removedClientSlot.slotCode)
+        }
     }
 
     override fun editTimeSlot(position: Int) {
@@ -150,9 +159,24 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
     }
 
 
+    private fun getIdentifier(slot: TimeSlot): String {
+        //Guarantee slot is only fixed or spo by GUI
+        return (slot as ClientTimeSlot).auxiliaryIdentifier
+    }
+
+    override fun saveTransaction() {
+        viewModel.saveTransaction()
+    }
+
+    override fun abortTransaction() {
+        viewModel.abortTransaction()
+    }
+
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.overflow, menu)
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -167,8 +191,10 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
                 override fun handleOnBackPressed() {
 
 
-                        Toast.makeText(context, "Please only possibility to logout", Toast.LENGTH_LONG)
-                            .show()
+                    Toast.makeText(context,
+                        "Please only possibility to logout",
+                        Toast.LENGTH_LONG)
+                        .show()
 
                 }
             }

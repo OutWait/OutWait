@@ -15,9 +15,9 @@ import org.joda.time.Duration
  * @property mode currently our app supports two modes. See specification document K1
  */
 class Preferences(
-    val defaultSlotDuration: Duration,
+    var defaultSlotDuration: Duration,
     val notificationTime: Duration,
     val delayNotificationTime: Duration,
     val prioritizationTime: Duration,
-    val mode: Mode
+    var mode: Mode
 )

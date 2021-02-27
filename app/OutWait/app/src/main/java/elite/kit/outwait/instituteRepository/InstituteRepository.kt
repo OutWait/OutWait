@@ -34,6 +34,9 @@ class InstituteRepository @Inject constructor(
 
     private val auxHelper = AuxHelper(db)
 
+
+
+
     init {
         remote.getErrors().observeForever {
             if (it.isNotEmpty()){
@@ -49,8 +52,11 @@ class InstituteRepository @Inject constructor(
                         -> doNothing()
                 }
             }
+
         }
     }
+
+
 
     private val preferences = MutableLiveData<Preferences>()
     private val timeSlotList = MutableLiveData<List<TimeSlot>>()
@@ -65,7 +71,31 @@ class InstituteRepository @Inject constructor(
     fun isInTransaction() = inTransaction as LiveData<Boolean>
     fun isLoggedIn() = loggedIn as LiveData<Boolean>
 
+    init {
+        preferences.value=Preferences(Duration(300000L),Duration(3000L),Duration(3000L),Duration(3000L),Mode.ONE)
 
+    }
+
+
+    suspend fun loginCo(username: String, password: String): Boolean {
+        withContext(IO) {
+            //Server Request
+            Log.d("login::InstiRepo",
+                "before server connect running in ${Thread.currentThread().name}")
+            delay(2000)
+            Log.d("login::InstiRepo", "after server connect")
+        }
+        //change Live Data
+        delay(2000)
+        var d = Duration(2999999)
+        Log.d("login::InstiRepo",
+            "before liveData changed running in ${Thread.currentThread().name}")
+        preferences.value = Preferences(d, d, d, d, Mode.TWO)
+        Log.d("login::InstiRepo", "after liveData changed")
+        val l = listOf(InstituteErrors.TRANSACTION_DENIED)
+        errorNotifications.value = l
+        return true
+    }
 
 
     private var communicationEstablished = false
@@ -120,21 +150,25 @@ class InstituteRepository @Inject constructor(
     }
 
     fun changePreferences(
-        defaultSlotDuration: Duration,
-        notificationTime: Duration,
-        delayNotificationTime: Duration,
-        prioritizationTime: Duration,
-        mode2Active: Boolean
+        defaultSlotDurations: Duration,
+        notificationTimes: Duration,
+        delayNotificationTimes: Duration,
+        prioritizationTimes: Duration,
+        mode2Actives: Boolean
     ){
+       preferences.value!!.mode=Mode.TWO
+        preferences.value!!.defaultSlotDuration=defaultSlotDurations
+        Log.i("change","${preferences.value!!.defaultSlotDuration.millis}")
+
         var mode = Mode.ONE
-        if (mode2Active){
+        if (mode2Actives){
             mode = Mode.TWO
         }
         val pref = Preferences(
-            defaultSlotDuration,
-            notificationTime,
-            delayNotificationTime,
-            prioritizationTime,
+            defaultSlotDurations,
+            notificationTimes,
+            delayNotificationTimes,
+            prioritizationTimes,
             mode
         )
         CoroutineScope(IO).launch{
