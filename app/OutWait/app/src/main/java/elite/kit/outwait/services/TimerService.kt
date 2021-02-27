@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
 import org.joda.time.DateTime
@@ -19,6 +20,7 @@ import javax.inject.Inject
 
 
 // TODO: Wie Zugriff oder Referenz aufs Repo halten?
+@AndroidEntryPoint
 class TimerService @Inject constructor(): LifecycleService() {
 
     @Inject
@@ -27,7 +29,7 @@ class TimerService @Inject constructor(): LifecycleService() {
     @Inject
     lateinit var handler: ServiceHandler
 
-    private lateinit var allClientInfoAsLiveData: LiveData<List<ClientInfo>>
+    private lateinit var allClientInfoAsLiveData: LiveData<List<ClientInfo>> //db.getAllClientInfoObservable()
 
     private lateinit var nextAppointmentClientInfo: ClientInfo
 
@@ -61,7 +63,7 @@ class TimerService @Inject constructor(): LifecycleService() {
             manager.createNotificationChannel(serviceChannel2)
         }
         Log.i("ForegroundService", "Second NotifChannel was created")
-
+        db.getAllClientInfoObservable()
 
     }
 
