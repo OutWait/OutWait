@@ -71,11 +71,6 @@ class InstituteRepository @Inject constructor(
     fun isInTransaction() = inTransaction as LiveData<Boolean>
     fun isLoggedIn() = loggedIn as LiveData<Boolean>
 
-    init {
-        preferences.value=Preferences(Duration(300000L),Duration(3000L),Duration(3000L),Duration(3000L),Mode.ONE)
-
-    }
-
 
     suspend fun loginCo(username: String, password: String): Boolean {
         withContext(IO) {
