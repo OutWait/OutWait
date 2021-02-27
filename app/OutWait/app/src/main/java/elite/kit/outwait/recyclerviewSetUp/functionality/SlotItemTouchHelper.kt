@@ -26,10 +26,9 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
             if (viewHolder.absoluteAdapterPosition != -1) {
                     Log.i("first case", "${viewHolder.absoluteAdapterPosition}")
                     adapter.skipPauseSlots(viewHolder.absoluteAdapterPosition)
-
-
             }
         }
+
 
         /*ManagmentViewFragment.displayingDialog.show()
         ManagmentViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode = true*/
@@ -84,6 +83,7 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        Log.i("swipe","done")
         val position = viewHolder.absoluteAdapterPosition
         adapter.onItemSwiped(position)
     }

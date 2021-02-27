@@ -2,9 +2,11 @@ package elite.kit.outwait.recyclerviewScreens.managementViewScreen
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.size
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -24,6 +26,7 @@ import elite.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFr
 import elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
+import elite.kit.outwait.recyclerviewSetUp.viewHolder.HeaderTransaction
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import kotlinx.android.synthetic.main.full_screen_progress_bar.*
 
@@ -36,12 +39,14 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     companion object {
         lateinit var displayingDialog: AlertDialog
-        var movementInfo = MutableLiveData<MutableList<String>>()
+        var movementInfo = MutableLiveData(mutableListOf<String>())
     }
 
     private lateinit var slotAdapter: SlotAdapter
     private lateinit var builder: AlertDialog.Builder
     private var FIRST_POSITION = 0
+    private var CURREND_SLOT1 = 0
+    private var CURREND_SLOT2 = 1
 
 
     override fun onCreateView(
@@ -67,29 +72,35 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
 
         viewModel.slotQueue.observe(viewLifecycleOwner) { list ->
-            var itemList:MutableList<DataItem> = list.toMutableList().map {
+            var itemList: MutableList<DataItem> = list.toMutableList().map {
                 TimeSlotItem(it)
             }.toMutableList()
             itemList.add(HeaderItem())
 
-            slotAdapter.updateSlots(list.toMutableList())
-            //TODO dismiss progress bar dialog
+            slotAdapter.updateSlots(itemList)
+
             displayingDialog.dismiss()
         }
 
+
         movementInfo.observe(viewLifecycleOwner) {
-            viewModel.moveSlotAfterAnother(it.first(), it.last())
+            Log.i("movement", "notified")
+            displayingDialog.dismiss()
+//            viewModel.moveSlotAfterAnother(it.first(),it.last())
         }
 
         viewModel.isInTransaction.observe(viewLifecycleOwner) {
             if (it) {
                 //TODO easy way with layout above recyclerview layout
+//               slotAdapter.updateSlots(slotAdapter.slotList.add(FIRST_POSITION, HeaderItem(Interval(200L))))
             }
+            //TODO maybe dismiss dialog during to abort
         }
 
 
         //Add listener for recyclerview
-        slotAdapter = SlotAdapter(mutableListOf<TimeSlot>(), this)
+
+        slotAdapter = SlotAdapter(mutableListOf<DataItem>(), this)
         var callback: ItemTouchHelper.Callback = SlotItemTouchHelper(slotAdapter)
         var itemTouchHelper: ItemTouchHelper = ItemTouchHelper(callback)
         slotAdapter.setTouchHelper(itemTouchHelper)
@@ -104,7 +115,8 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         return binding.root
     }
 
-    private fun forwarderMove(movedSlot: String, otherSlot: String) {
+
+    fun forwarderMove(movedSlot: String, otherSlot: String) {
         viewModel.moveSlotAfterAnother(movedSlot, otherSlot)
     }
 
@@ -143,8 +155,11 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     private fun notifyDeleteSlot(position: Int, removedSlot: TimeSlot) {
         var removedClientSlot = removedSlot as ClientTimeSlot
+        var firstPosition = if (viewModel.isInTransaction.value!!) CURREND_SLOT1 else CURREND_SLOT2
         when (position) {
-            FIRST_POSITION -> viewModel.endCurrendSlot()
+
+            //TODO check delete slot first then after header slot (also first)
+            firstPosition -> viewModel.endCurrendSlot()
             else -> viewModel.deleteSlot(removedClientSlot.slotCode)
         }
     }
@@ -156,25 +171,38 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
     }
 
 
+    override fun saveTransaction() {
+        Log.i("save", "call")
+//            viewModel.saveTransaction()
+        deleteHeader()
+    }
+
+    override fun abortTransaction() {
+        Log.i("abort", "call")
+//            viewModel.abortTransaction()
+        deleteHeader()
+        displayingDialog.show()
+        displayingDialog.fullScreenProgressBar.indeterminateMode = true
+    }
+
+    private fun deleteHeader() {
+        slotAdapter.slotList.removeAt(FIRST_POSITION)
+        slotAdapter.notifyItemRemoved(FIRST_POSITION)
+        slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 2)
+    }
+
+
     private fun getIdentifier(slot: TimeSlot): String {
         //Guarantee slot is only fixed or spo by GUI
         return (slot as ClientTimeSlot).auxiliaryIdentifier
     }
-
-    override fun saveTransaction() {
-        viewModel.saveTransaction()
-    }
-
-    override fun abortTransaction() {
-        viewModel.abortTransaction()
-    }
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.overflow, menu)
 
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         viewModel.navigateToConfigDialog()
