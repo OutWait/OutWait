@@ -10,6 +10,7 @@ import android.app.*
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
@@ -26,7 +27,7 @@ class TimerService @Inject constructor(): LifecycleService() {
     @Inject
     lateinit var handler: ServiceHandler
 
-    private val allClientInfoAsLiveData = db.getAllClientInfoObservable()
+    private lateinit var allClientInfoAsLiveData: LiveData<List<ClientInfo>>
 
     private lateinit var nextAppointmentClientInfo: ClientInfo
 
@@ -85,7 +86,8 @@ class TimerService @Inject constructor(): LifecycleService() {
 
         //TODO Background Work auf Nebenthread /susp function
         //here: do "heavy work" on a background thread
-        doWork()
+        //doWork()
+        stopSelf()
 
         //TODO mit was returnen sticky oder redeliver_intent?
         // mit was returned super.onStartCommand?
@@ -109,6 +111,8 @@ class TimerService @Inject constructor(): LifecycleService() {
         // TODO TESTTESTTESTTEST
         stopSelf()
         //TODO TESTETSSETSETEST
+
+        allClientInfoAsLiveData = db.getAllClientInfoObservable()
 
         val allClientInfo = allClientInfoAsLiveData.value
         if (allClientInfo == null || allClientInfo.isEmpty()) {
