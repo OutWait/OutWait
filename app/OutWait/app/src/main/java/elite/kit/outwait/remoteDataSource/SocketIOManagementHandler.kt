@@ -67,7 +67,7 @@ class SocketIOManagementHandler : ManagementHandler {
             onInvalidRequest(receivedData as JSONErrorMessageWrapper)
         }
         managementEventToCallbackMapping[Event.INTERNAL_SERVER_ERROR_M] = { receivedData ->
-            onInvalidRequest(receivedData as JSONErrorMessageWrapper)
+            onInternalServerError(receivedData as JSONErrorMessageWrapper)
         }
         managementEventToCallbackMapping[Event.MANAGEMENT_LOGIN_SUCCESS_M] = { receivedData ->
             onLoginSuccess(receivedData as JSONEmptyWrapper)
@@ -316,14 +316,16 @@ class SocketIOManagementHandler : ManagementHandler {
         this.loginRequested = true
     }
 
+    //TODO Muss und wenn ja, wie errorMessage an Repo hochreichen?
     private fun onInvalidRequest(wrappedJSONData: JSONErrorMessageWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
-        TODO("Fehlermeldung werfen (sonst noch was?)")
+        pushError(ManagementServerErrors.INVALID_REQUEST)
     }
 
+    //TODO Muss und wenn ja, wie errorMessage an Repo hochreichen?
     private fun onInternalServerError(wrappedJSONData: JSONErrorMessageWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
-        TODO("Fehlermeldung werfen (sonst noch was?)")
+        pushError(ManagementServerErrors.INTERNAL_SERVER_ERROR)
     }
 
     private fun onLoginSuccess(wrappedJSONData: JSONEmptyWrapper) {
@@ -333,10 +335,8 @@ class SocketIOManagementHandler : ManagementHandler {
     private fun onLoginDenied(wrappedJSONData: JSONEmptyWrapper) {
         this.loginDenied = true
         pushError(ManagementServerErrors.LOGIN_DENIED)
-        //hab hier mal einen push ans Repo eingefügt (B)
-        //TODO("Server will hier Verbindung abbrechen?!! Was tun? (siehe gitlab issue)")
 
-        //TODO Bisher Rückeldung ans Repo über Return Type von login()
+        //TODO("Server will hier Verbindung abbrechen?!! Was tun? (siehe gitlab issue)")
     }
 
 

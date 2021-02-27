@@ -9,12 +9,11 @@ import io.socket.emitter.Emitter
 import org.json.JSONObject
 import java.net.URI
 
-
 //TODO Fehler werfen bei Verbindungsfehler/Abbruch (inkl. der Listener) usw. ?
 //TODO Was ist Socket.IO mäßig noch zu beachten?
 //TODO Welche Zustände sollen/müssen alles hier gehalten werden?
 
-class SocketAdapter(private val namespace: String) {
+class SocketAdapter(namespace: String) {
 
     private val serverURI: String = "http://161.97.168.24:567"
 
@@ -46,12 +45,10 @@ class SocketAdapter(private val namespace: String) {
 
         // open the socket connection
         if (socketIOSocket.open() == null) {
-            Log.d("jkdfjagl", "isNull")
+            Log.d("SocketAdapter", "socket.open() returned null")
         } else {
-            Log.d("jkdfjagl", "is not Null")
+            Log.d("SocketAdapter", "socket.open() returned not null")
         }
-
-        Log.i("SocketAdapter", "SocketIOSocket.open() was called")
     }
 
     // TODO Fürs parsen hier eine JSON Exception werfen, falls es nicht klappt
@@ -104,7 +101,6 @@ class SocketAdapter(private val namespace: String) {
                     Log.d("incoming event:", k.getEventString())
 
                     // Invoke the given callback with the parsed data
-                    //TODO Funktioniert der Aufruf der Callback Methode richtig?
                     mapEventsToCallback[k]?.invoke(wrappedJSONData)
                 }
 
@@ -156,7 +152,6 @@ class SocketAdapter(private val namespace: String) {
 
         //TODO Was ist mit EVENT_DISCONNECT, EVENT_CONNECT_TIMEOUT, EVENT_ERROR, EVENT_RECONNECT etc?
         // soll Fehler geworfen werden, wenn Verbindung dauerhaft nicht möglich?
-
     }
 
 }

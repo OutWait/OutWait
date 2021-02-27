@@ -155,9 +155,10 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         pushError(ClientServerErrors.INVALID_SLOT_CODE)
     }
 
-    //TODO Fehlermeldung werfen? LiveData Error? Welche Fehlermeldung kommen rein und wie verarbeiten?
+    //TODO Muss und wenn ja, wie errorMessage an Repo hochreichen?
     private fun onInvalidRequest(wrappedJSONData: JSONErrorMessageWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
+        pushError(ClientServerErrors.INVALID_REQUEST)
     }
 
     private fun pushError(error: ClientServerErrors){
