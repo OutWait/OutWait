@@ -11,24 +11,27 @@ import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.FixedSlotViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.PauseSlotViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.SpontaneousSlotViewHolder
+import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ManagementViewFragment
+import elite.kit.outwait.recyclerviewSetUp.viewHolder.*
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
+import kotlinx.android.synthetic.main.full_screen_progress_bar.*
 import java.util.*
 
-class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemActionListener) : RecyclerView.Adapter<BaseViewHolder<*>>(),
+class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemActionListener) :
+    RecyclerView.Adapter<BaseViewHolder<*>>(),
     ItemTouchHelperAdapter {
     private lateinit var itemTouchHelper: ItemTouchHelper
     var slotList = slotList
 
 
-       fun updateSlots(newTimeSlotList: MutableList<TimeSlot>?) {
-           slotList.clear()
-           notifyDataSetChanged()
-           if (newTimeSlotList != null) {
-               slotList.addAll(newTimeSlotList)
-           }
-           notifyDataSetChanged()
-       }
-
+    fun updateSlots(newTimeSlotList: MutableList<TimeSlot>?) {
+        slotList.clear()
+        notifyDataSetChanged()
+        if (newTimeSlotList != null) {
+            slotList.addAll(newTimeSlotList)
+        }
+        notifyDataSetChanged()
+    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
@@ -36,11 +39,14 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
             Type.SPONTANEOUS_SLOT.ordinal ->
                 SpontaneousSlotViewHolder(
                     LayoutInflater.from(parent.context)
-                        .inflate(R.layout.spontaneous_slot, parent, false), itemTouchHelper, listener
+                        .inflate(R.layout.spontaneous_slot, parent, false),
+                    itemTouchHelper,
+                    listener
                 )
             Type.FIXED_SLOT.ordinal ->
                 FixedSlotViewHolder(
-                    LayoutInflater.from(parent.context).inflate(R.layout.fixed_slot, parent, false), listener
+                    LayoutInflater.from(parent.context).inflate(R.layout.fixed_slot, parent, false),
+                    listener
                 )
             else ->
                 PauseSlotViewHolder(
@@ -50,9 +56,8 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
-        val element=slotList!![position]
-        val viewType = slotList!![position].getType().ordinal
-        when (viewType) {
+        val element = slotList!![position]
+        when (slotList!![position].getType().ordinal) {
             Type.SPONTANEOUS_SLOT.ordinal -> holder.bind(element)
             Type.FIXED_SLOT.ordinal -> holder.bind(element)
             Type.PAUSE.ordinal -> holder.bind(element)
@@ -64,7 +69,7 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
         return slotList!!.size
     }
 
-     override fun getItemViewType(position: Int): Int {
+    override fun getItemViewType(position: Int): Int {
         val item = slotList!![position]
         return item.getType().ordinal
     }
@@ -74,13 +79,13 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
         if (getItemViewType(fromPosition) == Type.SPONTANEOUS_SLOT.ordinal) {
 
 
-            if(fromPosition<toPosition){
-                for(i in fromPosition until toPosition){
-                    Collections.swap(slotList,i,i+1)
+            if (fromPosition < toPosition) {
+                for (i in fromPosition until toPosition) {
+                    Collections.swap(slotList, i, i + 1)
                 }
-            }else{
-                for(i in fromPosition downTo toPosition+1){
-                    Collections.swap(slotList,i,i-1)
+            } else {
+                for (i in fromPosition downTo toPosition + 1) {
+                    Collections.swap(slotList, i, i - 1)
                 }
             }
 
@@ -92,12 +97,11 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
 
     override fun onItemSwiped(position: Int) {
         Log.i("swipe", "swipeeeeeeeeeeeeeeeeeeeeeeeeeee $position ")
-        var removedSlot=slotList.get(position)
+        var removedSlot = slotList.get(position)
         slotList.removeAt(position)
         notifyItemRemoved(position)
         notifyItemRangeChanged(0, slotList.size - 2)
-        listener.onItemSwiped(position,removedSlot)
-
+        listener.onItemSwiped(position, removedSlot)
     }
 
     override fun skipPauseSlots(position: Int) {
@@ -106,15 +110,23 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
         Log.i("newPos", "$nextPos")
         if (nextPos >= 0 && getItemViewType(nextPos) == Type.PAUSE.ordinal) {
 
-            while (getItemViewType(nextPos) == Type.PAUSE.ordinal) {
+            /*while (getItemViewType(nextPos) == Type.PAUSE.ordinal) {
                 //newPos!=0
                     Log.i("newPos", "$nextPos")
                 nextPos--
-                }
+                }*/
 
-                onItemMove(position, nextPos)
-            }
+            onItemMove(position, nextPos)
+           /* var movedSlot = slotList[nextPos] as ClientTimeSlot
+            var otherSlot = slotList[nextPos - 1] as ClientTimeSlot
+
+            ManagementViewFragment.movementInfo.value!!.add(movedSlot.slotCode)
+            ManagementViewFragment.movementInfo.value!!.add(otherSlot.slotCode)*/
+
+            ManagementViewFragment.displayingDialog.show()
+            ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode = true
         }
+    }
 
 
     fun setTouchHelper(itemTouchHelper: ItemTouchHelper) {

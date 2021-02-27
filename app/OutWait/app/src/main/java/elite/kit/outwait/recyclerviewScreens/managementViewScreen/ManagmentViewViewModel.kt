@@ -20,12 +20,16 @@ class ManagmentViewViewModel @Inject constructor(
         }
     }
 
-    /*
-    * - zuerst gebewgter slot dann der feste
-    * - both delete and endCurrent
-    * */
 
-    // val slotList:LiveData<List<TimeSlot>>=institutRepository.getAllSlots().asLiveData()
+
+
+    var isInTransaction= MediatorLiveData<Boolean>().apply {
+        addSource(repo.isInTransaction()){it ->
+
+            }
+
+    }
+
 
     fun navigateToAddSlotDialog() {
         coordinator.navigateToAddDialogFragment()
@@ -43,6 +47,24 @@ class ManagmentViewViewModel @Inject constructor(
         repo.endCurrentSlot()
     }
 
+    fun moveSlotAfterAnother(movedSlot: String, otherSlot: String) {
+        repo.moveSlotAfterAnother(movedSlot,otherSlot)
+    }
+
+    fun deleteSlot(slotCode:String){
+        repo.deleteSlot(slotCode)
+    }
+    fun endCurrendSlot(){
+        repo.endCurrentSlot()
+    }
+
+    fun saveTransaction() {
+        repo.saveTransaction()
+    }
+
+    fun abortTransaction() {
+        repo.abortTransaction()
+    }
 
 
 }
