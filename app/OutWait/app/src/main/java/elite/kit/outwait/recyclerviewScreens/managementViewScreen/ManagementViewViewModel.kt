@@ -23,12 +23,9 @@ class ManagementViewViewModel @Inject constructor(
 
 
 
-    var isInTransaction= MediatorLiveData<Boolean>().apply {
-        addSource(repo.isInTransaction()){
-                value=it
-            }
+    var isInTransaction= repo.isInTransaction()
 
-    }
+
 
 
     fun navigateToAddSlotDialog() {
