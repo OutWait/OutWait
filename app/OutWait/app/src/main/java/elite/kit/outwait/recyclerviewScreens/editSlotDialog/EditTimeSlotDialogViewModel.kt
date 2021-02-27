@@ -13,9 +13,6 @@ import javax.inject.Inject
 class EditTimeSlotDialogViewModel @Inject constructor(private val repo: InstituteRepository) :
     ViewModel() {
 
-    /*
-    * */
-
     var identifier = MutableLiveData<String>()
 
 

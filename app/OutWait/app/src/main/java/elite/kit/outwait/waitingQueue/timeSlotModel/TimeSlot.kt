@@ -13,5 +13,5 @@ abstract class TimeSlot(val interval: Interval) {
      *
      * @return type of time slot (e.g. Pause or Scheduled Client time slot)
      */
-    abstract fun getType() : Type
+    abstract fun getType(): Type
 }
