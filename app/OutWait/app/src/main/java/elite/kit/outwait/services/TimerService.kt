@@ -25,6 +25,9 @@ class TimerService @Inject constructor(): Service() {
     @Inject
     lateinit var db : ClientInfoDao
 
+    @Inject
+    lateinit var handler: ServiceHandler
+
     /**
      * Called by the system when the service is first created.  Do not call this method directly.
      */
