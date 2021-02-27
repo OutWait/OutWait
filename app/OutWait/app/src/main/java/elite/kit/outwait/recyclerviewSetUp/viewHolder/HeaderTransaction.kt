@@ -26,6 +26,6 @@ class HeaderTransaction(
         }
     }
     override fun bind(item: TimeSlot) {
-        //TODO check exception during of empty
+        item.getType()
     }
 }

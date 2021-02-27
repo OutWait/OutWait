@@ -21,6 +21,7 @@ import elite.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFr
 import elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
+import elite.kit.outwait.recyclerviewSetUp.viewHolder.HeaderTransaction
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import kotlinx.android.synthetic.main.full_screen_progress_bar.*
 import kotlinx.android.synthetic.main.management_view_fragment.*
@@ -41,6 +42,8 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
     private var CURREND_SLOT1=0
     private var CURREND_SLOT2=1
     private var FIRST_POSITION=0
+
+    private var deleteHeader=false
 
 
 
@@ -65,10 +68,15 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         }
         displayingDialog=builder.create()
 
+        var start = DateTime(DateTime.now()).plusHours(1)
+        var end = start.plusMinutes(33)
 
         //TODO check except
         viewModel.repo.getObservableTimeSlotList().observe(viewLifecycleOwner, Observer { list ->
             slotAdapter.updateSlots(list.toMutableList())
+            var ss: MutableList<DataItem> = list.toMutableList()
+                ss.add(FIRST_POSITION, HeaderItem())
+            slotAdapter.updateSlots(ss)
             //TODO dismiss progress bar dialog
             displayingDialog.dismiss()
         })
@@ -80,7 +88,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         viewModel.isInTransaction.observe(viewLifecycleOwner){
             if(it){
                 //TODO easy way with layout above recyclerview layout
-//               slotAdapter.updateSlots(slotAdapter.slotList.add(FIRST_POSITION,HeaderTransaction()).toMutableList())
+//               slotAdapter.updateSlots(slotAdapter.slotList.add(FIRST_POSITION, HeaderItem(Interval(200L))))
             }
         }
 
@@ -90,7 +98,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 //        }
 
         //Add listener for recyclerview
-        slotAdapter = SlotAdapter(fakeSlotList(), this)
+        slotAdapter = SlotAdapter( mutableListOf<DataItem>(), this)
         var callback: ItemTouchHelper.Callback = SlotItemTouchHelper(slotAdapter)
         var itemTouchHelper: ItemTouchHelper = ItemTouchHelper(callback)
         slotAdapter.setTouchHelper(itemTouchHelper)

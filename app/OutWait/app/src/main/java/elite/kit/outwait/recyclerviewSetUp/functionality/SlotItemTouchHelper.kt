@@ -86,6 +86,7 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        Log.i("swipe","done")
         val position = viewHolder.absoluteAdapterPosition
         adapter.onItemSwiped(position)
     }
