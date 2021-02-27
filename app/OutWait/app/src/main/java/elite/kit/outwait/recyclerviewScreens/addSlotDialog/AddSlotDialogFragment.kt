@@ -29,9 +29,6 @@ class AddSlotDialogFragment : DialogFragment() {
     private val viewModel: AddSlotDialogViewModel by viewModels()
     private lateinit var binding: AddSlotDialogFragmentBinding
 
-
-
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
         binding = AddSlotDialogFragmentBinding.inflate(LayoutInflater.from(context))
@@ -46,7 +43,7 @@ class AddSlotDialogFragment : DialogFragment() {
             setTitle(getString(R.string.title_add_slot))
             setPositiveButton(getString(R.string.confirm)) { dialog, which ->
 
-                if (viewModel.isModeTwo.value!! && viewModel.isFixedSlot.value!!) {
+                if (viewModel.isFixedSlot.value!!) {
                     setFixedSlotValues()
 
                     if (isDefaultAppointmentTime()) {

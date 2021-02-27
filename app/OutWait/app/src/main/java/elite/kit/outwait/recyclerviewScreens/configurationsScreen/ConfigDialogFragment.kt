@@ -54,8 +54,8 @@ class ConfigDialogFragment : Fragment() {
             viewModel.notificationTime.value=it.notificationTime
             viewModel.prioritizationTime.value=it.prioritizationTime
             viewModel.isModeTwo.value=it.mode.ordinal== Mode.TWO.ordinal
-            displayValues()
-            viewModel.isModeTwo.value=it.mode== Mode.TWO
+
+//            displayValues()
 
             binding.durationStandardSlot.duration=it.defaultSlotDuration.millis
             binding.durationDelay.duration=it.delayNotificationTime.millis
@@ -63,35 +63,11 @@ class ConfigDialogFragment : Fragment() {
             binding.durationNotification.duration=it.notificationTime.millis
             binding.sMode.isChecked= it.mode==Mode.TWO
 
-            Log.i("viewModel","${viewModel.standardSlotDauer.value}")
+            Log.i("viewModel","${viewModel.isModeTwo.value}")
             Log.i("observation","trueeeeeeeeee")
             displayingDialog.dismiss()
         }
 
-
-
-       /* viewModel.repo.getObservablePreferences().observe(viewLifecycleOwner, Observer<Preferences> {
-            viewModel.standardSlotDauer.value=it.defaultSlotDuration
-            viewModel.delayNotificationTime.value=it.delayNotificationTime
-            viewModel.notificationTime.value=it.notificationTime
-            viewModel.prioritizationTime.value=it.prioritizationTime
-            viewModel.isModusTwo.value=it.mode== Mode.TWO
-
-            binding.durationStandardSlot.duration=it.defaultSlotDuration.millis
-            binding.durationDelay.duration=it.delayNotificationTime.millis
-            binding.durationPrioritization.duration=it.prioritizationTime.millis
-            binding.durationNotification.duration=it.notificationTime.millis
-            binding.sMode.isChecked= it.mode==Mode.TWO
-
-            Log.i("viewModel","${viewModel.standardSlotDauer.value}")
-            Log.i("observation","trueeeeeeeeee")
-            displayingDialog.cancel()
->>>>>>> implementTransaction
-        })
-*/
-
-        //Setup Dialog
-//        displayValues()
 
         //TODO check problems to late pass data
         //pass new default values from user to server
@@ -100,13 +76,11 @@ class ConfigDialogFragment : Fragment() {
             viewModel.delayNotificationTime.value=Duration(binding.durationDelay.duration)
             viewModel.notificationTime.value=Duration(binding.durationNotification.duration)
             viewModel.prioritizationTime.value=Duration(binding.durationPrioritization.duration)
-
             viewModel.isModeTwo.value=binding.sMode.isChecked
+
             viewModel.saveConfigValues()
             displayingDialog.show()
         }
-
-
         return binding.root
     }
 
