@@ -22,7 +22,7 @@ class ClientRepository @Inject constructor(
     private val serviceHandler: ServiceHandler) {
 
     init {
-//        serviceHandler.startTimerService(this)
+        //serviceHandler.startTimerService(this)
         //Get notified with server errors
         remote.getErrors().observeForever {
             if (it.last() == ClientServerErrors.INVALID_SLOT_CODE){
