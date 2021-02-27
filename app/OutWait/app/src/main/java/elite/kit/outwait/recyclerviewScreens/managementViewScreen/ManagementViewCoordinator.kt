@@ -1,4 +1,4 @@
-package elite.kit.outwait.recyclerviewScreens.managmentViewScreen
+package elite.kit.outwait.recyclerviewScreens.managementViewScreen
 
 import elite.kit.outwait.navigation.Navigator
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
@@ -6,11 +6,11 @@ import javax.inject.Inject
 
 class ManagementViewCoordinator @Inject constructor(private val navigator: Navigator) {
     fun navigateToAddDialogFragment() {
-        navigator.navigate(ManagmentViewFragmentDirections.actionManagmentViewFragmentToAddSlotDialogFragment())
+        navigator.navigate(ManagementViewFragmentDirections.actionManagmentViewFragmentToAddSlotDialogFragment())
     }
 
     fun navigateToConfigDialog() {
-        navigator.navigate(ManagmentViewFragmentDirections.actionManagmentViewFragmentToConfigDialogFragment())
+        navigator.navigate(ManagementViewFragmentDirections.actionManagmentViewFragmentToConfigDialogFragment())
     }
 
     fun navigateToEditDialogFragment(timeSlot: ClientTimeSlot) {

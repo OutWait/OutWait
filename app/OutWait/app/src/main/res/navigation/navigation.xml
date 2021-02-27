@@ -15,7 +15,7 @@
         android:label="passwordForgotFragment" />
     <fragment
         android:id="@+id/managmentViewFragment"
-        android:name="elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ManagmentViewFragment"
+        android:name="elite.kit.outwait.recyclerviewScreens.managementViewScreen.ManagementViewFragment"
         android:label="managmentViewFragment" >
         <action
             android:id="@+id/action_managmentViewFragment_to_addSlotDialogFragment"

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
-import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ItemActionListener
+import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ItemActionListener
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.FixedSlotViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.PauseSlotViewHolder

@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
-import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ItemActionListener
+import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ItemActionListener
 import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 

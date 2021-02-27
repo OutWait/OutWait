@@ -1,43 +1,31 @@
-package elite.kit.outwait.recyclerviewScreens.managmentViewScreen
+package elite.kit.outwait.recyclerviewScreens.managementViewScreen
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
-import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding
-import elite.kit.outwait.databinding.ManagmentViewFragmentBinding
+import elite.kit.outwait.databinding.ManagementViewFragmentBinding
 import elite.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFragment
 import elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.joda.time.*
-import kotlin.time.ExperimentalTime
-import kotlin.time.milliseconds
 
 @AndroidEntryPoint
-class ManagmentViewFragment : Fragment(), ItemActionListener {
+class ManagementViewFragment : Fragment(), ItemActionListener {
 
     private val viewModel: ManagmentViewViewModel by viewModels()
-    private lateinit var binding: ManagmentViewFragmentBinding
+    private lateinit var binding: ManagementViewFragmentBinding
     private lateinit var slotAdapter: SlotAdapter
     private lateinit var builder: AlertDialog.Builder
 
@@ -47,7 +35,7 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         savedInstanceState: Bundle?,
     ): View? {
         binding =
-            DataBindingUtil.inflate(inflater, R.layout.managment_view_fragment, container, false)
+            DataBindingUtil.inflate(inflater, R.layout.management_view_fragment, container, false)
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
 
