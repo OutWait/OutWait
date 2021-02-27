@@ -125,8 +125,8 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
         var movedSlot = slotList[position] as ClientTimeSlot
         var otherSlot = slotList[position - 1] as ClientTimeSlot
         var list = mutableListOf<String>()
-        list.add("sss")
-        list.add("aaaa")
+        list.add(movedSlot.slotCode)
+        list.add(otherSlot.slotCode)
         ManagementViewFragment.movementInfo.value = list
         Log.i("input", "${ManagementViewFragment.movementInfo.value}")
 

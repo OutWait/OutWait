@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.size
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -35,7 +36,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
     companion object{
         lateinit var displayingDialog: AlertDialog
         var movementInfo = MutableLiveData(mutableListOf<String>())
-        fun ss() {}
     }
 
     private lateinit var binding: ManagementViewFragmentBinding
@@ -44,9 +44,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
     private var CURREND_SLOT1=0
     private var CURREND_SLOT2=1
     private var FIRST_POSITION=0
-
-    private var deleteHeader=false
-
 
 
     override fun onCreateView(
@@ -70,16 +67,12 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         }
         displayingDialog=builder.create()
 
-        var start = DateTime(DateTime.now()).plusHours(1)
-        var end = start.plusMinutes(33)
-
-        //TODO check except
         viewModel.repo.getObservableTimeSlotList().observe(viewLifecycleOwner, Observer { list ->
             slotAdapter.updateSlots(list.toMutableList())
             var ss: MutableList<DataItem> = list.toMutableList()
                 ss.add(FIRST_POSITION, HeaderItem())
             slotAdapter.updateSlots(ss)
-            //TODO dismiss progress bar dialog
+
             displayingDialog.dismiss()
         })
 
@@ -202,9 +195,10 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     private fun notifyDeleteSlot(position: Int, removedSlot: TimeSlot) {
         var removedClientSlot = removedSlot as ClientTimeSlot
+        var firstPosition= if(viewModel.isInTransaction.value!!) CURREND_SLOT1 else CURREND_SLOT2
         when (position) {
             //TODO check delete slot first then after header slot (also first)
-            CURREND_SLOT1, CURREND_SLOT2 -> viewModel.endCurrendSlot()
+            firstPosition -> viewModel.endCurrendSlot()
             else -> viewModel.deleteSlot(removedClientSlot.slotCode)
         }
     }
@@ -224,17 +218,25 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         override fun saveTransaction() {
             Log.i("save","call")
 //            viewModel.saveTransaction()
+            deleteHeader()
         }
 
         override fun abortTransaction() {
             Log.i("abort","call")
 //            viewModel.abortTransaction()
+            deleteHeader()
             displayingDialog.show()
             displayingDialog.fullScreenProgressBar.indeterminateMode =true
         }
 
+    private fun deleteHeader() {
+        slotAdapter.slotList.removeAt(FIRST_POSITION)
+        slotAdapter.notifyItemRemoved(FIRST_POSITION)
+        slotAdapter.notifyItemRangeChanged(0, slotList.size - 2)
+    }
 
-        override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
             super.onCreateOptionsMenu(menu, inflater)
             inflater?.inflate(R.menu.overflow, menu)
 

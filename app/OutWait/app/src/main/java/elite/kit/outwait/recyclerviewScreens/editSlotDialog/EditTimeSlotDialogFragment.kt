@@ -33,8 +33,6 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
         binding.lifecycleOwner = this
 
         val builder = AlertDialog.Builder(activity)
-
-        //EXAMPLE
         setUpPicker()
         setValuesOfScreen(editSlot)
         viewModel.isFixedSlot.value = isFixedSlot(editSlot)
