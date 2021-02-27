@@ -1,14 +1,9 @@
 package elite.kit.outwait.recyclerviewSetUp.functionality
 
-import android.graphics.Color
 import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import elite.kit.outwait.R
-import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ManagmentViewFragment
 import elite.kit.outwait.waitingQueue.timeSlotModel.Type
-import kotlinx.android.synthetic.main.full_screen_progress_bar.*
 
 class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
     ItemTouchHelper.Callback() {

@@ -1,4 +1,4 @@
-package elite.kit.outwait.recyclerviewScreens.managmentViewScreen
+package elite.kit.outwait.recyclerviewScreens.managementViewScreen
 
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 

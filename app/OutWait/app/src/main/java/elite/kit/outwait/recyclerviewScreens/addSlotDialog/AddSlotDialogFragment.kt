@@ -3,31 +3,17 @@ package elite.kit.outwait.recyclerviewScreens.addSlotDialog
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.CompoundButton
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDialogFragment
-import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
-import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.databinding.AddSlotDialogFragmentBinding
-import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ManagmentViewFragment
+import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ManagementViewFragment
 import elite.kit.outwait.utils.TransformationInput
-import elite.kit.outwait.waitingQueue.timeSlotModel.FixedTimeSlot
 import kotlinx.android.synthetic.main.full_screen_progress_bar.*
 import mobi.upod.timedurationpicker.TimeDurationPicker
-import org.joda.time.DateTime
-import org.joda.time.DateTimeFieldType.hourOfDay
-import org.joda.time.Interval
-import kotlin.time.toDuration
 
 @AndroidEntryPoint
 class AddSlotDialogFragment : DialogFragment() {
@@ -72,15 +58,15 @@ class AddSlotDialogFragment : DialogFragment() {
                             Toast.LENGTH_LONG).show()
                     } else {
                         viewModel.notifyAddFixedSlot()
-                        ManagmentViewFragment.displayingDialog.show()
-                        ManagmentViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode =true
+                        ManagementViewFragment.displayingDialog.show()
+                        ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode =true
                     }
 
                 } else {
                     setSpontaneousSlotValues()
                     viewModel.notifyAddSpontaneousSlot()
-                    ManagmentViewFragment.displayingDialog.show()
-                    ManagmentViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode =true
+                    ManagementViewFragment.displayingDialog.show()
+                    ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode =true
                 }
             }
             setNegativeButton(getString(R.string.cancel)) { dialog, which ->

@@ -5,14 +5,14 @@
     <data>
         <variable
             name="viewModel"
-            type="elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ManagmentViewViewModel" />
+            type="elite.kit.outwait.recyclerviewScreens.managementViewScreen.ManagmentViewViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rv_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".recyclerviewScreens.managmentViewScreen.ManagmentViewFragment">
+        tools:context=".recyclerviewScreens.managementViewScreen.ManagementViewFragment">
 
 
         <androidx.recyclerview.widget.RecyclerView

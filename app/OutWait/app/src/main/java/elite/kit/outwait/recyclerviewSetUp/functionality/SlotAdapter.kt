@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
-import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ItemActionListener
-import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ManagmentViewFragment
+import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ItemActionListener
+import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ManagementViewFragment
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.*
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import kotlinx.android.synthetic.main.full_screen_progress_bar.*
@@ -119,11 +119,11 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
             var movedSlot = slotList[nextPos] as ClientTimeSlot
             var otherSlot = slotList[nextPos - 1] as ClientTimeSlot
 
-            ManagmentViewFragment.movementInfo.value!!.add(movedSlot.slotCode)
-            ManagmentViewFragment.movementInfo.value!!.add(otherSlot.slotCode)
+            ManagementViewFragment.movementInfo.value!!.add(movedSlot.slotCode)
+            ManagementViewFragment.movementInfo.value!!.add(otherSlot.slotCode)
 
-            ManagmentViewFragment.displayingDialog.show()
-            ManagmentViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode = true
+            ManagementViewFragment.displayingDialog.show()
+            ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode = true
         }
     }
 

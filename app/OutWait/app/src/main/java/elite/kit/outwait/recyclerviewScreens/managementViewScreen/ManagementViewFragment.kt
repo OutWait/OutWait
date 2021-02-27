@@ -1,4 +1,4 @@
-package elite.kit.outwait.recyclerviewScreens.managmentViewScreen
+package elite.kit.outwait.recyclerviewScreens.managementViewScreen
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -16,20 +16,18 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.Callback
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
-import elite.kit.outwait.databinding.ManagmentViewFragmentBinding
+import elite.kit.outwait.databinding.ManagementViewFragmentBinding
 import elite.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFragment
 import elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
-import elite.kit.outwait.recyclerviewSetUp.viewHolder.HeaderTransaction
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import kotlinx.android.synthetic.main.full_screen_progress_bar.*
-import kotlinx.android.synthetic.main.managment_view_fragment.*
-import okhttp3.internal.http2.Header
+import kotlinx.android.synthetic.main.management_view_fragment.*
 import org.joda.time.*
 
 @AndroidEntryPoint
-class ManagmentViewFragment : Fragment(), ItemActionListener {
+class ManagementViewFragment : Fragment(), ItemActionListener {
     private val viewModel: ManagmentViewViewModel by viewModels()
 
     companion object{
@@ -37,7 +35,7 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         var movementInfo = MutableLiveData<MutableList<String>>()
         }
 
-    private lateinit var binding: ManagmentViewFragmentBinding
+    private lateinit var binding: ManagementViewFragmentBinding
     private lateinit var slotAdapter: SlotAdapter
     private lateinit var builder:AlertDialog.Builder
     private var CURREND_SLOT1=0
@@ -51,7 +49,7 @@ class ManagmentViewFragment : Fragment(), ItemActionListener {
         savedInstanceState: Bundle?,
     ): View? {
         binding =
-            DataBindingUtil.inflate(inflater, R.layout.managment_view_fragment, container, false)
+            DataBindingUtil.inflate(inflater, R.layout.management_view_fragment, container, false)
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
 

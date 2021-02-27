@@ -1,7 +1,6 @@
 package elite.kit.outwait.recyclerviewScreens.configurationsScreen
 
 import android.app.AlertDialog
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,18 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.R
 import elite.kit.outwait.customDataTypes.Mode
-import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.databinding.ConfigDialogFragmentBinding
-import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ManagmentViewFragment
 import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.joda.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 @AndroidEntryPoint
 class ConfigDialogFragment : Fragment() {

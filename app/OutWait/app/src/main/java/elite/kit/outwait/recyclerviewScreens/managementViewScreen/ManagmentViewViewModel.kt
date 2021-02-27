@@ -1,13 +1,10 @@
-package elite.kit.outwait.recyclerviewScreens.managmentViewScreen
+package elite.kit.outwait.recyclerviewScreens.managementViewScreen
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
-import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 import javax.inject.Inject
 
 @HiltViewModel

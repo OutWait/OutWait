@@ -5,9 +5,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
-import elite.kit.outwait.recyclerviewScreens.managmentViewScreen.ItemActionListener
+import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ItemActionListener
 import elite.kit.outwait.waitingQueue.timeSlotModel.FixedTimeSlot
-import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 
 class FixedSlotViewHolder(private var itemView: View, listener: ItemActionListener):BaseViewHolder<FixedTimeSlot>(itemView) {
