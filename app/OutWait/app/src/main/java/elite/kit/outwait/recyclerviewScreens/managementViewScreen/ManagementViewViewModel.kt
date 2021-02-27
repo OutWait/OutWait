@@ -9,7 +9,7 @@ import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 import javax.inject.Inject
 
 @HiltViewModel
-class ManagmentViewViewModel @Inject constructor(
+class ManagementViewViewModel @Inject constructor(
      val repo: InstituteRepository,
     private val coordinator: ManagementViewCoordinator,
 ) : ViewModel() {

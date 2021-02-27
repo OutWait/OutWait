@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="elite.kit.outwait.recyclerviewScreens.managementViewScreen.ManagmentViewViewModel" />
+            type="elite.kit.outwait.recyclerviewScreens.managementViewScreen.ManagementViewViewModel" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"

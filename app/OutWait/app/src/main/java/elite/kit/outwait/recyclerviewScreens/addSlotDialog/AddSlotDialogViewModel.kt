@@ -31,11 +31,7 @@ class AddSlotDialogViewModel @Inject constructor(val repo: InstituteRepository) 
     var isModeTwo = MutableLiveData<Boolean>()
 
 
-    val preferences = MediatorLiveData<Preferences>().apply {
-        addSource(repo.getObservablePreferences()) {
-            value = it
-        }
-    }
+    val preferences = repo.getObservablePreferences()
 
     fun notifyAddSpontaneousSlot() {
         repo.newSpontaneousSlot(identifier.value!!,

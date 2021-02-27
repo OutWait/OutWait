@@ -3,6 +3,7 @@ package elite.kit.outwait.recyclerviewScreens.addSlotDialog
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
@@ -29,18 +30,15 @@ class AddSlotDialogFragment : DialogFragment() {
     private lateinit var binding: AddSlotDialogFragmentBinding
 
 
+
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
         binding = AddSlotDialogFragmentBinding.inflate(LayoutInflater.from(context))
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
         setUpPicker()
-
-        viewModel.preferences.observe(viewLifecycleOwner) {
-            viewModel.interval.value = Interval(0L, it.defaultSlotDuration.millis)
-            viewModel.isModeTwo.value=it.mode==Mode.TWO
-            defaultValues()
-        }
+        defaultValues()
 
 
         builder.apply {
@@ -97,6 +95,10 @@ class AddSlotDialogFragment : DialogFragment() {
     private fun defaultValues() {
         binding.tpAppointmentTime.hour = DEFAULT_HOUR
         binding.tpAppointmentTime.minute = DEFAULT_MINUTE
+
+        viewModel.isModeTwo.value=viewModel.preferences.value!!.mode==Mode.TWO
+        viewModel.interval.value=Interval(0L,viewModel.preferences.value!!.defaultSlotDuration.millis)
+
         binding.timeDurationInput.duration = viewModel.interval.value!!.toDurationMillis()
     }
 
