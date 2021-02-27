@@ -16,6 +16,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.Callback
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
+import elite.kit.outwait.dataItem.DataItem
+import elite.kit.outwait.dataItem.TimeSlotItem
+import elite.kit.outwait.dataItem.HeaderItem
 import elite.kit.outwait.databinding.ManagementViewFragmentBinding
 import elite.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFragment
 import elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment
@@ -23,8 +26,6 @@ import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import kotlinx.android.synthetic.main.full_screen_progress_bar.*
-import kotlinx.android.synthetic.main.management_view_fragment.*
-import org.joda.time.*
 
 @AndroidEntryPoint
 class ManagementViewFragment : Fragment(), ItemActionListener {
@@ -66,6 +67,11 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
 
         viewModel.slotQueue.observe(viewLifecycleOwner) { list ->
+            var itemList:MutableList<DataItem> = list.toMutableList().map {
+                TimeSlotItem(it)
+            }.toMutableList()
+            itemList.add(HeaderItem())
+
             slotAdapter.updateSlots(list.toMutableList())
             //TODO dismiss progress bar dialog
             displayingDialog.dismiss()
