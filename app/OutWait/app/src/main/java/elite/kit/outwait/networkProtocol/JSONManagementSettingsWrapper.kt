@@ -14,10 +14,7 @@ class JSONManagementSettingsWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jso
         jsonObj.put(DEFAULT_SLOT_DURATION, prefs.defaultSlotDuration.millis)
         jsonObj.put(NOTIFICATION_TIME, prefs.notificationTime.millis)
         jsonObj.put(DELAY_NOTIFICATION_TIME, prefs.delayNotificationTime.millis)
-
-        //TODO Anstelle toLowerCase einfach ein String Attribut im Enum einführen?
-        // -> Benni fragen
-        jsonObj.put(MODE, prefs.mode.toString().toLowerCase(Locale.getDefault()))
+        jsonObj.put(MODE, prefs.mode.toString())
         jsonObj.put(PRIORITIZATION_TIME, prefs.prioritizationTime.millis)
     }
 
@@ -30,12 +27,12 @@ class JSONManagementSettingsWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jso
         val prioritizationTime: Duration = Duration(jsonObj.getLong(PRIORITIZATION_TIME))
 
         // parse mode param to enum
-        val mode: Mode = when (jsonObj.getString(MODE)) {
-            "one" -> Mode.ONE
-            "two" -> Mode.TWO
-            //TODO Fehlermeldung werfen im else fall?? -> ?? WIe handlen wir falsche Serverantworten?
-            else -> Mode.ONE
+        val mode: Mode = if (jsonObj.getString(MODE) == Mode.ONE.toString()) {
+            Mode.ONE
+        } else {
+            Mode.TWO
         }
+
         // Create and return Preferences Object
         return Preferences(defaultSlotDuration, notificationTime, delayNotificationTime,
         prioritizationTime, mode)

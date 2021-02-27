@@ -1,6 +1,7 @@
 package edu.kit.outwait.server.management
 
 import edu.kit.outwait.server.core.DatabaseWrapper
+import edu.kit.outwait.server.core.Logger
 import edu.kit.outwait.server.protocol.Event
 import edu.kit.outwait.server.protocol.JSONAddFixedSlotWrapper
 import edu.kit.outwait.server.protocol.JSONAddSpontaneousSlotWrapper
@@ -25,10 +26,13 @@ class Management(
 ) {
     private val managementInformation: ManagementInformation
     private var queue: Queue? = null
+    private val LOG_ID = "MGMT"
 
     init {
         // Configure the event callbacks
         configureReceivers(databaseWrapper)
+
+        Logger.debug(LOG_ID, "New management created and receivers registered")
 
         // Send settings
         val tmpInfo = databaseWrapper.getManagementById(managementId)!!
@@ -36,14 +40,17 @@ class Management(
         managementInformation = tmpInfo
         sendUpdatedManagementSettings(managementInformation.settings)
 
+        Logger.debug(LOG_ID, "Sent settings")
+
         // Send queue
         val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
         if (queueId == null) {
-            println("INTERNAL ERROR: management has no Queue!")
+            Logger.internalError(LOG_ID, "management has no Queue!")
             // Don't crash the server by a exception. This is just a log.
         } else {
             val queue = Queue(queueId, databaseWrapper)
             sendUpdatedQueue(queue)
+            Logger.debug(LOG_ID, "Sent first queue")
         }
     }
 
@@ -93,9 +100,13 @@ class Management(
                         wrapper.getDuration(),
                         wrapper.getCreationTime()
                     )
-                databaseWrapper.addTemporarySlot(slot, queue!!.queueId)
-                queue!!.addSpontaneousSlot(slot)
-                updateAndSendQueue()
+                val newSlot = databaseWrapper.addTemporarySlot(slot, queue!!.queueId)
+                if (newSlot == null) {
+                    Logger.internalError(LOG_ID, "failed to create new slot!")
+                } else {
+                    queue!!.addSpontaneousSlot(newSlot)
+                    updateAndSendQueue()
+                }
             }
         }
         socketFacade.onReceive(Event.ADD_FIXED_SLOT) { json ->
@@ -104,15 +115,19 @@ class Management(
                 val slot =
                     Slot(
                         SlotCode(""), // will be set by the database
-                        Priority.NORMAL,
+                        Priority.FIX_APPOINTMENT,
                         wrapper.getAppointmentTime(),
                         // The creation time is the expected time for new slots
                         wrapper.getDuration(),
                         wrapper.getAppointmentTime()
                     )
-                databaseWrapper.addTemporarySlot(slot, queue!!.queueId)
-                queue!!.addFixedSlot(slot)
-                updateAndSendQueue()
+                val newSlot = databaseWrapper.addTemporarySlot(slot, queue!!.queueId)
+                if (newSlot == null) {
+                    Logger.internalError(LOG_ID, "failed to create new slot!")
+                } else {
+                    queue!!.addFixedSlot(newSlot)
+                    updateAndSendQueue()
+                }
             }
         }
         socketFacade.onReceive(Event.CHANGE_SLOT_DURATION) { json ->
@@ -122,6 +137,13 @@ class Management(
                 updateAndSendQueue()
             }
         }
+
+        socketFacade.onDisconnect {
+            logout()
+            Logger.debug(LOG_ID, "Implicit logout")
+        }
+
+        Logger.debug(LOG_ID, "Receivers configured")
     }
 
     /**
@@ -131,8 +153,9 @@ class Management(
      */
     private fun checkTransactionStarted() :Boolean {
         if (queue == null) {
+            Logger.debug(LOG_ID, "Transaction not started! Can't execute command.")
             // Transaction has not been started
-            val json = JSONInvalidRequestMessageWrapper();
+            val json = JSONInvalidRequestMessageWrapper()
             json.setMessage("Transaction not started")
             socketFacade.send(Event.INVALID_MANAGEMENT_REQUEST, json)
             return false
@@ -146,30 +169,38 @@ class Management(
     private fun updateAndSendQueue() {
         if (queue != null) {
             queue!!.updateQueue(managementInformation.settings.prioritizationTime)
+            Logger.debug(LOG_ID, "Queue updated. New queue: " + queue)
             sendUpdatedQueue(queue!!)
+        } else {
+            Logger.debug(LOG_ID, "Failed to update queue (no queue loaded)")
         }
     }
     internal fun sendUpdatedQueue (queue: Queue):Unit {
-        val json = JSONQueueWrapper();
+        val json = JSONQueueWrapper()
         json.setQueue(queue)
         socketFacade.send(Event.UPDATE_QUEUE, json)
+        Logger.debug(LOG_ID, "Sent queue")
     }
     internal fun sendUpdatedManagementSettings (managementSettings: ManagementSettings) {
-        val json = JSONManagementSettingsWrapper();
+        val json = JSONManagementSettingsWrapper()
         json.setSettings(managementSettings)
         socketFacade.send(Event.UPDATE_MANAGEMENT_SETTINGS, json)
+        Logger.debug(LOG_ID, "Sent management settings")
     }
     private fun logout () {
         socketFacade.disconnect()
         managementManager.removeManagement(this)
+        Logger.debug(LOG_ID, "Manual logout completed")
     }
     private fun beginNewTransaction () {
         if (queue != null) {
+            Logger.debug(LOG_ID, "New transaction could not be started. Loaded queue: " + queue)
             // Cannot start a new transaction, when a transaction is running
-            val json = JSONInvalidRequestMessageWrapper();
+            val json = JSONInvalidRequestMessageWrapper()
             json.setMessage("Transaction already running")
             socketFacade.send(Event.INVALID_MANAGEMENT_REQUEST, json)
         } else {
+            Logger.debug(LOG_ID, "Beginning a new transaction")
             queue = managementManager.beginTransaction(managementId)
             if (queue == null) {
                 socketFacade.send(Event.TRANSACTION_DENIED, JSONEmptyWrapper())
@@ -180,20 +211,27 @@ class Management(
     }
     internal fun abortCurrentTransaction () {
         if (checkTransactionStarted()) {
+            Logger.debug(LOG_ID, "Aborting transaction")
             val original_queue = managementManager.abortTransaction(managementId)
             if (original_queue != null) {
                 sendUpdatedQueue(original_queue)
             }
             queue = null // transaction ended
+        } else {
+            Logger.debug(LOG_ID, "Could not abort transaction (none running)")
         }
     }
     private fun saveCurrentTransaction () {
         if (checkTransactionStarted()) {
+            Logger.debug(LOG_ID, "Saving transaction. Queue: " + queue)
             managementManager.saveTransaction(managementId, queue!!)
             queue = null // transaction ended
+        } else {
+            Logger.debug(LOG_ID, "Could not save a transaction (none running)")
         }
     }
     private fun changeManagementSettings (managementSettings: ManagementSettings) {
         managementManager.updateManagementSettings(managementId, managementSettings)
+        Logger.debug(LOG_ID, "Changed management settings")
     }
 }

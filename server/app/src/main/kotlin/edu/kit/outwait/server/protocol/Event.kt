@@ -46,6 +46,6 @@ enum class Event(private val tag: String, private val wrapper: (String) -> JSONO
         { JSONInvalidRequestMessageWrapper(JSONObject(it)) }
     );
 
-    fun getEventTag(): String { return tag; }
-    fun createWrapper(dat: String): JSONObjectWrapper { return wrapper(dat); }
+    fun getEventTag(): String { return tag }
+    fun createWrapper(dat: String): JSONObjectWrapper { return wrapper(dat) }
 }

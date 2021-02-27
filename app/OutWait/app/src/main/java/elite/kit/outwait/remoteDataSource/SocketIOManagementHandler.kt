@@ -141,7 +141,9 @@ class SocketIOManagementHandler : ManagementHandler {
                 "SocketIOManagementHandl",
                 "Waiting on server for LoginResponse"
             )
-            pushError(ManagementServerErrors.LOGIN_DENIED)
+            //hab das hier mal rausgemacht - hat auch bei erfolgreichem
+            //login den error gepusht. Dafür bei onLoginDenied() den push.
+            //pushError(ManagementServerErrors.LOGIN_DENIED)
             Thread.sleep(1_000)
         }
 
@@ -325,7 +327,7 @@ class SocketIOManagementHandler : ManagementHandler {
 
     private fun onLoginDenied(wrappedJSONData: JSONEmptyWrapper) {
         this.loginDenied = true
-        //pushError()
+        pushError(ManagementServerErrors.LOGIN_DENIED)
         //hab hier mal einen push ans Repo eingefügt (B)
         //TODO("Server will hier Verbindung abbrechen?!! Was tun? (siehe gitlab issue)")
 

@@ -9,4 +9,6 @@ data class Slot(
     val approxTime: Date,
     val expectedDuration: Duration,
     val constructorTime: Date,
-)
+) {
+    fun isFixedSlot() : Boolean = priority == Priority.FIX_APPOINTMENT
+}

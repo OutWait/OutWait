@@ -21,12 +21,11 @@ class DatabaseWrapper() {
     private val updateMediator = UpdateMediator()
     private lateinit var connection: Connection
     private val connectionProps: Properties = Properties()
-
+    private val LOG_ID = "DB"
 
     /**
      * Setting connection properties and trying to connect to the database.
      */
-
     init {
         this.connectionProps["user"] = "outwait"
         this.connectionProps["password"] = "OurOutwaitDB"
@@ -36,9 +35,11 @@ class DatabaseWrapper() {
                     "jdbc:mysql://localhost:3306/OutwaitDB",
                     connectionProps
                 )!!
-            println("Connected to Database!")
+            Logger.info(LOG_ID, "Connected to Database")
         } catch (e : SQLException) {
             e.printStackTrace()
+            println("Failed connecting to database. Server stopped.")
+            throw e
         }
     }
 
@@ -112,20 +113,38 @@ class DatabaseWrapper() {
      */
     fun addTemporarySlot(slot : Slot, queueId: QueueId) : Slot? {
         try {
+            val generatedSlotCode = arrayOf("code")
             val addTemporarySlotQuery =
                 connection.prepareStatement(
-                    "INSERT INTO Slot " +
+                    "INSERT INTO Slot" +
                         "(queue_id, priority, approx_time, expected_duration, constructor_time, " +
-                        "is_temporary) " + "OUTPUT INSERTED.code " + "VALUES (?, ?, ?, ?, ?, ?)"
+                        "is_temporary) " + "VALUES(?, ?, ?, ?, ?, ?)",
+                    generatedSlotCode
                 )
             addTemporarySlotQuery.setLong(1, queueId.id)
             addTemporarySlotQuery.setString(2, slot.priority.toString())
             addTemporarySlotQuery.setTimestamp(3, Timestamp(slot.approxTime.time))
             addTemporarySlotQuery.setLong(4, slot.expectedDuration.toMillis())
-            addTemporarySlotQuery.setInt(5, 1)
-            val rs = addTemporarySlotQuery.executeQuery()
+            addTemporarySlotQuery.setTimestamp(5, Timestamp(slot.constructorTime.time))
+            addTemporarySlotQuery.setInt(6, 1)
+            addTemporarySlotQuery.executeUpdate()
+            val keys = addTemporarySlotQuery.getGeneratedKeys()
+            keys.next()
+            val slotId = keys.getLong(1)
+            Logger.debug(LOG_ID, "Inserted new slot with slotId:" +slotId)
+            //Temporary fix
+            val getSlotCodeQuery =
+                connection.prepareStatement(
+                    "SELECT code " +
+                        "FROM Slot " +
+                        "WHERE Slot.id = ?"
+                )
+            getSlotCodeQuery.setLong(1, slotId)
+            val rs = getSlotCodeQuery.executeQuery()
             rs.next()
-            return slot.copy(slotCode = SlotCode(rs.getString("code")))
+            val slotCopy = slot.copy(slotCode = SlotCode(rs.getString("code")))
+            Logger.debug(LOG_ID, "Returning inserted Slot with Slotcode" +slotCopy.slotCode.code)
+            return slotCopy
         } catch (e: SQLException) {
             e.printStackTrace()
             return null

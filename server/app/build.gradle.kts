@@ -36,9 +36,6 @@ dependencies {
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation("mysql:mysql-connector-java:8.0.23")
 
-    // This dependency is used by the application.
-    implementation("com.google.guava:guava:29.0-jre")
-
     // Use the Kotlin test library.
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 

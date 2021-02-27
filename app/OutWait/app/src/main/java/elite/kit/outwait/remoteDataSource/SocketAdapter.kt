@@ -121,31 +121,38 @@ class SocketAdapter(private val namespace: String) {
          */
     private fun registerSocketIOListeners() {
 
+        // called on successful connection or reconnection
         val onConnectCallback = Emitter.Listener {
             Log.i("SocketAdapter", "Event" + Socket.EVENT_CONNECT)
         }
         socketIOSocket.on(Socket.EVENT_CONNECT, onConnectCallback)
 
+        // called on failed connection (server didn`t respond or accepted the connection)
         val onConnectErrorCallback = Emitter.Listener {
             Log.i("SocketAdapter", "Event" + Socket.EVENT_CONNECT_ERROR)
+            //TODO Hier muss manually reconnected werden
         }
         socketIOSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectErrorCallback)
 
+        // called //TODO when?
         val onEventErrorCallback = Emitter.Listener {
             Log.i("SocketAdapter", "Event" + Socket.EVENT_ERROR)
         }
         socketIOSocket.on(Socket.EVENT_ERROR, onEventErrorCallback)
 
+        // called // TODO when?
         val onEventConnectTimeoutCallback = Emitter.Listener {
             Log.i("SocketAdapter", "Event" + Socket.EVENT_CONNECT_TIMEOUT)
         }
         socketIOSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onEventConnectTimeoutCallback)
 
         //TODO Hierfür Exception werfen sinnvoll? -> erst wenn auch reconnect endgültig failed!!!!
+        // called on disconnection, either connection got interrupted or disconnected
         val onEventDisconnectCallback = Emitter.Listener {
             Log.i("SocketAdapter", "Event" + Socket.EVENT_DISCONNECT)
         }
         socketIOSocket.on(Socket.EVENT_DISCONNECT, onEventDisconnectCallback)
+        //TODO SocketIO versucht automatisch zu reconnecten (wie oft/lange?)
 
         //TODO Was ist mit EVENT_DISCONNECT, EVENT_CONNECT_TIMEOUT, EVENT_ERROR, EVENT_RECONNECT etc?
         // soll Fehler geworfen werden, wenn Verbindung dauerhaft nicht möglich?

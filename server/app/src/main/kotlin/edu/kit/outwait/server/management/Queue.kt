@@ -1,7 +1,7 @@
 package edu.kit.outwait.server.management
 
 import edu.kit.outwait.server.core.DatabaseWrapper
-import edu.kit.outwait.server.slot.Priority
+import edu.kit.outwait.server.core.Logger
 import edu.kit.outwait.server.slot.Slot
 import edu.kit.outwait.server.slot.SlotCode
 import java.time.Duration
@@ -11,21 +11,25 @@ import org.json.JSONObject
 class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     private var slots = mutableListOf<Slot>()
     private var delayChangeTime: Date? = null
+    private val LOG_ID = "QUEUE"
 
     init {
+        Logger.debug(LOG_ID, "Loading new queue with id " + queueId)
         slots = databaseWrapper.getSlots(queueId)!!.toMutableList() // queueId must exist
+        Logger.debug(LOG_ID, "Queue loaded")
     }
     fun updateQueue(prioritizationTime: Duration) {
+        Logger.debug(LOG_ID, "Updating queue " + queueId)
         delayChangeTime = null
         if (slots.isEmpty()) {
+            Logger.debug(LOG_ID, "Queue is empty (no update required)")
             return // Don't run the algorithm, if no slots exist
         }
 
         val newQueue = mutableListOf<Slot>() // The new queue
 
-        val spontaneousSlots =
-            slots.filter { it.priority != Priority.FIX_APPOINTMENT }.toMutableList()
-        val fixSlots = slots.filter { it.priority == Priority.FIX_APPOINTMENT }.toMutableList()
+        val spontaneousSlots = slots.filter { !it.isFixedSlot() }.toMutableList()
+        val fixSlots = slots.filter { it.isFixedSlot() }.toMutableList()
 
         // If the first slot has already started, it can not be moved
         slots.sortWith(compareBy { it.approxTime })// Sort the queue, to find the current slot
@@ -38,6 +42,8 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         // Sort the slots by their creation time
         spontaneousSlots.sortWith(compareBy { it.constructorTime })
         fixSlots.sortWith(compareBy { it.constructorTime })
+        Logger.debug(LOG_ID, "Spontaneous slots of queue: " + spontaneousSlots)
+        Logger.debug(LOG_ID, "Fixed slots of queue: " + fixSlots)
 
         // Start the sweep line after the running slot or at the current time
         var line =
@@ -47,6 +53,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                 Date().toInstant()
 
         // Construct the new queue using a sweep line-like algorithm
+        Logger.debug(LOG_ID, "Running queue update algorithm...")
         while (spontaneousSlots.isNotEmpty() && fixSlots.isNotEmpty()) {
             val nextSpontaneous = spontaneousSlots[0]
             val nextFix = fixSlots[0]
@@ -108,6 +115,8 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         } else if (fixSlots.isNotEmpty()) {
             newQueue.addAll(fixSlots)
         }
+        Logger.debug(LOG_ID, "Queue update algorithm finished. New queue: " + newQueue)
+        Logger.debug(LOG_ID, "Next delay change time: " + delayChangeTime)
 
         // Finalize the queue
         slots = newQueue
@@ -116,16 +125,24 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         return delayChangeTime
     }
     fun storeToDB(databaseWrapper: DatabaseWrapper) {
+        Logger.debug(LOG_ID, "Storing queue " + queueId + " into the DB")
         databaseWrapper.saveSlots(slots, queueId)
     }
     fun storeToJSON(json: JSONObject) {
-        if (slots.isEmpty()) return // noting to save
+        Logger.debug(LOG_ID, "Constructing queue " + queueId + " json...")
 
-        json.put("currentSlotStartedTime", slots[0].expectedDuration.toMillis())
+        var currentSlotStartedTime = Date()
+        if (slots.isNotEmpty() && slots[0].approxTime.before(currentSlotStartedTime)) {
+            // First slot is currently running
+            currentSlotStartedTime = slots[0].approxTime
+            Logger.debug(LOG_ID, "First slot is currently running")
+        }
+
+        json.put("currentSlotStartedTime", currentSlotStartedTime.getTime())
         json.put("slotOrder", slots.map { it.slotCode.code })
         json.put(
             "spontaneousSlots",
-            slots.filter { it.priority != Priority.FIX_APPOINTMENT }
+            slots.filter { !it.isFixedSlot() }
                 .map {
                     val tmp = JSONObject()
                     tmp.put("slotCode", it.slotCode.code)
@@ -135,7 +152,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         )
         json.put(
             "fixedSlots",
-            slots.filter { it.priority != Priority.FIX_APPOINTMENT }
+            slots.filter { it.isFixedSlot() }
                 .map {
                     val tmp = JSONObject()
                     tmp.put("slotCode", it.slotCode.code)
@@ -144,24 +161,38 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                     tmp
                 }
         )
+        Logger.debug(LOG_ID, "Queue json constructed: " + json)
     }
 
     fun addSpontaneousSlot(slot: Slot) {
-        slots.add(slot);
+        Logger.debug(LOG_ID, "Adding spontaneous slot " + slot + " to " + queueId)
+        slots.add(slot)
     }
     fun addFixedSlot(slot: Slot) {
-        slots.add(slot);
+        Logger.debug(LOG_ID, "Adding fixed slot " + slot + " to queue " + queueId)
+        slots.add(slot)
     }
     fun deleteSlot(slotCode: SlotCode) {
+        Logger.debug(LOG_ID, "Deleting slot " + slotCode + " from queue " + queueId)
         slots.removeIf({ it.slotCode == slotCode })
     }
     fun endCurrentSlot() {
         if (slots.isNotEmpty()) {
+            Logger.debug(LOG_ID, "Removing current slot " + slots.get(0) + " from queue " + queueId)
             slots.removeAt(0)
+        } else {
+            Logger.debug(
+                LOG_ID,
+                "Could not remove current slot from queue " + queueId + " (queue is empty)"
+            )
         }
     }
     fun moveSlotAfterAnother(slotToMove: SlotCode, otherSlot: SlotCode) {
-        // TODO this implementation will not work (updateQueue will revert the change)
+        Logger.debug(
+            LOG_ID,
+            "Moving slot " + slotToMove + " after slot " + otherSlot + " in queue " + queueId +
+                "..."
+        )
         // TODO maybe we should use a more stable approach to store the slots in the queue (maybe
         //  multiple lists and spontaneous slots are sorted by index instead of creation time)
         val slot = slots.find { it.slotCode == slotToMove }
@@ -179,25 +210,46 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                 moveSlotAfterAnother(conflictingSlot.slotCode, slot.slotCode)
             }
         }
+        Logger.debug(LOG_ID, "Slot movement completed")
     }
 
     /** Replaces a slot in the list with a updated slot */
     private fun replaceSlot(oldSlot:Slot, newSlot:Slot) {
+        Logger.debug(
+            LOG_ID,
+            "(internal): Replacing slot " + oldSlot + " with slot " + newSlot + " in queue " +
+                queueId
+        )
         val index = slots.indexOf(oldSlot)
         slots.remove(oldSlot)
         slots.add(index, newSlot)
     }
 
     fun changeAppointmentTime(slotCode: SlotCode, newTime: Date) {
+        Logger.debug(
+            LOG_ID,
+            "Changing appointment time of slot " + slotCode + " to " + newTime + " in queue " +
+                queueId
+        )
         var oldSlot = slots.find { it.slotCode == slotCode }
         if (oldSlot != null) {
             replaceSlot(oldSlot, oldSlot.copy(constructorTime=newTime))
+        } else {
+            Logger.debug(LOG_ID, "Failed to change appointment time (slot does not exist)")
         }
     }
     fun updateSlotLength(slotCode: SlotCode, newLength: Duration) {
+        Logger.debug(
+            LOG_ID,
+            "Changing slot length of slot " + slotCode + " to " + newLength + " in queue " + queueId
+        )
         var oldSlot = slots.find { it.slotCode == slotCode }
         if (oldSlot != null) {
             replaceSlot(oldSlot, oldSlot.copy(expectedDuration=newLength))
+        } else {
+            Logger.debug(LOG_ID, "Failed to change slot length (slot does not exist)")
         }
     }
+
+    override fun toString() = slots.toString()
 }

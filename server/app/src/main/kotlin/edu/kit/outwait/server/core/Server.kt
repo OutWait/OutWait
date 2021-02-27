@@ -4,60 +4,60 @@ import com.corundumstudio.socketio.Configuration
 import com.corundumstudio.socketio.SocketIOServer
 import edu.kit.outwait.server.client.ClientManager
 import edu.kit.outwait.server.management.ManagementManager
+import java.sql.SQLException
 
 class Server {
-    val server: SocketIOServer
-    val clientManager: ClientManager
-    val managementManager: ManagementManager
+    private val server: SocketIOServer
+    private val clientManager: ClientManager
+    private val managementManager: ManagementManager
+    private val LOG_ID = "SERVER"
 
     init {
         // First The database
+        Logger.debug(LOG_ID, "Creating database")
         val databaseWrapper = DatabaseWrapper()
 
+
         // Now the io server
-        val config = Configuration();
-        config.setHostname("0.0.0.0");
-        config.setPort(567);
-        config.setBossThreads(1);
-        config.setWorkerThreads(1);
-        config.pingInterval = 5000;
-        config.pingTimeout = 120000;
+        Logger.debug(LOG_ID, "Creating server (socketIO)")
+        val config = Configuration()
+        config.setHostname("0.0.0.0")
+        config.setPort(567)
+        config.setBossThreads(1)
+        config.setWorkerThreads(1)
+        config.pingInterval = 5000
+        config.pingTimeout = 120000
 
-        server = SocketIOServer(config);
+        server = SocketIOServer(config)
 
-        val clientNamespace = server.addNamespace("/client");
-        val managementNamespace = server.addNamespace("/management");
+        Logger.debug(LOG_ID, "Creating namespaces")
+        val clientNamespace = server.addNamespace("/client")
+        val managementNamespace = server.addNamespace("/management")
 
         // Finally our own classes
+        Logger.debug(LOG_ID, "Creating managers")
         clientManager = ClientManager(clientNamespace, databaseWrapper)
         managementManager = ManagementManager(managementNamespace, databaseWrapper)
+
+        Logger.info(LOG_ID, "Server initialized")
     }
 
     fun run() {
-        println("Hello World from server!")
-
-        // DEBUG terminate the server after 10 seconds
-        /* java.util
-         *            .Timer()
-         *            .schedule(
-         *                object : java.util.TimerTask() {
-         *                    override fun run() {
-         *                        stop()
-         *                        System.exit(0)
-         *                    }
-         *                },
-         *                10000
-         *            ) */
-
+        Logger.info(LOG_ID, "Starting server...")
         server.start()
+        Logger.info(LOG_ID, "Server started.")
     }
 
     fun stop() {
+        Logger.info(LOG_ID, "Stopping server...")
         server.stop()
+        Logger.info(LOG_ID, "Starting stopped.")
     }
 }
 
 fun main() {
+    Logger.debug("MAIN", "Entry point reached")
     val server = Server()
     server.run()
+    Logger.debug("MAIN", "Main terminated")
 }

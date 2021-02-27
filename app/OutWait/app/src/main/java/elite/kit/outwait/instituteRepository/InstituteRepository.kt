@@ -6,7 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.clientRepository.ClientErrors
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.customDataTypes.Preferences
+import elite.kit.outwait.instituteDatabase.facade.InstituteDBFacade
 import elite.kit.outwait.remoteDataSource.ManagementHandler
+import elite.kit.outwait.remoteDataSource.ManagementServerErrors
 import elite.kit.outwait.waitingQueue.gravityQueue.FixedGravitySlot
 import elite.kit.outwait.waitingQueue.gravityQueue.GravityQueueConverter
 import elite.kit.outwait.waitingQueue.gravityQueue.SpontaneousGravitySlot
@@ -24,11 +26,28 @@ import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
 @Singleton
-class InstituteRepository @Inject constructor(private val remote: ManagementHandler) {
+class InstituteRepository @Inject constructor(
+    private val remote: ManagementHandler,
+    private val db: InstituteDBFacade
+    ) {
+
+    private val auxHelper = AuxHelper(db)
 
     init {
         remote.getErrors().observeForever {
+            if (it.isNotEmpty()){
+                when (it.last()){
 
+                    ManagementServerErrors.LOGIN_DENIED
+                        -> pushError(InstituteErrors.LOGIN_DENIED)
+
+                    ManagementServerErrors.TRANSACTION_DENIED
+                        -> doNothing()//error wird in Methode transaction() über Rückgabewert behandelt
+
+                    else
+                        -> doNothing()
+                }
+            }
         }
     }
 
@@ -49,6 +68,7 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
 
 
     private var communicationEstablished = false
+
 
     fun login(username: String, password: String){
         CoroutineScope(IO).launch {
@@ -79,7 +99,13 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
         CoroutineScope(IO).launch {
             remote.logout()
         }
+        //TODO Reset Repo completely
+
         loggedIn.value=false
+        //preferences.value = null
+        //timeSlotList.value = null
+        inTransaction.value = false
+        //communicationEstablished = false
     }
 
     fun changePreferences(
@@ -133,15 +159,27 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
     }
 
     fun moveSlotAfterAnother(movedSlot: String, otherSlot: String){
-
+        CoroutineScope(IO).launch {
+            if (transaction()){
+                remote.moveSlotAfterAnother(movedSlot, otherSlot)
+            }
+        }
     }
 
     fun endCurrentSlot(){
-
+        CoroutineScope(IO).launch {
+            if (transaction()){
+                remote.endCurrentSlot()
+            }
+        }
     }
 
     fun deleteSlot(slotCode : String){
-
+        CoroutineScope(IO).launch {
+            if (transaction()){
+                remote.deleteSlot(slotCode)
+            }
+        }
     }
 
     fun changeFixedSlotInfo(slotCode : String, duration : Duration, auxiliaryIdentifier : String ,newAppointmentTime : DateTime){
@@ -154,19 +192,36 @@ class InstituteRepository @Inject constructor(private val remote: ManagementHand
     }
 
     fun saveTransaction(){
-
+        if (inTransaction.value == true){
+            CoroutineScope(IO).launch {
+                remote.saveTransaction()
+            }
+            inTransaction.value = false
+        }
+        else{
+            pushError(InstituteErrors.NOT_IN_TRANSACTION)
+        }
     }
 
     fun abortTransaction(){
-
+        if (inTransaction.value == true){
+            CoroutineScope(IO).launch {
+                remote.abortTransaction()
+            }
+            inTransaction.value = false
+        }
+        else{
+            pushError(InstituteErrors.NOT_IN_TRANSACTION)
+        }
     }
 
     fun passwordForgotten(username : String){
-
+        CoroutineScope(IO).launch {
+            remote.resetPassword(username)
+        }
     }
 
-    fun doSomething(){
-        Log.d("InstituteRepo", "method DoSomething is reached in FR2")
+    private fun doNothing(){
     }
 
     private suspend fun transaction(): Boolean{

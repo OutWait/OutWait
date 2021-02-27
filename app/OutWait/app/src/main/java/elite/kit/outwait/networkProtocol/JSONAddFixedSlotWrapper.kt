@@ -11,10 +11,11 @@ class JSONAddFixedSlotWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) 
 
     constructor(duration: Duration, appointmentTime: DateTime) : this(JSONObject()) {
 
-        val timeStamp: Long = appointmentTime.millis
+        val timeStampDuration: Long = duration.millis
+        val timeStampAppointment: Long = appointmentTime.millis
 
-        jsonObj.put(DURATION, duration)
-        jsonObj.put(APPOINTMENT_TIME, timeStamp)
+        jsonObj.put(DURATION, timeStampDuration)
+        jsonObj.put(APPOINTMENT_TIME, timeStampAppointment)
     }
 
 }

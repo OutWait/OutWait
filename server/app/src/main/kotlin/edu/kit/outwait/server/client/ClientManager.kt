@@ -1,5 +1,6 @@
 package edu.kit.outwait.server.client
 
+import edu.kit.outwait.server.core.Logger
 import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.SocketIONamespace
 import edu.kit.outwait.server.core.AbstractManager
@@ -20,6 +21,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
     AbstractManager(namespace, databaseWrapper) {
 
     private val clients = mutableListOf<Client>()
+    private val LOG_ID = "CLIENT-MGR"
 
 
     /**
@@ -29,6 +31,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
     init {
         val eventList = listOf<Event>(Event.LISTEN_SLOT, Event.REFRESH_SLOT_APPROX)
         super.configureEventListeners(eventList)
+        Logger.debug(LOG_ID, "Client manager initialized")
     }
 
     /**
@@ -40,6 +43,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
      * @param socketFacade passed to new client-Object
      */
     override fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade) {
+        Logger.debug(LOG_ID, "Binding new socket")
         val client = Client(socketFacade, this)
         clients.add(client)
     }
@@ -51,6 +55,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
      */
     fun removeClient(client: Client) {
         clients.remove(client)
+        Logger.debug(LOG_ID, "Client removed")
     }
 
     /**
@@ -58,6 +63,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
      * @return false if slotCode is invalid else true.
      */
     fun registerReceiver(slotCode: SlotCode, receiver: SlotInformationReceiver): Boolean {
+        Logger.debug(LOG_ID, "Register new receiver")
         return this.databaseWrapper.registerReceiver(receiver, slotCode)
     }
 
@@ -65,6 +71,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
      * Removes a receiver of Client
      */
     fun removeReceiver(receiver: SlotInformationReceiver) {
+        Logger.debug(LOG_ID, "Remove receiver")
         this.databaseWrapper.unregisterReceiver(receiver)
     }
 }

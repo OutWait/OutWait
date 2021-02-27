@@ -1,5 +1,6 @@
 package edu.kit.outwait.server.client
 
+import edu.kit.outwait.server.core.Logger
 import edu.kit.outwait.server.management.ManagementDetails
 import edu.kit.outwait.server.management.SlotManagementInformation
 import edu.kit.outwait.server.slot.SlotCode
@@ -19,9 +20,10 @@ class SlotInformationReceiver(val client: Client, val slotCode: SlotCode) {
     private var slotApprox = Date (0)
     private var slotManagementInformation =
         SlotManagementInformation(ManagementDetails(""), Duration.ZERO, Duration.ZERO)
+    private val LOG_ID = "SLOT-INFO-RECV"
 
     /**
-     * Called by UpdateMediator on change of Slot data TODO: Überprüfung auf Änderung Ja/Nein?
+     * Called by UpdateMediator on change of Slot data
      *
      * @param slotApprox new Slot ETA
      * @param slotManagementInformation new SlotManagementInformation
@@ -33,6 +35,9 @@ class SlotInformationReceiver(val client: Client, val slotCode: SlotCode) {
             this.slotApprox = slotApprox
             this.slotManagementInformation = slotManagementInformation
             client.sendSlotData(slotCode, slotApprox, slotManagementInformation)
+            Logger.debug(LOG_ID, "Updated slot information")
+        } else {
+            Logger.debug(LOG_ID, "Slot information was not updated (has no changes)")
         }
     }
 
@@ -47,11 +52,13 @@ class SlotInformationReceiver(val client: Client, val slotCode: SlotCode) {
 
     /** Called by UpdateMediator if Slot has been ended by management */
     fun end() {
+        Logger.debug(LOG_ID, "Sending slot end")
         client.endSlot(slotCode)
     }
 
     /** Called by UpdateMediator if Slot has been deleted by management */
     fun delete() {
+        Logger.debug(LOG_ID, "Sending slot deletion")
         client.deleteSlot(slotCode)
     }
 }
