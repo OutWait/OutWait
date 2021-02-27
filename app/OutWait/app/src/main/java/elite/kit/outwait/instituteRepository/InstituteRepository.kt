@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import elite.kit.outwait.clientRepository.ClientErrors
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.customDataTypes.Preferences
+import elite.kit.outwait.customDataTypes.ReceivedList
 import elite.kit.outwait.instituteDatabase.facade.InstituteDBFacade
 import elite.kit.outwait.remoteDataSource.ManagementHandler
 import elite.kit.outwait.remoteDataSource.ManagementServerErrors
@@ -72,6 +73,7 @@ class InstituteRepository @Inject constructor(
 
     fun login(username: String, password: String){
         CoroutineScope(IO).launch {
+            db.deleteAll()
             if(communicationEstablished || remote.initCommunication()){
                 if(remote.login(username, password)){
                     observeRemote()
@@ -84,14 +86,23 @@ class InstituteRepository @Inject constructor(
     private suspend fun observeRemote(){
         withContext(Main){
             remote.getReceivedList().observeForever {
-                Log.d("InstiRepo", "receivedList empfangen")
-                val converter = GravityQueueConverter()
-                val timeSlots = converter.receivedListToTimeSlotList(it, HashMap<String, String>())
-                timeSlotList.value = timeSlots
+                receivedNewList(it)
             }
             remote.getUpdatedPreferences().observeForever {
                 preferences.value = it
             }
+        }
+    }
+
+    private fun receivedNewList(receivedList: ReceivedList){
+        CoroutineScope(IO).launch {
+            Log.d("InstiRepo", "receivedList empfangen")
+
+            val timeSlots = GravityQueueConverter().receivedListToTimeSlotList(
+                receivedList,
+                auxHelper.receivedList(receivedList)
+            )
+            timeSlotList.postValue(timeSlots)
         }
     }
 
@@ -136,6 +147,7 @@ class InstituteRepository @Inject constructor(
         CoroutineScope(IO).launch {
             if (transaction()){
                 remote.addSpontaneousSlot(duration, DateTime.now())
+                auxHelper.newAux(auxiliaryIdentifier)
             }
         }
     }
@@ -145,6 +157,7 @@ class InstituteRepository @Inject constructor(
         CoroutineScope(IO).launch {
             if(transaction()){
                 remote.addFixedSlot(duration, appointmentTime)
+                auxHelper.newAux(auxiliaryIdentifier)
             }
         }
     }
