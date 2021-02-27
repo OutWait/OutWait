@@ -14,6 +14,6 @@ class ServiceHandler @Inject constructor(private val context: Context) {
         this.repo = repo
         val serviceIntent = Intent(context, TimerService::class.java)
         ContextCompat.startForegroundService(context, serviceIntent)
-        Log.i("ServiceHandler", "We returned from startOnCommand")
+        Log.i("ServiceHandler", "Service started in ServiceHandler")
     }
 }
