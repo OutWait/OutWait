@@ -50,7 +50,8 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
                 PauseSlotViewHolder(
                     LayoutInflater.from(parent.context).inflate(R.layout.pause_slot, parent, false)
                 )
-            else-> HeaderTransaction(LayoutInflater.from(parent.context).inflate(R.layout.header_transaction, parent, false),listener)
+            else -> HeaderTransaction(LayoutInflater.from(parent.context)
+                .inflate(R.layout.header_transaction, parent, false), listener)
         }
     }
 
@@ -60,7 +61,7 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
             Type.SPONTANEOUS_SLOT.ordinal -> holder.bind(element as TimeSlot)
             Type.FIXED_SLOT.ordinal -> holder.bind(element as TimeSlot)
             Type.PAUSE.ordinal -> holder.bind(element as TimeSlot)
-            Type.HEADER.ordinal->holder.bind(SpontaneousTimeSlot(Interval(20L,22L),"ss","aa"))
+            Type.HEADER.ordinal -> holder.bind(SpontaneousTimeSlot(Interval(20L, 22L), "ss", "aa"))
             else -> throw IllegalArgumentException()
         }
     }
@@ -109,24 +110,27 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
         var nextPos = position - 1
 
         Log.i("newPos", "$nextPos")
-        if (nextPos >= 0 && getItemViewType(nextPos) == Type.PAUSE.ordinal) {
+//        if (nextPos >= 0 && getItemViewType(nextPos) == Type.PAUSE.ordinal) {
 
-            /*while (getItemViewType(nextPos) == Type.PAUSE.ordinal) {
-                //newPos!=0
-                    Log.i("newPos", "$nextPos")
-                nextPos--
-                }*/
+        /*while (getItemViewType(nextPos) == Type.PAUSE.ordinal) {
+            //newPos!=0
+                Log.i("newPos", "$nextPos")
+            nextPos--
+            }*/
 
 //            onItemMove(position, nextPos)
-           /* var movedSlot = slotList[nextPos] as ClientTimeSlot
-            var otherSlot = slotList[nextPos - 1] as ClientTimeSlot
+        ManagementViewFragment.displayingDialog.show()
+        ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode = true
 
-            ManagementViewFragment.movementInfo.value!!.add(movedSlot.slotCode)
-            ManagementViewFragment.movementInfo.value!!.add(otherSlot.slotCode)
-*/
-            ManagementViewFragment.displayingDialog.show()
-            ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode = true
-        }
+        var movedSlot = slotList[position] as ClientTimeSlot
+        var otherSlot = slotList[position - 1] as ClientTimeSlot
+        var list = mutableListOf<String>()
+        list.add("sss")
+        list.add("aaaa")
+        ManagementViewFragment.movementInfo.value = list
+        Log.i("input", "${ManagementViewFragment.movementInfo.value}")
+
+//        }
     }
 
 

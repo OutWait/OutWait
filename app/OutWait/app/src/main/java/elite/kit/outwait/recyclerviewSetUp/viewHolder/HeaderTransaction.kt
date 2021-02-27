@@ -16,12 +16,12 @@ class HeaderTransaction(
     init {
         iconSave.setOnClickListener{
             if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
-                listener.editTimeSlot(absoluteAdapterPosition)
+                listener.saveTransaction()
             }
         }
         iconAbort.setOnClickListener{
             if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
-                listener.editTimeSlot(absoluteAdapterPosition)
+                listener.abortTransaction()
             }
         }
     }

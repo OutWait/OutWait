@@ -2,6 +2,7 @@ package elite.kit.outwait.recyclerviewScreens.managementViewScreen
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -33,8 +34,9 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     companion object{
         lateinit var displayingDialog: AlertDialog
-        var movementInfo = MutableLiveData<MutableList<String>>()
-        }
+        var movementInfo = MutableLiveData(mutableListOf<String>())
+        fun ss() {}
+    }
 
     private lateinit var binding: ManagementViewFragmentBinding
     private lateinit var slotAdapter: SlotAdapter
@@ -82,7 +84,9 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         })
 
         movementInfo.observe(viewLifecycleOwner){
-            viewModel.moveSlotAfterAnother(it.first(),it.last())
+            Log.i("movement","notified")
+            displayingDialog.dismiss()
+//            viewModel.moveSlotAfterAnother(it.first(),it.last())
         }
 
         viewModel.isInTransaction.observe(viewLifecycleOwner){
@@ -90,6 +94,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
                 //TODO easy way with layout above recyclerview layout
 //               slotAdapter.updateSlots(slotAdapter.slotList.add(FIRST_POSITION, HeaderItem(Interval(200L))))
             }
+            //TODO maybe dismiss dialog during to abort
         }
 
 
@@ -116,7 +121,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         return binding.root
     }
 
-    private fun forwarderMove(movedSlot: String, otherSlot: String){
+     fun forwarderMove(movedSlot: String, otherSlot: String){
         viewModel.moveSlotAfterAnother(movedSlot, otherSlot)
     }
 
@@ -217,11 +222,15 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         }
 
         override fun saveTransaction() {
-            viewModel.saveTransaction()
+            Log.i("save","call")
+//            viewModel.saveTransaction()
         }
 
         override fun abortTransaction() {
-            viewModel.abortTransaction()
+            Log.i("abort","call")
+//            viewModel.abortTransaction()
+            displayingDialog.show()
+            displayingDialog.fullScreenProgressBar.indeterminateMode =true
         }
 
 
