@@ -30,7 +30,7 @@ class SocketIOManagementHandler : ManagementHandler {
     /*
     External and internal LiveData (encapsulated with backing property) for current WaitingQueue
     */
-    private val _currentList = MutableLiveData<ReceivedList>()
+    private val _currentList = MutableLiveData<ReceivedList>(null)
     private val currentList: LiveData<ReceivedList>
         get() = _currentList
 
@@ -38,7 +38,7 @@ class SocketIOManagementHandler : ManagementHandler {
     /*
     External and internal LiveData (encapsulated with backing property) for current Preferences
      */
-    private val _currentPrefs = MutableLiveData<Preferences>()
+    private val _currentPrefs = MutableLiveData<Preferences>(null)
     private val currentPrefs: LiveData<Preferences>
         get() = _currentPrefs
 
@@ -52,9 +52,11 @@ class SocketIOManagementHandler : ManagementHandler {
     init {
         mSocket = SocketAdapter(namespaceManagement)
 
+        //TODO @Dennis du kannst das entfernen, die app stürtzt deswegen ab.
+        //habe stattdessen null in den Konstruktor von der Live Data gegeben.
         // initialize the observable LiveData with nulls, so they are immediately gettable
-        this._currentList.value = null
-        this._currentPrefs.value = null
+        //this._currentList.value = null
+        //this._currentPrefs.value = null
 
         // configure HashMap that maps receiving events to callbacks
         managementEventToCallbackMapping[Event.TRANSACTION_STARTED] = { receivedData ->
