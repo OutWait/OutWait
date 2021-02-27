@@ -36,6 +36,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     private val viewModel: ManagementViewViewModel by viewModels()
     private lateinit var binding: ManagementViewFragmentBinding
+    private var firstTime=true
 
     companion object {
         lateinit var displayingDialog: AlertDialog
@@ -75,7 +76,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             var itemList: MutableList<DataItem> = list.toMutableList().map {
                 TimeSlotItem(it)
             }.toMutableList()
-            itemList.add(HeaderItem())
 
             slotAdapter.updateSlots(itemList)
 
@@ -86,15 +86,22 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         movementInfo.observe(viewLifecycleOwner) {
             Log.i("movement", "notified")
             displayingDialog.dismiss()
-//            viewModel.moveSlotAfterAnother(it.first(),it.last())
+            if(!firstTime){
+                viewModel.moveSlotAfterAnother(it.first(),it.last())
+                firstTime=false
+            }
         }
 
         viewModel.isInTransaction.observe(viewLifecycleOwner) {
-            if (it) {
-                //TODO easy way with layout above recyclerview layout
-//               slotAdapter.updateSlots(slotAdapter.slotList.add(FIRST_POSITION, HeaderItem(Interval(200L))))
+            if(!firstTime) {
+                Log.i("transaction","$it")
+                if (it) {
+                    slotAdapter.slotList.add(FIRST_POSITION, HeaderItem())
+                } else {
+                    slotAdapter.slotList.removeAt(FIRST_POSITION)
+                }
+                firstTime=false
             }
-            //TODO maybe dismiss dialog during to abort
         }
 
 
@@ -133,11 +140,11 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             Snackbar.make(binding.slotList, "${getIdentifier(removedSlot)}", Snackbar.LENGTH_LONG)
                 .setAction(getString(
                     R.string.undo)) {
-                    slotAdapter.slotList.add(position, removedSlot as DataItem)
+                    slotAdapter.slotList.add(position, TimeSlotItem(removedSlot))
                     slotAdapter.notifyItemInserted(position)
                     slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 1)
-                    displayingDialog.show()
-                    displayingDialog.fullScreenProgressBar.indeterminateMode = true
+                    /*displayingDialog.show()
+                    displayingDialog.fullScreenProgressBar.indeterminateMode = true*/
                 }
 
         resetDelete.addCallback(object : Callback() {
@@ -166,7 +173,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     override fun editTimeSlot(position: Int) {
         var editDialog =
-            EditTimeSlotDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
+            EditTimeSlotDialogFragment((slotAdapter.slotList[position] as TimeSlotItem).timeSlot as ClientTimeSlot)
         editDialog.show(childFragmentManager, "aaa")
     }
 

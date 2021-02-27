@@ -106,11 +106,11 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
 
     override fun onItemSwiped(position: Int) {
         Log.i("swipe", "swipeeeeeeeeeeeeeeeeeeeeeeeeeee $position ")
-        var removedSlot = slotList[position] as TimeSlot
+        var removedSlot = (slotList[position] as TimeSlotItem).timeSlot
         slotList.removeAt(position)
         notifyItemRemoved(position)
         notifyItemRangeChanged(0, slotList.size - 2)
-        listener.onItemSwiped(position, removedSlot)
+        listener.onItemSwiped(position, removedSlot as TimeSlot)
     }
 
     override fun skipPauseSlots(position: Int) {
