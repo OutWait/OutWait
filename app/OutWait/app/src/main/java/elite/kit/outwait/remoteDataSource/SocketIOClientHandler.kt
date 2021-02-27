@@ -32,22 +32,22 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         cSocket = SocketAdapter(namespaceClient)
 
         // configure HashMap that maps receiving events to callbacks
-        clientEventToCallbackMapping[Event.SEND_SLOT_DATA] = { receivedData ->
+        clientEventToCallbackMapping[Event.SEND_SLOT_DATA_C] = { receivedData ->
             onSendSlotData(receivedData as JSONSlotDataWrapper)
         }
-        clientEventToCallbackMapping[Event.READY_TO_SERVE] = { receivedData ->
+        clientEventToCallbackMapping[Event.READY_TO_SERVE_C] = { receivedData ->
             onReadyToServe(receivedData as JSONEmptyWrapper)
         }
-        clientEventToCallbackMapping[Event.END_SLOT] = { receivedData ->
+        clientEventToCallbackMapping[Event.END_SLOT_C] = { receivedData ->
             onEndSlot(receivedData as JSONSlotCodeWrapper)
         }
-        clientEventToCallbackMapping[Event.DELETE_SLOT] = { receivedData ->
+        clientEventToCallbackMapping[Event.DELETE_SLOT_C] = { receivedData ->
             onDeleteSlot(receivedData as JSONSlotCodeWrapper)
         }
-        clientEventToCallbackMapping[Event.INVALID_CODE] = { receivedData ->
+        clientEventToCallbackMapping[Event.INVALID_CODE_C] = { receivedData ->
             onInvalidCode(receivedData as JSONEmptyWrapper)
         }
-        clientEventToCallbackMapping[Event.INVALID_REQUEST] = { receivedData ->
+        clientEventToCallbackMapping[Event.INVALID_REQUEST_C] = { receivedData ->
             onInvalidRequest(receivedData as JSONErrorMessageWrapper)
         }
     }
