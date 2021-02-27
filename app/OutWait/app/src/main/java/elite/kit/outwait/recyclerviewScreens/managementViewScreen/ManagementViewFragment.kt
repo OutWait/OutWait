@@ -39,17 +39,14 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
     private val viewModel: ManagmentViewViewModel by viewModels()
     private lateinit var binding: ManagementViewFragmentBinding
 
-    companion object{
+    companion object {
         lateinit var displayingDialog: AlertDialog
         var movementInfo = MutableLiveData<MutableList<String>>()
-        }
+    }
 
     private lateinit var slotAdapter: SlotAdapter
-    private lateinit var builder:AlertDialog.Builder
-    private var CURREND_SLOT1=0
-    private var CURREND_SLOT2=1
-    private var FIRST_POSITION=0
-
+    private lateinit var builder: AlertDialog.Builder
+    private var FIRST_POSITION = 0
 
 
     override fun onCreateView(
@@ -71,7 +68,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             setTitle(getString(R.string.process_title))
             setCancelable(true)
         }
-        displayingDialog=builder.create()
+        displayingDialog = builder.create()
 
 
         viewModel.slotQueue.observe(viewLifecycleOwner) { list ->
@@ -80,17 +77,15 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             displayingDialog.dismiss()
         }
 
-        movementInfo.observe(viewLifecycleOwner){
-            viewModel.moveSlotAfterAnother(it.first(),it.last())
+        movementInfo.observe(viewLifecycleOwner) {
+            viewModel.moveSlotAfterAnother(it.first(), it.last())
         }
 
-        viewModel.isInTransaction.observe(viewLifecycleOwner){
-            if(it){
+        viewModel.isInTransaction.observe(viewLifecycleOwner) {
+            if (it) {
                 //TODO easy way with layout above recyclerview layout
-//               slotAdapter.updateSlots(slotAdapter.slotList.add(FIRST_POSITION,HeaderTransaction()).toMutableList())
             }
         }
-
 
 
         //Add listener for recyclerview
@@ -112,7 +107,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         return binding.root
     }
 
-    private fun forwarderMove(movedSlot: String, otherSlot: String){
+    private fun forwarderMove(movedSlot: String, otherSlot: String) {
         viewModel.moveSlotAfterAnother(movedSlot, otherSlot)
     }
 
@@ -121,7 +116,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             SlotDetailDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
         detailDialog.show(childFragmentManager, "ssss")
     }
-
 
 
     override fun onItemSwiped(position: Int, removedSlot: TimeSlot) {
@@ -134,19 +128,16 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
                     slotAdapter.notifyItemInserted(position)
                     slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 1)
                     displayingDialog.show()
-                    displayingDialog.fullScreenProgressBar.indeterminateMode =true
-
-//        viewModel.notifyDelteSlot()
-//        viewModel.notifyEndCurrentSlot()
+                    displayingDialog.fullScreenProgressBar.indeterminateMode = true
                 }
 
         resetDelete.addCallback(object : Callback() {
             override fun onDismissed(snackbar: Snackbar, event: Int) {
                 super.onDismissed(snackbar, event)
                 if (event == DISMISS_EVENT_TIMEOUT) {
-                    notifyDeleteSlot(position,removedSlot)
+                    notifyDeleteSlot(position, removedSlot)
                     displayingDialog.show()
-                    displayingDialog.fullScreenProgressBar.indeterminateMode =true
+                    displayingDialog.fullScreenProgressBar.indeterminateMode = true
                 }
             }
         })
@@ -156,8 +147,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
     private fun notifyDeleteSlot(position: Int, removedSlot: TimeSlot) {
         var removedClientSlot = removedSlot as ClientTimeSlot
         when (position) {
-            //TODO check delete slot first then after header slot (also first)
-            CURREND_SLOT1, CURREND_SLOT2 -> viewModel.endCurrendSlot()
+            FIRST_POSITION -> viewModel.endCurrendSlot()
             else -> viewModel.deleteSlot(removedClientSlot.slotCode)
         }
     }
@@ -169,48 +159,47 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
     }
 
 
-        private fun getIdentifier(slot: TimeSlot): String {
-            //Guarantee slot is only fixed or spo by GUI
-            return (slot as ClientTimeSlot).auxiliaryIdentifier
-        }
+    private fun getIdentifier(slot: TimeSlot): String {
+        //Guarantee slot is only fixed or spo by GUI
+        return (slot as ClientTimeSlot).auxiliaryIdentifier
+    }
 
-        override fun saveTransaction() {
-            viewModel.saveTransaction()
-        }
+    override fun saveTransaction() {
+        viewModel.saveTransaction()
+    }
 
-        override fun abortTransaction() {
-            viewModel.abortTransaction()
-        }
-
-
-        override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-            super.onCreateOptionsMenu(menu, inflater)
-            inflater?.inflate(R.menu.overflow, menu)
-
-        }
+    override fun abortTransaction() {
+        viewModel.abortTransaction()
+    }
 
 
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            viewModel.navigateToConfigDialog()
-            return true
-        }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.overflow, menu)
 
-        private fun exitApp() {
-            val callback: OnBackPressedCallback =
-                object : OnBackPressedCallback(true) {
+    }
 
-                    override fun handleOnBackPressed() {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        viewModel.navigateToConfigDialog()
+        return true
+    }
+
+    private fun exitApp() {
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+
+                override fun handleOnBackPressed() {
 
 
-                        Toast.makeText(context,
-                            "Please only possibility to logout",
-                            Toast.LENGTH_LONG)
-                            .show()
+                    Toast.makeText(context,
+                        "Please only possibility to logout",
+                        Toast.LENGTH_LONG)
+                        .show()
 
-                    }
                 }
+            }
 
-            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
 
 }

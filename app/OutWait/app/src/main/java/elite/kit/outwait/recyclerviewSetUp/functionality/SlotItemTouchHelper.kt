@@ -24,8 +24,6 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
         //TODO ehance algo to skip pause slots
         if (isViewHolderEnabledForDrag(viewHolder)) {
             if (viewHolder.absoluteAdapterPosition != -1) {
-                //Maybe oldPos is useless
-
                     Log.i("first case", "${viewHolder.absoluteAdapterPosition}")
                     adapter.skipPauseSlots(viewHolder.absoluteAdapterPosition)
 

@@ -108,6 +108,7 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
         var nextPos = position - 1
 
         Log.i("newPos", "$nextPos")
+        //TODO move to first position show dialog (except)
         if (nextPos >= 0 && getItemViewType(nextPos) == Type.PAUSE.ordinal) {
 
             /*while (getItemViewType(nextPos) == Type.PAUSE.ordinal) {
@@ -116,7 +117,7 @@ class SlotAdapter(slotList: MutableList<TimeSlot>, private val listener: ItemAct
                 nextPos--
                 }*/
 
-            onItemMove(position, nextPos)
+//            onItemMove(position, nextPos)
            /* var movedSlot = slotList[nextPos] as ClientTimeSlot
             var otherSlot = slotList[nextPos - 1] as ClientTimeSlot
 

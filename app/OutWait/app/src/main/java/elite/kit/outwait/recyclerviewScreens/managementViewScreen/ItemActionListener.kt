@@ -8,5 +8,4 @@ interface ItemActionListener {
     fun editTimeSlot(position: Int)
     fun saveTransaction()
     fun abortTransaction()
-
 }
