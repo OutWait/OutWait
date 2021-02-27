@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
+import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ItemActionListener
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 
@@ -25,7 +26,7 @@ class HeaderTransaction(
             }
         }
     }
-    override fun bind(item: TimeSlot) {
+    override fun bind(item: TimeSlotItem) {
         item.getType()
     }
 }

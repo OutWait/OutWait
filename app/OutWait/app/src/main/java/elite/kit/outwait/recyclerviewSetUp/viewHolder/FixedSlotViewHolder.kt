@@ -5,6 +5,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
+import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ItemActionListener
 import elite.kit.outwait.waitingQueue.timeSlotModel.FixedTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
@@ -29,8 +30,8 @@ class FixedSlotViewHolder(private var itemView: View, listener: ItemActionListen
         }
     }
 
-    override fun bind(item: TimeSlot) {
-        identifier.text = (item as FixedTimeSlot).auxiliaryIdentifier
-        slotCode.text = item.slotCode
+    override fun bind(item: TimeSlotItem) {
+        identifier.text = (item.timeSlot as FixedTimeSlot).auxiliaryIdentifier
+        slotCode.text = (item.timeSlot as FixedTimeSlot).slotCode
     }
 }

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
 import elite.kit.outwait.dataItem.DataItem
+import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ItemActionListener
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.FixedSlotViewHolder
@@ -65,10 +66,10 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
         val element = slotList!![position]
         when (slotList!![position].getType().ordinal) {
 
-            Type.SPONTANEOUS_SLOT.ordinal -> holder.bind(element as TimeSlot)
-            Type.FIXED_SLOT.ordinal -> holder.bind(element as TimeSlot)
-            Type.PAUSE.ordinal -> holder.bind(element as TimeSlot)
-            Type.HEADER.ordinal -> holder.bind(SpontaneousTimeSlot(Interval(20L, 22L), "ss", "aa"))
+            Type.SPONTANEOUS_SLOT.ordinal -> holder.bind(element as TimeSlotItem)
+            Type.FIXED_SLOT.ordinal -> holder.bind(element as TimeSlotItem)
+            Type.PAUSE.ordinal -> holder.bind(element as TimeSlotItem)
+            Type.HEADER.ordinal -> holder.bind(TimeSlotItem(SpontaneousTimeSlot(Interval(20L, 22L), "ss", "aa")))
             else -> throw IllegalArgumentException()
         }
     }
@@ -129,11 +130,11 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
         ManagementViewFragment.displayingDialog.show()
         ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode = true
 
-        var movedSlot = slotList[position] as ClientTimeSlot
-        var otherSlot = slotList[position - 1] as ClientTimeSlot
+        var movedSlot = ((slotList[position] as TimeSlotItem).timeSlot as ClientTimeSlot).slotCode
+        var otherSlot = ((slotList[position-1] as TimeSlotItem).timeSlot as ClientTimeSlot).slotCode
         var list = mutableListOf<String>()
-        list.add(movedSlot.slotCode)
-        list.add(otherSlot.slotCode)
+        list.add(movedSlot)
+        list.add(otherSlot)
         ManagementViewFragment.movementInfo.value = list
         Log.i("input", "${ManagementViewFragment.movementInfo.value}")
 

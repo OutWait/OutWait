@@ -122,7 +122,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     override fun onItemClicked(position: Int) {
         var detailDialog =
-            SlotDetailDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
+            SlotDetailDialogFragment((slotAdapter.slotList[position] as TimeSlotItem).timeSlot as ClientTimeSlot)
         detailDialog.show(childFragmentManager, "ssss")
     }
 
@@ -133,7 +133,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             Snackbar.make(binding.slotList, "${getIdentifier(removedSlot)}", Snackbar.LENGTH_LONG)
                 .setAction(getString(
                     R.string.undo)) {
-                    slotAdapter.slotList.add(position, removedSlot)
+                    slotAdapter.slotList.add(position, removedSlot as DataItem)
                     slotAdapter.notifyItemInserted(position)
                     slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 1)
                     displayingDialog.show()
