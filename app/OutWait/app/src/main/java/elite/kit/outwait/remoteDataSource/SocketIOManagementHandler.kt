@@ -69,7 +69,7 @@ class SocketIOManagementHandler : ManagementHandler {
             onLoginRequest(receivedData as JSONEmptyWrapper)
         }
         managementEventToCallbackMapping[Event.INVALID_REQUEST] = { receivedData ->
-            onInvalidRequest(receivedData as JSONInvalidRequestWrapper)
+            onInvalidRequest(receivedData as JSONErrorMessageWrapper)
         }
         managementEventToCallbackMapping[Event.MANAGEMENT_LOGIN_SUCCESS] = { receivedData ->
             onLoginSuccess(receivedData as JSONEmptyWrapper)
@@ -318,7 +318,7 @@ class SocketIOManagementHandler : ManagementHandler {
         this.loginRequested = true
     }
 
-    private fun onInvalidRequest(wrappedJSONData: JSONInvalidRequestWrapper) {
+    private fun onInvalidRequest(wrappedJSONData: JSONErrorMessageWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
         TODO("Fehlermeldung werfen (sonst noch was?)")
     }

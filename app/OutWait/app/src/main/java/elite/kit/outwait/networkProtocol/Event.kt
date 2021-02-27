@@ -13,7 +13,7 @@ enum class Event(private val eventString: String,
     END_SLOT("endSlot@C", { JSONSlotCodeWrapper(it) }),
     DELETE_SLOT("deleteSlot@C", { JSONSlotCodeWrapper(it) }),
     INVALID_CODE("invalidCode@C", { JSONEmptyWrapper(it) }),
-    INVALID_REQUEST("invalidRequest@C", { JSONInvalidRequestWrapper(it)}),
+    INVALID_REQUEST("invalidRequest@C", { JSONErrorMessageWrapper(it)}),
 
     MANAGEMENT_LOGIN("managementLogin@S", { JSONLoginWrapper(it) }),
     MANAGEMENT_LOGOUT("managementLogout@S", { JSONEmptyWrapper(it) }),

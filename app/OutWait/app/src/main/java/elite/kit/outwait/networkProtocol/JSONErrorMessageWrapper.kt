@@ -6,7 +6,7 @@ import org.json.JSONObject
 /*
 Has no secondary constructor, as we only receive the wrapped JSONObject
  */
-class JSONInvalidRequestWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
+class JSONErrorMessageWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
 
     fun getErrorMessage(): String {
         return jsonObj.getString(ERROR_MESSAGE)

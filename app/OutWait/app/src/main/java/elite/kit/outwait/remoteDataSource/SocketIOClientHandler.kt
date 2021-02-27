@@ -48,7 +48,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
             onInvalidCode(receivedData as JSONEmptyWrapper)
         }
         clientEventToCallbackMapping[Event.INVALID_REQUEST] = { receivedData ->
-            onInvalidRequest(receivedData as JSONInvalidRequestWrapper)
+            onInvalidRequest(receivedData as JSONErrorMessageWrapper)
         }
     }
 
@@ -156,7 +156,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     }
 
     //TODO Fehlermeldung werfen? LiveData Error? Welche Fehlermeldung kommen rein und wie verarbeiten?
-    private fun onInvalidRequest(wrappedJSONData: JSONInvalidRequestWrapper) {
+    private fun onInvalidRequest(wrappedJSONData: JSONErrorMessageWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
     }
 
