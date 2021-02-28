@@ -51,7 +51,7 @@ class TimerService @Inject constructor(): LifecycleService() {
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(serviceChannel1)
         }
-        Log.i( "ForegroundService", "Permanent notifChannel was created")
+        Log.i( "TimerService", "Permanent notifChannel was created")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel2 = NotificationChannel(
@@ -64,6 +64,8 @@ class TimerService @Inject constructor(): LifecycleService() {
         }
         Log.i("ForegroundService", "Second NotifChannel was created")
         db.getAllClientInfoObservable()
+        Log.i("TimerService", "Second NotifChannel was created")
+
 
     }
 
@@ -75,7 +77,7 @@ class TimerService @Inject constructor(): LifecycleService() {
         val pendingIntent = PendingIntent.getActivity(this,
             0, notificationIntent, 0)
 
-        // Baue die (permanente) Notification für den ForegroundService
+        // Baue die (permanente) Notification für den TimerService
         val notification: Notification = NotificationCompat.Builder(this, getString(R.string.permanentChannel))
             .setContentTitle("Example Service")
             .setContentText("example text")
@@ -84,12 +86,12 @@ class TimerService @Inject constructor(): LifecycleService() {
             .build()
 
         startForeground(1, notification)
-        Log.i("ForegroundService", "service was started")
+        Log.i("TimerService", "service was started")
 
         //TODO Background Work auf Nebenthread /susp function
         //here: do "heavy work" on a background thread
         //doWork()
-        stopSelf()
+        //stopSelf()
 
         //TODO mit was returnen sticky oder redeliver_intent?
         // mit was returned super.onStartCommand?
@@ -104,17 +106,15 @@ class TimerService @Inject constructor(): LifecycleService() {
      */
     override fun onDestroy() {
         super.onDestroy()
-        Log.i("ForegroundService", "Service onDestroy was called")
+        Log.i("TimerService", "Service onDestroy was called")
     }
 
     private fun doWork() {
-        Log.i("ForegroundService", "backgroundWork was started")
-
-        // TODO TESTTESTTESTTEST
-        stopSelf()
-        //TODO TESTETSSETSETEST
-
+        Log.i("TimerService", "backgroundWork was started")
+        // TODO >>>>>>>>>>>>AUF DB KANN NOCH NICHT ZUGEGRIFFEN WERDEN <<<<<<<<<<<<<<<<
         allClientInfoAsLiveData = db.getAllClientInfoObservable()
+        Log.i("TimerService", "db was accessed")
+        // TODO >>>>>>>>>>>>AUF DB KANN NOCH NICHT ZUGEGRIFFEN WERDEN <<<<<<<<<<<<<<<<
 
         val allClientInfo = allClientInfoAsLiveData.value
         if (allClientInfo == null || allClientInfo.isEmpty()) {

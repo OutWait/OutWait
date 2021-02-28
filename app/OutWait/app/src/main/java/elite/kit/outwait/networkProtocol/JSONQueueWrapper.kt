@@ -18,8 +18,6 @@ class JSONQueueWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
         val spontaneousSlots: MutableList<SpontaneousSlot> = mutableListOf()
         val fixedSlots: MutableList<FixedSlot> = mutableListOf()
 
-        // TODO Falls JSON-Arrays leer sind, hier noch was abzufangen?
-
         val parsedSlotOrder = jsonObj.getJSONArray(SLOT_ORDER)
         // Iterate over the JSON Array, retrieving the slotCodes
         // JSON Array does not seem to expose an iterator so we use a for loop

@@ -52,35 +52,33 @@ class SocketIOManagementHandler : ManagementHandler {
     init {
         mSocket = SocketAdapter(namespaceManagement)
 
-        //TODO @Dennis du kannst das entfernen, die app stürtzt deswegen ab.
-        //habe stattdessen null in den Konstruktor von der Live Data gegeben.
-        // initialize the observable LiveData with nulls, so they are immediately gettable
-        //this._currentList.value = null
-        //this._currentPrefs.value = null
 
         // configure HashMap that maps receiving events to callbacks
-        managementEventToCallbackMapping[Event.TRANSACTION_STARTED] = { receivedData ->
+        managementEventToCallbackMapping[Event.TRANSACTION_STARTED_M] = { receivedData ->
             onTransactionStarted(receivedData as JSONEmptyWrapper)
         }
-        managementEventToCallbackMapping[Event.TRANSACTION_DENIED] = { receivedData ->
+        managementEventToCallbackMapping[Event.TRANSACTION_DENIED_M] = { receivedData ->
             onTransactionDenied(receivedData as JSONEmptyWrapper)
         }
-        managementEventToCallbackMapping[Event.LOGIN_REQUEST] = { receivedData ->
+        managementEventToCallbackMapping[Event.LOGIN_REQUEST_M] = { receivedData ->
             onLoginRequest(receivedData as JSONEmptyWrapper)
         }
-        managementEventToCallbackMapping[Event.INVALID_REQUEST] = { receivedData ->
-            onInvalidRequest(receivedData as JSONInvalidRequestWrapper)
+        managementEventToCallbackMapping[Event.INVALID_REQUEST_M] = { receivedData ->
+            onInvalidRequest(receivedData as JSONErrorMessageWrapper)
         }
-        managementEventToCallbackMapping[Event.MANAGEMENT_LOGIN_SUCCESS] = { receivedData ->
+        managementEventToCallbackMapping[Event.INTERNAL_SERVER_ERROR_M] = { receivedData ->
+            onInternalServerError(receivedData as JSONErrorMessageWrapper)
+        }
+        managementEventToCallbackMapping[Event.MANAGEMENT_LOGIN_SUCCESS_M] = { receivedData ->
             onLoginSuccess(receivedData as JSONEmptyWrapper)
         }
-        managementEventToCallbackMapping[Event.MANAGEMENT_LOGIN_DENIED] = { receivedData ->
+        managementEventToCallbackMapping[Event.MANAGEMENT_LOGIN_DENIED_M] = { receivedData ->
             onLoginDenied(receivedData as JSONEmptyWrapper)
         }
-        managementEventToCallbackMapping[Event.UPDATE_MANAGEMENT_SETTINGS] = { receivedData ->
+        managementEventToCallbackMapping[Event.UPDATE_MANAGEMENT_SETTINGS_M] = { receivedData ->
             onUpdateManagementSettings(receivedData as JSONManagementSettingsWrapper)
         }
-        managementEventToCallbackMapping[Event.UPDATE_QUEUE] = { receivedData ->
+        managementEventToCallbackMapping[Event.UPDATE_QUEUE_M] = { receivedData ->
             onUpdateQueue(receivedData as JSONQueueWrapper)
         }
     }
@@ -318,9 +316,16 @@ class SocketIOManagementHandler : ManagementHandler {
         this.loginRequested = true
     }
 
-    private fun onInvalidRequest(wrappedJSONData: JSONInvalidRequestWrapper) {
+    //TODO Muss und wenn ja, wie errorMessage an Repo hochreichen?
+    private fun onInvalidRequest(wrappedJSONData: JSONErrorMessageWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
-        TODO("Fehlermeldung werfen (sonst noch was?)")
+        pushError(ManagementServerErrors.INVALID_REQUEST)
+    }
+
+    //TODO Muss und wenn ja, wie errorMessage an Repo hochreichen?
+    private fun onInternalServerError(wrappedJSONData: JSONErrorMessageWrapper) {
+        val errorMessage = wrappedJSONData.getErrorMessage()
+        pushError(ManagementServerErrors.INTERNAL_SERVER_ERROR)
     }
 
     private fun onLoginSuccess(wrappedJSONData: JSONEmptyWrapper) {
@@ -330,10 +335,8 @@ class SocketIOManagementHandler : ManagementHandler {
     private fun onLoginDenied(wrappedJSONData: JSONEmptyWrapper) {
         this.loginDenied = true
         pushError(ManagementServerErrors.LOGIN_DENIED)
-        //hab hier mal einen push ans Repo eingefügt (B)
-        //TODO("Server will hier Verbindung abbrechen?!! Was tun? (siehe gitlab issue)")
 
-        //TODO Bisher Rückeldung ans Repo über Return Type von login()
+        //TODO("Server will hier Verbindung abbrechen?!! Was tun? (siehe gitlab issue)")
     }
 
 
