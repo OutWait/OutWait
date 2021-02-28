@@ -79,7 +79,6 @@ class ConfigDialogFragment : Fragment() {
             displayingDialog.show()
 
         } else if (viewModel.slotListSize == 0 && viewModel.isModeTwo != binding.sMode.isChecked ) {
-            Log.i("fehler", "getroffen")
             viewModel.saveConfigValues(Duration(binding.configStandardDuration.duration),
                 Duration(binding.configDurationNotification.duration),
                 Duration(binding.configDelayDuration.duration),
