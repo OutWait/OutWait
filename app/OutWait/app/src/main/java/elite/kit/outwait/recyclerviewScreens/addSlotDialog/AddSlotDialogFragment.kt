@@ -37,6 +37,7 @@ class AddSlotDialogFragment : DialogFragment() {
         setUpPicker()
         defaultValues()
 
+        //TODO set default duration trough preferences
 
         builder.apply {
             setView(binding.root)
@@ -72,12 +73,12 @@ class AddSlotDialogFragment : DialogFragment() {
 
     private fun setSpontaneousSlotValues() {
         viewModel.interval.value =
-            TransformationInput.formatInterval(binding.timeDurationInput.duration)
+            TransformationInput.formatInterval(binding.addSlotDuration.duration)
     }
 
     private fun setFixedSlotValues() {
         viewModel.interval.value =
-            TransformationInput.formatInterval(binding.timeDurationInput.duration)
+            TransformationInput.formatInterval(binding.addSlotDuration.duration)
         viewModel.appointmentTime.value =
             TransformationInput.formatDateTime(binding.tpAppointmentTime.hour,
                 binding.tpAppointmentTime.minute)
@@ -96,11 +97,11 @@ class AddSlotDialogFragment : DialogFragment() {
         viewModel.isModeTwo.value=viewModel.preferences.value!!.mode==Mode.TWO
         viewModel.interval.value=Interval(0L,viewModel.preferences.value!!.defaultSlotDuration.millis)
 
-        binding.timeDurationInput.duration = viewModel.interval.value!!.toDurationMillis()
+        binding.addSlotDuration.duration = viewModel.interval.value!!.toDurationMillis()
     }
 
     private fun setUpPicker() {
-        binding.timeDurationInput.setTimeUnits(TimeDurationPicker.HH_MM)
+        binding.addSlotDuration.setTimeUnits(TimeDurationPicker.HH_MM)
         binding.tpAppointmentTime.setIs24HourView(true)
     }
 

@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,6 +16,8 @@ import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.databinding.ConfigDialogFragmentBinding
 import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.joda.time.Duration
+import java.util.concurrent.TimeUnit
+import kotlin.time.toDuration
 
 @AndroidEntryPoint
 class ConfigDialogFragment : Fragment() {
@@ -32,11 +35,9 @@ class ConfigDialogFragment : Fragment() {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.config_dialog_fragment, container, false)
         binding.viewModel = this.viewModel
-        binding.lifecycleOwner=viewLifecycleOwner
+        binding.lifecycleOwner = viewLifecycleOwner
 
 
-        //Setup format
-        setUpFormat()
 
         builder = AlertDialog.Builder(activity)
         builder.apply {
@@ -44,60 +45,63 @@ class ConfigDialogFragment : Fragment() {
             setTitle(getString(R.string.process_title))
             setCancelable(true)
         }
-        displayingDialog= builder.create()
+        displayingDialog = builder.create()
 
-        //TODO check queue empty to switch mode
-        //get default values from sever
-        viewModel.preferences.observe(viewLifecycleOwner){
-            viewModel.standardSlotDauer.value=it.defaultSlotDuration
-            viewModel.delayNotificationTime.value=it.delayNotificationTime
-            viewModel.notificationTime.value=it.notificationTime
-            viewModel.prioritizationTime.value=it.prioritizationTime
-            viewModel.isModeTwo.value=it.mode.ordinal== Mode.TWO.ordinal
+        displayValues()
 
-//            displayValues()
-
-            binding.durationStandardSlot.duration=it.defaultSlotDuration.millis
-            binding.durationDelay.duration=it.delayNotificationTime.millis
-            binding.durationPrioritization.duration=it.prioritizationTime.millis
-            binding.durationNotification.duration=it.notificationTime.millis
-            binding.sMode.isChecked= it.mode==Mode.TWO
-
-            Log.i("viewModel","${viewModel.isModeTwo.value}")
-            Log.i("observation","trueeeeeeeeee")
-            displayingDialog.dismiss()
-        }
-
-
-        //TODO check problems to late pass data
-        //pass new default values from user to server
         binding.btnSave.setOnClickListener {
-            viewModel.standardSlotDauer.value= Duration(binding.durationStandardSlot.duration)
-            viewModel.delayNotificationTime.value=Duration(binding.durationDelay.duration)
-            viewModel.notificationTime.value=Duration(binding.durationNotification.duration)
-            viewModel.prioritizationTime.value=Duration(binding.durationPrioritization.duration)
-            viewModel.isModeTwo.value=binding.sMode.isChecked
-
-            viewModel.saveConfigValues()
-            displayingDialog.show()
+            emitSettingChanges()
         }
+
+        viewModel.preferences.observe(viewLifecycleOwner) {
+            Log.i("prefe", "changes success")
+            binding.configStandardDuration.duration = it.defaultSlotDuration.millis
+            binding.configDelayDuration.duration = it.delayNotificationTime.millis
+            binding.configDurationNotification.duration = it.notificationTime.millis
+            binding.configPrioDuration.duration = it.prioritizationTime.millis
+            binding.sMode.isChecked = it.mode == Mode.TWO
+            displayingDialog.dismiss()
+            Toast.makeText(context,
+                "Your settings are saved",
+                Toast.LENGTH_LONG).show()
+        }
+
+
         return binding.root
     }
 
-    private fun setUpFormat() {
-        binding.durationDelay.setTimeUnits(TimeDurationPicker.HH_MM)
-        binding.durationNotification.setTimeUnits(TimeDurationPicker.HH_MM)
-        binding.durationPrioritization.setTimeUnits(TimeDurationPicker.HH_MM)
-        binding.durationStandardSlot.setTimeUnits(TimeDurationPicker.HH_MM)
-    }
+    private fun emitSettingChanges() {
+        if (viewModel.isModeTwo == binding.sMode.isChecked) {
+            viewModel.saveConfigValues(Duration(binding.configStandardDuration.duration),
+                Duration(binding.configDurationNotification.duration),
+                Duration(binding.configDelayDuration.duration),
+                Duration(binding.configPrioDuration.duration), binding.sMode.isChecked)
+            displayingDialog.show()
+
+        } else if (viewModel.slotListSize == 0 && viewModel.isModeTwo != binding.sMode.isChecked ) {
+            Log.i("fehler", "getroffen")
+            viewModel.saveConfigValues(Duration(binding.configStandardDuration.duration),
+                Duration(binding.configDurationNotification.duration),
+                Duration(binding.configDelayDuration.duration),
+                Duration(binding.configPrioDuration.duration), binding.sMode.isChecked)
+            displayingDialog.show()
+
+        } else {
+            Toast.makeText(context,
+                "Your queue is not empty to switch your mode",
+                Toast.LENGTH_LONG).show()
+            Toast.makeText(context,
+                "Your settings are not saved",
+                Toast.LENGTH_LONG).show()
+        }    }
+
 
     private fun displayValues() {
-        binding.durationStandardSlot.duration=viewModel.standardSlotDauer.value!!.millis
-        binding.durationDelay.duration=viewModel.delayNotificationTime.value!!.millis
-        binding.durationPrioritization.duration=viewModel.prioritizationTime.value!!.millis
-        binding.durationNotification.duration=viewModel.notificationTime.value!!.millis
-        binding.sMode.isChecked= viewModel.isModeTwo.value!!
-
+        binding.configStandardDuration.duration = viewModel.standardSlotDuration.millis
+        binding.configDelayDuration.duration = viewModel.delayNotificationTime.millis
+        binding.configDurationNotification.duration = viewModel.notificationTime.millis
+        binding.configPrioDuration.duration = viewModel.prioritizationTime.millis
+        binding.sMode.isChecked = viewModel.isModeTwo
     }
 
 

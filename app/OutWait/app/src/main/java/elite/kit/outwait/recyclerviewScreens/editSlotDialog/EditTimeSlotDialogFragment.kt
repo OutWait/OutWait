@@ -65,12 +65,12 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
 
     private fun setSpontaneousSlotValues() {
         viewModel.interval.value =
-            TransformationInput.formatInterval(binding.timeDurationInput.duration)
+            TransformationInput.formatInterval(binding.editTimeDuration.duration)
     }
 
     private fun setFixedSlotValues() {
         viewModel.interval.value =
-            TransformationInput.formatInterval(binding.timeDurationInput.duration)
+            TransformationInput.formatInterval(binding.editTimeDuration.duration)
         viewModel.appointmentTime.value =
             TransformationInput.formatDateTime(binding.tpAppointmentTime.hour,
                 binding.tpAppointmentTime.minute)
@@ -83,13 +83,13 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
     private fun displaySpontaneousSlotTimes(slot: SpontaneousTimeSlot) {
         viewModel.identifier.value = slot.auxiliaryIdentifier
         viewModel.interval.value = slot.interval
-        binding.timeDurationInput.duration = slot.interval.toDurationMillis()
+        binding.editTimeDuration.duration = slot.interval.toDurationMillis()
     }
 
     private fun displayFixedSlotTimes(slot: FixedTimeSlot) {
         viewModel.identifier.value = slot.auxiliaryIdentifier
         viewModel.interval.value = slot.interval
-        binding.timeDurationInput.duration = slot.interval.toDurationMillis()
+        binding.editTimeDuration.duration = slot.interval.toDurationMillis()
         viewModel.appointmentTime.value = slot.appointmentTime
         binding.tpAppointmentTime.hour = slot.appointmentTime.hourOfDay
         binding.tpAppointmentTime.minute = slot.appointmentTime.minuteOfHour
@@ -103,7 +103,7 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
     }
 
     private fun setUpPicker() {
-        binding.timeDurationInput.setTimeUnits(TimeDurationPicker.HH_MM)
+        binding.editTimeDuration.setTimeUnits(TimeDurationPicker.HH_MM)
         binding.tpAppointmentTime.setIs24HourView(true)
     }
 }

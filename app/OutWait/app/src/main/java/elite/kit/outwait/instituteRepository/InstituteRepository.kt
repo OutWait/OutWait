@@ -115,6 +115,8 @@ class InstituteRepository @Inject constructor(
             }
             remote.getUpdatedPreferences().observeForever {
                 preferences.value = it
+                Log.i("preferences","${preferences.value.toString()}")
+
             }
         }
     }
