@@ -124,7 +124,7 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
         list.add(otherSlot)
         ManagementViewFragment.displayingDialog.show()
         ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode=true
-        
+
         ManagementViewFragment.movementInfo.value = list
         Log.i("input", "${ManagementViewFragment.movementInfo.value}")
 

@@ -14,6 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.databinding.ConfigDialogFragmentBinding
+import kotlinx.android.synthetic.main.full_screen_progress_bar.*
 import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.joda.time.Duration
 import java.util.concurrent.TimeUnit
@@ -76,6 +77,7 @@ class ConfigDialogFragment : Fragment() {
                 Duration(binding.configDelayDuration.duration),
                 Duration(binding.configPrioDuration.duration), binding.sMode.isChecked)
             displayingDialog.show()
+            displayingDialog.fullScreenProgressBar.indeterminateMode=true
 
         } else if (viewModel.slotListSize == 0 && viewModel.isModeTwo != binding.sMode.isChecked ) {
             viewModel.saveConfigValues(Duration(binding.configStandardDuration.duration),
@@ -83,6 +85,8 @@ class ConfigDialogFragment : Fragment() {
                 Duration(binding.configDelayDuration.duration),
                 Duration(binding.configPrioDuration.duration), binding.sMode.isChecked)
             displayingDialog.show()
+            displayingDialog.fullScreenProgressBar.indeterminateMode=true
+
 
         } else {
             Toast.makeText(context,
