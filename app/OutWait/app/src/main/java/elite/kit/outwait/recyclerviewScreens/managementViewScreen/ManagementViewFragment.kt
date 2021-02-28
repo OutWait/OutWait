@@ -36,7 +36,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     private val viewModel: ManagementViewViewModel by viewModels()
     private lateinit var binding: ManagementViewFragmentBinding
-    private var firstTime = true
 
     companion object {
         lateinit var displayingDialog: AlertDialog
@@ -76,7 +75,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             var itemList: MutableList<DataItem> = list.toMutableList().map {
                 TimeSlotItem(it)
             }.toMutableList()
-            Log.i("inTransaction", "${viewModel.isInTransaction.value}")
+            Log.i("observeQUEUE", "VALUE:  ${viewModel.isInTransaction.value}")
 
             if (viewModel.isInTransaction.value!!) {
                 itemList.add(FIRST_POSITION, HeaderItem())
@@ -92,16 +91,15 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
 
         movementInfo.observe(viewLifecycleOwner) {
-            Log.i("movement222", "notified")
 
           if(it.isNotEmpty()) {
               viewModel.moveSlotAfterAnother(it.first(), it.last())
-//                displayingDialog.dismiss()
+                displayingDialog.dismiss()
           }
         }
 
         viewModel.isInTransaction.observe(viewLifecycleOwner) {
-            Log.i("observerTransaction", "${viewModel.isInTransaction.value}")
+            Log.i("observerTransaction", "VALUE:  ${viewModel.isInTransaction.value}")
 
             //TODO what to do if transaction is denied ?
             /* if (it) {
@@ -162,7 +160,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             override fun onDismissed(snackbar: Snackbar, event: Int) {
                 super.onDismissed(snackbar, event)
                 if (event == DISMISS_EVENT_TIMEOUT) {
-
                     notifyDeleteSlot(position, removedSlot.timeSlot)
 
                 }
@@ -179,7 +176,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             else -> {
                 viewModel.deleteSlot(removedClientSlot.slotCode)
 
-                //TODO  dismiss only spo slots, else okay with fixslot
+                //TODO  except response from server to dismiss
                 slotAdapter.slotList.add(FIRST_POSITION, HeaderItem())
                 slotAdapter.updateSlots(slotAdapter.slotList.toMutableList())
                 displayingDialog.show()

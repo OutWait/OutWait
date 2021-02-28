@@ -1,5 +1,6 @@
 package elite.kit.outwait.recyclerviewScreens.managementViewScreen
 
+import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,21 +46,27 @@ class ManagementViewViewModel @Inject constructor(
     }
 
     fun moveSlotAfterAnother(movedSlot: String, otherSlot: String) {
+        Log.i("moveSlots","$movedSlot ++++++ $otherSlot")
         repo.moveSlotAfterAnother(movedSlot,otherSlot)
     }
 
     fun deleteSlot(slotCode:String){
+        Log.i("deleteSlot","$slotCode")
         repo.deleteSlot(slotCode)
     }
     fun endCurrendSlot(){
+        Log.i("currentSlot","CURRENT SLOT")
         repo.endCurrentSlot()
     }
 
     fun saveTransaction() {
+        Log.i("saveTransaction","VALUE: ${isInTransaction.value}")
+
         repo.saveTransaction()
     }
 
     fun abortTransaction() {
+        Log.i("abortTransaction","VALUE: ${isInTransaction.value}")
         repo.abortTransaction()
     }
 

@@ -54,7 +54,6 @@ class ConfigDialogFragment : Fragment() {
         }
 
         viewModel.preferences.observe(viewLifecycleOwner) {
-            Log.i("prefe", "changes success")
             binding.configStandardDuration.duration = it.defaultSlotDuration.millis
             binding.configDelayDuration.duration = it.delayNotificationTime.millis
             binding.configDurationNotification.duration = it.notificationTime.millis
