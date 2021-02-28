@@ -4,7 +4,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
 import elite.kit.outwait.dataItem.DataItem
@@ -116,14 +115,16 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
     override fun skipPauseSlots(position: Int) {
 
         //TODO block movement before first
-        ManagementViewFragment.displayingDialog.show()
-        ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode = true
+
 
         var movedSlot = ((slotList[position] as TimeSlotItem).timeSlot as ClientTimeSlot).slotCode
         var otherSlot = ((slotList[position-1] as TimeSlotItem).timeSlot as ClientTimeSlot).slotCode
         var list = mutableListOf<String>()
         list.add(movedSlot)
         list.add(otherSlot)
+        ManagementViewFragment.displayingDialog.show()
+        ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode=true
+        
         ManagementViewFragment.movementInfo.value = list
         Log.i("input", "${ManagementViewFragment.movementInfo.value}")
 

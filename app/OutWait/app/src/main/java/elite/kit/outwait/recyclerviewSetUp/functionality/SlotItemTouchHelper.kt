@@ -24,14 +24,10 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
         //TODO ehance algo to skip pause slots
         if (isViewHolderEnabledForDrag(viewHolder)) {
             if (viewHolder.absoluteAdapterPosition != -1) {
-                    Log.i("first case", "${viewHolder.absoluteAdapterPosition}")
                     adapter.skipPauseSlots(viewHolder.absoluteAdapterPosition)
             }
         }
 
-
-        /*ManagmentViewFragment.displayingDialog.show()
-        ManagmentViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode = true*/
 
 
 //        viewHolder.itemView.setBackgroundColor(

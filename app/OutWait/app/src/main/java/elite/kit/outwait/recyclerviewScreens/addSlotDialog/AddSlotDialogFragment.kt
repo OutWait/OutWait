@@ -77,7 +77,6 @@ class AddSlotDialogFragment : DialogFragment() {
     }
 
     private fun setFixedSlotValues() {
-        Log.i("minuteADD","${binding.tpAppointmentTime.minute}")
         viewModel.interval.value =
             TransformationInput.formatInterval(binding.addSlotDuration.duration)
         viewModel.appointmentTime.value =

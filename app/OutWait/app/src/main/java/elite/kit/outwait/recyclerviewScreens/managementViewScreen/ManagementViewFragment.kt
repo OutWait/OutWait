@@ -99,17 +99,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         viewModel.isInTransaction.observe(viewLifecycleOwner) {
             Log.i("observerTransaction", "VALUE:  ${viewModel.isInTransaction.value}")
 
-            //TODO what to do if transaction is denied ?
-            /* if (it) {
-                 Log.i("inTransaction", "${viewModel.isInTransaction.value}")
-                 var newList= slotAdapter.slotList.toMutableList()
-                 newList.add(FIRST_POSITION, HeaderItem())
-                 slotAdapter.updateSlots(newList)
-                 } else if (!it && !firstTime) {
-                 var newList= slotAdapter.slotList.toMutableList()
-                 newList.removeAt(FIRST_POSITION)
-                 slotAdapter.updateSlots(newList)
-             }*/
         }
 
 
@@ -130,9 +119,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
     }
 
 
-    fun forwarderMove(movedSlot: String, otherSlot: String) {
-        viewModel.moveSlotAfterAnother(movedSlot, otherSlot)
-    }
+
 
     override fun onItemClicked(position: Int) {
         var detailDialog =

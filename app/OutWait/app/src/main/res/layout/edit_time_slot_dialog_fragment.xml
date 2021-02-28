@@ -10,93 +10,95 @@
     </data>
 
 
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
+        android:id="@+id/scrollViewEdit"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".recyclerviewScreens.addSlotDialog.AddSlotDialogFragment">
+        android:layout_height="match_parent">
 
-        <ru.ifr0z.timepickercompact.TimePickerCompact
-            android:id="@+id/tpAppointmentTime"
-            style="@style/Widget.TimeDurationPicker.Light"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/containerEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
-            android:timePickerMode="spinner"
-            android:visibility="@{viewModel.isFixedSlot?View.VISIBLE:View.INVISIBLE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvAppointmentTimeAddDialog"
-            app:layout_constraintVertical_bias="0.0" />
+            tools:context=".recyclerviewScreens.addSlotDialog.AddSlotDialogFragment">
 
-        <TextView
-            android:id="@+id/tvAppointmentTimeAddDialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="@string/appointment_time"
-            android:visibility="@{viewModel.isFixedSlot?View.VISIBLE:View.INVISIBLE}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTimeDuration" />
+            <ru.ifr0z.timepickercompact.TimePickerCompact
+                android:id="@+id/tpAppointmentTimeEdit"
+                style="@style/Widget.TimeDurationPicker.Light"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="64dp"
+                android:timePickerMode="spinner"
+                android:visibility="@{viewModel.isFixedSlot?View.VISIBLE:View.INVISIBLE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvAppointmentTimeEditDialog"
+                app:layout_constraintVertical_bias="0.0" />
 
-        <mobi.upod.timedurationpicker.TimeDurationPicker
-            android:id="@+id/editTimeDuration"
-            android:layout_width="213dp"
-            android:layout_height="247dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="56dp"
-            android:layout_weight="1"
-            android:paddingHorizontal="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDurationAddDialog">
+            <TextView
+                android:id="@+id/tvAppointmentTimeEditDialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="@string/appointment_time"
+                android:visibility="@{viewModel.isFixedSlot?View.VISIBLE:View.INVISIBLE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editTimeDurationEditDialog" />
 
-        </mobi.upod.timedurationpicker.TimeDurationPicker>
+            <mobi.upod.timedurationpicker.TimeDurationPicker
+                android:id="@+id/editTimeDurationEditDialog"
+                android:layout_width="213dp"
+                android:layout_height="247dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="56dp"
+                android:layout_weight="1"
+                android:paddingHorizontal="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.496"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvDurationAddDialog">
 
-        <TextView
-            android:id="@+id/tvDurationAddDialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="44dp"
-            android:text="@string/duration"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etIdentifierAddDialog" />
+            </mobi.upod.timedurationpicker.TimeDurationPicker>
 
-        <TextView
-            android:id="@+id/tvIdentifierAddDialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
-            android:text="@string/identifier"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/tvDurationAddDialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="44dp"
+                android:text="@string/duration"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.502"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etIdentifierAddDialog" />
 
-        <EditText
-            android:id="@+id/etIdentifierAddDialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
-            android:ems="10"
-            android:hint="@{viewModel.identifier}"
-            android:inputType="textPersonName"
-            android:text="@={viewModel.identifier}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvIdentifierAddDialog" />
+            <TextView
+                android:id="@+id/tvIdentifierAddDialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                android:text="@string/identifier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/etIdentifierAddDialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                android:ems="10"
+                android:hint="@{viewModel.identifier}"
+                android:inputType="textPersonName"
+                android:text="@={viewModel.identifier}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.497"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvIdentifierAddDialog" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </layout>
