@@ -2,6 +2,7 @@ package elite.kit.outwait.networkProtocol
 
 import org.json.JSONObject
 
+
 enum class Event(private val eventString: String,
                  private val wrapperFromJSON: (JSONObject) -> JSONObjectWrapper) {
 
