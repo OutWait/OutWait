@@ -10,6 +10,8 @@ import org.json.JSONObject
 
 class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     private var slots = mutableListOf<Slot>()
+    private var deletedSlots = mutableListOf<SlotCode>()
+    private var endedSlots = mutableListOf<SlotCode>()
     private var delayChangeTime: Date? = null
     private val LOG_ID = "QUEUE"
 
@@ -127,6 +129,10 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     fun storeToDB(databaseWrapper: DatabaseWrapper) {
         Logger.debug(LOG_ID, "Storing queue " + queueId + " into the DB")
         databaseWrapper.saveSlots(slots, queueId)
+        deletedSlots.forEach { databaseWrapper.deleteSlot(it) }
+        endedSlots.forEach { databaseWrapper.endSlot(it) }
+        deletedSlots.clear()
+        endedSlots.clear()
     }
     fun storeToJSON(json: JSONObject) {
         Logger.debug(LOG_ID, "Constructing queue " + queueId + " json...")
@@ -174,11 +180,13 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     }
     fun deleteSlot(slotCode: SlotCode) {
         Logger.debug(LOG_ID, "Deleting slot " + slotCode + " from queue " + queueId)
+        deletedSlots.add(slotCode)
         slots.removeIf({ it.slotCode == slotCode })
     }
     fun endCurrentSlot() {
         if (slots.isNotEmpty()) {
             Logger.debug(LOG_ID, "Removing current slot " + slots.get(0) + " from queue " + queueId)
+            endedSlots.add(slots.get(0).slotCode)
             slots.removeAt(0)
         } else {
             Logger.debug(
