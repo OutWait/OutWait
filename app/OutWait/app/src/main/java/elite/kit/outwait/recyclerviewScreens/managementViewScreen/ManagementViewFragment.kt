@@ -83,9 +83,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
             } else {
                 slotAdapter.updateSlots(itemList)
-
             }
-
             displayingDialog.dismiss()
         }
 
@@ -172,7 +170,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         var removedClientSlot = removedSlot as ClientTimeSlot
         var firstPosition = if (viewModel.isInTransaction.value!!) CURREND_SLOT2 else CURREND_SLOT1
         when (position) {
-            firstPosition -> viewModel.endCurrendSlot()
+            firstPosition -> viewModel.deleteCurrentSlot()
             else -> {
                 viewModel.deleteSlot(removedClientSlot.slotCode)
 

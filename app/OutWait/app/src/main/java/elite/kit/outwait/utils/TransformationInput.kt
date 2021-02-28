@@ -22,13 +22,10 @@ object TransformationInput {
     fun formatInterval(duration:Long) : Interval {
         var start =DateTime(START_TIME_DURATION)
         var end = start.plus(duration)
+        Log.i("interval","${Interval(start,end).toDurationMillis()}")
         return Interval(start,end)
     }
 
-    @JvmStatic
-    fun formatDuration(duration:Long) : Duration {
-        return Duration(duration)
-    }
 
 
 }
