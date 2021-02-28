@@ -43,10 +43,10 @@
             android:visibility="@{viewModel.isFixedSlot?View.VISIBLE:View.INVISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/timeDurationInput" />
+            app:layout_constraintTop_toBottomOf="@+id/editTimeDuration" />
 
         <mobi.upod.timedurationpicker.TimeDurationPicker
-            android:id="@+id/timeDurationInput"
+            android:id="@+id/editTimeDuration"
             android:layout_width="213dp"
             android:layout_height="247dp"
             android:layout_gravity="center_horizontal"

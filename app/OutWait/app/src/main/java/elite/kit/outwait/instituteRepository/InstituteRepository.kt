@@ -115,6 +115,8 @@ class InstituteRepository @Inject constructor(
             }
             remote.getUpdatedPreferences().observeForever {
                 preferences.value = it
+                Log.i("preferences","${preferences.value.toString()}")
+
             }
         }
     }
@@ -268,6 +270,7 @@ class InstituteRepository @Inject constructor(
 
     private suspend fun transaction(): Boolean{
         if (inTransaction.value == true){
+            //TODO set value again to observe it DISCUSS BENNI
             return true
         } else{
             val transactionEstablished = remote.startTransaction()

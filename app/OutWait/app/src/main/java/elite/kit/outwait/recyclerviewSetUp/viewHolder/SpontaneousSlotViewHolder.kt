@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
+import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ItemActionListener
 import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
@@ -40,9 +41,9 @@ class SpontaneousSlotViewHolder(
         }
     }
 
-    override fun bind(item: TimeSlot) {
-        identifier.text = (item as SpontaneousTimeSlot).auxiliaryIdentifier
-        slotCode.text = (item as SpontaneousTimeSlot).slotCode
+    override fun bind(item: TimeSlotItem) {
+        identifier.text = (item.timeSlot as SpontaneousTimeSlot).auxiliaryIdentifier
+        slotCode.text = (item.timeSlot as SpontaneousTimeSlot).slotCode
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {

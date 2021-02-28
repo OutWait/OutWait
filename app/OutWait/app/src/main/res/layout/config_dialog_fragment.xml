@@ -61,21 +61,21 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/durationPrioritization" />
+                app:layout_constraintTop_toBottomOf="@+id/configPrioDuration" />
 
             <TextView
                 android:id="@+id/tvMode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="Activ Mode is"
+                android:text="Active Mode is"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.492"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <mobi.upod.timedurationpicker.TimeDurationPicker
-                android:id="@+id/durationNotification"
+                android:id="@+id/configDurationNotification"
                 android:layout_width="213dp"
                 android:layout_height="247dp"
                 android:layout_gravity="center_horizontal"
@@ -84,7 +84,8 @@
                 android:paddingHorizontal="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvNotificationTime">
+                app:layout_constraintTop_toBottomOf="@+id/tvNotificationTime"
+                app:timeUnits="hhmm">
 
             </mobi.upod.timedurationpicker.TimeDurationPicker>
 
@@ -99,33 +100,31 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
-            <mobi.upod.timedurationpicker.TimeDurationPicker
-                android:id="@+id/durationStandardSlot"
-                android:layout_width="213dp"
-                android:layout_height="247dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="24dp"
-                android:layout_weight="1"
-                android:paddingHorizontal="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.615"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvStandardSlot">
 
-            </mobi.upod.timedurationpicker.TimeDurationPicker>
+            <mobi.upod.timedurationpicker.TimeDurationPicker
+                android:id="@+id/configStandardDuration"
+                android:layout_width="158dp"
+                android:layout_height="185dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="28dp"
+                android:layout_weight="1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvStandardSlot"
+                app:timeUnits="hhmm"></mobi.upod.timedurationpicker.TimeDurationPicker>
 
             <TextView
                 android:id="@+id/tvNotificationTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
                 android:text="@string/notificationtime"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/durationStandardSlot" />
+                app:layout_constraintTop_toBottomOf="@+id/configStandardDuration" />
 
             <mobi.upod.timedurationpicker.TimeDurationPicker
-                android:id="@+id/durationDelay"
+                android:id="@+id/configDelayDuration"
                 android:layout_width="213dp"
                 android:layout_height="247dp"
                 android:layout_gravity="center_horizontal"
@@ -134,7 +133,8 @@
                 android:paddingHorizontal="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvDelayNotificationTime">
+                app:layout_constraintTop_toBottomOf="@+id/tvDelayNotificationTime"
+                app:timeUnits="hhmm">
 
             </mobi.upod.timedurationpicker.TimeDurationPicker>
 
@@ -146,7 +146,7 @@
                 android:text="@string/delay_notificationtime"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/durationNotification" />
+                app:layout_constraintTop_toBottomOf="@+id/configDurationNotification" />
 
             <TextView
                 android:id="@+id/tvPrioritizationTime"
@@ -156,10 +156,10 @@
                 android:text="@string/prioritizationtime"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/durationDelay" />
+                app:layout_constraintTop_toBottomOf="@+id/configDelayDuration" />
 
             <mobi.upod.timedurationpicker.TimeDurationPicker
-                android:id="@+id/durationPrioritization"
+                android:id="@+id/configPrioDuration"
                 android:layout_width="213dp"
                 android:layout_height="247dp"
                 android:layout_gravity="center_horizontal"
@@ -170,7 +170,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvPrioritizationTime"
-                app:layout_constraintVertical_bias="0.0">
+                app:layout_constraintVertical_bias="0.0"
+                app:timeUnits="hhmm">
 
             </mobi.upod.timedurationpicker.TimeDurationPicker>
 
@@ -179,6 +180,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="32dp"
+                android:onClick="@{()->viewModel.logout()}"
                 android:text="@string/logout"
                 app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
                 app:layout_constraintEnd_toEndOf="parent"

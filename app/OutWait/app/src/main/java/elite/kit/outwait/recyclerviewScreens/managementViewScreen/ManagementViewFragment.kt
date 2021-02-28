@@ -75,26 +75,43 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             var itemList: MutableList<DataItem> = list.toMutableList().map {
                 TimeSlotItem(it)
             }.toMutableList()
-            itemList.add(HeaderItem())
+            Log.i("observeQUEUE", "VALUE:  ${viewModel.isInTransaction.value}")
 
-            slotAdapter.updateSlots(itemList)
+            if (viewModel.isInTransaction.value!!) {
+                itemList.add(FIRST_POSITION, HeaderItem())
+                slotAdapter.updateSlots(itemList)
+
+            } else {
+                slotAdapter.updateSlots(itemList)
+
+            }
 
             displayingDialog.dismiss()
         }
 
 
         movementInfo.observe(viewLifecycleOwner) {
-            Log.i("movement", "notified")
-            displayingDialog.dismiss()
-//            viewModel.moveSlotAfterAnother(it.first(),it.last())
+
+          if(it.isNotEmpty()) {
+              viewModel.moveSlotAfterAnother(it.first(), it.last())
+                displayingDialog.dismiss()
+          }
         }
 
         viewModel.isInTransaction.observe(viewLifecycleOwner) {
-            if (it) {
-                //TODO easy way with layout above recyclerview layout
-//               slotAdapter.updateSlots(slotAdapter.slotList.add(FIRST_POSITION, HeaderItem(Interval(200L))))
-            }
-            //TODO maybe dismiss dialog during to abort
+            Log.i("observerTransaction", "VALUE:  ${viewModel.isInTransaction.value}")
+
+            //TODO what to do if transaction is denied ?
+            /* if (it) {
+                 Log.i("inTransaction", "${viewModel.isInTransaction.value}")
+                 var newList= slotAdapter.slotList.toMutableList()
+                 newList.add(FIRST_POSITION, HeaderItem())
+                 slotAdapter.updateSlots(newList)
+                 } else if (!it && !firstTime) {
+                 var newList= slotAdapter.slotList.toMutableList()
+                 newList.removeAt(FIRST_POSITION)
+                 slotAdapter.updateSlots(newList)
+             }*/
         }
 
 
@@ -111,7 +128,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         setHasOptionsMenu(true)
 
         exitApp()
-
         return binding.root
     }
 
@@ -122,31 +138,30 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     override fun onItemClicked(position: Int) {
         var detailDialog =
-            SlotDetailDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
+            SlotDetailDialogFragment((slotAdapter.slotList[position] as TimeSlotItem).timeSlot as ClientTimeSlot)
         detailDialog.show(childFragmentManager, "ssss")
     }
 
 
-    override fun onItemSwiped(position: Int, removedSlot: TimeSlot) {
+    override fun onItemSwiped(position: Int, removedSlot: TimeSlotItem) {
 
         var resetDelete =
-            Snackbar.make(binding.slotList, "${getIdentifier(removedSlot)}", Snackbar.LENGTH_LONG)
+            Snackbar.make(binding.slotList,
+                "${getIdentifier(removedSlot.timeSlot)}",
+                Snackbar.LENGTH_LONG)
                 .setAction(getString(
                     R.string.undo)) {
                     slotAdapter.slotList.add(position, removedSlot)
                     slotAdapter.notifyItemInserted(position)
                     slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 1)
-                    displayingDialog.show()
-                    displayingDialog.fullScreenProgressBar.indeterminateMode = true
                 }
 
         resetDelete.addCallback(object : Callback() {
             override fun onDismissed(snackbar: Snackbar, event: Int) {
                 super.onDismissed(snackbar, event)
                 if (event == DISMISS_EVENT_TIMEOUT) {
-                    notifyDeleteSlot(position, removedSlot)
-                    displayingDialog.show()
-                    displayingDialog.fullScreenProgressBar.indeterminateMode = true
+                    notifyDeleteSlot(position, removedSlot.timeSlot)
+
                 }
             }
         })
@@ -155,31 +170,39 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     private fun notifyDeleteSlot(position: Int, removedSlot: TimeSlot) {
         var removedClientSlot = removedSlot as ClientTimeSlot
-        var firstPosition = if (viewModel.isInTransaction.value!!) CURREND_SLOT1 else CURREND_SLOT2
+        var firstPosition = if (viewModel.isInTransaction.value!!) CURREND_SLOT2 else CURREND_SLOT1
         when (position) {
-
-            //TODO check delete slot first then after header slot (also first)
             firstPosition -> viewModel.endCurrendSlot()
-            else -> viewModel.deleteSlot(removedClientSlot.slotCode)
+            else -> {
+                viewModel.deleteSlot(removedClientSlot.slotCode)
+
+                //TODO  except response from server to dismiss
+                slotAdapter.slotList.add(FIRST_POSITION, HeaderItem())
+                slotAdapter.updateSlots(slotAdapter.slotList.toMutableList())
+                displayingDialog.show()
+                displayingDialog.fullScreenProgressBar.indeterminateMode = true
+                Log.i("inTransaction", "${viewModel.isInTransaction.value}")
+            }
         }
+
     }
 
     override fun editTimeSlot(position: Int) {
         var editDialog =
-            EditTimeSlotDialogFragment(slotAdapter.slotList[position] as ClientTimeSlot)
+            EditTimeSlotDialogFragment((slotAdapter.slotList[position] as TimeSlotItem).timeSlot as ClientTimeSlot)
         editDialog.show(childFragmentManager, "aaa")
     }
 
 
     override fun saveTransaction() {
         Log.i("save", "call")
-//            viewModel.saveTransaction()
+        viewModel.saveTransaction()
         deleteHeader()
     }
 
     override fun abortTransaction() {
         Log.i("abort", "call")
-//            viewModel.abortTransaction()
+        viewModel.abortTransaction()
         deleteHeader()
         displayingDialog.show()
         displayingDialog.fullScreenProgressBar.indeterminateMode = true
