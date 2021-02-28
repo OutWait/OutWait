@@ -65,7 +65,6 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
     }
 
     private fun setSpontaneousSlotValues() {
-        Log.i("editSpoDur","${binding.editTimeDuration.duration}")
         viewModel.interval.value =
             TransformationInput.formatInterval(binding.editTimeDuration.duration)
     }

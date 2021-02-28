@@ -13,8 +13,8 @@ object TransformationInput {
 
     @JvmStatic
     fun formatDateTime(hour: Int, minute: Int) : DateTime {
-        return DateTime(DateTime.now().year,
-            DateTime.now().monthOfYear,DateTime.now().dayOfWeek, hour,
+        return  DateTime(DateTime.now().year,
+            DateTime.now().monthOfYear,DateTime.now().dayOfMonth, hour,
             minute)
     }
 
@@ -22,7 +22,6 @@ object TransformationInput {
     fun formatInterval(duration:Long) : Interval {
         var start =DateTime(START_TIME_DURATION)
         var end = start.plus(duration)
-        Log.i("interval","${Interval(start,end).toDurationMillis()}")
         return Interval(start,end)
     }
 

@@ -142,7 +142,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
 
     override fun onItemSwiped(position: Int, removedSlot: TimeSlotItem) {
-
+        //TODO block delete of multiple slots simuntanously
         var resetDelete =
             Snackbar.make(binding.slotList,
                 "${getIdentifier(removedSlot.timeSlot)}",
@@ -179,7 +179,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
                 slotAdapter.updateSlots(slotAdapter.slotList.toMutableList())
                 displayingDialog.show()
                 displayingDialog.fullScreenProgressBar.indeterminateMode = true
-                Log.i("inTransaction", "${viewModel.isInTransaction.value}")
             }
         }
 

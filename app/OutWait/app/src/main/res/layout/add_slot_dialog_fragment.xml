@@ -12,20 +12,23 @@
 
 <ScrollView
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:nextFocusDown="@string/appointment_time"    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:descendantFocusability="beforeDescendants"
         tools:context=".recyclerviewScreens.addSlotDialog.AddSlotDialogFragment">
-
 
         <ru.ifr0z.timepickercompact.TimePickerCompact
             android:id="@+id/tpAppointmentTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:timePickerMode="spinner"
+            android:timePickerMode="clock"
+            android:focusedByDefault="true"
+            android:focusable="true"
             android:visibility="@{viewModel.isFixedSlot? View.VISIBLE:View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -87,6 +90,10 @@
             android:layout_marginTop="36dp"
             android:ems="10"
             android:inputType="textPersonName"
+            android:focusedByDefault="false"
+            android:nextFocusDown="@id/addSlotDuration"
+            android:focusableInTouchMode="true"
+            android:cursorVisible="true"
             android:text="@={viewModel.identifier}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"

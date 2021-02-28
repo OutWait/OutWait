@@ -39,7 +39,6 @@ class AddSlotDialogViewModel @Inject constructor(val repo: InstituteRepository) 
 
 
         Log.i("input", "${identifier.value}\n" +
-            "            ${appointmentTime.value}\n" +
             "            ${interval.value!!.toDurationMillis()}")
     }
 
