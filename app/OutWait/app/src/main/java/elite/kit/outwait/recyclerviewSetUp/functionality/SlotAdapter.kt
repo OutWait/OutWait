@@ -114,19 +114,8 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
     }
 
     override fun skipPauseSlots(position: Int) {
-        var nextPos = position - 1
 
-        Log.i("newPos", "$nextPos")
-
-//        if (nextPos >= 0 && getItemViewType(nextPos) == Type.PAUSE.ordinal) {
-
-        /*while (getItemViewType(nextPos) == Type.PAUSE.ordinal) {
-            //newPos!=0
-                Log.i("newPos", "$nextPos")
-            nextPos--
-            }*/
-
-//            onItemMove(position, nextPos)
+        //TODO block movement before first
         ManagementViewFragment.displayingDialog.show()
         ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode = true
 
@@ -138,7 +127,6 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
         ManagementViewFragment.movementInfo.value = list
         Log.i("input", "${ManagementViewFragment.movementInfo.value}")
 
-//        }
     }
 
 

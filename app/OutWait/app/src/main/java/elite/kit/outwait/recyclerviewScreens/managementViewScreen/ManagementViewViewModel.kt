@@ -37,13 +37,7 @@ class ManagementViewViewModel @Inject constructor(
         coordinator.navigateToConfigDialog()
     }
 
-    fun notifyDeleteSlot(slot:ClientTimeSlot){
-        repo.deleteSlot(slot.slotCode)
-    }
 
-    fun notifyEndCurrentSlot(){
-        repo.endCurrentSlot()
-    }
 
     fun moveSlotAfterAnother(movedSlot: String, otherSlot: String) {
         Log.i("moveSlots","$movedSlot ++++++ $otherSlot")
@@ -54,7 +48,7 @@ class ManagementViewViewModel @Inject constructor(
         Log.i("deleteSlot","$slotCode")
         repo.deleteSlot(slotCode)
     }
-    fun endCurrendSlot(){
+    fun deleteCurrentSlot(){
         Log.i("currentSlot","CURRENT SLOT")
         repo.endCurrentSlot()
     }

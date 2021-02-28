@@ -3,6 +3,7 @@ package elite.kit.outwait.recyclerviewScreens.editSlotDialog
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -64,6 +65,7 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
     }
 
     private fun setSpontaneousSlotValues() {
+        Log.i("editSpoDur","${binding.editTimeDuration.duration}")
         viewModel.interval.value =
             TransformationInput.formatInterval(binding.editTimeDuration.duration)
     }
