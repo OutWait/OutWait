@@ -98,7 +98,6 @@ class InstituteRepository @Inject constructor(
 
     fun login(username: String, password: String){
         CoroutineScope(IO).launch {
-            db.deleteAll()
             if(communicationEstablished || remote.initCommunication()){
                 if(remote.login(username, password)){
                     observeRemote()

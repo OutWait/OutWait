@@ -8,7 +8,7 @@ class InstituteRoomDBFacade @Inject constructor(
     private val dao: DBAuxiliaryIdentifierDao
     ) : InstituteDBFacade {
 
-    override fun insertUpdateAux(slotCode: String, aux: String) {
+    override suspend fun insertUpdateAux(slotCode: String, aux: String) {
         val auxToInsert = DBAuxiliaryIdentifier(slotCode, aux)
         dao.delete(auxToInsert)
         dao.insert(auxToInsert)
@@ -19,18 +19,18 @@ class InstituteRoomDBFacade @Inject constructor(
         }*/
     }
 
-    override fun getAuxiliaryIdentifiers(): Map<String, String> {
+    override suspend fun getAuxiliaryIdentifiers(): Map<String, String> {
         val auxObjects = dao.getIdentifierList()
         return auxObjects.associate {
             Pair(it.slotCode, it.auxiliaryText)
         }
     }
 
-    override fun deleteAux(slotCode: String) {
+    override suspend fun deleteAux(slotCode: String) {
         dao.delete(DBAuxiliaryIdentifier(slotCode, ""))
     }
 
-    override fun deleteAll() {
+    override suspend fun deleteAll() {
         dao.clearTable()
     }
 }
