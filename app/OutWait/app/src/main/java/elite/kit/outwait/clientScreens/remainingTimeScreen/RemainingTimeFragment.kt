@@ -28,14 +28,6 @@ class RemainingTimeFragment : Fragment() {
 
     private val viewModel: RemainingTimeViewModel by viewModels()
     private lateinit var binding: RemainingTimeFragmentBinding
-    private lateinit var counterDownTimer: CountDownTimer
-
-    companion object {
-        private const val CORRECTION_TIME = 1000L
-        private const val COUNTDOWN_INTERVAL = 1000L
-        private const val MINIMUM_INTERVAL = 1000f
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,68 +39,9 @@ class RemainingTimeFragment : Fragment() {
             false)
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
-
-
-        binding.circularProgressBar.apply {
-
-
-            // Set Progress Max
-            //TODO set remianing time
-            progressMax = 10000f
-
-
-            // Set ProgressBar Color
-            progressBarColor = Color.BLACK
-            // or with gradient
-            progressBarColorStart = Color.GRAY
-            progressBarColorEnd = Color.RED
-            progressBarColorDirection = CircularProgressBar.GradientDirection.TOP_TO_BOTTOM
-
-            // Set background ProgressBar Color
-            backgroundProgressBarColor = Color.GRAY
-            // or with gradient
-            backgroundProgressBarColorStart = Color.WHITE
-            backgroundProgressBarColorEnd = Color.RED
-            backgroundProgressBarColorDirection =
-                CircularProgressBar.GradientDirection.TOP_TO_BOTTOM
-
-            // Set Width
-            progressBarWidth = 7f // in DP
-            backgroundProgressBarWidth = 3f // in DP
-
-            // Other
-            roundBorder = true
-            startAngle = 0F
-            progressDirection = CircularProgressBar.ProgressDirection.TO_LEFT
-        }
-
-        counterDownTimer()
         exitApp()
 
         return binding.root
-    }
-
-    private fun counterDownTimer() {
-        //TODO set remainingTime
-        counterDownTimer = object : CountDownTimer(viewModel.remainingMinutes.value!!.plus(
-            CORRECTION_TIME), COUNTDOWN_INTERVAL) {
-
-            override fun onTick(millisUntilFinished: Long) {
-                binding.circularProgressBar.setProgressWithAnimation(millisUntilFinished.toFloat() - CORRECTION_TIME)
-                binding.tvRemainingTime.text = TransformationOutput.intervalToString(Interval(0L,millisUntilFinished))
-
-            }
-
-            override fun onFinish() {
-                binding.tvRemainingTime.text = "Please go to your institute"
-                binding.circularProgressBar.progress = 0F
-                Toast.makeText(context,
-                    "Press back button to enter a new slot code",
-                    Toast.LENGTH_LONG)
-                    .show()
-            }
-        }.start()
-
     }
 
     private fun exitApp() {
@@ -116,8 +49,8 @@ class RemainingTimeFragment : Fragment() {
             object : OnBackPressedCallback(true) {
 
                 override fun handleOnBackPressed() {
-                    if (binding.circularProgressBar.progress == 0F
-                    ) {
+                    if (viewModel.clientInfoList.value!!.isNotEmpty())
+                     {
                         Toast.makeText(context, "You can enter a new appointment after your appointment is finished", Toast.LENGTH_LONG)
                             .show()
                     } else {

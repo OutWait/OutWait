@@ -5,9 +5,11 @@
     <corners
         android:bottomLeftRadius="0dp"
         android:bottomRightRadius="0dp"
-        android:topLeftRadius="8dp"
-        android:topRightRadius="8dp" />
+        android:topLeftRadius="20dp"
+        android:topRightRadius="20dp"
+        />
 
-    <solid android:color="@color/code_edit_text_background" />
+
+<!--    <solid android:color="@color/text_missing" />-->
 
 </shape>

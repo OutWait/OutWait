@@ -6,7 +6,6 @@ import javax.inject.Inject
 class LoginCoordinator @Inject constructor(private val navigator: Navigator) {
     fun navigateToRemainingTimeFragment() {
         navigator.navigate(ForwarderFragmentDirections.actionForwarderFragmentToRemainingTimeFragment())
-
     }
 
     fun navigateToManagementViewFragment() {
