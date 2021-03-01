@@ -10,6 +10,7 @@ import elite.kit.outwait.remoteDataSource.ClientServerErrors
 import elite.kit.outwait.services.ServiceHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -21,22 +22,35 @@ class ClientRepository @Inject constructor(
     private val remote: ClientHandler,
     private val serviceHandler: ServiceHandler) {
 
+    private val activeSlots = dao.getAllClientInfoObservable()// MutableLiveData<List<ClientInfo>>()//
     init {
-        serviceHandler.startTimerService(this)
+
         //Get notified with server errors
         remote.getErrors().observeForever {
             if (it.last() == ClientServerErrors.INVALID_SLOT_CODE){
                 pushError(ClientErrors.INVALID_SLOT_CODE)
             }
         }
+
+
         CoroutineScope(IO).launch {
             dao.clearTable()
+
+            withContext(Main){
+                activeSlots.observeForever {
+                    if (it.isNotEmpty() && !serviceStarted){
+                        serviceStarted = false
+                        serviceHandler.startTimerService(this)
+                    }
+                }
+            }
         }
     }
-    private val activeSlots = dao.getAllClientInfoObservable()// MutableLiveData<List<ClientInfo>>()//
+
     private val errorNotifications = MutableLiveData<List<ClientErrors>>()
 
     private var remoteConnected = false
+    private var serviceStarted = false
 
     suspend fun newCodeEntered(code : String?) {
         if (code === null || code == ""){
@@ -67,4 +81,6 @@ class ClientRepository @Inject constructor(
             errorNotifications.value = listOf(error)
         }
     }
+
+
 }
