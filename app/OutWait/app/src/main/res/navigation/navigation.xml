@@ -39,8 +39,7 @@
     <fragment
         android:id="@+id/remainingTimeFragment"
         android:name="elite.kit.outwait.clientScreens.remainingTimeScreen.RemainingTimeFragment"
-        android:label="RemainingTimeFragment" >
-    </fragment>
+        android:label="RemainingTimeFragment" />
     <fragment
         android:id="@+id/configDialogFragment2"
         android:name="elite.kit.outwait.recyclerviewScreens.configurationsScreen.ConfigDialogFragment"
@@ -61,7 +60,11 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="elite.kit.outwait.loginSystem.LoginFragment"
-        android:label="LoginFragment" />
+        android:label="LoginFragment" >
+        <action
+            android:id="@+id/action_loginFragment_to_passwordForgotFragment"
+            app:destination="@id/passwordForgotFragment" />
+    </fragment>
     <fragment
         android:id="@+id/forwarderFragment"
         android:name="elite.kit.outwait.loginSystem.ForwarderFragment"

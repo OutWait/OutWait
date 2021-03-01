@@ -70,11 +70,16 @@ class LoginFragment : Fragment() {
         binding.etInstituteName.setOnFocusChangeListener { v, hasFocus ->
             if(viewModel.instituteName.value!!.isNotBlank() && !hasFocus){
                 binding.boxesInstituteName.secondaryColor=R.color.code_edit_text_bottom_line
+            }else{
+                binding.boxesInstituteName.secondaryColor=R.color.text_missing
+
             }
         }
         binding.etInstitutePassword.setOnFocusChangeListener { v, hasFocus ->
-            if(viewModel.instituteName.value!!.isNotBlank() && !hasFocus){
+            if(viewModel.institutePassword.value!!.isNotBlank() && !hasFocus){
                 binding.boxesInstitutePassword.secondaryColor=R.color.code_edit_text_bottom_line
+            }else{
+                binding.boxesInstitutePassword.secondaryColor=R.color.text_missing
             }
         }
        binding.etSlotCode.setBackgroundResource(R.drawable.shape_code_edit_text)

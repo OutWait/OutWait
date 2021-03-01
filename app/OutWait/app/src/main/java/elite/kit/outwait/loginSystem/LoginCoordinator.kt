@@ -16,4 +16,8 @@ class LoginCoordinator @Inject constructor(private val navigator: Navigator) {
     fun navigateToLoginFragment() {
         navigator.navigate(ForwarderFragmentDirections.actionForwarderFragmentToLoginFragment())
     }
+
+    fun navigateToPasswordForgottenFragment() {
+navigator.navigate(LoginFragmentDirections.actionLoginFragmentToPasswordForgotFragment())
+    }
 }

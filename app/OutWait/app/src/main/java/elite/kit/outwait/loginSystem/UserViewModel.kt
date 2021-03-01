@@ -52,5 +52,9 @@ class UserViewModel @Inject constructor(private val repoClient : ClientRepositor
         coordinator.navigateToLoginFragment()
     }
 
+    fun navigateToPasswordForgottenFragment() {
+        coordinator.navigateToPasswordForgottenFragment()
+    }
+
 
 }

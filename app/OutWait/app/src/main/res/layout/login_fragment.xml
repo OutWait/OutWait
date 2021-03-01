@@ -16,19 +16,19 @@
 
         <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
             android:id="@+id/boxes_institute_password"
-            app:panelBackgroundColor="@color/code_edit_text_background"
-            app:primaryColor="@color/code_edit_text_bottom_line"
-            app:secondaryColor="@color/text_missing"
             android:layout_width="300dp"
             android:layout_height="70dp"
-            android:layout_marginTop="152dp"
+            android:layout_marginTop="24dp"
             app:hasClearButton="true"
             app:iconSignifier="@drawable/ic_institue_key"
             app:labelText="Password"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivScan">
+            app:layout_constraintTop_toBottomOf="@+id/boxes_institute_name"
+            app:panelBackgroundColor="@color/code_edit_text_background"
+            app:primaryColor="@color/code_edit_text_bottom_line"
+            app:secondaryColor="@color/text_missing">
 
             <studio.carbonylgroup.textfieldboxes.ExtendedEditText
                 android:id="@+id/etInstitutePassword"
@@ -40,18 +40,19 @@
 
         <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
             android:id="@+id/boxes_institute_name"
-            app:panelBackgroundColor="@color/code_edit_text_background"
-            app:primaryColor="@color/code_edit_text_bottom_line"
-            app:secondaryColor="@color/text_missing"
             android:layout_width="300dp"
             android:layout_height="70dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="160dp"
             app:hasClearButton="true"
             app:iconSignifier="@drawable/ic_institue_key"
             app:labelText="Name"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/boxes_institute_password">
+            app:layout_constraintTop_toBottomOf="@+id/ivScan"
+            app:panelBackgroundColor="@color/code_edit_text_background"
+            app:primaryColor="@color/code_edit_text_bottom_line"
+            app:secondaryColor="@color/text_missing">
 
             <studio.carbonylgroup.textfieldboxes.ExtendedEditText
                 android:id="@+id/etInstituteName"
@@ -81,15 +82,13 @@
             android:id="@+id/btnLoginFrag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="80dp"
+            android:layout_marginTop="24dp"
             android:onClick="@{()->viewModel.login()}"
             android:text="@string/sign_in"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/boxes_institute_name"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="@+id/boxes_institute_name"
-            app:layout_constraintTop_toBottomOf="@+id/boxes_institute_name" />
+            app:layout_constraintEnd_toEndOf="@+id/boxes_institute_password"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintStart_toStartOf="@+id/boxes_institute_password"
+            app:layout_constraintTop_toBottomOf="@+id/boxes_institute_password" />
 
         <ImageView
             android:id="@+id/ivScan"
@@ -100,6 +99,21 @@
             app:layout_constraintEnd_toEndOf="@+id/etSlotCode"
             app:layout_constraintStart_toStartOf="@+id/etSlotCode"
             app:layout_constraintTop_toBottomOf="@+id/etSlotCode" />
+
+        <TextView
+            android:id="@+id/tvPForgotton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:onClick="@{()->viewModel.navigateToPasswordForgottenFragment()}"
+            android:text="@string/forgot_password"
+            android:textColor="@color/code_edit_text_bottom_line"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/btnLoginFrag"
+            app:layout_constraintHorizontal_bias="0.483"
+            app:layout_constraintStart_toStartOf="@+id/btnLoginFrag"
+            app:layout_constraintTop_toBottomOf="@+id/btnLoginFrag"
+            app:layout_constraintVertical_bias="0.321" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
