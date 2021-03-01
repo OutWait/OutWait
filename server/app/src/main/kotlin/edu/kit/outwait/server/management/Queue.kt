@@ -8,6 +8,16 @@ import java.time.Duration
 import java.util.Date
 import org.json.JSONObject
 
+/**
+ * Representation of a queue.
+ *
+ * Implements the operations and algorithms regarding the queue. Is only created on demand, which
+ * means while a transaction is performed or to send the initial queue to the management.
+ *
+ * @property queueId the id of the queue.
+ * @param databaseWrapper the DB to load the queue.
+ * @constructor Loads the queue from the DB.
+ */
 class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     private var slots = mutableListOf<Slot>()
     private var deletedSlots = mutableListOf<SlotCode>()
@@ -20,6 +30,16 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         slots = databaseWrapper.getSlots(queueId)!!.toMutableList() // queueId must exist
         Logger.debug(LOG_ID, "Queue loaded")
     }
+
+    /**
+     * The main update algorithm.
+     *
+     * Calculates the order an positioning of all slots in the queue. Call this method after a
+     * change of the slots in queue. The algorithm uses the [prioritizationTime] to properly
+     * calculate the queue.
+     *
+     * @param prioritizationTime the prioritization settings of ManagementSettings.
+     */
     fun updateQueue(prioritizationTime: Duration) {
         Logger.debug(LOG_ID, "Updating queue " + queueId)
         delayChangeTime = null
@@ -123,9 +143,27 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         // Finalize the queue
         slots = newQueue
     }
+
+    /**
+     * Returns the time of the next not-trivial change of the queue.
+     *
+     * Those changes may happen due to prioritization of slots due to other delayed slots.
+     * "Not-Trivial" means it is not a simple postponement of spontaneous slots, but the queue is
+     * re-ordered.
+     *
+     * @return The date a which the next non-trivial change happens.
+     */
     fun calculateNextDelayChange(): Date? {
         return delayChangeTime
     }
+
+    /**
+     * Saves the state of the queue to the database.
+     *
+     * This includes all deleted or ended slot (of this transaction).
+     *
+     * @param databaseWrapper the DB into which the queue is saved.
+     */
     fun storeToDB(databaseWrapper: DatabaseWrapper) {
         Logger.debug(LOG_ID, "Storing queue " + queueId + " into the DB")
         databaseWrapper.saveSlots(slots, queueId)
@@ -134,6 +172,12 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         deletedSlots.clear()
         endedSlots.clear()
     }
+
+    /**
+     * Saves the state of the queue into a json object.
+     *
+     * @param json the json object into which the data should be written.
+     */
     fun storeToJSON(json: JSONObject) {
         Logger.debug(LOG_ID, "Constructing queue " + queueId + " json...")
 
@@ -170,19 +214,47 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         Logger.debug(LOG_ID, "Queue json constructed: " + json)
     }
 
+    /**
+     * Add a new spontaneous slot the the queue.
+     *
+     * Call updateQueue after this method call.
+     *
+     * @param slot the new slot to add.
+     */
     fun addSpontaneousSlot(slot: Slot) {
         Logger.debug(LOG_ID, "Adding spontaneous slot " + slot + " to " + queueId)
         slots.add(slot)
     }
+    /**
+     * Add a new fix slot the the queue.
+     *
+     * Call updateQueue after this method call.
+     *
+     * @param slot the new slot to add.
+     */
     fun addFixedSlot(slot: Slot) {
         Logger.debug(LOG_ID, "Adding fixed slot " + slot + " to queue " + queueId)
         slots.add(slot)
     }
+
+    /**
+     * Delete a slot from the queue.
+     *
+     * Call updateQueue after this method call.
+     *
+     * @param slotCode the code of the slot to delete.
+     */
     fun deleteSlot(slotCode: SlotCode) {
         Logger.debug(LOG_ID, "Deleting slot " + slotCode + " from queue " + queueId)
         deletedSlots.add(slotCode)
         slots.removeIf({ it.slotCode == slotCode })
     }
+
+    /**
+     * Ends the current slot (the very first in the queue)
+     *
+     * Call updateQueue after this method call.
+     */
     fun endCurrentSlot() {
         if (slots.isNotEmpty()) {
             Logger.debug(LOG_ID, "Removing current slot " + slots.get(0) + " from queue " + queueId)
@@ -195,6 +267,16 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
             )
         }
     }
+
+    /**
+     * Move one slot after another slot.
+     *
+     * Call updateQueue after this method call. It is not possible to move a slot before the first
+     * slot (for various reasons).
+     *
+     * @param slotToMove the code of the slot that should be moved.
+     * @param otherSlot the slot before which the first slot should be moved.
+     */
     fun moveSlotAfterAnother(slotToMove: SlotCode, otherSlot: SlotCode) {
         Logger.debug(
             LOG_ID,
@@ -221,7 +303,14 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         Logger.debug(LOG_ID, "Slot movement completed")
     }
 
-    /** Replaces a slot in the list with a updated slot */
+    /**
+     * Replaces a slot in the list with a updated slot .
+     *
+     * This method is used internally to serve various slot update tasks.
+     *
+     * @param oldSlot the slot that should be replaced.
+     * @param newSlot the new slot that should take the place of the old slot.
+     */
     private fun replaceSlot(oldSlot:Slot, newSlot:Slot) {
         Logger.debug(
             LOG_ID,
@@ -233,6 +322,14 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         slots.add(index, newSlot)
     }
 
+    /**
+     * Updates the appointment time of a slot.
+     *
+     * Call updateQueue after this method call.
+     *
+     * @param slotCode the code of the slot to update.
+     * @param newTime the new appointment time of the slot.
+     */
     fun changeAppointmentTime(slotCode: SlotCode, newTime: Date) {
         Logger.debug(
             LOG_ID,
@@ -246,6 +343,15 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
             Logger.debug(LOG_ID, "Failed to change appointment time (slot does not exist)")
         }
     }
+
+    /**
+     * Updates the length/expected duration of a slot.
+     *
+     * Call updateQueue after this method call.
+     *
+     * @param slotCode the code of the slot to update.
+     * @param newTime the new length/expected duration of the slot.
+     */
     fun updateSlotLength(slotCode: SlotCode, newLength: Duration) {
         Logger.debug(
             LOG_ID,
@@ -259,5 +365,12 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         }
     }
 
+    /**
+     * Returns the string representation of the queue.
+     *
+     * Used for debugging purposes.
+     *
+     * @return The string representation of the queue.
+     */
     override fun toString() = slots.toString()
 }
