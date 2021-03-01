@@ -71,28 +71,6 @@ class InstituteRepository @Inject constructor(
     fun isInTransaction() = inTransaction as LiveData<Boolean>
     fun isLoggedIn() = loggedIn as LiveData<Boolean>
 
-
-    suspend fun loginCo(username: String, password: String): Boolean {
-        withContext(IO) {
-            //Server Request
-            Log.d("login::InstiRepo",
-                "before server connect running in ${Thread.currentThread().name}")
-            delay(2000)
-            Log.d("login::InstiRepo", "after server connect")
-        }
-        //change Live Data
-        delay(2000)
-        var d = Duration(2999999)
-        Log.d("login::InstiRepo",
-            "before liveData changed running in ${Thread.currentThread().name}")
-        preferences.value = Preferences(d, d, d, d, Mode.TWO)
-        Log.d("login::InstiRepo", "after liveData changed")
-        val l = listOf(InstituteErrors.TRANSACTION_DENIED)
-        errorNotifications.value = l
-        return true
-    }
-
-
     private var communicationEstablished = false
 
 
