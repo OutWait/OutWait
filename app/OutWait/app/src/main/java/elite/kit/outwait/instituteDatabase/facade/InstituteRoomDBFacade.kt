@@ -10,11 +10,13 @@ class InstituteRoomDBFacade @Inject constructor(
 
     override fun insertUpdateAux(slotCode: String, aux: String) {
         val auxToInsert = DBAuxiliaryIdentifier(slotCode, aux)
-        if(dao.getAuxIdentifier(slotCode) == null){
+        dao.delete(auxToInsert)
+        dao.insert(auxToInsert)
+        /*if(dao.getAuxIdentifier(slotCode) == null){
             dao.insert(auxToInsert)
         } else{
             dao.update(auxToInsert)
-        }
+        }*/
     }
 
     override fun getAuxiliaryIdentifiers(): Map<String, String> {

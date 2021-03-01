@@ -116,7 +116,6 @@ class InstituteRepository @Inject constructor(
             remote.getUpdatedPreferences().observeForever {
                 preferences.value = it
                 Log.i("preferences","${preferences.value.toString()}")
-
             }
         }
     }
@@ -125,9 +124,11 @@ class InstituteRepository @Inject constructor(
         CoroutineScope(IO).launch {
             Log.d("InstiRepo", "receivedList empfangen")
 
+            val newAuxMap = auxHelper.receivedList(receivedList)
+
             val timeSlots = GravityQueueConverter().receivedListToTimeSlotList(
                 receivedList,
-                auxHelper.receivedList(receivedList)
+                newAuxMap
             )
             timeSlotList.postValue(timeSlots)
         }
