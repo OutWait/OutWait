@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -25,6 +26,7 @@ import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.databinding.LoginFragmentBinding
 import elite.kit.outwait.managmentLogin.institutLoginScreen.InstitutLoginViewModel
 import elite.kit.outwait.qrCode.scanner.CaptureAct
+import kotlinx.android.synthetic.main.login_fragment.*
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -63,6 +65,24 @@ class LoginFragment : Fragment() {
                     navController.popBackStack()
                 }
             }
+        }
+
+        binding.etInstituteName.setOnFocusChangeListener { v, hasFocus ->
+            if(viewModel.instituteName.value!!.isNotBlank() && !hasFocus){
+                binding.boxesInstituteName.secondaryColor=R.color.code_edit_text_bottom_line
+            }
+        }
+        binding.etInstitutePassword.setOnFocusChangeListener { v, hasFocus ->
+            if(viewModel.instituteName.value!!.isNotBlank() && !hasFocus){
+                binding.boxesInstitutePassword.secondaryColor=R.color.code_edit_text_bottom_line
+            }
+        }
+       binding.etSlotCode.setBackgroundResource(R.drawable.shape_code_edit_text)
+        binding.etSlotCode.setOnCodeChangedListener { (code, completed) ->
+            if (completed) {
+                viewModel.clientSlotCode.value= code
+                viewModel.enterSlotCode()
+                Log.i("slotCode","${viewModel.clientSlotCode.value}")            }
         }
         return binding.root
     }

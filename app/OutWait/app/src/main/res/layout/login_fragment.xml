@@ -7,82 +7,99 @@
             name="viewModel"
             type="elite.kit.outwait.loginSystem.UserViewModel" />
     </data>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".loginSystem.LoginFragment">
 
-    <EditText
-        android:id="@+id/etSlotCode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
-        android:ems="10"
-        android:text="@={viewModel.clientSlotCode}"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLoginFrag" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".loginSystem.LoginFragment">
 
-    <EditText
-        android:id="@+id/etName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="96dp"
-        android:ems="10"
-        android:text="@={viewModel.instituteName}"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/etPasswordInstitute"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:ems="10"
-        android:text="@={viewModel.institutePassword}"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etName" />
+        <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
+            android:id="@+id/boxes_institute_password"
+            app:panelBackgroundColor="@color/code_edit_text_background"
+            app:primaryColor="@color/code_edit_text_bottom_line"
+            app:secondaryColor="@color/text_missing"
+            android:layout_width="300dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="152dp"
+            app:hasClearButton="true"
+            app:iconSignifier="@drawable/ic_institue_key"
+            app:labelText="Password"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivScan">
 
-    <Button
-        android:id="@+id/btnLoginFrag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:text="@string/sign_in"
-        android:onClick="@{()->viewModel.login()}"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etPasswordInstitute" />
+            <studio.carbonylgroup.textfieldboxes.ExtendedEditText
+                android:id="@+id/etInstitutePassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@={viewModel.institutePassword}" />
 
-    <Button
-        android:id="@+id/btnEnteCode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter Code"
-        android:onClick="@{()-> viewModel.enterSlotCode()}"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etSlotCode"
-        app:layout_constraintVertical_bias="0.216" />
+        </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
 
-    <ImageView
-        android:id="@+id/ivScan"
-        android:layout_width="38dp"
-        android:layout_height="40dp"
-        android:src="@drawable/ic_baseline_camera_alt_24"
-        app:layout_constraintBottom_toBottomOf="@+id/btnEnteCode"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.487"
-        app:layout_constraintStart_toEndOf="@+id/btnEnteCode"
-        app:layout_constraintTop_toBottomOf="@+id/etSlotCode"
-        app:layout_constraintVertical_bias="0.851" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
+            android:id="@+id/boxes_institute_name"
+            app:panelBackgroundColor="@color/code_edit_text_background"
+            app:primaryColor="@color/code_edit_text_bottom_line"
+            app:secondaryColor="@color/text_missing"
+            android:layout_width="300dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="24dp"
+            app:hasClearButton="true"
+            app:iconSignifier="@drawable/ic_institue_key"
+            app:labelText="Name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/boxes_institute_password">
+
+            <studio.carbonylgroup.textfieldboxes.ExtendedEditText
+                android:id="@+id/etInstituteName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@={viewModel.instituteName}" />
+
+        </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
+
+        <com.lukelorusso.codeedittext.CodeEditText
+            android:id="@+id/etSlotCode"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="16dp"
+            android:inputType="textVisiblePassword"
+            android:maxLength="9"
+            app:cet_codePlaceholder="•"
+            app:cet_scrollDurationInMillis="300"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnLoginFrag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="80dp"
+            android:onClick="@{()->viewModel.login()}"
+            android:text="@string/sign_in"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/boxes_institute_name"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="@+id/boxes_institute_name"
+            app:layout_constraintTop_toBottomOf="@+id/boxes_institute_name" />
+
+        <ImageView
+            android:id="@+id/ivScan"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_qr_code"
+            app:layout_constraintEnd_toEndOf="@+id/etSlotCode"
+            app:layout_constraintStart_toStartOf="@+id/etSlotCode"
+            app:layout_constraintTop_toBottomOf="@+id/etSlotCode" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

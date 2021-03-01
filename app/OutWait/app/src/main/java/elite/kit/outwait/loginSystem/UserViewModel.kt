@@ -14,9 +14,9 @@ class UserViewModel @Inject constructor(private val repoClient : ClientRepositor
 
 
 
-    val clientSlotCode= MutableLiveData<String>()
-    val instituteName= MutableLiveData<String>()
-    val institutePassword= MutableLiveData<String>()
+    val clientSlotCode= MutableLiveData<String>("")
+    val instituteName= MutableLiveData<String>("")
+    val institutePassword= MutableLiveData<String>("")
 
     val loginResponse= MediatorLiveData<List<Any>>().apply {
         addSource(repoClient.getActiveSlots()){
@@ -29,13 +29,13 @@ class UserViewModel @Inject constructor(private val repoClient : ClientRepositor
     }
 
     fun enterSlotCode(){
-        Log.d("enterSCode::EditCodeVM", "reached")
         viewModelScope.launch {
             repoClient.newCodeEntered(clientSlotCode.value)
         }
     }
 
     fun login(){
+        Log.i("password","$institutePassword")
      repoInstitute.login(instituteName.value!!, institutePassword.value!!)
 
     }

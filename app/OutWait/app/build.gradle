@@ -95,6 +95,8 @@ dependencies {
 
     //Dependency for login design
     implementation 'com.lukelorusso:codeedittext:1.0.6'
+    implementation 'com.github.HITGIF:TextFieldBoxes:1.4.5'
+
 
 
 
