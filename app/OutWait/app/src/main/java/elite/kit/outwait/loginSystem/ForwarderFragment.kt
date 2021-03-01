@@ -29,11 +29,9 @@ class ForwarderFragment : Fragment() {
         userViewModel.loginResponse.observe(viewLifecycleOwner) { listOfUsers ->
             when {
                 listOfUsers.isEmpty() -> {
-//                    userViewModel.navigateToLoginFragment()
                     findNavController().navigate(R.id.loginFragment)
                 }
                 listOfUsers.component1() == false -> {
-//                    userViewModel.navigateToLoginFragment()
                     findNavController().navigate(R.id.loginFragment)
                 }
                 listOfUsers.component1() == true -> {

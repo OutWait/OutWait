@@ -93,6 +93,9 @@ dependencies {
     //Dependency for qr scan
     implementation('com.journeyapps:zxing-android-embedded:4.1.0') { transitive = false }
 
+    //Dependency for login design
+    implementation 'com.lukelorusso:codeedittext:1.0.6'
+
 
 
 }

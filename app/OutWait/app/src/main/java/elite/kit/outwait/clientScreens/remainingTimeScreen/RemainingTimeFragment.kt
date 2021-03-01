@@ -19,6 +19,8 @@ import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.RemainingTimeFragmentBinding
+import elite.kit.outwait.utils.TransformationOutput
+import org.joda.time.Interval
 
 
 @AndroidEntryPoint
@@ -93,8 +95,8 @@ class RemainingTimeFragment : Fragment() {
 
             override fun onTick(millisUntilFinished: Long) {
                 binding.circularProgressBar.setProgressWithAnimation(millisUntilFinished.toFloat() - CORRECTION_TIME)
-                binding.tvRemainingTime.text =
-                    ((millisUntilFinished / 1000L).toString())
+                binding.tvRemainingTime.text = TransformationOutput.intervalToString(Interval(0L,millisUntilFinished))
+
             }
 
             override fun onFinish() {
@@ -114,17 +116,10 @@ class RemainingTimeFragment : Fragment() {
             object : OnBackPressedCallback(true) {
 
                 override fun handleOnBackPressed() {
-
-
                     if (binding.circularProgressBar.progress == 0F
                     ) {
-                        //TODO delete clientinfo object
-                        Log.i("backButton", "go to loginfragment")
-
-
-                        /*Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                            press = false
-                        }, 1500)*/
+                        Toast.makeText(context, "You can enter a new appointment after your appointment is finished", Toast.LENGTH_LONG)
+                            .show()
                     } else {
                         Toast.makeText(context, "Click home button to exit", Toast.LENGTH_LONG)
                             .show()
