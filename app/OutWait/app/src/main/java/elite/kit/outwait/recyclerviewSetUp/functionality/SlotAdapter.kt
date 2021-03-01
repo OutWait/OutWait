@@ -1,6 +1,5 @@
 package elite.kit.outwait.recyclerviewSetUp.functionality
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -64,7 +63,6 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
     override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
         val element = slotList!![position]
         when (slotList!![position].getType().ordinal) {
-
             Type.SPONTANEOUS_SLOT.ordinal -> holder.bind(element as TimeSlotItem)
             Type.FIXED_SLOT.ordinal -> holder.bind(element as TimeSlotItem)
             Type.PAUSE.ordinal -> holder.bind(element as TimeSlotItem)
@@ -83,10 +81,7 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
-        Log.i("before move", "fromPos:$fromPosition toPos:$toPosition")
         if (getItemViewType(fromPosition) == Type.SPONTANEOUS_SLOT.ordinal) {
-
-
             if (fromPosition < toPosition) {
                 for (i in fromPosition until toPosition) {
                     Collections.swap(slotList, i, i + 1)
@@ -96,15 +91,11 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
                     Collections.swap(slotList, i, i - 1)
                 }
             }
-
-            Log.i("after move", "fromPos:$fromPosition toPos:$toPosition")
-
             this.notifyItemMoved(fromPosition, toPosition)
         }
     }
 
     override fun onItemSwiped(position: Int) {
-        Log.i("swipe", "swipeeeeeeeeeeeeeeeeeeeeeeeeeee $position ")
         var removedSlot = (slotList[position] as TimeSlotItem)
         slotList.removeAt(position)
         notifyItemRemoved(position)
@@ -112,9 +103,8 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
         listener.onItemSwiped(position, removedSlot)
     }
 
-    override fun skipPauseSlots(newPos: Int,oldPos:Int) {
+    override fun registerMovement(newPos: Int,oldPos:Int) {
 
-        //TODO block movement before first
         ManagementViewFragment.displayingDialog.show()
         ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode=true
 
@@ -130,10 +120,7 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
             var list = mutableListOf<String>()
             list.add(movedSlot)
             list.add(otherSlot)
-
-
             ManagementViewFragment.movementInfo.value = list
-            Log.i("input", "${ManagementViewFragment.movementInfo.value}")
         }
 
     }
