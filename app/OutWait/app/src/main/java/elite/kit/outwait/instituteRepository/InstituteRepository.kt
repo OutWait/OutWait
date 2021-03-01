@@ -71,34 +71,11 @@ class InstituteRepository @Inject constructor(
     fun isInTransaction() = inTransaction as LiveData<Boolean>
     fun isLoggedIn() = loggedIn as LiveData<Boolean>
 
-
-    suspend fun loginCo(username: String, password: String): Boolean {
-        withContext(IO) {
-            //Server Request
-            Log.d("login::InstiRepo",
-                "before server connect running in ${Thread.currentThread().name}")
-            delay(2000)
-            Log.d("login::InstiRepo", "after server connect")
-        }
-        //change Live Data
-        delay(2000)
-        var d = Duration(2999999)
-        Log.d("login::InstiRepo",
-            "before liveData changed running in ${Thread.currentThread().name}")
-        preferences.value = Preferences(d, d, d, d, Mode.TWO)
-        Log.d("login::InstiRepo", "after liveData changed")
-        val l = listOf(InstituteErrors.TRANSACTION_DENIED)
-        errorNotifications.value = l
-        return true
-    }
-
-
     private var communicationEstablished = false
 
 
     fun login(username: String, password: String){
         CoroutineScope(IO).launch {
-            db.deleteAll()
             if(communicationEstablished || remote.initCommunication()){
                 if(remote.login(username, password)){
                     observeRemote()
@@ -178,8 +155,8 @@ class InstituteRepository @Inject constructor(
         //add aux to DB
         CoroutineScope(IO).launch {
             if (transaction()){
-                remote.addSpontaneousSlot(duration, DateTime.now())
                 auxHelper.newAux(auxiliaryIdentifier)
+                remote.addSpontaneousSlot(duration, DateTime.now())
             }
         }
     }
@@ -188,8 +165,8 @@ class InstituteRepository @Inject constructor(
         //add aux to db
         CoroutineScope(IO).launch {
             if(transaction()){
-                remote.addFixedSlot(duration, appointmentTime)
                 auxHelper.newAux(auxiliaryIdentifier)
+                remote.addFixedSlot(duration, appointmentTime)
             }
         }
     }
@@ -198,6 +175,17 @@ class InstituteRepository @Inject constructor(
         //change aux
         CoroutineScope(IO).launch {
             if (transaction()){
+                auxHelper.changeAux(slotCode, auxiliaryIdentifier)
+                remote.changeSlotDuration(slotCode, duration)
+            }
+        }
+    }
+
+    fun changeFixedSlotInfo(slotCode : String, duration : Duration, auxiliaryIdentifier : String ,newAppointmentTime : DateTime){
+        CoroutineScope(IO).launch {
+            if (transaction()){
+                auxHelper.changeAux(slotCode, auxiliaryIdentifier)
+                remote.changeFixedSlotTime(slotCode, newAppointmentTime)
                 remote.changeSlotDuration(slotCode, duration)
             }
         }
@@ -223,15 +211,6 @@ class InstituteRepository @Inject constructor(
         CoroutineScope(IO).launch {
             if (transaction()){
                 remote.deleteSlot(slotCode)
-            }
-        }
-    }
-
-    fun changeFixedSlotInfo(slotCode : String, duration : Duration, auxiliaryIdentifier : String ,newAppointmentTime : DateTime){
-        CoroutineScope(IO).launch {
-            if (transaction()){
-                remote.changeFixedSlotTime(slotCode, newAppointmentTime)
-                remote.changeSlotDuration(slotCode, duration)
             }
         }
     }
