@@ -177,8 +177,8 @@ class InstituteRepository @Inject constructor(
         //add aux to DB
         CoroutineScope(IO).launch {
             if (transaction()){
-                remote.addSpontaneousSlot(duration, DateTime.now())
                 auxHelper.newAux(auxiliaryIdentifier)
+                remote.addSpontaneousSlot(duration, DateTime.now())
             }
         }
     }
@@ -187,8 +187,8 @@ class InstituteRepository @Inject constructor(
         //add aux to db
         CoroutineScope(IO).launch {
             if(transaction()){
-                remote.addFixedSlot(duration, appointmentTime)
                 auxHelper.newAux(auxiliaryIdentifier)
+                remote.addFixedSlot(duration, appointmentTime)
             }
         }
     }
@@ -197,6 +197,17 @@ class InstituteRepository @Inject constructor(
         //change aux
         CoroutineScope(IO).launch {
             if (transaction()){
+                auxHelper.changeAux(slotCode, auxiliaryIdentifier)
+                remote.changeSlotDuration(slotCode, duration)
+            }
+        }
+    }
+
+    fun changeFixedSlotInfo(slotCode : String, duration : Duration, auxiliaryIdentifier : String ,newAppointmentTime : DateTime){
+        CoroutineScope(IO).launch {
+            if (transaction()){
+                auxHelper.changeAux(slotCode, auxiliaryIdentifier)
+                remote.changeFixedSlotTime(slotCode, newAppointmentTime)
                 remote.changeSlotDuration(slotCode, duration)
             }
         }
@@ -222,15 +233,6 @@ class InstituteRepository @Inject constructor(
         CoroutineScope(IO).launch {
             if (transaction()){
                 remote.deleteSlot(slotCode)
-            }
-        }
-    }
-
-    fun changeFixedSlotInfo(slotCode : String, duration : Duration, auxiliaryIdentifier : String ,newAppointmentTime : DateTime){
-        CoroutineScope(IO).launch {
-            if (transaction()){
-                remote.changeFixedSlotTime(slotCode, newAppointmentTime)
-                remote.changeSlotDuration(slotCode, duration)
             }
         }
     }

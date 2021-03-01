@@ -32,5 +32,7 @@ class AuxHelper(private var db: InstituteDBFacade) {
         return db.getAuxiliaryIdentifiers()
     }
 
-
+    suspend fun changeAux(slotCode: String, newAux: String){
+        db.insertUpdateAux(slotCode, newAux)
+    }
 }
