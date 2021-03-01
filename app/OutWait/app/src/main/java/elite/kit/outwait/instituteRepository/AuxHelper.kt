@@ -10,7 +10,7 @@ class AuxHelper(private var db: InstituteDBFacade) {
         latestAux = aux
     }
 
-    suspend fun receivedList(receivedList: ReceivedList): Map<String, String> {
+    suspend fun receivedList(receivedList: ReceivedList, inTransaction: Boolean): Map<String, String> {
         val slotsInDB = db.getAuxiliaryIdentifiers().keys
         val slotsInReceived = receivedList.order
         val newSlotCodes = slotsInReceived.subtract(slotsInDB)
@@ -22,15 +22,15 @@ class AuxHelper(private var db: InstituteDBFacade) {
             latestAux = ""
         }
 
-        /*
-        if (newSlotCodes.size > 1) {
-            for (code in newSlotCodes) {
-                db.insertUpdateAux(
-                    code,
-                    ""
-                )
+        if(!inTransaction){
+            val obsoleteSlotCodes = slotsInDB.subtract(slotsInReceived)
+            for (code in obsoleteSlotCodes){
+                db.deleteAux(code)
             }
-        }*/
+        }
+
         return db.getAuxiliaryIdentifiers()
     }
+
+
 }

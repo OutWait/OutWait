@@ -124,7 +124,7 @@ class InstituteRepository @Inject constructor(
         CoroutineScope(IO).launch {
             Log.d("InstiRepo", "receivedList empfangen")
 
-            val newAuxMap = auxHelper.receivedList(receivedList)
+            val newAuxMap = auxHelper.receivedList(receivedList, inTransaction.value!!) //we never set inTransaction null
 
             val timeSlots = GravityQueueConverter().receivedListToTimeSlotList(
                 receivedList,
@@ -238,10 +238,10 @@ class InstituteRepository @Inject constructor(
 
     fun saveTransaction(){
         if (inTransaction.value == true){
+            inTransaction.value = false
             CoroutineScope(IO).launch {
                 remote.saveTransaction()
             }
-            inTransaction.value = false
         }
         else{
             pushError(InstituteErrors.NOT_IN_TRANSACTION)
@@ -250,10 +250,10 @@ class InstituteRepository @Inject constructor(
 
     fun abortTransaction(){
         if (inTransaction.value == true){
+            inTransaction.value = false
             CoroutineScope(IO).launch {
                 remote.abortTransaction()
             }
-            inTransaction.value = false
         }
         else{
             pushError(InstituteErrors.NOT_IN_TRANSACTION)

@@ -26,6 +26,10 @@ class InstituteRoomDBFacade @Inject constructor(
         }
     }
 
+    override fun deleteAux(slotCode: String) {
+        dao.delete(DBAuxiliaryIdentifier(slotCode, ""))
+    }
+
     override fun deleteAll() {
         dao.clearTable()
     }
