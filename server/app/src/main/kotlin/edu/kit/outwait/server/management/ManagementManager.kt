@@ -13,6 +13,16 @@ import edu.kit.outwait.server.socketHelper.SocketFacade
 import java.util.Date
 import java.util.Timer
 
+/**
+ * Manager for all management instances (of connected institutions).
+ *
+ * It manages the login of managements, distributes updates between them, coordinates open
+ * transactions and initiates delayed queue updates.
+ *
+ * @param namespace the SocketIO namespace for management, to configure the socket adapter.
+ * @param databaseWrapper the DB to load and store queue and management data.
+ * @constructor Initializes the object and registers all events.
+ */
 class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapper) :
     AbstractManager(namespace, databaseWrapper) {
 
@@ -44,6 +54,14 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         Logger.debug(LOG_ID, "Management manager initialized")
     }
 
+    /**
+     * Handles a new management connection.
+     *
+     * Initial message receivers are registered and a login request is sent.
+     *
+     * @param socket the new socket connection.
+     * @param socketFacade the socketFacade of the new connection.
+     */
     override fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade) {
         // Handle the login
         socketFacade.onReceive(Event.MANAGEMENT_LOGIN) { json ->
@@ -75,6 +93,14 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         Logger.debug(LOG_ID, "Starting login routine")
         socketFacade.send(Event.LOGIN_REQUEST, JSONEmptyWrapper())
     }
+
+    /**
+     * Removes a management from the internal list.
+     *
+     * Called by a management on logout. Started transactions are aborted implicitly.
+     *
+     * @param management the management to remove.
+     */
     fun removeManagement(management: Management) {
         Logger.debug(LOG_ID, "Removing management connection")
         // Close open transactions
@@ -82,6 +108,18 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
         managements.remove(management)
     }
+
+    /**
+     * Starts a new transaction.
+     *
+     * If the requested transaction is not available (because another management of the same
+     * institution has already running transaction), null is returned. Otherwise a queue is
+     * returned, that represent the new transaction.
+     *
+     * @param managementId the id of the institution whose management wants to start a new
+     *     transaction.
+     * @return The initialized queue of the new transaction or null on error.
+     */
     fun beginTransaction(managementId: ManagementId): Queue? {
         if (activeTransactions.contains(managementId)) {
             Logger.debug(
@@ -105,6 +143,15 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             }
         }
     }
+
+    /**
+     * Aborts a running transaction.
+     *
+     * The old queue (the one with the state before the transaction) is returned.
+     *
+     * @param managementId the id of the institution whose running transaction should be aborted.
+     * @return The old queue (before the transaction) or null on error.
+     */
     fun abortTransaction(managementId: ManagementId): Queue? {
         Logger.debug(LOG_ID, "Aborting transaction of management " + managementId + "...")
         assert(activeTransactions.contains(managementId))
@@ -129,8 +176,13 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
     }
 
     /**
-     * Is called internally when the queue has been changed somewhere. It will store the queue in
-     * the database, inform all Managements and update the next-delay-alarm.
+     * Is called internally when the queue has been changed somewhere.
+     *
+     * It will store the queue in the database, inform all Managements and update the
+     * next-delay-alarm.
+     *
+     * @param managementId the id of the institution whose managements should receive the update.
+     * @param queue the new queue.
      */
     private fun handleQueueUpdate(managementId: ManagementId, queue: Queue) {
         Logger.debug(
@@ -154,6 +206,14 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         }
     }
 
+    /**
+     * Saves a running transaction.
+     *
+     * This will inform all active managements of this institution.
+     *
+     * @param managementId the id of the institution whose running transaction should be aborted.
+     * @return The old queue (before the transaction) or null on error.
+     */
     fun saveTransaction(managementId: ManagementId, queue: Queue) {
         Logger.debug(LOG_ID, "Saving transaction. Checking...")
         assert(activeTransactions.contains(managementId))
@@ -164,6 +224,15 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         activeTransactions.remove(managementId)
         Logger.debug(LOG_ID, "Active transaction removed")
     }
+
+    /**
+     * Notifies all management of the given institution about the updated settings.
+     *
+     * This will also store the new settings in the DB.
+     *
+     * @param managementId the id of the institution whose settings have been changed.
+     * @param managementSettings the new settings of the management.
+     */
     fun updateManagementSettings(
         managementId: ManagementId,
         managementSettings: ManagementSettings
@@ -180,11 +249,24 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                 management.sendUpdatedManagementSettings(managementSettings)
         }
     }
+
+    /**
+     * Initiates the reset routine for the password of a management.
+     *
+     * @param username the login name of the institution whose password should be reset.
+     */
     private fun resetManagementPassword(username: String) {
         Logger.debug(LOG_ID, "Reset password routine started")
         // TODO implement the reset password procedure
     }
-    fun keepQueueDelayTime(time: Date, managementId: ManagementId) {
+
+    /**
+     * Initiates a timer to update a queue at the given time.
+     *
+     * @param time the time at which the queue should be updated.
+     * @param managementId the id of the institution whose queue should be updated later.
+     */
+    private fun keepQueueDelayTime(time: Date, managementId: ManagementId) {
         queueDelayTimes.add(Pair(time, managementId))
         queueDelayTimes.sortedBy { it.first }
         Logger.debug(
@@ -205,6 +287,13 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                 queueDelayTimes.get(0).first
         )
     }
+
+    /**
+     * The routine that is called to update a queue.
+     *
+     * It will update the queue whose update delay time is the youngest. The timer will be reset to
+     * update the other queues as needed.
+     */
     private fun queueDelayAlarmHandler() {
         Logger.debug(LOG_ID, "Starting delayed queue update routine...")
         if (queueDelayTimes.isEmpty()) return

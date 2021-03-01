@@ -39,12 +39,19 @@ class ConfigDialogViewModel @Inject constructor(
                          delayNotificationTime:Duration,
                          prioritizationTime:Duration,
                          isModeTwo:Boolean) {
-        Log.i("save","success")
-        repo.changePreferences(standardSlotDuration,
+        Log.i("save", "success")
+
+        val newMode = if (isModeTwo) {
+            Mode.TWO
+        } else {
+            Mode.ONE
+        }
+        repo.changePreferences(Preferences(
+            standardSlotDuration,
             notificationTime,
             delayNotificationTime,
             prioritizationTime,
-            isModeTwo)
-
+            newMode
+        ))
     }
 }

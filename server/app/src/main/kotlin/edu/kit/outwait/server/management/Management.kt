@@ -18,6 +18,19 @@ import edu.kit.outwait.server.slot.Slot
 import edu.kit.outwait.server.slot.SlotCode
 import edu.kit.outwait.server.socketHelper.SocketFacade
 
+/**
+ * Representation of a connection to a manager.
+ *
+ * All communication with the management-side user (except the login) is done through this class. It
+ * holds the socket and handles all incoming requests, as well as outgoing messages.
+ *
+ * @property socketFacade the created socket to the manager with a running connection
+ * @property managementId the id of the management (loaded from the DB)
+ * @param databaseWrapper the DB to complete the initialization of the management
+ * @property managementManager the ManagementManager which administrates all managements
+ * @constructor initializes the object to receive requests and automatically sends management
+ *     settings and the queue to the management
+ */
 class Management(
     private val socketFacade: SocketFacade,
     internal val managementId: ManagementId,
@@ -25,6 +38,7 @@ class Management(
     private val managementManager: ManagementManager
 ) {
     private val managementInformation: ManagementInformation
+    /** The queue of this management. Only loaded on demand, when a transaction is running. */
     private var queue: Queue? = null
     private val LOG_ID = "MGMT"
 
@@ -54,6 +68,16 @@ class Management(
         }
     }
 
+    /**
+     * Configures the message receivers.
+     *
+     * The handlers for all possible (allowed) incoming messages are registered here. Lambdas are
+     * used to handle basic logic like unwrapping of json wrappers, but most of the business logic
+     * is done in dedicated methods.
+     *
+     * @param databaseWrapper used for simple operations inside the handlers, like (temporarily)
+     *     adding new slots
+     */
     private fun configureReceivers(databaseWrapper: DatabaseWrapper) {
         socketFacade.onReceive(Event.MANAGEMENT_LOGOUT) { logout() }
         socketFacade.onReceive(Event.START_TRANSACTION) { beginNewTransaction() }
@@ -147,12 +171,14 @@ class Management(
     }
 
     /**
-     * Checks if a transaction has been started. An error message will be send otherwise.
+     * Checks if a transaction has been started.
      *
-     * @return if the transaction has been started
+     * An error message will be send to the management, if the transaction has not been started jet.
+     *
+     * @return whether the transaction has been started.
      */
     private fun checkTransactionStarted() :Boolean {
-        if (queue == null) {
+        if (!isTransactionRunning()) {
             Logger.debug(LOG_ID, "Transaction not started! Can't execute command.")
             // Transaction has not been started
             val json = JSONInvalidRequestMessageWrapper()
@@ -164,36 +190,71 @@ class Management(
         }
     }
 
+    /**
+     * Detects whether a transaction is running.
+     *
+     * @return whether a transaction is running.
+     */
     internal fun isTransactionRunning(): Boolean = queue != null
 
+    /**
+     * Updates the current queue and sends the new queue state to the management.
+     *
+     * Calling this requires a transaction to be started.
+     */
     private fun updateAndSendQueue() {
-        if (queue != null) {
+        if (isTransactionRunning()) {
             queue!!.updateQueue(managementInformation.settings.prioritizationTime)
             Logger.debug(LOG_ID, "Queue updated. New queue: " + queue)
             sendUpdatedQueue(queue!!)
         } else {
-            Logger.debug(LOG_ID, "Failed to update queue (no queue loaded)")
+            Logger.error(LOG_ID, "Failed to update queue (no queue loaded)")
         }
     }
+
+    /**
+     * Sends the given queue to the management.
+     *
+     * @param queue the queue which should be send.
+     */
     internal fun sendUpdatedQueue (queue: Queue):Unit {
         val json = JSONQueueWrapper()
         json.setQueue(queue)
+        //Thread.sleep(1000) // DEBUG
         socketFacade.send(Event.UPDATE_QUEUE, json)
         Logger.debug(LOG_ID, "Sent queue")
     }
+    /**
+     * Sends the given management settings to the management.
+     *
+     * @param managementSettings the setting which should be send.
+     */
     internal fun sendUpdatedManagementSettings (managementSettings: ManagementSettings) {
         val json = JSONManagementSettingsWrapper()
         json.setSettings(managementSettings)
         socketFacade.send(Event.UPDATE_MANAGEMENT_SETTINGS, json)
         Logger.debug(LOG_ID, "Sent management settings")
     }
+
+    /**
+     * Initiates the logout routine.
+     *
+     * It will remove the management from the manger and thus abort the running transaction if
+     * needed.
+     */
     private fun logout () {
         socketFacade.disconnect()
         managementManager.removeManagement(this)
         Logger.debug(LOG_ID, "Manual logout completed")
     }
+
+    /**
+     * Starts a new transaction if possible.
+     *
+     * It will send an error message, if a transaction is already running (for this institution).
+     */
     private fun beginNewTransaction () {
-        if (queue != null) {
+        if (isTransactionRunning()) {
             Logger.debug(LOG_ID, "New transaction could not be started. Loaded queue: " + queue)
             // Cannot start a new transaction, when a transaction is running
             val json = JSONInvalidRequestMessageWrapper()
@@ -202,13 +263,20 @@ class Management(
         } else {
             Logger.debug(LOG_ID, "Beginning a new transaction")
             queue = managementManager.beginTransaction(managementId)
-            if (queue == null) {
+            if (!isTransactionRunning()) {
                 socketFacade.send(Event.TRANSACTION_DENIED, JSONEmptyWrapper())
             } else {
                 socketFacade.send(Event.TRANSACTION_STARTED, JSONEmptyWrapper())
             }
         }
     }
+
+    /**
+     * Aborts the currently running transaction.
+     *
+     * It will send an error message, if no transaction is running. Otherwise the old queue is send
+     * to the management (the one before the transaction).
+     */
     internal fun abortCurrentTransaction () {
         if (checkTransactionStarted()) {
             Logger.debug(LOG_ID, "Aborting transaction")
@@ -221,6 +289,13 @@ class Management(
             Logger.debug(LOG_ID, "Could not abort transaction (none running)")
         }
     }
+
+    /**
+     * Saves the currently running transaction.
+     *
+     * It will send an error message, if no transaction is running. Otherwise the current queue is
+     * send to all managements of this institution and saved in the database.
+     */
     private fun saveCurrentTransaction () {
         if (checkTransactionStarted()) {
             Logger.debug(LOG_ID, "Saving transaction. Queue: " + queue)
@@ -230,6 +305,15 @@ class Management(
             Logger.debug(LOG_ID, "Could not save a transaction (none running)")
         }
     }
+
+    /**
+     * Changes the settings of this management
+     *
+     * All managements of this institution will receive the new settings and the settings are saved
+     * in the database.
+     *
+     * @param managementSettings the new settings to save
+     */
     private fun changeManagementSettings (managementSettings: ManagementSettings) {
         managementManager.updateManagementSettings(managementId, managementSettings)
         Logger.debug(LOG_ID, "Changed management settings")

@@ -4,7 +4,6 @@ import com.corundumstudio.socketio.Configuration
 import com.corundumstudio.socketio.SocketIOServer
 import edu.kit.outwait.server.client.ClientManager
 import edu.kit.outwait.server.management.ManagementManager
-import java.sql.SQLException
 
 class Server {
     private val server: SocketIOServer
@@ -16,7 +15,6 @@ class Server {
         // First The database
         Logger.debug(LOG_ID, "Creating database")
         val databaseWrapper = DatabaseWrapper()
-
 
         // Now the io server
         Logger.debug(LOG_ID, "Creating server (socketIO)")

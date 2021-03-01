@@ -54,6 +54,13 @@ class InstituteRepository @Inject constructor(
             }
 
         }
+        remote.getReceivedList().observeForever {
+            if (it !== null) receivedNewList(it)
+        }
+        remote.getUpdatedPreferences().observeForever {
+            if (preferences !== null) preferences.value = it
+            Log.i("preferences","${preferences?.value.toString()}")
+        }
     }
 
 
@@ -78,24 +85,12 @@ class InstituteRepository @Inject constructor(
         CoroutineScope(IO).launch {
             if(communicationEstablished || remote.initCommunication()){
                 if(remote.login(username, password)){
-                    observeRemote()
                     loggedIn.postValue(true)
                 }
             }
         }
     }
 
-    private suspend fun observeRemote(){
-        withContext(Main){
-            remote.getReceivedList().observeForever {
-                receivedNewList(it)
-            }
-            remote.getUpdatedPreferences().observeForever {
-                preferences.value = it
-                Log.i("preferences","${preferences.value.toString()}")
-            }
-        }
-    }
 
     private fun receivedNewList(receivedList: ReceivedList){
         CoroutineScope(IO).launch {
@@ -124,32 +119,12 @@ class InstituteRepository @Inject constructor(
         //communicationEstablished = false
     }
 
-    fun changePreferences(
-        defaultSlotDurations: Duration,
-        notificationTimes: Duration,
-        delayNotificationTimes: Duration,
-        prioritizationTimes: Duration,
-        mode2Actives: Boolean
-    ){
-       preferences.value!!.mode=Mode.TWO
-        preferences.value!!.defaultSlotDuration=defaultSlotDurations
-        Log.i("change","${preferences.value!!.defaultSlotDuration.millis}")
-
-        var mode = Mode.ONE
-        if (mode2Actives){
-            mode = Mode.TWO
-        }
-        val pref = Preferences(
-            defaultSlotDurations,
-            notificationTimes,
-            delayNotificationTimes,
-            prioritizationTimes,
-            mode
-        )
-        CoroutineScope(IO).launch{
-            remote.changePreferences(pref)
+    fun changePreferences(preferences: Preferences) {
+        CoroutineScope(IO).launch {
+            remote.changePreferences(preferences)
         }
     }
+
 
     fun newSpontaneousSlot(auxiliaryIdentifier : String, duration : Duration){
         //add aux to DB
