@@ -7,13 +7,27 @@ import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.json.JSONObject
 
-/*
-Has no secondary constructor, as we only receive the wrapped JSONObject
+/**
+ * The JSONObjectWrapper for the data of the "updateQueue@M" event, that is to be received
+ *
+ * @constructor
+ * Primary constructor takes a given JSONObject and wraps it, using the
+ * constructor of the base class
+ *
+ * @param jsonObj The JSONObject that is to be wrapped (containing the received data of the event)
  */
-class JSONQueueWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
+class JSONQueueWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
 
+    /**
+     * Getter for the new Queue, as ReceivedList object, contained in the received JSONObject
+     *
+     * @return new Queue as ReceivedList (with the parsed values from the received JSONObject)
+     */
     fun getQueue(): ReceivedList {
-        val currentSlotStartedTime: DateTime = DateTime(jsonObj.getLong(CURRENT_SLOT_STARTED_TIME))
+        // parse the received values for the queue
+        val currentSlotStartedTime = DateTime(jsonObj.getLong(CURRENT_SLOT_STARTED_TIME))
+
+        // the following lists can also be empty
         val order: MutableList<String> = mutableListOf()
         val spontaneousSlots: MutableList<SpontaneousSlot> = mutableListOf()
         val fixedSlots: MutableList<FixedSlot> = mutableListOf()
@@ -41,18 +55,30 @@ class JSONQueueWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
         for (i in 0 until parsedFixSlots.length()) {
             val slotJSON: JSONObject = parsedFixSlots[i] as JSONObject
             val fixSlot: FixedSlot = getFixSlotFromJSON(slotJSON)
-           fixedSlots.add(fixSlot)
+            fixedSlots.add(fixSlot)
         }
 
         return ReceivedList(currentSlotStartedTime, order, spontaneousSlots, fixedSlots)
     }
 
+    /**
+     * Helper method to create a SpontaneousSlot object from a corresponding JSONObject
+     *
+     * @param spontJSON from which the attributes of the SpontaneousSlot are to be parsed
+     * @return the SpontaneousSlot with the parsed values
+     */
     private fun getSpontSlotFromJSON(spontJSON: JSONObject): SpontaneousSlot {
         val duration = Duration(spontJSON.getLong(DURATION))
         val slotCode = spontJSON.getString(SLOT_CODE)
         return SpontaneousSlot(duration, slotCode)
     }
 
+    /**
+     * Helper method to create a FixedSlot object from a corresponding JSONObject
+     *
+     * @param fixJSON from which the attributes of the FixedSlot are to be parsed
+     * @return the FixedSlot with the parsed values
+     */
     private fun getFixSlotFromJSON(fixJSON: JSONObject): FixedSlot {
         val duration = Duration(fixJSON.getLong(DURATION))
         val slotCode = fixJSON.getString(SLOT_CODE)

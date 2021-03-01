@@ -2,7 +2,14 @@ package elite.kit.outwait.networkProtocol
 
 import org.json.JSONObject
 
-
+/**
+ * These enums represent all the events specified in the server-client-communication protocol
+ * with the associated event string and a JSONObjectWrapper for the sent data
+ * //TODO Verweis auf ENtwurfsdokument? Oder Syntaxaufbau der Events erklären o.ä?
+ *
+ * @property eventString the associated event String transmitted with the data
+ * @property wrapperFromJSON the transmitted data for the respective event
+ */
 enum class Event(private val eventString: String,
                  private val wrapperFromJSON: (JSONObject) -> JSONObjectWrapper) {
 
@@ -41,10 +48,22 @@ enum class Event(private val eventString: String,
     INVALID_REQUEST_M("invalidRequest@M", { JSONErrorMessageWrapper(it) }),
     INTERNAL_SERVER_ERROR_M("internalServerError@M", { JSONErrorMessageWrapper(it) });
 
+    /**
+     * This method returns the event string that is associated with the event
+     *
+     * @return eventString for the respective event
+     */
     fun getEventString(): String {
         return eventString
     }
 
+    /**
+     * This method returns, for a given JSONObject, a wrapped JSONObject, using the
+     * associated JSONObjectWrapper of the respective event
+     *
+     * @param jsonObj JSONObject that is to be wrapped
+     * @return JSONObjectWrapper of the respective event, containing the given JSONObject
+     */
     fun createWrapper(jsonObj: JSONObject): JSONObjectWrapper {
         return wrapperFromJSON(jsonObj)
     }
