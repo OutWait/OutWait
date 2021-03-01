@@ -88,7 +88,8 @@ class RemainingTimeFragment : Fragment() {
 
     private fun counterDownTimer() {
         //TODO set remainingTime
-        counterDownTimer = object : CountDownTimer(10000L + CORRECTION_TIME, COUNTDOWN_INTERVAL) {
+        counterDownTimer = object : CountDownTimer(viewModel.remainingMinutes.value!!.plus(
+            CORRECTION_TIME), COUNTDOWN_INTERVAL) {
 
             override fun onTick(millisUntilFinished: Long) {
                 binding.circularProgressBar.setProgressWithAnimation(millisUntilFinished.toFloat() - CORRECTION_TIME)

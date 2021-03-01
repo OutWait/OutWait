@@ -24,7 +24,7 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
         //TODO ehance algo to skip pause slots
         if (isViewHolderEnabledForDrag(viewHolder)) {
             if (viewHolder.absoluteAdapterPosition != -1) {
-                    adapter.skipPauseSlots(viewHolder.absoluteAdapterPosition)
+                    adapter.skipPauseSlots(viewHolder.absoluteAdapterPosition,oldPos)
             }
         }
 
@@ -79,7 +79,6 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        Log.i("swipe","done")
         val position = viewHolder.absoluteAdapterPosition
         adapter.onItemSwiped(position)
     }
@@ -95,6 +94,7 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
     private fun isViewHolderEnabledForSwipe(viewHolder: RecyclerView.ViewHolder): Boolean {
         return when (viewHolder.itemViewType) {
             Type.PAUSE.ordinal -> false
+            Type.HEADER.ordinal-> false
             else -> true
         }
     }
@@ -102,6 +102,7 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
     private fun isViewHolderEnabledForSelect(viewHolder: RecyclerView.ViewHolder): Boolean {
         return when (viewHolder.itemViewType) {
             Type.PAUSE.ordinal -> false
+            Type.HEADER.ordinal-> false
             else -> true
         }
     }

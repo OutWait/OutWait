@@ -112,21 +112,29 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
         listener.onItemSwiped(position, removedSlot)
     }
 
-    override fun skipPauseSlots(position: Int) {
+    override fun skipPauseSlots(newPos: Int,oldPos:Int) {
 
         //TODO block movement before first
-
-
-        var movedSlot = ((slotList[position] as TimeSlotItem).timeSlot as ClientTimeSlot).slotCode
-        var otherSlot = ((slotList[position-1] as TimeSlotItem).timeSlot as ClientTimeSlot).slotCode
-        var list = mutableListOf<String>()
-        list.add(movedSlot)
-        list.add(otherSlot)
         ManagementViewFragment.displayingDialog.show()
         ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode=true
 
-        ManagementViewFragment.movementInfo.value = list
-        Log.i("input", "${ManagementViewFragment.movementInfo.value}")
+        if(slotList[0].getType()==Type.HEADER && newPos==1 || newPos==0){
+            onItemMove(newPos,oldPos)
+            ManagementViewFragment.displayingDialog.dismiss()
+        }else {
+
+            var movedSlot =
+                ((slotList[newPos] as TimeSlotItem).timeSlot as ClientTimeSlot).slotCode
+            var otherSlot =
+                ((slotList[newPos - 1] as TimeSlotItem).timeSlot as ClientTimeSlot).slotCode
+            var list = mutableListOf<String>()
+            list.add(movedSlot)
+            list.add(otherSlot)
+
+
+            ManagementViewFragment.movementInfo.value = list
+            Log.i("input", "${ManagementViewFragment.movementInfo.value}")
+        }
 
     }
 
