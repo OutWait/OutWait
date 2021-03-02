@@ -17,7 +17,7 @@ import java.util.Properties
  *  @property connection holds connection
  *  @property connectionProps properties of connection
  */
-class DatabaseWrapper() {
+class DatabaseWrapper(val dbName : String) {
     private val updateMediator = UpdateMediator()
     private lateinit var connection: Connection
     private val connectionProps: Properties = Properties()
@@ -32,7 +32,7 @@ class DatabaseWrapper() {
         try {
             connection =
                 DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/OutwaitDB",
+                    "jdbc:mysql://localhost:3306/"+dbName,
                     connectionProps
                 )!!
             Logger.info(LOG_ID, "Connected to Database")
@@ -197,6 +197,7 @@ class DatabaseWrapper() {
                 saveSlotsUpdate.setLong(4, queueId.id)
                 saveSlotsUpdate.setString(5, slot.slotCode.code)
                 saveSlotsUpdate.executeUpdate()
+                updateMediator.setSlotApprox(slot.slotCode, slot.approxTime)
             }
             return true
         } catch (e: SQLException) {

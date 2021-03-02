@@ -14,7 +14,7 @@ class Server {
     init {
         // First The database
         Logger.debug(LOG_ID, "Creating database")
-        val databaseWrapper = DatabaseWrapper()
+        val databaseWrapper = DatabaseWrapper("OutwaitDB")
 
         // Now the io server
         Logger.debug(LOG_ID, "Creating server (socketIO)")

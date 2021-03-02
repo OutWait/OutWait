@@ -13,6 +13,7 @@ plugins {
     application
 }
 
+
 repositories {
     // Use JCenter for resolving dependencies.
     jcenter()
@@ -35,6 +36,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation("mysql:mysql-connector-java:8.0.23")
+    implementation("org.junit.jupiter:junit-jupiter:5.4.2")
+    implementation("org.junit.jupiter:junit-jupiter:5.4.2")
 
     // Use the Kotlin test library.
     testImplementation("org.jetbrains.kotlin:kotlin-test")
@@ -44,11 +47,15 @@ dependencies {
 
     // Create a client mock
     testImplementation("io.socket:socket.io-client:1.0.0")
+
 }
+
+
 
 application {
     // Define the main class for the application.
     mainClass.set("edu.kit.outwait.server.core.ServerKt")
+
 
     // Add dependencies
     tasks.withType<Jar>() {
@@ -57,3 +64,4 @@ application {
         manifest { attributes(mapOf("Main-Class" to "edu.kit.outwait.server.core.ServerKt")) }
     }
 }
+
