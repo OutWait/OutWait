@@ -1,13 +1,24 @@
 package elite.kit.outwait.networkProtocol
 
-import org.joda.time.Duration
 import org.json.JSONObject
 
-/*
-Has no secondary constructor, as we only receive the wrapped JSONObject
+/**
+ * The JSONObjectWrapper for the data of events, where an error message is to be received
+ *
+ * @constructor
+ * Primary constructor takes a given JSONObject and wraps it, using the
+ * constructor of the base class
+ *
+ * @param jsonObj The JSONObject that is to be wrapped (containing the received data of the
+ * respective event)
  */
 class JSONErrorMessageWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
 
+    /**
+     * Getter for the error message contained in the received JSONObject
+     *
+     * @return received error message as a String
+     */
     fun getErrorMessage(): String {
         return jsonObj.getString(ERROR_MESSAGE)
     }

@@ -4,11 +4,26 @@ import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.json.JSONObject
 
-/*
-Has no getters, as we only emit the wrapped JSONObject
+/**
+ * The JSONObjectWrapper for the data of the "addFixedSlot@S" event that is to be transmitted
+ *
+ * @constructor
+ * Primary constructor takes a given JSONObject and wraps it, using the
+ * constructor of the base class
+ *
+ * @param jsonObj The JSONObject that is to be wrapped (which will contain the data for this event)
  */
-class JSONAddFixedSlotWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj)  {
+class JSONAddFixedSlotWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
 
+    /**
+     * Secondary constructor, takes the data that is to be transmitted and stores it in the
+     * (previously empty) JSONObject (of the primary constructor)
+     * according to the specified (JSON) protocol
+     * //TODO Verweis auf Entwurfsdokument oder Protokoll? Bps. JSON syntax
+     *
+     * @param duration the requested duration of a fixedSlot as a Duration object
+     * @param appointmentTime the requested appointment time of a fixedSlot as a DateTime object
+     */
     constructor(duration: Duration, appointmentTime: DateTime) : this(JSONObject()) {
 
         val timeStampDuration: Long = duration.millis
