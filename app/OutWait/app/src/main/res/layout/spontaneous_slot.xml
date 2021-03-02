@@ -11,8 +11,7 @@ android:padding="10dp"   >
 <com.google.android.material.card.MaterialCardView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:backgroundTint="@color/outwait_color"
-
+    android:backgroundTint="#DC1F8BFF"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintHorizontal_bias="0.0"

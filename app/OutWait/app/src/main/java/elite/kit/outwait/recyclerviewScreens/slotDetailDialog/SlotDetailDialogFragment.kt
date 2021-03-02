@@ -61,7 +61,10 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
     private fun displaySpontaneousSlot(spontaneousSlot: SpontaneousTimeSlot) {
         viewModel.slotCode.value=spontaneousSlot.slotCode
         viewModel.identifier.value=spontaneousSlot.auxiliaryIdentifier
+        Log.i("stringAddDialog","${spontaneousSlot.interval.toString()}")
         viewModel.interval.value=TransformationOutput.intervalToString(spontaneousSlot.interval)
+        Log.i("stringAddDialog2", TransformationOutput.intervalToString(spontaneousSlot.interval))
+
         viewModel.qrCode.value=qrCodeGenerator.generateQRCode(spontaneousSlot.slotCode)
         binding.ivQRCode.setImageBitmap(viewModel.qrCode.value)
 
