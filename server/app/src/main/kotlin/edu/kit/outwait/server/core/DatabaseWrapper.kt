@@ -17,7 +17,7 @@ import java.util.Properties
  *  @property connection holds connection
  *  @property connectionProps properties of connection
  */
-class DatabaseWrapper(val dbName : String) {
+class DatabaseWrapper(dbName : String) {
     private val updateMediator = UpdateMediator()
     private lateinit var connection: Connection
     private val connectionProps: Properties = Properties()
@@ -38,7 +38,7 @@ class DatabaseWrapper(val dbName : String) {
             Logger.info(LOG_ID, "Connected to Database")
         } catch (e : SQLException) {
             e.printStackTrace()
-            println("Failed connecting to database. Server stopped.")
+            Logger.error(LOG_ID, "Failed connecting to database. Server stopped.")
             throw e
         }
     }
