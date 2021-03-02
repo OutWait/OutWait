@@ -82,13 +82,15 @@
         <android.widget.Button
             android:id="@+id/btnLoginFrag"
             style="@style/DefaultButton"
-            android:layout_marginTop="64dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="70dp"
             android:onClick="@{()->viewModel.login()}"
             android:text="@string/sign_in"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/boxes_institute_password"
-            app:layout_constraintHorizontal_bias="0.502"
             app:layout_constraintStart_toStartOf="@+id/boxes_institute_password"
-            app:layout_constraintTop_toBottomOf="@+id/tvPForgotton" />
+            app:layout_constraintTop_toBottomOf="@+id/tvPForgotton"
+            app:layout_constraintVertical_bias="1.0" />
 
         <ImageView
             android:id="@+id/ivScan"
