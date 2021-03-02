@@ -2,7 +2,11 @@ package elite.kit.outwait.recyclerviewScreens.slotDetailDialog
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.graphics.Color
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
@@ -15,8 +19,7 @@ import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.FixedTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.Type
-import org.joda.time.DateTime
-import org.joda.time.Interval
+
 
 class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : DialogFragment() {
 
@@ -28,6 +31,28 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         //TODO Fragment design wrong, appointmenttime not showing
+
+
+        // Initialize a new foreground color span instance
+
+        // Initialize a new foreground color span instance
+        val foregroundColorSpan = ForegroundColorSpan(Color.parseColor("#38B6FF"))
+
+        // Initialize a new spannable string builder instance
+        // Initialize a new spannable string builder instance
+        val ssBuilder = SpannableStringBuilder(getString(R.string.slot_details))
+
+        // Apply the text color span
+
+        // Apply the text color span
+        ssBuilder.setSpan(
+            foregroundColorSpan,
+            0,
+            getString(R.string.slot_details).length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+
         val builder = AlertDialog.Builder(activity)
         binding = SlotDetailDialogFragmentBinding.inflate(LayoutInflater.from(context))
         binding.viewModel = this.viewModel
@@ -38,7 +63,7 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
 
         builder.apply {
             setView(binding.root)
-            setTitle(getString(R.string.slot_details))
+            setTitle(ssBuilder)
             setPositiveButton(getString(R.string.confirm)) { dialog, which ->
                 dialog.dismiss()
             }

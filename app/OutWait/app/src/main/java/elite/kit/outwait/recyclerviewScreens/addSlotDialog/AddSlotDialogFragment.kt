@@ -2,7 +2,11 @@ package elite.kit.outwait.recyclerviewScreens.addSlotDialog
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.graphics.Color
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -37,11 +41,24 @@ class AddSlotDialogFragment : DialogFragment() {
         setUpPicker()
         defaultValues()
 
-        //TODO set default duration trough preferences
+        val foregroundColorSpan = ForegroundColorSpan(Color.parseColor("#38B6FF"))
 
+        // Initialize a new spannable string builder instance
+        // Initialize a new spannable string builder instance
+        val ssBuilder = SpannableStringBuilder(getString(R.string.title_add_slot))
+
+        // Apply the text color span
+
+        // Apply the text color span
+        ssBuilder.setSpan(
+            foregroundColorSpan,
+            0,
+            getString(R.string.title_add_slot).length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
         builder.apply {
             setView(binding.root)
-            setTitle(getString(R.string.title_add_slot))
+            setTitle(ssBuilder)
             setPositiveButton(getString(R.string.confirm)) { dialog, which ->
 
                 if (viewModel.isFixedSlot.value!!) {

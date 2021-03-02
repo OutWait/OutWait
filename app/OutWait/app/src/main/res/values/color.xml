@@ -15,6 +15,6 @@
     <color name="code_edit_text_background">#330199FF</color>
     <color name="outwait_color">#38B6FF</color>
     <color name="outwait_color_dark">#2F93CD</color>
-    <color name="header_color">#FFC107</color>
+    <color name="duration_digit_color">#56ACF1</color>
 
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="light_red">#FB001E</color>
-    <color name="light_green">#41F300</color>
+    <color name="light_green">#F84A4A</color>
+    <color name="light_red">#36E010</color>
+    <color name="header_color">#FFEB3B</color>
 </resources>

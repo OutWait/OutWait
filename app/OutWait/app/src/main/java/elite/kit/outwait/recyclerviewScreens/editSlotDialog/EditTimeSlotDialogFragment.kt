@@ -2,7 +2,11 @@ package elite.kit.outwait.recyclerviewScreens.editSlotDialog
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.graphics.Color
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
@@ -37,6 +41,22 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
         setValuesOfScreen(editSlot)
         viewModel.isFixedSlot.value = isFixedSlot(editSlot)
         viewModel.slotCode.value = editSlot.slotCode
+
+        val foregroundColorSpan = ForegroundColorSpan(Color.parseColor("#38B6FF"))
+
+        // Initialize a new spannable string builder instance
+        // Initialize a new spannable string builder instance
+        val ssBuilder = SpannableStringBuilder(getString(R.string.title_edit_dialog))
+
+        // Apply the text color span
+
+        // Apply the text color span
+        ssBuilder.setSpan(
+            foregroundColorSpan,
+            0,
+            getString(R.string.title_edit_dialog).length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
         builder.apply {
 
