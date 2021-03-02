@@ -5,6 +5,13 @@ import com.corundumstudio.socketio.SocketIOServer
 import edu.kit.outwait.server.client.ClientManager
 import edu.kit.outwait.server.management.ManagementManager
 
+/**
+ * The main server application, that represents the entry point.
+ *
+ * It holds the SocketIOServer and the managers.
+ *
+ * @constructor Initializes the whole server and loads the Database.
+ */
 class Server {
     private val server: SocketIOServer
     private val clientManager: ClientManager
@@ -40,12 +47,14 @@ class Server {
         Logger.info(LOG_ID, "Server initialized")
     }
 
+    /** Starts the server, so that it can receive requests. */
     fun run() {
         Logger.info(LOG_ID, "Starting server...")
         server.start()
         Logger.info(LOG_ID, "Server started.")
     }
 
+    /** Shuts down the server explicitly. */
     fun stop() {
         Logger.info(LOG_ID, "Stopping server...")
         server.stop()
@@ -53,6 +62,11 @@ class Server {
     }
 }
 
+/**
+ * Main entry point of the application.
+ *
+ * Creates and starts the server instance.
+ */
 fun main() {
     Logger.debug("MAIN", "Entry point reached")
     val server = Server()

@@ -8,10 +8,27 @@ import com.corundumstudio.socketio.listener.DisconnectListener
 import edu.kit.outwait.server.core.Logger
 import edu.kit.outwait.server.protocol.Event
 
+/**
+ * Coordinator for incoming messages over a socket.
+ *
+ * This class is used as a wrapper around the namespace-logic of SocketIO. SocketFacades register in
+ * the adapter and incoming events are forwarded to the right handler of the right SocketFacade.
+ * Each SocketAdapter wraps exactly one namespace.
+ *
+ * @param namespace the SocketIONamespace to wrap.
+ * @constructor Creates a socket adapter object.
+ */
 class SocketAdapter(val namespace: SocketIONamespace) {
     private val facades = hashMapOf<SocketIOClient, SocketFacade>()
     private val LOG_ID = "SO-ADAPTER"
 
+    /**
+     * Configures all allowed incoming events.
+     *
+     * Call this method before starting the server.
+     *
+     * @param events specifies which events are allowed and handled by this adapter.
+     */
     fun configureEvents(events: List<Event>) {
         // Configure all event listeners
         for (e in events) {
@@ -61,10 +78,25 @@ class SocketAdapter(val namespace: SocketIONamespace) {
         )
     }
 
+    /**
+     * Register a new SocketFacade for this adapter.
+     *
+     * This can be called after the server has been started, to register new sockets. After that
+     * incoming events are directed to the facade respectively.
+     *
+     * @param facade the SocketFacade to register
+     * @param socket the SocketIOClient to identify the socket
+     */
     fun addFacadeForSocket(facade: SocketFacade, socket: SocketIOClient) {
         Logger.debug(LOG_ID, "Adding new facade")
         facades.put(socket, facade)
     }
+
+    /**
+     * Called internally when a connection is closed to deregister a SocketFacade
+     *
+     * @facade the SocketFacade to deregister.
+     */
     private fun removeFacade(facade: SocketFacade) {
         Logger.debug(LOG_ID, "Removing facade")
         facades.values.remove(facade)

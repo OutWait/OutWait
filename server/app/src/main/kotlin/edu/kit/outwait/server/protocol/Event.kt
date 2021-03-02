@@ -2,6 +2,17 @@ package edu.kit.outwait.server.protocol
 
 import org.json.JSONObject
 
+/**
+ * Enumeration of all possible network protocol events.
+ *
+ * The events must be used according to the design document.
+ *
+ * @property tag the type tag that is send over the network to identify the Event. It ends with
+ *     '@S', '@M' or '@C' to specify whether the event is designated for the Server, the Management
+ *     or the Client respectively.
+ * @property wrapper a function to create the dedicated json wrapper from a json string.
+ * @constructor Internal constructor for event types.
+ */
 enum class Event(private val tag: String, private val wrapper: (String) -> JSONObjectWrapper) {
     MANAGEMENT_LOGIN("managementLogin@S", { JSONCredentialsWrapper(JSONObject(it)) }),
     MANAGEMENT_LOGOUT("managementLogout@S", { JSONEmptyWrapper(JSONObject(it)) }),
@@ -46,6 +57,18 @@ enum class Event(private val tag: String, private val wrapper: (String) -> JSONO
         { JSONInvalidRequestMessageWrapper(JSONObject(it)) }
     );
 
+    /**
+     * Returns the event tag.
+     *
+     * @return The event tag
+     */
     fun getEventTag(): String { return tag }
+
+    /**
+     * Constructs the corresponding json wrapper from a json string.
+     *
+     * @param dat the json string
+     * @return the dedicated json wrapper (with the right dynamic type)
+     */
     fun createWrapper(dat: String): JSONObjectWrapper { return wrapper(dat) }
 }
