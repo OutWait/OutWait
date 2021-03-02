@@ -63,6 +63,8 @@ class Management(
             // Don't crash the server by a exception. This is just a log.
         } else {
             val queue = Queue(queueId, databaseWrapper)
+            // Update the queue as it might have been loaded in wrong order.
+            queue.updateQueue(managementInformation.settings.prioritizationTime)
             sendUpdatedQueue(queue)
             Logger.debug(LOG_ID, "Sent first queue")
         }
@@ -282,6 +284,8 @@ class Management(
             Logger.debug(LOG_ID, "Aborting transaction")
             val original_queue = managementManager.abortTransaction(managementId)
             if (original_queue != null) {
+                // Update the queue as it might have been loaded in wrong order.
+                original_queue.updateQueue(managementInformation.settings.prioritizationTime)
                 sendUpdatedQueue(original_queue)
             }
             queue = null // transaction ended
