@@ -32,7 +32,7 @@ interface ClientInfoDao {
      * @param waitCode see [ClientInfo.slotCode]
      * @return clientInfo with given slot Code or null if such a clientInfo does not exist
      */
-    @Query("Select * From client_table Where :waitCode")
+    @Query("Select * From client_table Where slotCode = :waitCode")
     fun getClientInfo(waitCode: String): ClientInfo?
 
     /**
