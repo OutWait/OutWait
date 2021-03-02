@@ -14,6 +14,19 @@
         tools:context=".loginSystem.LoginFragment">
 
 
+        <TextView
+            android:id="@+id/tvTitleSlotCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center|center_horizontal|center_vertical"
+            android:text="Are you a client?"
+            android:textColor="@color/outwait_color"
+            android:textSize="@dimen/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <studio.carbonylgroup.textfieldboxes.TextFieldBoxes
             android:id="@+id/boxes_institute_password"
             android:layout_width="300dp"
@@ -42,14 +55,14 @@
             android:id="@+id/boxes_institute_name"
             android:layout_width="300dp"
             android:layout_height="70dp"
-            android:layout_marginTop="132dp"
+            android:layout_marginTop="16dp"
             app:hasClearButton="true"
             app:iconSignifier="@drawable/ic_institute_person"
             app:labelText="Name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivScan"
+            app:layout_constraintTop_toBottomOf="@+id/tvTitleLogin"
             app:panelBackgroundColor="@color/code_edit_text_background"
             app:primaryColor="@color/code_edit_text_bottom_line"
             app:secondaryColor="@color/text_missing">
@@ -67,17 +80,19 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:foregroundGravity="center"
             android:inputType="textVisiblePassword"
             android:maxLength="9"
             app:cet_codePlaceholder="*"
-            android:foregroundGravity="center"
             app:cet_scrollDurationInMillis="300"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/tvTitleSlotCode">
+
+        </com.lukelorusso.codeedittext.CodeEditText>
 
         <android.widget.Button
             android:id="@+id/btnLoginFrag"
@@ -113,6 +128,20 @@
             app:layout_constraintEnd_toEndOf="@+id/boxes_institute_password"
             app:layout_constraintStart_toStartOf="@+id/boxes_institute_password"
             app:layout_constraintTop_toBottomOf="@+id/boxes_institute_password" />
+
+        <TextView
+            android:id="@+id/tvTitleLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:gravity="center|center_horizontal|center_vertical"
+            android:text="Are you a institute ?"
+            android:textColor="@color/outwait_color"
+            android:textSize="@dimen/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivScan" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
