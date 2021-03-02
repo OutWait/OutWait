@@ -17,6 +17,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.google.zxing.integration.android.IntentIntegrator

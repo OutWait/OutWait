@@ -9,10 +9,10 @@ import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ItemActionList
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 
 class HeaderTransaction(
-    private var itemView: View, private var listener: ItemActionListener,
-    ) : BaseViewHolder<HeaderTransaction>(itemView){
-    private var iconSave = itemView.findViewById<ImageView>(R.id.ivSaveTransaction)
-    private var iconAbort = itemView.findViewById<ImageView>(R.id.ivAbortTransaction)
+    private var itemViewHeader: View, private var listener: ItemActionListener,
+    ) : BaseViewHolder<HeaderTransaction>(itemViewHeader){
+    private var iconSave = itemViewHeader.findViewById<ImageView>(R.id.ivSaveTransaction)
+    private var iconAbort = itemViewHeader.findViewById<ImageView>(R.id.ivAbortTransaction)
 
     init {
         iconSave.setOnClickListener{

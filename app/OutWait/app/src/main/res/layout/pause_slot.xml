@@ -4,30 +4,103 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="10dp"
-    android:paddingTop="10dp"
-    android:paddingEnd="10dp"
-    android:paddingRight="10dp"
-    android:paddingBottom="10dp">
+    android:padding="10dp"
 
-    <TextView
-        android:id="@+id/tvPauseSlotContainer"
-        android:layout_width="385dp"
-        android:layout_height="33dp"
-        android:background="#4CAF50"
+    android:visibility="invisible">
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.237"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
-    <TextView
-        android:id="@+id/tvPause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/pause_text"
-        app:layout_constraintBottom_toBottomOf="@+id/tvPauseSlotContainer"
-        app:layout_constraintEnd_toEndOf="@+id/tvPauseSlotContainer"
-        app:layout_constraintStart_toStartOf="@+id/tvPauseSlotContainer"
-        app:layout_constraintTop_toTopOf="@+id/tvPauseSlotContainer" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="3dp"
+
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvStartTimePause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="top|left"
+
+                android:text="StartTime"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toStartOf="@+id/gVertical"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvEndTimePause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+
+                android:gravity="bottom|left"
+                android:text="EndTime"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/gVertical"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvStartTimePause"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/gVertical"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="invisible"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <TextView
+                android:id="@+id/tvIdentifierPause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right|top"
+
+                android:text="@string/identifier"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/gVertical"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvSlotCodePause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+
+                android:gravity="bottom|right"
+                android:text="@string/slotcode"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/gVertical"
+                app:layout_constraintTop_toBottomOf="@+id/tvIdentifierPause"
+                app:layout_constraintVertical_bias="1.0" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,55 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:padding="10dp"   >
+
+
+
+<com.google.android.material.card.MaterialCardView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="10dp"
-    android:paddingTop="10dp"
-    android:paddingEnd="10dp"
-    android:paddingRight="10dp"
-    android:paddingBottom="10dp">
+    android:backgroundTint="@color/outwait_color"
 
-    <TextView
-        android:id="@+id/tvSpoSlotContainer"
-        android:layout_width="376dp"
-        android:layout_height="76dp"
-        android:background="#00BCD4"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.0">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/tvSpoSlotContainerSpo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="3dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/tvIdentifier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/identifier"
-        app:layout_constraintBottom_toBottomOf="@+id/tvSpoSlotContainer"
-        app:layout_constraintEnd_toStartOf="@+id/ivEditIcon"
-        app:layout_constraintStart_toEndOf="@+id/tvSlotCode"
-        app:layout_constraintTop_toTopOf="@+id/tvSpoSlotContainer" />
+        <ImageView
+            android:id="@+id/ivEditIconSpo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="center_vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/gVertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_slot_edit" />
 
-    <TextView
-        android:id="@+id/tvSlotCode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/slotcode"
-        app:layout_constraintBottom_toBottomOf="@+id/tvSpoSlotContainer"
-        app:layout_constraintEnd_toEndOf="@+id/tvSpoSlotContainer"
-        app:layout_constraintHorizontal_bias="0.068"
-        app:layout_constraintStart_toStartOf="@+id/tvSpoSlotContainer"
-        app:layout_constraintTop_toTopOf="@+id/tvSpoSlotContainer"
-        app:layout_constraintVertical_bias="0.491" />
+        <TextView
+            android:id="@+id/tvStartTimeSpo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="top|start"
+            android:text="StartTime"
+            app:layout_constraintEnd_toStartOf="@+id/gVertical"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/ivEditIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvSpoSlotContainer"
-        app:layout_constraintEnd_toEndOf="@+id/tvSpoSlotContainer"
-        app:layout_constraintTop_toTopOf="@+id/tvSpoSlotContainer"
-        app:srcCompat="@android:drawable/ic_menu_edit" />
+        <TextView
+            android:id="@+id/tvEndTimeSpo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="bottom|start"
+            android:text="EndTime"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/gVertical"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvStartTimeSpo"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gVertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <TextView
+            android:id="@+id/tvIdentifierSpo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:gravity="end|top"
+            android:text="@string/identifier"
+            app:layout_constraintEnd_toStartOf="@+id/ivEditIconSpo"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/gVertical"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvSlotCodeSpo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="bottom|end"
+            android:text="@string/slotcode"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivEditIconSpo"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/gVertical"
+            app:layout_constraintTop_toBottomOf="@+id/tvIdentifierSpo"
+            app:layout_constraintVertical_bias="0.0" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+

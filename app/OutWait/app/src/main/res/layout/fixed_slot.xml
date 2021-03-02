@@ -4,50 +4,105 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="10dp"
-    android:paddingTop="10dp"
-    android:paddingEnd="10dp"
-    android:paddingRight="10dp"
-    android:paddingBottom="10dp">
+    android:padding="10dp"   >
 
-    <TextView
-        android:id="@+id/tvFixedSlotContainer"
-        android:layout_width="387dp"
-        android:layout_height="45dp"
-        android:background="#F44336"
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/outwait_color_dark"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
-    <TextView
-        android:id="@+id/tvIdentifier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="132dp"
-        android:text="@string/identifier"
-        app:layout_constraintBottom_toBottomOf="@+id/tvFixedSlotContainer"
-        app:layout_constraintEnd_toStartOf="@+id/ivEditIcon"
-        app:layout_constraintTop_toTopOf="@+id/tvFixedSlotContainer" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/tvSpoSlotContainerFix"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="3dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/tvSlotCode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/slotcode"
-        app:layout_constraintBottom_toBottomOf="@+id/tvFixedSlotContainer"
-        app:layout_constraintEnd_toStartOf="@+id/tvIdentifier"
-        app:layout_constraintHorizontal_bias="0.204"
-        app:layout_constraintStart_toStartOf="@+id/tvFixedSlotContainer"
-        app:layout_constraintTop_toTopOf="@+id/tvFixedSlotContainer" />
+            <ImageView
+                android:id="@+id/ivEditIconFix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:foregroundGravity="center_vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/gVertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_slot_edit" />
 
-    <ImageView
-        android:id="@+id/ivEditIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvFixedSlotContainer"
-        app:layout_constraintEnd_toEndOf="@+id/tvFixedSlotContainer"
-        app:layout_constraintTop_toTopOf="@+id/tvFixedSlotContainer"
-        app:srcCompat="@android:drawable/ic_menu_edit" />
+            <TextView
+                android:id="@+id/tvStartTimeFix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="top|start"
+                android:text="StartTime"
+                app:layout_constraintEnd_toStartOf="@+id/gVertical"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvEndTimeFix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="bottom|start"
+                android:text="EndTime"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/gVertical"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvStartTimeFix"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/gVertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <TextView
+                android:id="@+id/tvIdentifierFix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:gravity="end|top"
+                android:text="@string/identifier"
+                app:layout_constraintEnd_toStartOf="@+id/ivEditIconFix"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/gVertical"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvSlotCodeFix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="20dp"
+                android:gravity="bottom|end"
+                android:text="@string/slotcode"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/ivEditIconFix"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/gVertical"
+                app:layout_constraintTop_toBottomOf="@+id/tvIdentifierFix"
+                app:layout_constraintVertical_bias="0.0" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+

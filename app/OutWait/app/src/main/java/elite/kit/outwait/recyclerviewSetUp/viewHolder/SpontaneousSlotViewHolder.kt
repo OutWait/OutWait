@@ -5,29 +5,34 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import elite.kit.outwait.R
 import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ItemActionListener
+import elite.kit.outwait.utils.TransformationOutput
 import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 
 class SpontaneousSlotViewHolder(
-    private var itemView: View,
+    private var itemViewSpo: View,
     private var itemTouchHelper: ItemTouchHelper,
     listener: ItemActionListener
 ) :
-    BaseViewHolder<SpontaneousTimeSlot>(itemView),View.OnTouchListener, GestureDetector.OnGestureListener {
-    private var identifier = itemView.findViewById<TextView>(R.id.tvIdentifier)
-    private var slotCode = itemView.findViewById<TextView>(R.id.tvSlotCode)
-    private var icon = itemView.findViewById<ImageView>(R.id.ivEditIcon)
-    private var container = itemView.findViewById<TextView>(R.id.tvSpoSlotContainer)
+    BaseViewHolder<SpontaneousTimeSlot>(itemViewSpo),View.OnTouchListener, GestureDetector.OnGestureListener {
+    private var identifier = itemViewSpo.findViewById<TextView>(R.id.tvIdentifierSpo)
+    private var slotCode = itemViewSpo.findViewById<TextView>(R.id.tvSlotCodeSpo)
+    private var startTime = itemViewSpo.findViewById<TextView>(R.id.tvStartTimeSpo)
+    private var endTime = itemViewSpo.findViewById<TextView>(R.id.tvEndTimeSpo)
 
-    private val gestureDetector: GestureDetector = GestureDetector(itemView.context, this)
+    private var icon = itemViewSpo.findViewById<ImageView>(R.id.ivEditIconSpo)
+    private var container = itemViewSpo.findViewById<ConstraintLayout>(R.id.tvSpoSlotContainerSpo)
+
+    private val gestureDetector: GestureDetector = GestureDetector(itemViewSpo.context, this)
 
     init {
-        itemView.setOnTouchListener(this)
+        itemViewSpo.setOnTouchListener(this)
 
         container.setOnClickListener{
             if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
@@ -44,6 +49,8 @@ class SpontaneousSlotViewHolder(
     override fun bind(item: TimeSlotItem) {
         identifier.text = (item.timeSlot as SpontaneousTimeSlot).auxiliaryIdentifier
         slotCode.text = (item.timeSlot as SpontaneousTimeSlot).slotCode
+        startTime.text = TransformationOutput.appointmentToString((item.timeSlot as SpontaneousTimeSlot).interval.start)
+        endTime.text = TransformationOutput.appointmentToString((item.timeSlot as SpontaneousTimeSlot).interval.end)
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
