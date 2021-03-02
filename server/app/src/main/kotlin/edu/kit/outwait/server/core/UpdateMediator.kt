@@ -78,7 +78,6 @@ class UpdateMediator {
                 slotManagementInformation
         )
         receivers[slotCode]?.forEach() { it.setSlotData(slotApprox, slotManagementInformation) }
-            ?: Logger.error(LOG_ID, "Unknown slot requested (" + slotCode + ")")
     }
 
     /**
@@ -92,7 +91,6 @@ class UpdateMediator {
         Logger.debug(LOG_ID, "Update slot approx of slot " + slotCode + " to " + slotApprox)
         receivers[slotCode]
             ?.forEach() { it.setSlotData(slotApprox, it.getSlotManagementInformation()) }
-            ?: Logger.error(LOG_ID, "Unknown slot requested (" + slotCode + ")")
     }
 
     /**
@@ -113,7 +111,6 @@ class UpdateMediator {
             )
             receivers[code]
                 ?.forEach() { it.setSlotData(it.getSlotApprox(), slotManagementInformation) }
-                ?: Logger.debug(LOG_ID, "Unknown slot requested (" + code + ")")
         }
     }
 
@@ -126,7 +123,6 @@ class UpdateMediator {
     fun endSlot(slotCode: SlotCode) {
         Logger.debug(LOG_ID, "Ending slot " + slotCode)
         receivers[slotCode]?.forEach() { it.end() }
-            ?: Logger.debug(LOG_ID, "Unknown slot requested (" + slotCode + ")")
     }
 
     /**
@@ -138,6 +134,5 @@ class UpdateMediator {
     fun deleteSlot(slotCode: SlotCode) {
         Logger.debug(LOG_ID, "Deleting slot " + slotCode)
         receivers[slotCode]?.forEach() { it.delete() }
-            ?: Logger.debug(LOG_ID, "Unknown slot requested (" + slotCode + ")")
     }
 }

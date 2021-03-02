@@ -13,7 +13,6 @@ plugins {
     application
 }
 
-
 repositories {
     // Use JCenter for resolving dependencies.
     jcenter()
@@ -47,15 +46,11 @@ dependencies {
 
     // Create a client mock
     testImplementation("io.socket:socket.io-client:1.0.0")
-
 }
-
-
 
 application {
     // Define the main class for the application.
     mainClass.set("edu.kit.outwait.server.core.ServerKt")
-
 
     // Add dependencies
     tasks.withType<Jar>() {
@@ -64,4 +59,3 @@ application {
         manifest { attributes(mapOf("Main-Class" to "edu.kit.outwait.server.core.ServerKt")) }
     }
 }
-
