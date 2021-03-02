@@ -89,6 +89,8 @@ class LoginFragment : Fragment() {
                 viewModel.enterSlotCode()
                 Log.i("slotCode","${viewModel.clientSlotCode.value}")            }
         }
+
+
         return binding.root
     }
 

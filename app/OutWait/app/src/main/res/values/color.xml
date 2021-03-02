@@ -13,4 +13,7 @@
     <color name="text_missing">#B53140</color>
     <color name="code_edit_text_bottom_line">@color/colorAccent</color>
     <color name="code_edit_text_background">#330199FF</color>
+    <color name="outwait_color">#38B6FF</color>
+    <color name="outwait_color_dark">#2F93CD</color>
+
 </resources>

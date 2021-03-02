@@ -102,6 +102,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         }
 
 
+
         //Add listener for recyclerview
 
         slotAdapter = SlotAdapter(mutableListOf<DataItem>(), this)

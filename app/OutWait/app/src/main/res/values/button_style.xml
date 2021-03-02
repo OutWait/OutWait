@@ -1,0 +1,9 @@
+<resources>
+    <style name="DefaultButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/default_button_selector</item>
+        <item name="android:textColor">@color/button_text_color_selector</item>
+        <item name="android:textSize">@dimen/button_text_size</item>
+    </style>
+</resources>
