@@ -42,7 +42,7 @@
             android:id="@+id/boxes_institute_name"
             android:layout_width="300dp"
             android:layout_height="70dp"
-            android:layout_marginTop="160dp"
+            android:layout_marginTop="132dp"
             app:hasClearButton="true"
             app:iconSignifier="@drawable/ic_institute_person"
             app:labelText="Name"
@@ -82,15 +82,15 @@
         <android.widget.Button
             android:id="@+id/btnLoginFrag"
             style="@style/DefaultButton"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="70dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
             android:onClick="@{()->viewModel.login()}"
             android:text="@string/sign_in"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/boxes_institute_password"
             app:layout_constraintStart_toStartOf="@+id/boxes_institute_password"
             app:layout_constraintTop_toBottomOf="@+id/tvPForgotton"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintVertical_bias="0.224" />
 
         <ImageView
             android:id="@+id/ivScan"
