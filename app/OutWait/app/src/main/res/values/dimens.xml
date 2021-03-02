@@ -4,5 +4,7 @@
     <dimen name="fragment_vertical_margin">16dp</dimen>
     <dimen name="button_text_size">13dp</dimen>
     <dimen name="title">20dp</dimen>
+    <dimen name="title_big">25dp</dimen>
+    <dimen name="title_small">10dp</dimen>
 
 </resources>

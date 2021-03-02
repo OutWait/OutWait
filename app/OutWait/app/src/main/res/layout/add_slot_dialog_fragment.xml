@@ -13,7 +13,7 @@
     <ScrollView
         android:id="@+id/scrollViewAdd"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:nextFocusDown="@string/appointment_time">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -92,7 +92,6 @@
                 android:cursorVisible="true"
                 android:ems="10"
                 android:focusableInTouchMode="true"
-                android:focusedByDefault="false"
                 android:inputType="textPersonName"
                 android:nextFocusDown="@id/addSlotDuration"
                 android:text="@={viewModel.identifier}"

@@ -53,4 +53,7 @@
     <string name="sss">\@string/forgot_password_underline</string>
     <string name="are_you_a_client"><i>Are you a client?</i></string>
     <string name="are_you_a_institute"><i>Are you a institute ?</i></string>
+    <string name="title_auxiliary_identifier">Auxiliary Identifier:</string>
+    <string name="title_duration">Duration:</string>
+    <string name="title_appointment">Appointment:</string>
 </resources>

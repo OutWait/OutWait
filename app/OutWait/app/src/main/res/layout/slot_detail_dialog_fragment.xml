@@ -2,101 +2,143 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="viewModel"
             type="elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogViewModel" />
+
         <import type="android.view.View" />
     </data>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp">
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp"
-        android:paddingStart="8dp"
-        android:paddingLeft="8dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="8dp"
-        android:paddingRight="8dp"
-        android:paddingBottom="8dp"
-        tools:context=".recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment">
 
-
-        <TextView
-            android:id="@+id/tvSlotCodeDetail"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="@string/slotcode"
-            android:text="@{viewModel.slotCode}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:padding="8dp"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="8dp"
+            tools:context=".recyclerviewScreens.slotDetailDialog.SlotDetailDialogFragment">
 
-        <ImageView
-            android:id="@+id/ivQRCode"
-            android:layout_width="400dp"
-            android:layout_height="400dp"
-            android:layout_marginStart="1dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="1dp"
-            android:src="@drawable/ic_clear"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.444"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvSlotCodeDetail" />
 
-        <TextView
-            android:id="@+id/tvIdentifierDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
-            android:hint="@string/identifier"
-            android:text="@{viewModel.identifier}"
-            app:layout_constraintBottom_toTopOf="@+id/tvDurationDetail"
-            app:layout_constraintEnd_toEndOf="@+id/ivQRCode"
-            app:layout_constraintStart_toStartOf="@+id/ivQRCode"
-            app:layout_constraintTop_toBottomOf="@+id/ivQRCode" />
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/bVerticalTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:barrierDirection="start"
+                app:constraint_referenced_ids="tvTitleIdentifier,tvTitleDuration,tvTitleAppointment"
+                app:layout_constraintGuide_begin="40dp" />
 
-        <TextView
-            android:id="@+id/tvDurationDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:hint="@string/duration"
-            android:text="@{viewModel.interval}"
-            app:layout_constraintBottom_toTopOf="@+id/tvAppointmentTimeDetail"
-            app:layout_constraintEnd_toEndOf="@+id/tvIdentifierDetail"
-            app:layout_constraintHorizontal_bias="0.333"
-            app:layout_constraintStart_toStartOf="@+id/tvIdentifierDetail"
-            app:layout_constraintTop_toBottomOf="@+id/tvIdentifierDetail"
-            app:layout_constraintVertical_bias="0.0" />
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/bVerticalDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:barrierDirection="start"
+                app:constraint_referenced_ids="tvIdentifierDetail,tvDurationDetail,tvAppointmentTimeDetail"
+                app:layout_constraintGuide_percent="" />
 
-        <TextView
-            android:id="@+id/tvAppointmentTimeDetail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
-            android:layout_marginBottom="8dp"
-            android:hint="@string/appointment_time"
-            android:text="@{viewModel.appointmentTime}"
-                android:visibility="@{viewModel.isFixedSlot?View.VISIBLE:View.INVISIBLE}"
-        app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/tvDurationDetail"
-            app:layout_constraintHorizontal_bias="0.507"
-            app:layout_constraintStart_toStartOf="@+id/tvDurationDetail"
-            app:layout_constraintTop_toBottomOf="@+id/tvIdentifierDetail"
-            app:layout_constraintVertical_bias="0.0" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/tvSlotCodeDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center|center_horizontal"
+                android:hint="@string/slotcode"
+                android:text="@{viewModel.slotCode}"
+                android:textColor="@color/black"
+                android:textSize="@dimen/title_big"
+                tools:layout_editor_absoluteX="41dp"
+                tools:layout_editor_absoluteY="24dp" />
+
+            <ImageView
+                android:id="@+id/ivQRCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="1dp"
+                android:layout_marginBottom="24dp"
+                android:foregroundGravity="center_vertical|center|center_horizontal"
+                android:src="@drawable/ic_clear"
+                app:layout_constraintBottom_toTopOf="@+id/tvIdentifierDetail"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvSlotCodeDetail" />
+
+            <TextView
+                android:id="@+id/tvIdentifierDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal|center_vertical"
+                android:hint="@string/identifier"
+                android:text="@{viewModel.identifier}"
+                android:textSize="@dimen/title"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="120dp" />
+
+            <TextView
+                android:id="@+id/tvDurationDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center|center_horizontal|left|center_vertical"
+                android:hint="@string/duration"
+                android:text="@{viewModel.interval}"
+                android:textSize="@dimen/title"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="188dp" />
+
+            <TextView
+                android:id="@+id/tvAppointmentTimeDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center|start|center_horizontal|center_vertical"
+                android:hint="@string/appointment_time"
+                android:text="@{viewModel.appointmentTime}"
+                android:textSize="@dimen/title"
+                android:visibility="@{viewModel.isFixedSlot?View.VISIBLE:View.GONE}"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="223dp" />
+
+            <TextView
+                android:id="@+id/tvTitleIdentifier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_auxiliary_identifier"
+                android:textSize="@dimen/title_small"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="141dp" />
+
+            <TextView
+                android:id="@+id/tvTitleDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_duration"
+                android:textSize="@dimen/title_small"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="180dp" />
+
+            <TextView
+                android:id="@+id/tvTitleAppointment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_appointment"
+                android:textSize="@dimen/title_small"
+                android:visibility="@{viewModel.isFixedSlot?View.VISIBLE:View.GONE}"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="226dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
 </layout>

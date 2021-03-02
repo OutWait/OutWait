@@ -8,8 +8,8 @@ import com.google.zxing.WriterException
 
 class QRCodeGenerator {
     companion object {
-        private const val WITDH = 400
-        private const val HEIGHT = 400
+        private const val WITDH = 800
+        private const val HEIGHT = 800
     }
 
      fun generateQRCode(text: String): Bitmap {
