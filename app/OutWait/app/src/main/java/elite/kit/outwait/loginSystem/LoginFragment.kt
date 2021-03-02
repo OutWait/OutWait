@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -83,12 +84,14 @@ class LoginFragment : Fragment() {
             }
         }
        binding.etSlotCode.setBackgroundResource(R.drawable.shape_code_edit_text)
+
         binding.etSlotCode.setOnCodeChangedListener { (code, completed) ->
             if (completed) {
                 viewModel.clientSlotCode.value= code
                 viewModel.enterSlotCode()
                 Log.i("slotCode","${viewModel.clientSlotCode.value}")            }
         }
+
 
 
         return binding.root

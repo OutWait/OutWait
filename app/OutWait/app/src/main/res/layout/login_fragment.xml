@@ -2,7 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="viewModel"
             type="elite.kit.outwait.loginSystem.UserViewModel" />
@@ -20,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:gravity="center|center_horizontal|center_vertical"
-            android:text="Are you a client?"
+            android:text="@string/are_you_a_client"
             android:textColor="@color/outwait_color"
             android:textSize="@dimen/title"
             app:layout_constraintEnd_toEndOf="parent"
@@ -32,6 +34,7 @@
             android:layout_width="300dp"
             android:layout_height="70dp"
             android:layout_marginTop="24dp"
+            android:inputType="textPassword"
             app:hasClearButton="true"
             app:iconSignifier="@drawable/ic_institue_key"
             app:labelText="Password"
@@ -47,7 +50,12 @@
                 android:id="@+id/etInstitutePassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@={viewModel.institutePassword}" />
+                android:background="@null"
+                android:password="true"
+                android:saveEnabled="true"
+                android:singleLine="true"
+                android:text="@={viewModel.institutePassword}"
+                tools:ignore="Deprecated" />
 
         </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
 
@@ -71,6 +79,7 @@
                 android:id="@+id/etInstituteName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
                 android:text="@={viewModel.instituteName}" />
 
         </studio.carbonylgroup.textfieldboxes.TextFieldBoxes>
@@ -83,7 +92,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:foregroundGravity="center"
-            android:inputType="textVisiblePassword"
+            android:inputType="textCapCharacters"
             android:maxLength="9"
             app:cet_codePlaceholder="*"
             app:cet_scrollDurationInMillis="300"
@@ -133,15 +142,30 @@
             android:id="@+id/tvTitleLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="16dp"
             android:gravity="center|center_horizontal|center_vertical"
-            android:text="Are you a institute ?"
+            android:text="@string/are_you_a_institute"
             android:textColor="@color/outwait_color"
             android:textSize="@dimen/title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivScan" />
+            app:layout_constraintTop_toTopOf="@+id/gdHorizental" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gdHorizental"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="224dp"
+            android:layout_marginEnd="393dp"
+            android:layout_marginBottom="583dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintGuide_begin="247dp"
+            app:layout_constraintGuide_percent="0.30"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
