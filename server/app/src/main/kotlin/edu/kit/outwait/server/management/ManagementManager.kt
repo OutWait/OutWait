@@ -354,7 +354,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                     )
 
                     // Send the error message to all corresponding managements
-                    managements.filter { it.managementID == urgentQueueManagementId }
+                    managements.filter { it.managementId == urgentQueueManagementId }
                         .forEach {
                             it.sendInternalErrorMessage(
                                 "Failed to update the queue with an overdue slot. Reason: " +
