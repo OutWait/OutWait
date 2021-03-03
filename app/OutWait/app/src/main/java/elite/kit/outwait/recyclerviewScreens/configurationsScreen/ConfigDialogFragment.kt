@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.full_screen_progress_bar.*
 import mobi.upod.timedurationpicker.TimeDurationPicker
 import org.joda.time.Duration
 import java.util.concurrent.TimeUnit
+import kotlin.time.milliseconds
 import kotlin.time.toDuration
 
 @AndroidEntryPoint
@@ -28,6 +29,7 @@ class ConfigDialogFragment : Fragment() {
     private val viewModel: ConfigDialogViewModel by viewModels()
     private lateinit var builder: AlertDialog.Builder
     private lateinit var displayingDialog: AlertDialog
+    private var firstFragmentCall=true
 
 
     override fun onCreateView(
@@ -52,6 +54,8 @@ class ConfigDialogFragment : Fragment() {
         displayValues()
 
         binding.btnSave.setOnClickListener {
+           // Log.i("settings changed","${areSettingsChanged()}")
+
             emitSettingChanges()
         }
 
@@ -62,53 +66,81 @@ class ConfigDialogFragment : Fragment() {
             binding.configPrioDuration.duration = it.prioritizationTime.millis
             binding.sMode.isChecked = it.mode == Mode.TWO
             displayingDialog.dismiss()
-            Toast.makeText(context,
-                "Your settings are saved",
-                Toast.LENGTH_LONG).show()
+            if(!firstFragmentCall){
+                Toast.makeText(
+                    context,
+                    "Your settings are saved",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            firstFragmentCall=false
         }
 
         setSwitchTextOnState(binding.sMode.isChecked)
         binding.sMode.setOnCheckedChangeListener { buttonView, isChecked ->
-           setSwitchTextOnState(isChecked)
+            setSwitchTextOnState(isChecked)
         }
-
         return binding.root
     }
 
-    private fun setSwitchTextOnState(isChecked:Boolean){
-        if(isChecked){
-            binding.tvSwitchText.text="Mode 2"
-        }else{
-            binding.tvSwitchText.text="Mode 1"
+    private fun areSettingsChanged():Boolean {
+        var isSlotDurationSame =
+            binding.configStandardDuration.duration == viewModel.standardSlotDuration.millis
+        var isDelayNotificationTimeSame =
+            binding.configDelayDuration.duration == viewModel.delayNotificationTime.millis
+        var isNotificationTimeSame =
+            binding.configDurationNotification.duration == viewModel.notificationTime.millis
+        var isPrioDurationSame =
+            binding.configPrioDuration.duration == viewModel.prioritizationTime.millis
+        var isModeSame = binding.sMode.isChecked == viewModel.isModeTwo
+        Log.i("valuesSettings","$isSlotDurationSame++$isDelayNotificationTimeSame++$isNotificationTimeSame++$isPrioDurationSame++$isModeSame")
+
+        return !(isSlotDurationSame&&isDelayNotificationTimeSame&&isNotificationTimeSame&&isPrioDurationSame&&isModeSame)
+    }
+
+    private fun setSwitchTextOnState(isChecked: Boolean) {
+        if (isChecked) {
+            binding.tvSwitchText.text = "Mode 2"
+        } else {
+            binding.tvSwitchText.text = "Mode 1"
         }
     }
 
     private fun emitSettingChanges() {
         if (viewModel.isModeTwo == binding.sMode.isChecked) {
-            viewModel.saveConfigValues(Duration(binding.configStandardDuration.duration),
+            viewModel.saveConfigValues(
+                Duration(binding.configStandardDuration.duration),
                 Duration(binding.configDurationNotification.duration),
                 Duration(binding.configDelayDuration.duration),
-                Duration(binding.configPrioDuration.duration), binding.sMode.isChecked)
+                Duration(binding.configPrioDuration.duration), binding.sMode.isChecked
+            )
             displayingDialog.show()
-            displayingDialog.fullScreenProgressBar.indeterminateMode=true
+            displayingDialog.fullScreenProgressBar.indeterminateMode = true
 
-        } else if (viewModel.slotListSize == 0 && viewModel.isModeTwo != binding.sMode.isChecked ) {
-            viewModel.saveConfigValues(Duration(binding.configStandardDuration.duration),
+        } else if (viewModel.slotListSize == 0 && viewModel.isModeTwo != binding.sMode.isChecked) {
+            viewModel.saveConfigValues(
+                Duration(binding.configStandardDuration.duration),
                 Duration(binding.configDurationNotification.duration),
                 Duration(binding.configDelayDuration.duration),
-                Duration(binding.configPrioDuration.duration), binding.sMode.isChecked)
+                Duration(binding.configPrioDuration.duration), binding.sMode.isChecked
+            )
             displayingDialog.show()
-            displayingDialog.fullScreenProgressBar.indeterminateMode=true
+            displayingDialog.fullScreenProgressBar.indeterminateMode = true
 
 
         } else {
-            Toast.makeText(context,
+            Toast.makeText(
+                context,
                 "Your queue is not empty to switch your mode",
-                Toast.LENGTH_LONG).show()
-            Toast.makeText(context,
+                Toast.LENGTH_LONG
+            ).show()
+            Toast.makeText(
+                context,
                 "Your settings are not saved",
-                Toast.LENGTH_LONG).show()
-        }    }
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
 
 
     private fun displayValues() {

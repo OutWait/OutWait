@@ -20,6 +20,7 @@ import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ManagementView
 import elite.kit.outwait.utils.TransformationInput
 import kotlinx.android.synthetic.main.full_screen_progress_bar.*
 import mobi.upod.timedurationpicker.TimeDurationPicker
+import org.joda.time.DateTime
 import org.joda.time.Interval
 
 @AndroidEntryPoint
@@ -96,10 +97,21 @@ class AddSlotDialogFragment : DialogFragment() {
     private fun setFixedSlotValues() {
         viewModel.interval.value =
             TransformationInput.formatInterval(binding.addSlotDuration.duration)
-        viewModel.appointmentTime.value =
-            TransformationInput.formatDateTime(binding.tpAppointmentTime.hour,
-                binding.tpAppointmentTime.minute)
+        viewModel.appointmentTime.value = setAppointmentIn24Interval()
+        setAppointmentIn24Interval()
+        Log.i("correct appointment","${viewModel.appointmentTime.value}")
     }
+
+    private fun setAppointmentIn24Interval(): DateTime? {
+        var isBefore=DateTime.now().compareTo( TransformationInput.formatDateTime(binding.tpAppointmentTime.hour,
+            binding.tpAppointmentTime.minute))
+        var dateTimePostponed =TransformationInput.formatDateTime(binding.tpAppointmentTime.hour,
+        binding.tpAppointmentTime.minute)
+        if(isBefore>0){
+             dateTimePostponed=TransformationInput.formatDateTime(binding.tpAppointmentTime.hour,
+                binding.tpAppointmentTime.minute).plusDays(1)
+        }
+        return dateTimePostponed }
 
     private fun isDefaultAppointmentTime(): Boolean {
         return viewModel.appointmentTime.value!!.isEqual(TransformationInput.formatDateTime(

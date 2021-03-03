@@ -8,8 +8,7 @@ import org.joda.time.Interval
 import java.util.*
 
 object TransformationInput {
-    const val START_TIME_DURATION=0L
-    const val MILLISECONDS_TO_MINUTE=60000
+    private const val START_TIME_DURATION=0L
 
     @JvmStatic
     fun formatDateTime(hour: Int, minute: Int) : DateTime {

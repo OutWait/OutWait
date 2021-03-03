@@ -9,6 +9,7 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,6 +23,7 @@ import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.Type
 import kotlinx.android.synthetic.main.full_screen_progress_bar.*
 import mobi.upod.timedurationpicker.TimeDurationPicker
+import java.time.Duration
 
 @AndroidEntryPoint
 class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogFragment() {
@@ -39,7 +41,7 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
         val builder = AlertDialog.Builder(activity)
         setUpPicker()
         setValuesOfScreen(editSlot)
-        viewModel.isFixedSlot.value = isFixedSlot(editSlot)
+        viewModel.isFixedSlot.value = isFixedSlot()
         viewModel.slotCode.value = editSlot.slotCode
 
         val foregroundColorSpan = ForegroundColorSpan(Color.parseColor("#38B6FF"))
@@ -61,27 +63,43 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
         builder.apply {
 
             setView(binding.root)
-            setTitle(getString(R.string.title_edit_dialog))
+            setTitle(ssBuilder)
 
             setPositiveButton(getString(R.string.confirm)) { dialog, which ->
+                if (isSlotEdit()) {
 
-                if (viewModel.isFixedSlot.value!!) {
-                    setFixedSlotValues()
-                    viewModel.notifyEditFixedSlot()
-                } else {
-                    setSpontaneousSlotValues()
-                    viewModel.notifyEditSpontaneousSlot()
+                    if (viewModel.isFixedSlot.value!!) {
+                        setFixedSlotValues()
+                        viewModel.notifyEditFixedSlot()
+                    } else {
+                        setSpontaneousSlotValues()
+                        viewModel.notifyEditSpontaneousSlot()
+                    }
+                    ManagementViewFragment.displayingDialog.show()
+                    ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode =
+                        true
                 }
-                ManagementViewFragment.displayingDialog.show()
-                ManagementViewFragment.displayingDialog.fullScreenProgressBar.indeterminateMode =true
             }
-
             setNegativeButton(getString(R.string.cancel)) { dialog, which ->
                 dialog.cancel()
             }
 
         }
         return builder.create()
+    }
+
+    private fun isSlotEdit(): Boolean {
+        var isIdentifierSame = editSlot.auxiliaryIdentifier.compareTo(viewModel.identifier.value!!)
+        var isIntervalSame = editSlot.interval.toDurationMillis()
+            .compareTo(binding.editTimeDurationEditDialog.duration)
+        var isAppointmentSame = true
+        if (isFixedSlot()) {
+            var isHourSame =
+                (editSlot as FixedTimeSlot).appointmentTime.hourOfDay.toString() == binding.tpAppointmentTimeEdit.hour.toString()
+            var isMinuteSame = (editSlot as FixedTimeSlot).appointmentTime.minuteOfHour== binding.tpAppointmentTimeEdit.minute
+            isAppointmentSame = isHourSame && isMinuteSame
+        }
+        return !(isIdentifierSame == 0 && isIntervalSame == 0 && isAppointmentSame)
     }
 
     private fun setSpontaneousSlotValues() {
@@ -93,12 +111,14 @@ class EditTimeSlotDialogFragment(private var editSlot: ClientTimeSlot) : DialogF
         viewModel.interval.value =
             TransformationInput.formatInterval(binding.editTimeDurationEditDialog.duration)
         viewModel.appointmentTime.value =
-            TransformationInput.formatDateTime(binding.tpAppointmentTimeEdit.hour,
-                binding.tpAppointmentTimeEdit.minute)
+            TransformationInput.formatDateTime(
+                binding.tpAppointmentTimeEdit.hour,
+                binding.tpAppointmentTimeEdit.minute
+            )
     }
 
-    private fun isFixedSlot(slot: ClientTimeSlot): Boolean? {
-        return slot.getType().ordinal == Type.FIXED_SLOT.ordinal
+    private fun isFixedSlot(): Boolean {
+        return editSlot.getType().ordinal == Type.FIXED_SLOT.ordinal
     }
 
     private fun displaySpontaneousSlotTimes(slot: SpontaneousTimeSlot) {
