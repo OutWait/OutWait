@@ -35,7 +35,6 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="8dp"
                 android:background="@color/duration_digit_color"
-                android:headerBackground="@color/colorPrimary"
                 android:numbersTextColor="@color/white"
                 android:timePickerMode="spinner"
                 android:visibility="@{viewModel.isFixedSlot? View.VISIBLE:View.GONE}"
