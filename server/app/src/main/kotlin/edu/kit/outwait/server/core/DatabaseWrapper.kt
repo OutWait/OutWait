@@ -11,15 +11,17 @@ import java.util.Date
 import java.util.Properties
 
 /**
- *  This class encapsulates all communication to the Database.
- *  @property updateMediator reference to the updateMediator which redirects changes to Receivers
- *      (f.ex. for Slot-Changes)
- *  @property connection holds connection
- *  @property connectionProps properties of connection
+ * This class encapsulates all communication to the Database.
+ * @property updateMediator reference to the updateMediator which redirects changes to Receivers
+ *     (f.ex. for Slot-Changes)
+ * @property connection holds connection
+ * @property connectionProps properties of connection
+ * @constructor Connects to the database.
+ * @throws SQLException when the connection to the database failed.
  */
-class DatabaseWrapper(dbName : String) {
+class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String) {
     private val updateMediator = UpdateMediator()
-    private lateinit var connection: Connection
+    private var connection: Connection
     private val connectionProps: Properties = Properties()
     private val LOG_ID = "DB"
 
