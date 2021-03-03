@@ -338,7 +338,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         )
         var oldSlot = slots.find { it.slotCode == slotCode }
         if (oldSlot != null) {
-            replaceSlot(oldSlot, oldSlot.copy(constructorTime=newTime))
+            replaceSlot(oldSlot, oldSlot.copy(constructorTime=newTime, approxTime=newTime))
         } else {
             Logger.debug(LOG_ID, "Failed to change appointment time (slot does not exist)")
         }
