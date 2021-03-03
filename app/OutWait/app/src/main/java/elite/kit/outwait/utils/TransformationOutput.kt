@@ -1,6 +1,7 @@
 package elite.kit.outwait.utils
 
 import org.joda.time.DateTime
+import org.joda.time.Duration
 import org.joda.time.Interval
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
@@ -17,5 +18,10 @@ object TransformationOutput {
 
     fun intervalToString(interval: Interval):String{
         return  formatter.print(interval.toDurationMillis())
+    }
+
+    fun durationToString(duration: Duration): String{
+        //return formatter.print(duration.millis)
+        return "" + duration.standardHours + ":" + duration.standardMinutes
     }
 }
