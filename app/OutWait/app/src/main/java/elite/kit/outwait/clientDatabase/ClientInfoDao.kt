@@ -51,7 +51,7 @@ interface ClientInfoDao {
      * @return clientInfo with given slot Code or null if such a clientInfo does not exist,
      * but encapsulated in a LiveData object (which is never null)
      */
-    @Query("Select * From client_table Where :slotCode")
+    @Query("Select * From client_table Where slotCode = :slotCode")
     fun getClientInfoObservable(slotCode: String): LiveData<ClientInfo?>
 
     /**
