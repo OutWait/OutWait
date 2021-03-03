@@ -1,6 +1,7 @@
 package edu.kit.outwait.server.management
 
 import edu.kit.outwait.server.core.DatabaseWrapper
+import edu.kit.outwait.server.core.InternalServerErrorException
 import edu.kit.outwait.server.core.Logger
 import edu.kit.outwait.server.protocol.Event
 import edu.kit.outwait.server.protocol.JSONAddFixedSlotWrapper
@@ -279,11 +280,15 @@ class Management(
             socketFacade.send(Event.INVALID_MANAGEMENT_REQUEST, json)
         } else {
             Logger.debug(LOG_ID, "Beginning a new transaction")
-            queue = managementManager.beginTransaction(managementId)
-            if (!isTransactionRunning()) {
-                socketFacade.send(Event.TRANSACTION_DENIED, JSONEmptyWrapper())
-            } else {
-                socketFacade.send(Event.TRANSACTION_STARTED, JSONEmptyWrapper())
+            try {
+                queue = managementManager.beginTransaction(managementId)
+                if (!isTransactionRunning()) {
+                    socketFacade.send(Event.TRANSACTION_DENIED, JSONEmptyWrapper())
+                } else {
+                    socketFacade.send(Event.TRANSACTION_STARTED, JSONEmptyWrapper())
+                }
+            } catch (e: InternalServerErrorException) {
+                sendInternalErrorMessage(e.message!!)
             }
         }
     }
@@ -297,13 +302,17 @@ class Management(
     internal fun abortCurrentTransaction () {
         if (checkTransactionStarted()) {
             Logger.debug(LOG_ID, "Aborting transaction")
-            val original_queue = managementManager.abortTransaction(managementId)
-            if (original_queue != null) {
-                // Update the queue as it might have been loaded in wrong order.
-                original_queue.updateQueue(managementInformation.settings.prioritizationTime)
-                sendUpdatedQueue(original_queue)
+            try {
+                val original_queue = managementManager.abortTransaction(managementId)
+                if (original_queue != null) {
+                    // Update the queue as it might have been loaded in wrong order.
+                    original_queue.updateQueue(managementInformation.settings.prioritizationTime)
+                    sendUpdatedQueue(original_queue)
+                }
+                queue = null // transaction ended
+            } catch (e: InternalServerErrorException) {
+                sendInternalErrorMessage(e.message!!)
             }
-            queue = null // transaction ended
         } else {
             Logger.debug(LOG_ID, "Could not abort transaction (none running)")
         }
@@ -318,8 +327,12 @@ class Management(
     private fun saveCurrentTransaction () {
         if (checkTransactionStarted()) {
             Logger.debug(LOG_ID, "Saving transaction. Queue: " + queue)
-            managementManager.saveTransaction(managementId, queue!!)
-            queue = null // transaction ended
+            try {
+                managementManager.saveTransaction(managementId, queue!!)
+                queue = null // transaction ended
+            } catch (e: InternalServerErrorException) {
+                sendInternalErrorMessage(e.message!!)
+            }
         } else {
             Logger.debug(LOG_ID, "Could not save a transaction (none running)")
         }
@@ -334,7 +347,11 @@ class Management(
      * @param managementSettings the new settings to save
      */
     private fun changeManagementSettings (managementSettings: ManagementSettings) {
-        managementManager.updateManagementSettings(managementId, managementSettings)
-        Logger.debug(LOG_ID, "Changed management settings")
+        try {
+            managementManager.updateManagementSettings(managementId, managementSettings)
+            Logger.debug(LOG_ID, "Changed management settings")
+        } catch (e: InternalServerErrorException) {
+            sendInternalErrorMessage(e.message!!)
+        }
     }
 }
