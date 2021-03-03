@@ -39,10 +39,9 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
      * object for incoming connection and adds it to list. TODO: Überprüfung ob
      * SocketIOClient-Parameter nötig?
      *
-     * @param socket
      * @param socketFacade passed to new client-Object
      */
-    override fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade) {
+    override fun bindSocket(socketFacade: SocketFacade) {
         Logger.debug(LOG_ID, "Binding new socket")
         val client = Client(socketFacade, this)
         clients.add(client)

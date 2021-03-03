@@ -30,10 +30,9 @@ abstract class AbstractManager(
     /**
      * Abstract method which is called when a new socket connection was established.
      *
-     * @param socket the SocketIOClient to identify the connection.
      * @param socketFacade the socketFacade to send and receive messages over the new connection.
      */
-    abstract fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade)
+    abstract fun bindSocket(socketFacade: SocketFacade)
 
     /**
      * Internal method to configure the connection routine.
@@ -49,7 +48,7 @@ abstract class AbstractManager(
                         "New socket connection established with id " + client.getSessionId()
                     )
                     val socketFacade = SocketFacade(client, socketAdapter)
-                    bindSocket(client, socketFacade)
+                    bindSocket(socketFacade)
                 }
             }
         )

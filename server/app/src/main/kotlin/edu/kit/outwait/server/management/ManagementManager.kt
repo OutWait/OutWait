@@ -60,10 +60,9 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      *
      * Initial message receivers are registered and a login request is sent.
      *
-     * @param socket the new socket connection.
      * @param socketFacade the socketFacade of the new connection.
      */
-    override fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade) {
+    override fun bindSocket(socketFacade: SocketFacade) {
         // Handle the login
         socketFacade.onReceive(Event.MANAGEMENT_LOGIN) { json ->
             val wrapper = (json as JSONCredentialsWrapper)
