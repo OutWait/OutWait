@@ -48,6 +48,10 @@ dependencies {
     testImplementation("io.socket:socket.io-client:1.0.0")
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
 application {
     // Define the main class for the application.
     mainClass.set("edu.kit.outwait.server.core.ServerKt")
