@@ -13,20 +13,6 @@
         android:id="@+id/passwordForgotFragment"
         android:name="elite.kit.outwait.managmentLogin.passwordForgottenScreen.passwordForgotFragment"
         android:label="passwordForgotFragment" />
-    <fragment
-        android:id="@+id/managmentViewFragment"
-        android:name="elite.kit.outwait.recyclerviewScreens.managementViewScreen.ManagementViewFragment"
-        android:label="managmentViewFragment" >
-        <action
-            android:id="@+id/action_managmentViewFragment_to_addSlotDialogFragment"
-            app:destination="@id/addSlotDialogFragment" />
-        <action
-            android:id="@+id/action_managmentViewFragment_to_configDialogFragment"
-            app:destination="@id/configDialogFragment2" />
-        <action
-            android:id="@+id/action_managmentViewFragment_to_editTimeSlotDialogFragment"
-            app:destination="@id/editTimeSlotDialogFragment" />
-    </fragment>
     <dialog
         android:id="@+id/addSlotDialogFragment"
         android:name="elite.kit.outwait.recyclerviewScreens.addSlotDialog.AddSlotDialogFragment"
@@ -41,8 +27,8 @@
         android:name="elite.kit.outwait.clientScreens.remainingTimeScreen.RemainingTimeFragment"
         android:label="RemainingTimeFragment" >
         <action
-            android:id="@+id/action_remainingTimeFragment_to_managmentViewFragment"
-            app:destination="@id/managmentViewFragment" />
+            android:id="@+id/action_remainingTimeFragment_to_forwarderFragment"
+            app:destination="@id/forwarderFragment" />
     </fragment>
     <fragment
         android:id="@+id/configDialogFragment2"
@@ -78,7 +64,21 @@
             android:id="@+id/action_forwarderFragment_to_remainingTimeFragment"
             app:destination="@id/remainingTimeFragment" />
         <action
-            android:id="@+id/action_forwarderFragment_to_managmentViewFragment"
-            app:destination="@id/managmentViewFragment" />
+            android:id="@+id/action_forwarderFragment_to_managementViewFragment"
+            app:destination="@id/managementViewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/managementViewFragment"
+        android:name="elite.kit.outwait.recyclerviewScreens.managementViewScreen.ManagementViewFragment"
+        android:label="ManagementViewFragment" >
+        <action
+            android:id="@+id/action_managementViewFragment_to_configDialogFragment2"
+            app:destination="@id/configDialogFragment2" />
+        <action
+            android:id="@+id/action_managementViewFragment_to_editTimeSlotDialogFragment"
+            app:destination="@id/editTimeSlotDialogFragment" />
+        <action
+            android:id="@+id/action_managementViewFragment_to_addSlotDialogFragment"
+            app:destination="@id/addSlotDialogFragment" />
     </fragment>
 </navigation>

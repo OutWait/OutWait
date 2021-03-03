@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,25 +29,49 @@ class ForwarderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        userViewModel.loginResponse.observe(viewLifecycleOwner,Observer{ listOfUsers ->
+        userViewModel.loginResponse.observeOnce(viewLifecycleOwner, Observer { listOfUsers ->
+            Log.i("currentDestionation", "${findNavController().currentDestination!!}")
             when {
-                listOfUsers.isEmpty() -> {
-                  //  userViewModel.navigateToLoginFragment()
-                    findNavController().navigate(R.id.loginFragment)
+                listOfUsers.isNotEmpty() && listOfUsers.component1() is ClientInfo -> {
+                    Log.i("navigate", "remainingTime")
+                        userViewModel.navigateToRemainingTimeFragment()
 
                 }
-                listOfUsers.component1() == false -> {
-                    findNavController().navigate(R.id.loginFragment)
+
+                listOfUsers.isNotEmpty() && listOfUsers.component1() == true -> {
+                    Log.i("navigate", "managementFragment")
+
+                        userViewModel.navigateToManagementViewFragment()
                 }
-                listOfUsers.component1() == true -> {
-                    userViewModel.navigateToManagementViewFragment()
+
+                listOfUsers.isNotEmpty() && listOfUsers.component1() == false -> {
+                    Log.i("navigate", "loginFragment")
+
+                        userViewModel.navigateToLoginFragment()
+
+
+                    //findNavController().navigate(R.id.loginFragment)
                 }
-                listOfUsers.component1() is ClientInfo -> {
-                    Log.i("navigate","remainingTime")
-                    findNavController().navigate(R.id.remainingTimeFragment)
+
+                listOfUsers.isEmpty() -> {
+                    //findNavController().navigate(R.id.loginFragment)
+                    Log.i("navigate", "loginFragment")
+                        userViewModel.navigateToLoginFragment()
+
+
                 }
+
             }
         })
 
+    }
+
+    private fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
+        observe(lifecycleOwner, object : Observer<T> {
+            override fun onChanged(t: T?) {
+                observer.onChanged(t)
+                removeObserver(this)
+            }
+        })
     }
 }

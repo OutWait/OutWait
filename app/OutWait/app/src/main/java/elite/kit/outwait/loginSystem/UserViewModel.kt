@@ -37,7 +37,6 @@ class UserViewModel @Inject constructor(private val repoClient : ClientRepositor
     fun login(){
         Log.i("password","$institutePassword")
      repoInstitute.login(instituteName.value!!, institutePassword.value!!)
-
     }
 
     fun navigateToRemainingTimeFragment() {

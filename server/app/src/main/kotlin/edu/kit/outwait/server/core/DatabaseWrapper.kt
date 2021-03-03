@@ -18,22 +18,25 @@ import java.util.Properties
  * @property connection holds connection.
  * @property connectionProps properties of connection.
  * @param dbName the name of the database to connect to.
- * @constructor Connects to the database with name [dbName].
+ * @constructor Connects to the database with name [dbName] and address [dbAddress].
  * @throws SQLException when the connection to the database failed.
  */
-class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String) {
+class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, dbAddress: String) {
     private val updateMediator = UpdateMediator()
     private var connection: Connection
     private val connectionProps: Properties = Properties()
     private val LOG_ID = "DB"
 
+    /**
+     * Setting connection properties and trying to connect to the database.
+     */
     init {
         this.connectionProps["user"] = "outwait"
         this.connectionProps["password"] = "OurOutwaitDB"
         try {
             connection =
                 DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/" + dbName,
+                    "jdbc:mysql://" + dbAddress + ":3306/" + dbName,
                     connectionProps
                 )!!
             Logger.info(LOG_ID, "Connected to Database")
