@@ -35,13 +35,13 @@ init {
     //clientInfo=ClientRepository.getActiveSlots.value[0]
 
     //Ausgabe 20:13 also HH:mm
-    TransformationOutput.intervalToString(Interval(_remainingTime.value!!))
+    //TransformationOutput.intervalToString(Interval(_remainingTime.value!!))
 
     val slots = repo.getActiveSlots().value
     if (slots !== null && slots.isNotEmpty()){
         val approxTime = slots.last().approximatedTime
         val timeLeft = Duration(approxTime.millis - DateTime.now().millis)
-        _remainingTime.value = TransformationOutput.intervalToString(Interval(timeLeft.millis))
+        //_remainingTime.value = TransformationOutput.intervalToString(Interval(timeLeft.millis))
         Log.d("RemTimeVM", "${_remainingTime.value} minuten verbleibend")
     }
 
@@ -49,7 +49,7 @@ init {
         if (it.isNotEmpty()){
             val approxTime = it.last().approximatedTime
             val timeLeft = Duration(approxTime.millis - DateTime.now().millis)
-            _remainingTime.value = TransformationOutput.intervalToString(Interval(timeLeft.millis))
+           // _remainingTime.value = TransformationOutput.intervalToString(Interval(timeLeft.millis))
             Log.d("RemTimeVM", "${_remainingTime.value} minuten verbleibend")
         }
     }

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.customDataTypes.Mode
@@ -66,8 +67,20 @@ class ConfigDialogFragment : Fragment() {
                 Toast.LENGTH_LONG).show()
         }
 
+        setSwitchTextOnState(binding.sMode.isChecked)
+        binding.sMode.setOnCheckedChangeListener { buttonView, isChecked ->
+           setSwitchTextOnState(isChecked)
+        }
 
         return binding.root
+    }
+
+    private fun setSwitchTextOnState(isChecked:Boolean){
+        if(isChecked){
+            binding.tvSwitchText.text="Mode 2"
+        }else{
+            binding.tvSwitchText.text="Mode 1"
+        }
     }
 
     private fun emitSettingChanges() {

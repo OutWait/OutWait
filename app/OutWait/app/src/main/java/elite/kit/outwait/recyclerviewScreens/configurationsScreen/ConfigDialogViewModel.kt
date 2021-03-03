@@ -29,6 +29,7 @@ class ConfigDialogViewModel @Inject constructor(
     val delayNotificationTime: Duration = preferences.value!!.delayNotificationTime
 
 
+
     fun logout() {
         repo.logout()
         coordinator.navigateToForwarderFragment()
