@@ -53,6 +53,7 @@ class RemainingTimeFragment : Fragment() {
                      {
                         Toast.makeText(context, "You can enter a new appointment after your appointment is finished", Toast.LENGTH_LONG)
                             .show()
+                        //TODO navigate back
                     } else {
                         Toast.makeText(context, "Click home button to exit", Toast.LENGTH_LONG)
                             .show()

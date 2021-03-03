@@ -21,7 +21,7 @@ private const val TWO_DAYS = 172800000L
 private const val ONE_SEC = 1000L
 
 @HiltViewModel
-class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepository): ViewModel() {
+class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepository, private var coordinator: RemainingTimeCoordinator): ViewModel() {
 
     val clientInfoList = repo.getActiveSlots()
      var instituteName=MutableLiveData(clientInfoList.value!!.first().institutionName)
@@ -72,5 +72,9 @@ class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepos
         if (showingSlot != ""){
             repo.refreshWaitingTime(showingSlot)
         }
+    }
+
+    fun navigateBack(){
+        coordinator.navigateToForwarderFragment()
     }
 }

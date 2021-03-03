@@ -1,11 +1,13 @@
 package elite.kit.outwait.loginSystem
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
@@ -25,10 +27,12 @@ class ForwarderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        userViewModel.loginResponse.observe(viewLifecycleOwner) { listOfUsers ->
+        userViewModel.loginResponse.observe(viewLifecycleOwner,Observer{ listOfUsers ->
             when {
                 listOfUsers.isEmpty() -> {
+                  //  userViewModel.navigateToLoginFragment()
                     findNavController().navigate(R.id.loginFragment)
+
                 }
                 listOfUsers.component1() == false -> {
                     findNavController().navigate(R.id.loginFragment)
@@ -37,10 +41,11 @@ class ForwarderFragment : Fragment() {
                     userViewModel.navigateToManagementViewFragment()
                 }
                 listOfUsers.component1() is ClientInfo -> {
-                    userViewModel.navigateToRemainingTimeFragment()
+                    Log.i("navigate","remainingTime")
+                    findNavController().navigate(R.id.remainingTimeFragment)
                 }
             }
-        }
+        })
 
     }
 }
