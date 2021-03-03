@@ -1,9 +1,9 @@
 package edu.kit.outwait.server.management
 
-import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.SocketIONamespace
 import edu.kit.outwait.server.core.AbstractManager
 import edu.kit.outwait.server.core.DatabaseWrapper
+import edu.kit.outwait.server.core.InternalServerErrorException
 import edu.kit.outwait.server.core.Logger
 import edu.kit.outwait.server.protocol.Event
 import edu.kit.outwait.server.protocol.JSONCredentialsWrapper
@@ -59,10 +59,9 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      *
      * Initial message receivers are registered and a login request is sent.
      *
-     * @param socket the new socket connection.
      * @param socketFacade the socketFacade of the new connection.
      */
-    override fun bindSocket(socket: SocketIOClient, socketFacade: SocketFacade) {
+    override fun bindSocket(socketFacade: SocketFacade) {
         // Handle the login
         socketFacade.onReceive(Event.MANAGEMENT_LOGIN) { json ->
             val wrapper = (json as JSONCredentialsWrapper)
@@ -107,6 +106,10 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         if (management.isTransactionRunning()) management.abortCurrentTransaction()
 
         managements.remove(management)
+
+        if (managements.isEmpty()) {
+            Logger.debug(LOG_ID, "Last active management connection closed.");
+        }
     }
 
     /**
@@ -119,7 +122,9 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      * @param managementId the id of the institution whose management wants to start a new
      *     transaction.
      * @return The initialized queue of the new transaction or null on error.
+     * @throws InternalServerErrorException when the management has not corresponding queue.
      */
+    @Throws(InternalServerErrorException::class)
     fun beginTransaction(managementId: ManagementId): Queue? {
         if (activeTransactions.contains(managementId)) {
             Logger.debug(
@@ -135,8 +140,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
             if (queueId == null) {
                 Logger.internalError(LOG_ID, "Management has no Queue!")
-                // Don't crash the server by a exception. This is just a log.
-                return null
+                throw InternalServerErrorException("Management has no corresponding queue.")
             } else {
                 Logger.debug(LOG_ID, "New transaction queue loaded")
                 return Queue(queueId, databaseWrapper)
@@ -151,7 +155,10 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      *
      * @param managementId the id of the institution whose running transaction should be aborted.
      * @return The old queue (before the transaction) or null on error.
+     * @throws InternalServerErrorException when the management has not corresponding queue or
+     *     temporarily created slot couldn't be deleted.
      */
+    @Throws(InternalServerErrorException::class)
     fun abortTransaction(managementId: ManagementId): Queue? {
         Logger.debug(LOG_ID, "Aborting transaction of management " + managementId + "...")
         assert(activeTransactions.contains(managementId))
@@ -164,12 +171,13 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
         if (queueId == null) {
             Logger.internalError(LOG_ID, "Management has no Queue!")
-            // Don't crash the server by a exception. This is just a log.
-            return null
+            throw InternalServerErrorException("Management has no corresponding queue.")
         } else {
             // delete all temporary slots
             Logger.debug(LOG_ID, "Deleting temporary slots...")
-            if (!databaseWrapper.deleteAllTemporarySlots(queueId)) return null
+            if (!databaseWrapper.deleteAllTemporarySlots(queueId)) {
+                throw InternalServerErrorException("Can't delete temporarily created slots.")
+            }
             Logger.debug(LOG_ID, "Temporary slots deleted.")
             return Queue(queueId, databaseWrapper)
         }
@@ -183,13 +191,17 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      *
      * @param managementId the id of the institution whose managements should receive the update.
      * @param queue the new queue.
+     * @throws InternalServerErrorException when the queue could not be saved.
      */
+    @Throws(InternalServerErrorException::class)
     private fun handleQueueUpdate(managementId: ManagementId, queue: Queue) {
         Logger.debug(
             LOG_ID,
             "Saving updated queue for management " + managementId + ", new queue: " + queue
         )
-        queue.storeToDB(databaseWrapper)
+        if (!queue.storeToDB(databaseWrapper)) {
+            throw InternalServerErrorException("Failed to save the queue into the database.")
+        }
 
         // Distribute the queue
         for (management in managements) {
@@ -211,9 +223,11 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      *
      * This will inform all active managements of this institution.
      *
-     * @param managementId the id of the institution whose running transaction should be aborted.
+     * @param managementId the id of the institution whose running transaction should be saved.
      * @return The old queue (before the transaction) or null on error.
+     * @throws InternalServerErrorException when the queue could not be saved.
      */
+    @Throws(InternalServerErrorException::class)
     fun saveTransaction(managementId: ManagementId, queue: Queue) {
         Logger.debug(LOG_ID, "Saving transaction. Checking...")
         assert(activeTransactions.contains(managementId))
@@ -232,7 +246,9 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      *
      * @param managementId the id of the institution whose settings have been changed.
      * @param managementSettings the new settings of the management.
+     * @throws InternalServerErrorException when the settings could not be saved.
      */
+    @Throws(InternalServerErrorException::class)
     fun updateManagementSettings(
         managementId: ManagementId,
         managementSettings: ManagementSettings
@@ -242,7 +258,10 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             "Updating management settings of " + managementId + " with settings: " +
                 managementSettings
         )
-        databaseWrapper.saveManagementSettings(managementId, managementSettings)
+
+        if (!databaseWrapper.saveManagementSettings(managementId, managementSettings)) {
+            throw InternalServerErrorException("Failed to save the settings into the database.")
+        }
 
         for (management in managements) {
             if (management.managementId == managementId)
@@ -312,7 +331,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             val queueId = databaseWrapper.getQueueIdOfManagement(urgentQueueManagementId)
             if (queueId == null) {
                 Logger.internalError(LOG_ID, "Management has no Queue!")
-                // Don't crash the server by a exception. This is just a log.
+                // Silently ignore this error as it is not the result of a manager request
             } else {
                 val queue = Queue(queueId, databaseWrapper)
 
@@ -326,8 +345,33 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                 queue.updateQueue(prioritizationTime)
                 Logger.debug(LOG_ID, "Delayed queue refreshed")
 
-                // thi s will also set the next timer
-                handleQueueUpdate(urgentQueueManagementId, queue)
+                // this will also set the next timer
+                try {
+                    handleQueueUpdate(urgentQueueManagementId, queue)
+                } catch (e: InternalServerErrorException) {
+                    Logger.internalError(
+                        LOG_ID,
+                        "InternalServerErrorException while updating the delayed queues, with " +
+                            "message: " + e.message
+                    )
+
+                    // Send the error message to all corresponding managements
+                    managements.filter { it.managementId == urgentQueueManagementId }
+                        .forEach {
+                            it.sendInternalErrorMessage(
+                                "Failed to update the queue with an overdue slot. Reason: " +
+                                    e.message!!
+                            )
+                        }
+
+                    // Ensure that the next timer is set
+                    nextDelayAlarm.schedule(
+                        object : java.util.TimerTask() {
+                            override fun run() = queueDelayAlarmHandler()
+                        },
+                        queueDelayTimes.get(0).first.getTime()
+                    )
+                }
             }
         } else if (queueDelayTimes.isNotEmpty()) {
             Logger.debug(LOG_ID, "Delayed queue is not ready yet")

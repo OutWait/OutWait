@@ -122,7 +122,11 @@ class UpdateMediator {
      */
     fun endSlot(slotCode: SlotCode) {
         Logger.debug(LOG_ID, "Ending slot " + slotCode)
-        receivers[slotCode]?.forEach() { it.end() }
+
+        // Work around - iterator invalidation
+        while (!receivers[slotCode].isNullOrEmpty()) {
+            receivers[slotCode]?.first()?.end()
+        }
     }
 
     /**
@@ -133,6 +137,10 @@ class UpdateMediator {
      */
     fun deleteSlot(slotCode: SlotCode) {
         Logger.debug(LOG_ID, "Deleting slot " + slotCode)
-        receivers[slotCode]?.forEach() { it.delete() }
+
+        // Work around - iterator invalidation
+        while (!receivers[slotCode].isNullOrEmpty()) {
+            receivers[slotCode]?.first()?.delete()
+        }
     }
 }

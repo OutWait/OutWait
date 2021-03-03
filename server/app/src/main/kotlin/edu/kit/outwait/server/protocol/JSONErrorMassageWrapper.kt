@@ -8,7 +8,7 @@ import org.json.JSONObject
  * @param obj the json object that should be wrapped.
  * @constructor Creates a new json wrapper from a json object.
  */
-class JSONInvalidRequestMessageWrapper(obj: JSONObject) : JSONObjectWrapper(obj) {
+class JSONErrorMessageWrapper(obj: JSONObject) : JSONObjectWrapper(obj) {
     /**
      * Secondary constructor with no parameter.
      *
