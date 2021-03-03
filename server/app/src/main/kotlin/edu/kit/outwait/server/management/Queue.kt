@@ -246,25 +246,14 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     }
 
     /**
-     * Add a new spontaneous slot the the queue.
+     * Add a new slot the the queue.
      *
      * Call updateQueue after this method call.
      *
      * @param slot the new slot to add.
      */
-    fun addSpontaneousSlot(slot: Slot) {
-        Logger.debug(LOG_ID, "Adding spontaneous slot " + slot + " to " + queueId)
-        slots.add(slot)
-    }
-    /**
-     * Add a new fix slot the the queue.
-     *
-     * Call updateQueue after this method call.
-     *
-     * @param slot the new slot to add.
-     */
-    fun addFixedSlot(slot: Slot) {
-        Logger.debug(LOG_ID, "Adding fixed slot " + slot + " to queue " + queueId)
+    fun addSlot(slot: Slot) {
+        Logger.debug(LOG_ID, "Adding new slot " + slot + " to " + queueId)
         slots.add(slot)
     }
 

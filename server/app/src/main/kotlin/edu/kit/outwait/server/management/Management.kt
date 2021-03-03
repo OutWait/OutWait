@@ -133,7 +133,7 @@ class Management(
                     Logger.internalError(LOG_ID, "Failed to create new slot!")
                     sendInternalErrorMessage("Failed to create new slot.")
                 } else {
-                    queue!!.addSpontaneousSlot(newSlot)
+                    queue!!.addSlot(newSlot)
                     updateAndSendQueue()
                 }
             }
@@ -155,7 +155,7 @@ class Management(
                     Logger.internalError(LOG_ID, "Failed to create new slot!")
                     sendInternalErrorMessage("Failed to create slot.")
                 } else {
-                    queue!!.addFixedSlot(newSlot)
+                    queue!!.addSlot(newSlot)
                     updateAndSendQueue()
                 }
             }
@@ -230,6 +230,7 @@ class Management(
         socketFacade.send(Event.UPDATE_QUEUE, json)
         Logger.debug(LOG_ID, "Sent queue")
     }
+
     /**
      * Sends the given management settings to the management.
      *

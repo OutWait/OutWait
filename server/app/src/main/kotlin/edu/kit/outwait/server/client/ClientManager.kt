@@ -1,6 +1,5 @@
 package edu.kit.outwait.server.client
 
-import com.corundumstudio.socketio.SocketIOClient
 import com.corundumstudio.socketio.SocketIONamespace
 import edu.kit.outwait.server.core.AbstractManager
 import edu.kit.outwait.server.core.DatabaseWrapper
