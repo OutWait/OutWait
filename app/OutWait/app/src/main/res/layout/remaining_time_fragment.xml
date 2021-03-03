@@ -31,7 +31,7 @@
                 android:layout_width="350dp"
                 android:layout_height="350dp"
                 android:background="@drawable/remaining_time_circle"
-                android:text="Remaining Time"
+                android:text="@{viewModel.remainingTime}"
                 android:textColor="#fff"
                 android:textSize="40dp" />
         </RelativeLayout>
