@@ -165,18 +165,30 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
 
         // Add remaining slots
         if (spontaneousSlots.isNotEmpty()) {
-            newQueue.addAll(spontaneousSlots)
             Logger.debug(LOG_ID, "Add remaining spontaneous slots:")
-            spontaneousSlots.forEach {
-                Logger.debug(LOG_ID, "Slot " + it.slotCode + " at " + it.approxTime)
+            for (slot in spontaneousSlots) {
+                val newSlot = slot.copy(approxTime = Date.from(line))
+                newQueue.add(newSlot)
+                Logger.debug(LOG_ID, "Slot " + newSlot.slotCode + " at " + newSlot.approxTime)
+                line += newSlot.expectedDuration
             }
         } else if (fixSlots.isNotEmpty()) {
-            newQueue.addAll(fixSlots)
             Logger.debug(LOG_ID, "Add remaining fix slots:")
-            fixSlots.forEach {
-                Logger.debug(LOG_ID, "Slot " + it.slotCode + " at " + it.approxTime)
+            for (slot in fixSlots) {
+                val newSlot =
+                    slot.copy(
+                        approxTime =
+                            if (line.isAfter(slot.constructorTime.toInstant()))
+                                Date.from(line)
+                            else
+                                slot.constructorTime
+                    )
+                newQueue.add(newSlot)
+                Logger.debug(LOG_ID, "Slot " + newSlot.slotCode + " at " + newSlot.approxTime)
+                line = newSlot.approxTime.toInstant() + newSlot.expectedDuration
             }
         }
+
         Logger.debug(LOG_ID, "Queue update algorithm finished. New queue: " + newQueue)
         Logger.debug(LOG_ID, "========= QUEUE UPDATE END =========")
         Logger.debug(LOG_ID, "Next delay change time: " + delayChangeTime)

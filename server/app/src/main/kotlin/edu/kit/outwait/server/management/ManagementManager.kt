@@ -62,8 +62,22 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      * @param socketFacade the socketFacade of the new connection.
      */
     override fun bindSocket(socketFacade: SocketFacade) {
+        // Add timeout
+        val timeoutTimer = Timer()
+        timeoutTimer.schedule(
+            object : java.util.TimerTask() {
+                override fun run() {
+                    Logger.debug(LOG_ID, "Management connection login timed out")
+                    socketFacade.disconnect()
+                }
+            },
+            10000 // wait 10 seconds
+        )
+
         // Handle the login
         socketFacade.onReceive(Event.MANAGEMENT_LOGIN) { json ->
+            timeoutTimer.cancel()
+
             val wrapper = (json as JSONCredentialsWrapper)
             Logger.debug(LOG_ID, "New login of: " + wrapper)
             val credentials = databaseWrapper.getManagementByUsername(wrapper.getUsername())
@@ -84,6 +98,8 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
         // Handle the reset password function
         socketFacade.onReceive(Event.RESET_PASSWORD) { json ->
+            timeoutTimer.cancel()
+
             Logger.debug(LOG_ID, "Password resetting routine started")
             resetManagementPassword((json as JSONResetPasswordWrapper).getUsername())
         }
