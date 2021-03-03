@@ -12,29 +12,28 @@ import java.util.Properties
 
 /**
  * This class encapsulates all communication to the Database.
+ *
  * @property updateMediator reference to the updateMediator which redirects changes to Receivers
- *     (f.ex. for Slot-Changes)
- * @property connection holds connection
- * @property connectionProps properties of connection
- * @constructor Connects to the database.
+ *     (f.ex. for Slot-Changes).
+ * @property connection holds connection.
+ * @property connectionProps properties of connection.
+ * @param dbName the name of the database to connect to.
+ * @constructor Connects to the database with name [dbName].
  * @throws SQLException when the connection to the database failed.
  */
-class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String) {
+class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String) {
     private val updateMediator = UpdateMediator()
     private var connection: Connection
     private val connectionProps: Properties = Properties()
     private val LOG_ID = "DB"
 
-    /**
-     * Setting connection properties and trying to connect to the database.
-     */
     init {
         this.connectionProps["user"] = "outwait"
         this.connectionProps["password"] = "OurOutwaitDB"
         try {
             connection =
                 DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/"+dbName,
+                    "jdbc:mysql://localhost:3306/" + dbName,
                     connectionProps
                 )!!
             Logger.info(LOG_ID, "Connected to Database")
@@ -46,8 +45,9 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
     }
 
     /**
-     * Retrieves a list of slots of a specified queue from the database.
-     *      F. ex. for the initialization of a queue in the manager.
+     * Retrieves a list of slots of a specified queue from the database. F. ex. for the
+     * initialization of a queue in the manager.
+     *
      * @param queueId Id der Queue dessen Slots zurückgegeben werden.
      * @return List of Slots of Queue with queueId
      */
@@ -78,11 +78,11 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
             e.printStackTrace()
             return null
         }
-
     }
 
     /**
      * Retrieves the approximated "time of arrival" for a slot from the database.
+     *
      * @param slotCode code of the slot which approximated "time of arrival" is retrieved.
      * @return approximated "time of arrival" in Date type,
      */
@@ -104,11 +104,11 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
         }
     }
 
-
     /**
-     * Adds a new temporary Slot to a specified queue of a management.
-     *      A temporary Slot, is a Slot which is created during a transaction without saving the transaction.
-     *      So that it is not shown for other managements until the transaction is saved.
+     * Adds a new temporary Slot to a specified queue of a management. A temporary Slot, is a Slot
+     * which is created during a transaction without saving the transaction. So that it is not shown
+     * for other managements until the transaction is saved.
+     *
      * @param slot temporary Slot to be added.
      * @param queueId Queue in which the Slot has to be added
      * @return slot of param with an assigned SlotCode.
@@ -133,19 +133,15 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
             val keys = addTemporarySlotQuery.getGeneratedKeys()
             keys.next()
             val slotId = keys.getLong(1)
-            Logger.debug(LOG_ID, "Inserted new slot with slotId:" +slotId)
+            Logger.debug(LOG_ID, "Inserted new slot with slotId:" + slotId)
             //Temporary fix
             val getSlotCodeQuery =
-                connection.prepareStatement(
-                    "SELECT code " +
-                        "FROM Slot " +
-                        "WHERE Slot.id = ?"
-                )
+                connection.prepareStatement("SELECT code " + "FROM Slot " + "WHERE Slot.id = ?")
             getSlotCodeQuery.setLong(1, slotId)
             val rs = getSlotCodeQuery.executeQuery()
             rs.next()
             val slotCopy = slot.copy(slotCode = SlotCode(rs.getString("code")))
-            Logger.debug(LOG_ID, "Returning inserted Slot with Slotcode" +slotCopy.slotCode.code)
+            Logger.debug(LOG_ID, "Returning inserted Slot with Slotcode" + slotCopy.slotCode.code)
             return slotCopy
         } catch (e: SQLException) {
             e.printStackTrace()
@@ -154,8 +150,8 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
     }
 
     /**
-     * Deletes all temporary Slots of a specific Queue.
-     *      F. ex. after a transaction is aborted.
+     * Deletes all temporary Slots of a specific Queue. F. ex. after a transaction is aborted.
+     *
      * @param queueId Id of specified Queue
      * @return true if successful else false
      */
@@ -176,9 +172,9 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
     }
 
     /**
-     * Saves (updates) all slots with their slot data in the Slot entries of the database.
-     *      All temporary slots will be fixed!
-     *      F. ex. after a transaction is saved.
+     * Saves (updates) all slots with their slot data in the Slot entries of the database. All
+     * temporary slots will be fixed! F. ex. after a transaction is saved.
+     *
      * @param slots list of slots to be saved (updated)
      * @param queueId Queue in which the Slot has to be saved (updated)
      * @return true if successful else false
@@ -210,6 +206,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
 
     /**
      * Retrieves ManagementInformation by managementId from Database.
+     *
      * @param managementId id of management
      * @return ManagementInformation with information about management
      */
@@ -242,6 +239,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
 
     /**
      * Retrieves SlotManagementInformation for a Slot by its Code from Database.
+     *
      * @param slotCode code of Slot
      * @return SlotManagementInformation with information about management of Slot
      */
@@ -270,8 +268,9 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
     }
 
     /**
-     * Retrieves QueueId for specified managementId from Database.
-     *      Note: This only works, for managements with one Queue.
+     * Retrieves QueueId for specified managementId from Database. Note: This only works, for
+     * managements with one Queue.
+     *
      * @param managementId Id of Management
      * @return QueueId
      */
@@ -294,6 +293,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
 
     /**
      * Retrieves credentials of management specified by username from Database
+     *
      * @param username Username of specified management
      * @return ManagementCredentials of specified management
      */
@@ -321,8 +321,9 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
     }
 
     /**
-     * Verifies that a Slot with specified SlotCode exists in Database.
-     *      Helper method for registerReceiver method.
+     * Verifies that a Slot with specified SlotCode exists in Database. Helper method for
+     * registerReceiver method.
+     *
      * @param slotCode SlotCode of Slot
      * @return true if Slot exists else false
      */
@@ -341,63 +342,77 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
 
     /**
      * Saves (updates) settings for a management with specified managementId in Database.
+     *
      * @param managementId Id of management to be updated
      * @param managementSettings new managementSetting for management
      * @return true if successful else false
      */
-    fun saveManagementSettings(managementId: ManagementId, managementSettings: ManagementSettings): Boolean {
-        try {
-            val saveManagementSettingsUpdate =
-                connection.prepareStatement(
-                    "UPDATE Management " +
-                        "SET mode = ?, default_slot_duration = ?, notification_time = ?, " +
-                        "delay_notification_time = ?, prioritization_time = ? " + "WHERE id = ?"
+    fun saveManagementSettings(managementId: ManagementId, managementSettings: ManagementSettings):
+        Boolean {
+            try {
+                val saveManagementSettingsUpdate =
+                    connection.prepareStatement(
+                        "UPDATE Management " +
+                            "SET mode = ?, default_slot_duration = ?, notification_time = ?, " +
+                            "delay_notification_time = ?, prioritization_time = ? " + "WHERE id = ?"
+                    )
+                saveManagementSettingsUpdate.setString(1, managementSettings.mode.toString())
+                saveManagementSettingsUpdate.setLong(
+                    2,
+                    managementSettings.defaultSlotDuration.toMillis()
                 )
-            saveManagementSettingsUpdate.setString(1, managementSettings.mode.toString())
-            saveManagementSettingsUpdate.setLong(2, managementSettings.defaultSlotDuration.toMillis())
-            saveManagementSettingsUpdate.setLong(3, managementSettings.notificationTime.toMillis())
-            saveManagementSettingsUpdate.setLong(
-                4,
-                managementSettings.delayNotificationTime.toMillis()
-            )
-            saveManagementSettingsUpdate.setLong(5, managementSettings.prioritizationTime.toMillis())
-            saveManagementSettingsUpdate.setLong(6, managementId.id)
-            saveManagementSettingsUpdate.executeUpdate()
+                saveManagementSettingsUpdate.setLong(
+                    3,
+                    managementSettings.notificationTime.toMillis()
+                )
+                saveManagementSettingsUpdate.setLong(
+                    4,
+                    managementSettings.delayNotificationTime.toMillis()
+                )
+                saveManagementSettingsUpdate.setLong(
+                    5,
+                    managementSettings.prioritizationTime.toMillis()
+                )
+                saveManagementSettingsUpdate.setLong(6, managementId.id)
+                saveManagementSettingsUpdate.executeUpdate()
 
-            val getSlotsByManagementIdQuery =
-                connection.prepareStatement(
-                    "SELECT Slot.code " + "FROM Management " +
-                        "INNER JOIN Queue ON Management.id = Queue.management_id " +
-                        "INNER JOIN Slot on Queue.queue_id = Slot.queue_id " +
-                        "WHERE Management.id = ?"
-                )
-            getSlotsByManagementIdQuery.setLong(1, managementId.id)
-            val rs = getSlotsByManagementIdQuery.executeQuery()
-            val slotCodes = mutableListOf<SlotCode>()
-            while (rs.next()) {
-                slotCodes.add(SlotCode(rs.getString("Slot.code")))
-            }
-            if (!slotCodes.isEmpty()) {
-                val slotManagementInformation = this.getSlotManagementInformation(slotCodes.first())
-                if (slotManagementInformation != null) {
-                    updateMediator.setManagementInformation(slotCodes, slotManagementInformation)
+                val getSlotsByManagementIdQuery =
+                    connection.prepareStatement(
+                        "SELECT Slot.code " + "FROM Management " +
+                            "INNER JOIN Queue ON Management.id = Queue.management_id " +
+                            "INNER JOIN Slot on Queue.queue_id = Slot.queue_id " +
+                            "WHERE Management.id = ?"
+                    )
+                getSlotsByManagementIdQuery.setLong(1, managementId.id)
+                val rs = getSlotsByManagementIdQuery.executeQuery()
+                val slotCodes = mutableListOf<SlotCode>()
+                while (rs.next()) {
+                    slotCodes.add(SlotCode(rs.getString("Slot.code")))
                 }
-                else {
-                    return false
+                if (!slotCodes.isEmpty()) {
+                    val slotManagementInformation =
+                        this.getSlotManagementInformation(slotCodes.first())
+                    if (slotManagementInformation != null) {
+                        updateMediator.setManagementInformation(
+                            slotCodes,
+                            slotManagementInformation
+                        )
+                    } else {
+                        return false
+                    }
                 }
+                return true
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                return false
             }
-            return true
-        } catch (e: SQLException) {
-            e.printStackTrace()
-            return false
         }
-    }
 
     /**
-     * Registers (SlotInformation)receiver in updateMediator.
-     *      Calls getSlotApprox, getSlotManagementInformation method for specified Slot(code) and passes results
-     *      to the updateMediator.
-     *      Called after Client listens to a Slot.
+     * Registers (SlotInformation)receiver in updateMediator. Calls getSlotApprox,
+     * getSlotManagementInformation method for specified Slot(code) and passes results to the
+     * updateMediator. Called after Client listens to a Slot.
+     *
      * @param receiver SlotInformationReceiver to be registered
      * @param slotCode SlotCode of SlotInformationReceivers Slot
      * @return true if successful else false
@@ -408,8 +423,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
             val slotManagementInformation = this.getSlotManagementInformation(slotCode)
             if (slotApprox == null || slotManagementInformation == null) {
                 return false
-            }
-            else {
+            } else {
                 updateMediator.subscribeReceiver(
                     receiver,
                     slotCode,
@@ -424,8 +438,9 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
     }
 
     /**
-     * Unegisters (SlotInformation)receiver in updateMediator.
-     *      Called after Client stops listening to a Slot (f.ex. after disconnect)
+     * Unegisters (SlotInformation)receiver in updateMediator. Called after Client stops listening
+     * to a Slot (f.ex. after disconnect)
+     *
      * @param receiver SlotInformationReceiver to be registered
      * @return true if successful else false
      */
@@ -435,6 +450,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
 
     /**
      * Changes password for a management specified by username in Database.
+     *
      * @param username username of management
      * @param password new password to be assigned
      * @return true if successful else false
@@ -456,7 +472,9 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
     }
 
     /**
-     * Deletes a Slot from Database by specified SlotCode and calls endSlot with SlotCode on updateMediator.
+     * Deletes a Slot from Database by specified SlotCode and calls endSlot with SlotCode on
+     * updateMediator.
+     *
      * @param slotCode SlotCode of Slot
      * @return true if successful else false
      */
@@ -475,7 +493,9 @@ class DatabaseWrapper @Throws(SQLException::class) constructor (dbName : String)
     }
 
     /**
-     * Deletes a Slot from Database by specified SlotCode and calls deleteSlot with SlotCode on updateMediator.
+     * Deletes a Slot from Database by specified SlotCode and calls deleteSlot with SlotCode on
+     * updateMediator.
+     *
      * @param slotCode SlotCode of Slot
      * @return true if successful else false
      */
