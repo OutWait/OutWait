@@ -69,14 +69,24 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
 
         // Start the sweep line after the running slot or at the current time
         var line =
-            if (newQueue.isNotEmpty())
-                newQueue[0].approxTime.toInstant() + newQueue[0].expectedDuration
-            else
+            if (newQueue.isNotEmpty()) {
+                val endTime = newQueue[0].approxTime.toInstant() + newQueue[0].expectedDuration
+                if (endTime.isAfter(Date().toInstant())) {
+                    // Slot has started, but expected end has not been reached
+                    endTime
+                } else {
+                    // Slot hast started and expected end has been reached
+                    Date().toInstant()
+                }
+            } else {
+                // No slot has started jet
                 Date().toInstant()
+            }
 
         // Construct the new queue using a sweep line-like algorithm
         Logger.debug(LOG_ID, "Running queue update algorithm...")
         Logger.debug(LOG_ID, "=========== QUEUE UPDATE ===========")
+        Logger.debug(LOG_ID, "Start queue at " + Date.from(line))
         while (spontaneousSlots.isNotEmpty() && fixSlots.isNotEmpty()) {
             val nextSpontaneous = spontaneousSlots[0]
             val nextFix = fixSlots[0]
@@ -143,8 +153,16 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         // Add remaining slots
         if (spontaneousSlots.isNotEmpty()) {
             newQueue.addAll(spontaneousSlots)
+            Logger.debug(LOG_ID, "Add remaining spontaneous slots:")
+            spontaneousSlots.forEach {
+                Logger.debug(LOG_ID, "Slot " + it.slotCode + " at " + it.approxTime)
+            }
         } else if (fixSlots.isNotEmpty()) {
             newQueue.addAll(fixSlots)
+            Logger.debug(LOG_ID, "Add remaining fix slots:")
+            fixSlots.forEach {
+                Logger.debug(LOG_ID, "Slot " + it.slotCode + " at " + it.approxTime)
+            }
         }
         Logger.debug(LOG_ID, "Queue update algorithm finished. New queue: " + newQueue)
         Logger.debug(LOG_ID, "========= QUEUE UPDATE END =========")
@@ -303,7 +321,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
             val newDate = Date.from(targetSlot.constructorTime.toInstant() + Duration.ofMillis(1))
             val conflictingSlot = slots.find { it.constructorTime == newDate }
 
-            slots.add(slot.copy(constructorTime=newDate))
+            slots.add(slot.copy(constructorTime=newDate, approxTime=newDate))
 
             if (conflictingSlot != null) {
                 // Move the conflicting slots recursively
