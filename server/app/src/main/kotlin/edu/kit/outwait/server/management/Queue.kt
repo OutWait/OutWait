@@ -43,6 +43,19 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
     fun updateQueue(prioritizationTime: Duration) {
         Logger.debug(LOG_ID, "Updating queue " + queueId)
         delayChangeTime = null
+
+        // Remove outdated slots (to keep the db clean)
+        slots
+            .filter {
+                it.constructorTime.toInstant().isBefore(Date().toInstant() - Duration.ofHours(48))
+            }
+            .forEach {
+                Logger.debug(LOG_ID, "Remove outdated slot " + it.slotCode)
+                deletedSlots.add(it.slotCode)
+            }
+        deletedSlots.forEach { slotCode -> slots.removeIf { slot -> slot.slotCode == slotCode } }
+
+        // Check if queue is not empty (the algorithm below requires at least one slot)
         if (slots.isEmpty()) {
             Logger.debug(LOG_ID, "Queue is empty (no update required)")
             return // Don't run the algorithm, if no slots exist
