@@ -23,9 +23,11 @@ class Navigator @Inject constructor() : CoroutineScope by MainScope() {
     }
 
     private fun navAction(action: NavController.() -> Unit) {
+
         launch {
             _navigationActions.emit(action)
         }
     }
 }
+
 

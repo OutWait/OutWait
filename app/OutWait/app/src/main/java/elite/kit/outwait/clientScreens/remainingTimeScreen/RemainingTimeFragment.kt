@@ -14,6 +14,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,15 +50,14 @@ class RemainingTimeFragment : Fragment() {
             object : OnBackPressedCallback(true) {
 
                 override fun handleOnBackPressed() {
-                    if (viewModel.clientInfoList.value!!.isNotEmpty())
-                     {
+                    viewModel.isTimeOver.observe(viewLifecycleOwner, Observer{isTimeOver->
+                        if(isTimeOver){
+                            viewModel.navigateBack()
+                        }
+                    })
                         Toast.makeText(context, "You can enter a new appointment after your appointment is finished", Toast.LENGTH_LONG)
                             .show()
-                        //TODO navigate back
-                    } else {
-                        Toast.makeText(context, "Click home button to exit", Toast.LENGTH_LONG)
-                            .show()
-                    }
+
                 }
             }
 

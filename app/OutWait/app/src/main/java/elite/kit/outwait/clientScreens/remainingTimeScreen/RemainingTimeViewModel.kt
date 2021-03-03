@@ -31,6 +31,9 @@ class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepos
     private val _remainingTime = MutableLiveData<String>("")
     val remainingTime get() = _remainingTime as LiveData<String>
 
+    private val _isTimeOver = MutableLiveData<Boolean>(false)
+    val isTimeOver get() = _remainingTime as LiveData<Boolean>
+
     private val timer = object : CountDownTimer(TWO_DAYS, ONE_SEC){
         override fun onTick(millisUntilFinished: Long) {
             if (approximatedTime !== null){
@@ -48,6 +51,7 @@ class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepos
 
         override fun onFinish() {
             TODO("Not yet implemented")
+            _isTimeOver.value=true
         }
 
     }

@@ -33,12 +33,13 @@ class MainActivity : AppCompatActivity(),androidx.lifecycle.ViewModelStoreOwner 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val navController = (supportFragmentManager.findFragmentById(R.id.main_container) as? NavHostFragment)
-            ?.findNavController()
+        val navController = ((supportFragmentManager.findFragmentById(R.id.main_container)) as NavHostFragment)
+            .findNavController()
+
 
         lifecycleScope.launchWhenCreated {
-            navigator.navigationActions.collect {
-                navController?.it()
+            navigator.navigationActions.collect { action->
+                navController.action()
             }
         }
 
