@@ -24,6 +24,7 @@ private const val ONE_SEC = 1000L
 class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepository): ViewModel() {
 
     val clientInfoList = repo.getActiveSlots()
+     var instituteName=MutableLiveData(clientInfoList.value!!.first().institutionName)
 
     private var approximatedTime: DateTime? = null
 
@@ -55,7 +56,6 @@ class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepos
 
     init {
         timer.start()
-
         repo.getActiveSlots().observeForever {
             if (it !== null){
                 if (it.isNotEmpty()){
@@ -65,9 +65,7 @@ class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepos
         }
     }
 
-    fun navigateBack() {
-        TODO("Not yet implemented")
-    }
+
 
     fun refreshWaitingTime(){
         val showingSlot = repo.getActiveSlots().value?.last()?.slotCode ?: ""

@@ -16,7 +16,7 @@ class PasswordForgotViewModel @Inject constructor(private val repo : InstituteRe
     /*
     * - passwordForgotten is void- CHECK
     * */
-    val institutName=MutableLiveData<String>()
+    val institutName=MutableLiveData<String>("")
 
     fun resetPassword(){
         repo.passwordForgotten(institutName.value!!)
