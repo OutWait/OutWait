@@ -45,11 +45,12 @@ class LoginFragment : Fragment() {
         binding=DataBindingUtil.inflate(inflater,R.layout.login_fragment, container, false)
         binding.viewModel=this.viewModel
         binding.lifecycleOwner=viewLifecycleOwner
-        val navController = findNavController()
 
         binding.ivScan.setOnClickListener {
             checkForPermission(android.Manifest.permission.CAMERA, "camera", CAMERA_RQ)
         }
+
+        val navController = findNavController()
 
         viewModel.loginResponse.observe(viewLifecycleOwner){listOfUsers->
             when {

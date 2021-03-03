@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class RemainingTimeCoordinator @Inject constructor(private val navigator: Navigator) {
     fun navigateToForwarderFragment() {
-        //navigator.navigate()
+        navigator.navigate(RemainingTimeFragmentDirections.actionRemainingTimeFragmentToForwarderFragment())
     }
 
 }
