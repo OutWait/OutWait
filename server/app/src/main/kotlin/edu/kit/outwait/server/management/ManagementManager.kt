@@ -106,6 +106,10 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         if (management.isTransactionRunning()) management.abortCurrentTransaction()
 
         managements.remove(management)
+
+        if (managements.isEmpty()) {
+            Logger.debug(LOG_ID, "Last active management connection closed.");
+        }
     }
 
     /**

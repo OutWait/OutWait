@@ -54,6 +54,10 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
     fun removeClient(client: Client) {
         clients.remove(client)
         Logger.debug(LOG_ID, "Client removed")
+
+        if (clients.isEmpty()) {
+            Logger.debug(LOG_ID, "Last active client connection closed.");
+        }
     }
 
     /**
