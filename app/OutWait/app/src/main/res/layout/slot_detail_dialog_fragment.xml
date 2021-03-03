@@ -121,11 +121,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:layout_marginBottom="32dp"
+                android:layout_marginBottom="8dp"
                 android:text="@string/title_auxiliary_identifier"
                 android:textColor="@color/outwait_color"
                 android:textSize="@dimen/title_small"
-                app:layout_constraintBottom_toTopOf="@+id/tvTitleDuration"
+                app:layout_constraintBottom_toTopOf="@+id/guideline2"
                 app:layout_constraintStart_toStartOf="@+id/gVerticalTitle"
                 app:layout_constraintTop_toBottomOf="@+id/ivQRCode" />
 
@@ -134,9 +134,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:text="@string/title_duration"
                 android:textColor="@color/outwait_color"
                 android:textSize="@dimen/title_small"
+                app:layout_constraintBottom_toTopOf="@+id/tvTitleAppointment"
                 app:layout_constraintStart_toStartOf="@+id/gVerticalTitle"
                 app:layout_constraintTop_toTopOf="@+id/guideline2" />
 
@@ -144,7 +146,7 @@
                 android:id="@+id/tvTitleAppointment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:text="@string/title_appointment"
                 android:textColor="@color/outwait_color"
@@ -156,11 +158,11 @@
 
             <TextView
                 android:id="@+id/tvIdentifierDetail"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:text="@{viewModel.identifier}"
                 android:singleLine="false"
+                android:text="@{viewModel.identifier}"
                 android:textSize="@dimen/title_big"
                 app:layout_constraintBottom_toBottomOf="@+id/tvTitleIdentifier"
                 app:layout_constraintEnd_toEndOf="parent"
