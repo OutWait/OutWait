@@ -80,19 +80,26 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
             val wrapper = (json as JSONCredentialsWrapper)
             Logger.debug(LOG_ID, "New login of: " + wrapper)
-            val credentials = databaseWrapper.getManagementByUsername(wrapper.getUsername())
-
-            if (credentials == null || wrapper.getPassword() != credentials.password) {
-                Logger.debug(LOG_ID, "Access denied")
+            if (wrapper.getUsername() == "" || wrapper.getPassword() == "") {
+                // Catch empty credentials
+                Logger.debug(LOG_ID, "Access denied (empty credentials)")
                 socketFacade.send(Event.MANAGEMENT_LOGIN_DENIED, JSONEmptyWrapper())
                 socketFacade.disconnect()
             } else {
-                Logger.debug(LOG_ID, "Access granted. Starting management " + credentials.id)
-                socketFacade.send(Event.MANAGEMENT_LOGIN_SUCCESS, JSONEmptyWrapper())
+                val credentials = databaseWrapper.getManagementByUsername(wrapper.getUsername())
 
-                // Create new management instance
-                val manager = Management(socketFacade, credentials.id, databaseWrapper, this)
-                managements.add(manager)
+                if (credentials == null || wrapper.getPassword() != credentials.password) {
+                    Logger.debug(LOG_ID, "Access denied")
+                    socketFacade.send(Event.MANAGEMENT_LOGIN_DENIED, JSONEmptyWrapper())
+                    socketFacade.disconnect()
+                } else {
+                    Logger.debug(LOG_ID, "Access granted. Starting management " + credentials.id)
+                    socketFacade.send(Event.MANAGEMENT_LOGIN_SUCCESS, JSONEmptyWrapper())
+
+                    // Create new management instance
+                    val manager = Management(socketFacade, credentials.id, databaseWrapper, this)
+                    managements.add(manager)
+                }
             }
         }
 
