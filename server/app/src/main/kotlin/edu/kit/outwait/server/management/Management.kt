@@ -95,6 +95,7 @@ class Management(
         }
         socketFacade.onReceive(Event.END_CURRENT_SLOT) {
             if (checkTransactionStarted()) {
+                queue!!.updateQueue(managementInformation.settings.prioritizationTime)
                 queue!!.endCurrentSlot()
                 updateAndSendQueue()
             }
