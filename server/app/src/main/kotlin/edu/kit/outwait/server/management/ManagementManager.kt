@@ -135,7 +135,8 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
             if (queueId == null) {
                 Logger.internalError(LOG_ID, "Management has no Queue!")
-                // Don't crash the server by a exception. This is just a log.
+                managements.find { it.managementId == managementId }
+                    ?.sendInternalErrorMessage("Management has no corresponding queue.")
                 return null
             } else {
                 Logger.debug(LOG_ID, "New transaction queue loaded")
@@ -164,12 +165,17 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
         if (queueId == null) {
             Logger.internalError(LOG_ID, "Management has no Queue!")
-            // Don't crash the server by a exception. This is just a log.
+            managements.find { it.managementId == managementId }
+                ?.sendInternalErrorMessage("Management has no corresponding queue.")
             return null
         } else {
             // delete all temporary slots
             Logger.debug(LOG_ID, "Deleting temporary slots...")
-            if (!databaseWrapper.deleteAllTemporarySlots(queueId)) return null
+            if (!databaseWrapper.deleteAllTemporarySlots(queueId)) {
+                managements.find { it.managementId == managementId }
+                    ?.sendInternalErrorMessage("Can't delete temporarily created slots.")
+                return null
+            }
             Logger.debug(LOG_ID, "Temporary slots deleted.")
             return Queue(queueId, databaseWrapper)
         }
@@ -189,7 +195,10 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             LOG_ID,
             "Saving updated queue for management " + managementId + ", new queue: " + queue
         )
-        queue.storeToDB(databaseWrapper)
+        if (!queue.storeToDB(databaseWrapper)) {
+            managements.find { it.managementId == managementId }
+                ?.sendInternalErrorMessage("Failed to save the queue into the database.")
+        }
 
         // Distribute the queue
         for (management in managements) {
@@ -242,7 +251,11 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             "Updating management settings of " + managementId + " with settings: " +
                 managementSettings
         )
-        databaseWrapper.saveManagementSettings(managementId, managementSettings)
+
+        if (!databaseWrapper.saveManagementSettings(managementId, managementSettings)) {
+            managements.find { it.managementId == managementId }
+                ?.sendInternalErrorMessage("Failed to save the settings into the database.")
+        }
 
         for (management in managements) {
             if (management.managementId == managementId)
@@ -312,7 +325,8 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             val queueId = databaseWrapper.getQueueIdOfManagement(urgentQueueManagementId)
             if (queueId == null) {
                 Logger.internalError(LOG_ID, "Management has no Queue!")
-                // Don't crash the server by a exception. This is just a log.
+                managements.find { it.managementId == urgentQueueManagementId }
+                    ?.sendInternalErrorMessage("Management has no corresponding queue.")
             } else {
                 val queue = Queue(queueId, databaseWrapper)
 

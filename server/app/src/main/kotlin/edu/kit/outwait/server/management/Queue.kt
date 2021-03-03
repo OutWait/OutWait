@@ -191,14 +191,17 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
      * This includes all deleted or ended slot (of this transaction).
      *
      * @param databaseWrapper the DB into which the queue is saved.
+     * @return False when the queue couldn't be saved
      */
-    fun storeToDB(databaseWrapper: DatabaseWrapper) {
+    fun storeToDB(databaseWrapper: DatabaseWrapper): Boolean {
         Logger.debug(LOG_ID, "Storing queue " + queueId + " into the DB")
-        databaseWrapper.saveSlots(slots, queueId)
-        deletedSlots.forEach { databaseWrapper.deleteSlot(it) }
-        endedSlots.forEach { databaseWrapper.endSlot(it) }
+        var success = true
+        if (!databaseWrapper.saveSlots(slots, queueId)) success = false
+        deletedSlots.forEach { if (!databaseWrapper.deleteSlot(it)) success = false }
+        endedSlots.forEach { if (!databaseWrapper.endSlot(it)) success = false }
         deletedSlots.clear()
         endedSlots.clear()
+        return success
     }
 
     /**

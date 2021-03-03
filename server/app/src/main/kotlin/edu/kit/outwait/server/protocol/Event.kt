@@ -41,10 +41,8 @@ enum class Event(private val tag: String, private val wrapper: (String) -> JSONO
         { JSONManagementSettingsWrapper(JSONObject(it)) }
     ),
     UPDATE_QUEUE("updateQueue@M", { JSONQueueWrapper(JSONObject(it)) }),
-    INVALID_MANAGEMENT_REQUEST(
-        "invalidRequest@M",
-        { JSONInvalidRequestMessageWrapper(JSONObject(it)) }
-    ),
+    INVALID_MANAGEMENT_REQUEST("invalidRequest@M", { JSONErrorMessageWrapper(JSONObject(it)) }),
+    INTERNAL_SERVER_ERROR("internalServerError@M", { JSONErrorMessageWrapper(JSONObject(it)) }),
     LISTEN_SLOT("listenSlot@S", { JSONSlotCodeWrapper(JSONObject(it)) }),
     REFRESH_SLOT_APPROX("refreshSlotApprox@S", { JSONSlotCodeWrapper(JSONObject(it)) }),
     READY_TO_SERVE("readyToServe@C", { JSONEmptyWrapper(JSONObject(it)) }),
@@ -52,10 +50,7 @@ enum class Event(private val tag: String, private val wrapper: (String) -> JSONO
     SLOT_ENDED("endSlot@C", { JSONSlotCodeWrapper(JSONObject(it)) }),
     SLOT_DELETED("deleteSlot@C", { JSONSlotCodeWrapper(JSONObject(it)) }),
     INVALID_CODE("invalidCode@C", { JSONEmptyWrapper(JSONObject(it)) }),
-    INVALID_CLIENT_REQUEST(
-        "invalidRequest@C",
-        { JSONInvalidRequestMessageWrapper(JSONObject(it)) }
-    );
+    INVALID_CLIENT_REQUEST("invalidRequest@C", { JSONErrorMessageWrapper(JSONObject(it)) });
 
     /**
      * Returns the event tag.

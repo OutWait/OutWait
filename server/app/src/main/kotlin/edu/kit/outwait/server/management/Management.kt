@@ -8,7 +8,7 @@ import edu.kit.outwait.server.protocol.JSONAddSpontaneousSlotWrapper
 import edu.kit.outwait.server.protocol.JSONChangeSlotDurationWrapper
 import edu.kit.outwait.server.protocol.JSONChangeSlotTimeWrapper
 import edu.kit.outwait.server.protocol.JSONEmptyWrapper
-import edu.kit.outwait.server.protocol.JSONInvalidRequestMessageWrapper
+import edu.kit.outwait.server.protocol.JSONErrorMessageWrapper
 import edu.kit.outwait.server.protocol.JSONManagementSettingsWrapper
 import edu.kit.outwait.server.protocol.JSONQueueWrapper
 import edu.kit.outwait.server.protocol.JSONSlotCodeWrapper
@@ -49,8 +49,8 @@ class Management(
         Logger.debug(LOG_ID, "New management created and receivers registered")
 
         // Send settings
+        // Passed managementId must exist
         val tmpInfo = databaseWrapper.getManagementById(managementId)!!
-        // passed managementId must exist
         managementInformation = tmpInfo
         sendUpdatedManagementSettings(managementInformation.settings)
 
@@ -60,6 +60,7 @@ class Management(
         val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
         if (queueId == null) {
             Logger.internalError(LOG_ID, "management has no Queue!")
+            sendInternalErrorMessage("Management has no corresponding queue.")
             // Don't crash the server by a exception. This is just a log.
         } else {
             val queue = Queue(queueId, databaseWrapper)
@@ -128,7 +129,8 @@ class Management(
                     )
                 val newSlot = databaseWrapper.addTemporarySlot(slot, queue!!.queueId)
                 if (newSlot == null) {
-                    Logger.internalError(LOG_ID, "failed to create new slot!")
+                    Logger.internalError(LOG_ID, "Failed to create new slot!")
+                    sendInternalErrorMessage("Failed to create new slot.")
                 } else {
                     queue!!.addSpontaneousSlot(newSlot)
                     updateAndSendQueue()
@@ -149,7 +151,8 @@ class Management(
                     )
                 val newSlot = databaseWrapper.addTemporarySlot(slot, queue!!.queueId)
                 if (newSlot == null) {
-                    Logger.internalError(LOG_ID, "failed to create new slot!")
+                    Logger.internalError(LOG_ID, "Failed to create new slot!")
+                    sendInternalErrorMessage("Failed to create slot.")
                 } else {
                     queue!!.addFixedSlot(newSlot)
                     updateAndSendQueue()
@@ -183,7 +186,7 @@ class Management(
         if (!isTransactionRunning()) {
             Logger.debug(LOG_ID, "Transaction not started! Can't execute command.")
             // Transaction has not been started
-            val json = JSONInvalidRequestMessageWrapper()
+            val json = JSONErrorMessageWrapper()
             json.setMessage("Transaction not started")
             socketFacade.send(Event.INVALID_MANAGEMENT_REQUEST, json)
             return false
@@ -239,6 +242,18 @@ class Management(
     }
 
     /**
+     * Sends an error message to the manager with the given message.
+     *
+     * @param message the message string to send to the manager.
+     */
+    internal fun sendInternalErrorMessage(message: String) {
+        val json = JSONErrorMessageWrapper()
+        json.setMessage(message)
+        socketFacade.send(Event.INTERNAL_SERVER_ERROR, json)
+        Logger.debug(LOG_ID, "Sent internal error message")
+    }
+
+    /**
      * Initiates the logout routine.
      *
      * It will remove the management from the manger and thus abort the running transaction if
@@ -259,7 +274,7 @@ class Management(
         if (isTransactionRunning()) {
             Logger.debug(LOG_ID, "New transaction could not be started. Loaded queue: " + queue)
             // Cannot start a new transaction, when a transaction is running
-            val json = JSONInvalidRequestMessageWrapper()
+            val json = JSONErrorMessageWrapper()
             json.setMessage("Transaction already running")
             socketFacade.send(Event.INVALID_MANAGEMENT_REQUEST, json)
         } else {
