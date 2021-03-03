@@ -45,9 +45,16 @@
     <string name="EXAMPLE_ERROR">Example Error!</string>
     <string name="INVALID_SLOT_CODE">Your code is not valid!</string>
     <string name="process_title">Process</string>
-    <!-- Strings related to timerService -->
-    <string name="permanentChannel">PERM_CHANNEL_ID</string>
-    <string name="secondChannel">SEC_CHANNEL_ID</string>
+    <!-- Strings related to push notifications -->
+    <string name="Perm_Notif_BaseTitle">Your Next Appointment Today</string>
+    <string name="Perm_Notif_Basetext1">with\u00A0</string>
+    <string name="Perm_Notif_Basetext2">\u00A0is at\u00A0</string>
+    <string name="Delay_Notif_BaseTitle">Delay Of Your Appointment with\u00A0</string>
+    <string name="Delay_Notif_BaseText1">by\u00A0</string>
+    <string name="Delay_Notif_BaseText2">\u00A0, now at\u00A0</string>
+    <string name="Pending_Notif_BaseTitle1">Your Appointment with\u00A0</string>
+    <string name="Pending_Notif_BaseTitle2">\u00A0will begin shortly!</string>
+    <string name="Pending_Notif_BaseText">Please go to the institution immediately!</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="sss">\@string/forgot_password_underline</string>
