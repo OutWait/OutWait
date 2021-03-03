@@ -1,5 +1,6 @@
 package elite.kit.outwait.clientScreens.remainingTimeScreen
 
+import android.os.CountDownTimer
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
@@ -16,44 +17,54 @@ import org.joda.time.Interval
 import javax.inject.Inject
 import kotlin.time.milliseconds
 
+private const val TWO_DAYS = 172800000L
+private const val ONE_SEC = 1000L
+
 @HiltViewModel
 class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepository): ViewModel() {
 
-/*
-    - calculation of remainingtime here?
-    - calculation of remainingTime is trough approximatedTime
-*/
+    val clientInfoList = repo.getActiveSlots()
 
-    //TODO calculation of remaining time
-    var clientInfo = MutableLiveData<ClientInfo>()
-    var clientInfoList = repo.getActiveSlots()
-    private val _remainingTime = MutableLiveData<String>()
-    val remainingTime
-        get() = _remainingTime as LiveData<String>
+    private var approximatedTime: DateTime? = null
 
-init {
-    //clientInfo=ClientRepository.getActiveSlots.value[0]
+    private val _remainingTime = MutableLiveData<String>("")
+    val remainingTime get() = _remainingTime as LiveData<String>
 
-    //Ausgabe 20:13 also HH:mm
-    //TransformationOutput.intervalToString(Interval(_remainingTime.value!!))
+    private val timer = object : CountDownTimer(TWO_DAYS, ONE_SEC){
+        override fun onTick(millisUntilFinished: Long) {
+            if (approximatedTime !== null){
+                val now = DateTime.now()
+                val diff = Duration(
+                    approximatedTime!!.millis - now.millis
+                )
+                _remainingTime.value =
+                    if(diff > Duration(0))
+                        TransformationOutput.durationToString(diff)
+                    else
+                        TransformationOutput.durationToString(Duration(0))
+            }
+        }
 
-    val slots = repo.getActiveSlots().value
-    if (slots !== null && slots.isNotEmpty()){
-        val approxTime = slots.last().approximatedTime
-        val timeLeft = Duration(approxTime.millis - DateTime.now().millis)
-        //_remainingTime.value = TransformationOutput.intervalToString(Interval(timeLeft.millis))
-        Log.d("RemTimeVM", "${_remainingTime.value} minuten verbleibend")
+        override fun onFinish() {
+            TODO("Not yet implemented")
+        }
+
     }
 
-    repo.getActiveSlots().observeForever {
-        if (it.isNotEmpty()){
-            val approxTime = it.last().approximatedTime
-            val timeLeft = Duration(approxTime.millis - DateTime.now().millis)
-           // _remainingTime.value = TransformationOutput.intervalToString(Interval(timeLeft.millis))
-            Log.d("RemTimeVM", "${_remainingTime.value} minuten verbleibend")
+
+
+    init {
+        timer.start()
+
+        repo.getActiveSlots().observeForever {
+            if (it !== null){
+                if (it.isNotEmpty()){
+                    approximatedTime = it.last().approximatedTime
+                }
+            }
         }
     }
-}
+
     fun navigateBack() {
         TODO("Not yet implemented")
     }

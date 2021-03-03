@@ -76,6 +76,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
 
         // Construct the new queue using a sweep line-like algorithm
         Logger.debug(LOG_ID, "Running queue update algorithm...")
+        Logger.debug(LOG_ID, "=========== QUEUE UPDATE ===========")
         while (spontaneousSlots.isNotEmpty() && fixSlots.isNotEmpty()) {
             val nextSpontaneous = spontaneousSlots[0]
             val nextFix = fixSlots[0]
@@ -107,6 +108,10 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                             else
                                 nextFix.constructorTime
                     )
+                Logger.debug(
+                    LOG_ID,
+                    "Chose fix slot " + chosenSlot.slotCode + " at " + chosenSlot.approxTime
+                )
                 newQueue.add(chosenSlot)
                 fixSlots.removeAt(0)
 
@@ -124,6 +129,10 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                 line = chosenSlot.approxTime.toInstant() + chosenSlot.expectedDuration
             } else {
                 val chosenSlot = nextSpontaneous.copy(approxTime = Date.from(line))
+                Logger.debug(
+                    LOG_ID,
+                    "Chose spontaneous slot " + chosenSlot.slotCode + " at " + chosenSlot.approxTime
+                )
                 newQueue.add(chosenSlot)
                 spontaneousSlots.removeAt(0)
 
@@ -138,6 +147,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
             newQueue.addAll(fixSlots)
         }
         Logger.debug(LOG_ID, "Queue update algorithm finished. New queue: " + newQueue)
+        Logger.debug(LOG_ID, "========= QUEUE UPDATE END =========")
         Logger.debug(LOG_ID, "Next delay change time: " + delayChangeTime)
 
         // Finalize the queue
@@ -338,7 +348,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         )
         var oldSlot = slots.find { it.slotCode == slotCode }
         if (oldSlot != null) {
-            replaceSlot(oldSlot, oldSlot.copy(constructorTime=newTime))
+            replaceSlot(oldSlot, oldSlot.copy(constructorTime=newTime, approxTime=newTime))
         } else {
             Logger.debug(LOG_ID, "Failed to change appointment time (slot does not exist)")
         }
