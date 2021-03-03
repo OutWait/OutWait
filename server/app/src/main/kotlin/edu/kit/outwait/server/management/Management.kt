@@ -18,6 +18,8 @@ import edu.kit.outwait.server.slot.Priority
 import edu.kit.outwait.server.slot.Slot
 import edu.kit.outwait.server.slot.SlotCode
 import edu.kit.outwait.server.socketHelper.SocketFacade
+import java.time.Duration
+import java.util.Date
 
 /**
  * Representation of a connection to a manager.
@@ -120,45 +122,23 @@ class Management(
         socketFacade.onReceive(Event.ADD_SPONTANEOUS_SLOT) { json ->
             if (checkTransactionStarted()) {
                 val wrapper = json as JSONAddSpontaneousSlotWrapper
-                val slot =
-                    Slot(
-                        SlotCode(""), // will be set by the database
-                        Priority.NORMAL,
-                        wrapper.getCreationTime(),
-                        // The creation time is the expected time for new slots
-                        wrapper.getDuration(),
-                        wrapper.getCreationTime()
-                    )
-                val newSlot = databaseWrapper.addTemporarySlot(slot, queue!!.queueId)
-                if (newSlot == null) {
-                    Logger.internalError(LOG_ID, "Failed to create new slot!")
-                    sendInternalErrorMessage("Failed to create new slot.")
-                } else {
-                    queue!!.addSlot(newSlot)
-                    updateAndSendQueue()
-                }
+                addNewSlot(
+                    wrapper.getDuration(),
+                    wrapper.getCreationTime(),
+                    Priority.NORMAL,
+                    databaseWrapper
+                )
             }
         }
         socketFacade.onReceive(Event.ADD_FIXED_SLOT) { json ->
             if (checkTransactionStarted()) {
                 val wrapper = json as JSONAddFixedSlotWrapper
-                val slot =
-                    Slot(
-                        SlotCode(""), // will be set by the database
-                        Priority.FIX_APPOINTMENT,
-                        wrapper.getAppointmentTime(),
-                        // The creation time is the expected time for new slots
-                        wrapper.getDuration(),
-                        wrapper.getAppointmentTime()
-                    )
-                val newSlot = databaseWrapper.addTemporarySlot(slot, queue!!.queueId)
-                if (newSlot == null) {
-                    Logger.internalError(LOG_ID, "Failed to create new slot!")
-                    sendInternalErrorMessage("Failed to create slot.")
-                } else {
-                    queue!!.addSlot(newSlot)
-                    updateAndSendQueue()
-                }
+                addNewSlot(
+                    wrapper.getDuration(),
+                    wrapper.getAppointmentTime(),
+                    Priority.FIX_APPOINTMENT,
+                    databaseWrapper
+                )
             }
         }
         socketFacade.onReceive(Event.CHANGE_SLOT_DURATION) { json ->
@@ -175,6 +155,46 @@ class Management(
         }
 
         Logger.debug(LOG_ID, "Receivers configured")
+    }
+
+    private fun addNewSlot(
+        expectedDuration: Duration,
+        constructionTime: Date,
+        priority: Priority,
+        databaseWrapper: DatabaseWrapper
+    ) {
+        // First check if the constructionTime is valid
+        if (constructionTime.toInstant().isBefore(Date().toInstant())) {
+            val json = JSONErrorMessageWrapper()
+            json.setMessage("Tried to create slot in the past")
+            socketFacade.send(Event.INVALID_MANAGEMENT_REQUEST, json)
+            Logger.debug(LOG_ID, "Tried to create slot in the past")
+        } else if (constructionTime.toInstant().isAfter(Date().toInstant() + Duration.ofHours(24))
+        ) {
+            val json = JSONErrorMessageWrapper()
+            json.setMessage("Tried to create slot more than 24h in the future")
+            socketFacade.send(Event.INVALID_MANAGEMENT_REQUEST, json)
+            Logger.debug(LOG_ID, "Tried to create slot more than 24h in the future")
+        } else {
+            // Slot time is valid
+            val slot =
+                Slot(
+                    SlotCode(""), // will be set by the database
+                    priority,
+                    // The creation time is the expected time for new slots
+                    constructionTime,
+                    expectedDuration,
+                    constructionTime
+                )
+            val newSlot = databaseWrapper.addTemporarySlot(slot, queue!!.queueId)
+            if (newSlot == null) {
+                Logger.internalError(LOG_ID, "Failed to create new slot!")
+                sendInternalErrorMessage("Failed to create slot.")
+            } else {
+                queue!!.addSlot(newSlot)
+                updateAndSendQueue()
+            }
+        }
     }
 
     /**
