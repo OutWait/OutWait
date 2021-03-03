@@ -28,6 +28,24 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/vbEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="start"
+                app:constraint_referenced_ids="ivEditIconFix"
+                tools:layout_editor_absoluteX="346dp"
+                tools:layout_editor_absoluteY="3dp" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/vbStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="start"
+                app:constraint_referenced_ids="tvIdentifierFix"
+                tools:layout_editor_absoluteX="186dp"
+                tools:layout_editor_absoluteY="3dp" />
+
             <ImageView
                 android:id="@+id/ivEditIconFix"
                 android:layout_width="wrap_content"
@@ -74,13 +92,14 @@
 
             <TextView
                 android:id="@+id/tvIdentifierFix"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:gravity="end|top"
+                android:maxLines="1"
+                android:singleLine="true"
                 android:text="@string/identifier"
                 app:layout_constraintEnd_toStartOf="@+id/ivEditIconFix"
-                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="@+id/gVertical"
                 app:layout_constraintTop_toTopOf="parent" />
 
