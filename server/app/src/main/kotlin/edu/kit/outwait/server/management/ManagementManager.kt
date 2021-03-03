@@ -219,7 +219,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      *
      * This will inform all active managements of this institution.
      *
-     * @param managementId the id of the institution whose running transaction should be aborted.
+     * @param managementId the id of the institution whose running transaction should be saved.
      * @return The old queue (before the transaction) or null on error.
      * @throws InternalServerErrorException when the queue could not be saved.
      */
