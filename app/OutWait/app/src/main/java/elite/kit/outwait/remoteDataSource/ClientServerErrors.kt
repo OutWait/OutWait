@@ -10,4 +10,5 @@ enum class ClientServerErrors {
     INVALID_SLOT_CODE,
     INVALID_REQUEST,
     COULD_NOT_CONNECT,
+    SERVER_DID_NOT_RESPOND
 }

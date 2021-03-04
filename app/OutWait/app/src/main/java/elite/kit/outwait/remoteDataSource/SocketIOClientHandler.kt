@@ -9,6 +9,7 @@ import elite.kit.outwait.networkProtocol.*
 
 // TODO Falsche Zugriffe durch Repo abfangen (bspw.2x initComm hintereinander)
 // TODO InvalidRequest adäquat handlen (oder error pushen?) Welche Fehler sind möglich?
+private const val MAX_WAITTIME_FOR_RESPONSE = 10000L
 
 class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
@@ -66,15 +67,21 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
             Log.i("SocketMHandler", "Connection established with $currentSessionID id")
         }
 
-
         // Mit return warten bis Server readyToServe signalisiert
-        // TODO geht auch schöner? LiveData?
-        while (!this.serverReady) {
+        var curWaitTimeForResponse = 0L
+        while (!this.serverReady and (curWaitTimeForResponse < MAX_WAITTIME_FOR_RESPONSE)) {
+            Log.d("SocketCHandler", "wait for readyToServe since $curWaitTimeForResponse millis")
+            curWaitTimeForResponse += 1000L
             Thread.sleep(1000)
-            Log.d("initCom::SIOCliHandler", "in der 2 Whileschleife")
         }
-
-        return true
+        if (this.serverReady) {
+            return true
+        } else {
+            Log.i("SocketCHandler", "waited in vain for readyToServe since $curWaitTimeForResponse millis")
+            pushError(ClientServerErrors.SERVER_DID_NOT_RESPOND)
+            endCommunication()
+        }
+        return false
     }
 
     override fun endCommunication(): Boolean {
