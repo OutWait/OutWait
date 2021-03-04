@@ -14,7 +14,12 @@ import org.joda.time.Duration
 // TODO Interne Zustandsvariablen richtig benutzt? Threading beachtet?
 // insb. login- und transaction- related sachen?
 
+private const val MAX_WAITTIME_FOR_RESPONSE = 10000L
+
+
 class SocketIOManagementHandler : ManagementHandler {
+
+
 
     // Ein Haufen unschöner (intern, da bisher prozedural) Zustandsvariablen
     // TODO LiveData schöner?
@@ -48,6 +53,8 @@ class SocketIOManagementHandler : ManagementHandler {
             (wrappedJSONData: JSONObjectWrapper) -> Unit> = hashMapOf()
 
     private val mSocket: SocketAdapter
+
+    private var currentSessionID: String = ""
 
     init {
         mSocket = SocketAdapter(namespaceManagement)
@@ -85,18 +92,13 @@ class SocketIOManagementHandler : ManagementHandler {
 
     //TODO initComm was noch zu tun?
     override fun initCommunication(): Boolean {
-        mSocket.initializeConnection(managementEventToCallbackMapping)
-
-        // wait until connection is established
-        while(!mSocket.isConnected()) {
-            Log.i("SocketIOManagHand", "While loop until Socket.isConnected() == true")
-            Thread.sleep(1000)
-        }
-
-        // wait until server requested a login try
-        while(!loginRequested) {
-            Log.i("SocketIOManagHand", "While loop until loginRequested == true")
-            Thread.sleep(1000)
+        if (!mSocket.initializeConnection(managementEventToCallbackMapping)) {
+            pushError(ManagementServerErrors.COULD_NOT_CONNECT)
+            endCommunication()
+            return false
+        } else {
+            this.currentSessionID = mSocket.getCurrentSessionID()
+            Log.i("SocketMHandler", "Connection established with $currentSessionID id")
         }
 
         return true
@@ -119,34 +121,39 @@ class SocketIOManagementHandler : ManagementHandler {
     und Boolsche Rückgabe wird erst nach entspr. Event des Servers geschickt
      */
     override fun login(username: String, password: String): Boolean {
-        while (!this.loginRequested) {
+
+        var curWaitTimeForLogReq = 0L
+        while (!this.loginRequested and (curWaitTimeForLogReq < MAX_WAITTIME_FOR_RESPONSE)) {
             Log.i(
-                "SocketIOManagementHandl",
-                "Waiting on server LoginRequest for LoginAttempt"
+                "SocketIOManagHandl",
+                "Wait with loginAttempt till loginRequest event (since $curWaitTimeForLogReq millis)"
             )
+            curWaitTimeForLogReq += 1000L
             Thread.sleep(1_000)
+
+        }
+        if (!loginRequested) {
+            pushError(ManagementServerErrors.SERVER_DID_NOT_RESPOND)
+            endCommunication()
+            return false
         }
 
         val event: Event = Event.MANAGEMENT_LOGIN
         val data: JSONObjectWrapper = JSONLoginWrapper(username, password)
         mSocket.emitEventToServer(event.getEventString(), data)
+        Log.i("SocketIOManagementHandl", "Login attempted")
 
-        Log.i(
-            "SocketIOManagementHandl",
-            "Login attempted"
-        )
-
-        while (!this.loggedIn and !this.loginDenied) {
-            Log.i(
-                "SocketIOManagementHandl",
-                "Waiting on server for LoginResponse"
-            )
-            //hab das hier mal rausgemacht - hat auch bei erfolgreichem
-            //login den error gepusht. Dafür bei onLoginDenied() den push.
-            //pushError(ManagementServerErrors.LOGIN_DENIED)
+        var curWaitTimeForResponse = 0L
+        while (!this.loggedIn and !this.loginDenied and (curWaitTimeForResponse < MAX_WAITTIME_FOR_RESPONSE)) {
+            Log.i("SocketIOManagHandl", "Waiting on server for LoginResponse (since $curWaitTimeForResponse millis)")
+            curWaitTimeForResponse += 1000L
             Thread.sleep(1_000)
         }
-
+        if (!this.loggedIn and !this.loginDenied) {
+            Log.i("SocketMHandler", "Server did not respond to login attempt since $curWaitTimeForResponse millis")
+            pushError(ManagementServerErrors.SERVER_DID_NOT_RESPOND)
+            endCommunication()
+        }
         if (this.loggedIn) {
             Log.i(
                 "SocketIOManagementHandl",
@@ -154,11 +161,10 @@ class SocketIOManagementHandler : ManagementHandler {
             )
             return true
         } else if (this.loginDenied) {
-            Log.i(
-                "SocketIOManagementHandl",
-                "Login was denied"
-            )
-            resetLoginState()
+            Log.i("SocketIOManagementHandl", "Login was denied")
+            pushError(ManagementServerErrors.LOGIN_DENIED)
+            endCommunication()
+            initCommunication()
         }
         return false
     }
