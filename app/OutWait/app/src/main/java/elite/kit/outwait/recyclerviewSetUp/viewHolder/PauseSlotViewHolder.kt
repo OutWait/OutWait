@@ -7,10 +7,18 @@ import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.waitingQueue.timeSlotModel.Pause
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 
+/**
+ * Viewholder for a pause slot
+ *
+ * @property itemView View of a pause slot
+ */
 class PauseSlotViewHolder(private var itemView: View):BaseViewHolder<Pause>(itemView) {
-    //TODO set all visibility false
+    /**
+     * Binds attributes of item with its layout
+     *
+     * @param item Slot
+     */
     override fun bind(item: TimeSlotItem) {
-        //Time space is possible to add
     }
 
 }

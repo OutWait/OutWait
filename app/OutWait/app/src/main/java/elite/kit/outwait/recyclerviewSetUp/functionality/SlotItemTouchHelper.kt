@@ -1,8 +1,11 @@
 package elite.kit.outwait.recyclerviewSetUp.functionality
 
+import android.graphics.Color
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import elite.kit.outwait.R
 import elite.kit.outwait.waitingQueue.timeSlotModel.Type
 
 class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
@@ -24,25 +27,31 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
         //TODO ehance algo to skip pause slots
         if (isViewHolderEnabledForDrag(viewHolder)) {
             if (viewHolder.absoluteAdapterPosition != -1) {
-                    adapter.registerMovement(viewHolder.absoluteAdapterPosition,oldPos)
+                adapter.registerMovement(viewHolder.absoluteAdapterPosition, oldPos)
             }
         }
 
-
-
-//        viewHolder.itemView.setBackgroundColor(
-//            ContextCompat.getColor(
-//                viewHolder.itemView.context,
-//                 Color.parseColor("#F44336").toInt() )      )
+        viewHolder.itemView.setBackgroundColor(
+            ContextCompat.getColor(
+                viewHolder.itemView.context,
+                R.color.white
+            )
+        )
     }
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
 
 
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && isViewHolderEnabledForSelect(
-                viewHolder!!)
+                viewHolder!!
+            )
         ) {
-            // viewHolder!!.itemView.setBackgroundColor(Color.YELLOW)
+            viewHolder.itemView.setBackgroundColor(
+                ContextCompat.getColor(
+                    viewHolder.itemView.context,
+                    R.color.outwait_color
+                )
+            )
             oldPos = viewHolder.absoluteAdapterPosition
 
 
@@ -94,7 +103,7 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
     private fun isViewHolderEnabledForSwipe(viewHolder: RecyclerView.ViewHolder): Boolean {
         return when (viewHolder.itemViewType) {
             Type.PAUSE.ordinal -> false
-            Type.HEADER.ordinal-> false
+            Type.HEADER.ordinal -> false
             else -> true
         }
     }
@@ -102,7 +111,7 @@ class SlotItemTouchHelper(private var adapter: ItemTouchHelperAdapter) :
     private fun isViewHolderEnabledForSelect(viewHolder: RecyclerView.ViewHolder): Boolean {
         return when (viewHolder.itemViewType) {
             Type.PAUSE.ordinal -> false
-            Type.HEADER.ordinal-> false
+            Type.HEADER.ordinal -> false
             else -> true
         }
     }
