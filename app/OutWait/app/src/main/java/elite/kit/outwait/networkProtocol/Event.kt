@@ -46,7 +46,8 @@ enum class Event(private val eventString: String,
     UPDATE_MANAGEMENT_SETTINGS_M("updateManagementSettings@M", { JSONManagementSettingsWrapper(it) }),
     UPDATE_QUEUE_M("updateQueue@M", { JSONQueueWrapper(it) }),
     INVALID_REQUEST_M("invalidRequest@M", { JSONErrorMessageWrapper(it) }),
-    INTERNAL_SERVER_ERROR_M("internalServerError@M", { JSONErrorMessageWrapper(it) });
+    INTERNAL_SERVER_ERROR_M("internalServerError@M", { JSONErrorMessageWrapper(it) }),
+    NETWORK_ERROR("NETWORK_ERROR", { JSONEmptyWrapper(it) });
 
     /**
      * This method returns the event string that is associated with the event

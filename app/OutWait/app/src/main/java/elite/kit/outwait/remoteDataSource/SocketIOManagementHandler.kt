@@ -88,6 +88,9 @@ class SocketIOManagementHandler : ManagementHandler {
         managementEventToCallbackMapping[Event.UPDATE_QUEUE_M] = { receivedData ->
             onUpdateQueue(receivedData as JSONQueueWrapper)
         }
+        managementEventToCallbackMapping[Event.NETWORK_ERROR] = { receivedData ->
+            onNetworkError(receivedData as JSONEmptyWrapper)
+        }
     }
 
     //TODO initComm was noch zu tun?
@@ -167,10 +170,8 @@ class SocketIOManagementHandler : ManagementHandler {
             pushError(ManagementServerErrors.LOGIN_DENIED)
             endCommunication()
             Log.i("SocketMHandler", "We ended Comm")
-            //TODO >>>>>>>>>>>>>>< Hier gehts kaputt >>>>>>>>>>>>>>>
             initCommunication()
             Log.i("SocketMHandler", "We initComm again")
-            // <<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>
         }
         return false
     }
@@ -366,6 +367,11 @@ class SocketIOManagementHandler : ManagementHandler {
     private fun onUpdateQueue(wrappedJSONData: JSONQueueWrapper) {
         val receivedList = wrappedJSONData.getQueue()
         this._currentList.postValue(receivedList)
+    }
+
+    private fun onNetworkError(wrappedJSONData: JSONEmptyWrapper) {
+        pushError(ManagementServerErrors.NETWORK_ERROR)
+        endCommunication()
     }
 
     private fun pushError(error: ManagementServerErrors){
