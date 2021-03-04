@@ -41,6 +41,7 @@
     <string name="TRANSACTION_DENIED">Transaction denied!</string>
     <string name="LOGIN_DENIED">Login denied!</string>
     <string name="NOT_IN_TRANSACTION">no running transaction!</string>
+    <string name="NETWORK_ERROR">Network error. Please check your Internet connection!</string>
     <!-- Strings for Error-Notifications (Client) -->
     <string name="EXAMPLE_ERROR">Example Error!</string>
     <string name="INVALID_SLOT_CODE">Your code is not valid!</string>
