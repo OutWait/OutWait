@@ -44,18 +44,21 @@ class Server {
         clientManager = ClientManager(clientNamespace, databaseWrapper)
         managementManager = ManagementManager(managementNamespace, databaseWrapper)
 
+        // Add termination routine to close all connections gracefully
+        Runtime.getRuntime().addShutdownHook(Thread { stop_server() })
+
         Logger.info(LOG_ID, "Server initialized")
     }
 
     /** Starts the server, so that it can receive requests. */
-    fun run() {
+    fun start_server() {
         Logger.info(LOG_ID, "Starting server...")
         server.start()
         Logger.info(LOG_ID, "Server started.")
     }
 
     /** Shuts down the server explicitly. */
-    fun stop() {
+    fun stop_server() {
         Logger.info(LOG_ID, "Stopping server...")
         server.stop()
         Logger.info(LOG_ID, "Starting stopped.")
@@ -70,6 +73,6 @@ class Server {
 fun main() {
     Logger.debug("MAIN", "Entry point reached")
     val server = Server()
-    server.run()
+    server.start_server()
     Logger.debug("MAIN", "Main terminated")
 }

@@ -11,7 +11,7 @@
         android:label="InstitutLoginFragment" />
     <fragment
         android:id="@+id/passwordForgotFragment"
-        android:name="elite.kit.outwait.managmentLogin.passwordForgottenScreen.passwordForgotFragment"
+        android:name="elite.kit.outwait.managmentLogin.passwordForgottenScreen.PasswordForgotFragment"
         android:label="passwordForgotFragment" />
     <dialog
         android:id="@+id/addSlotDialogFragment"
