@@ -35,8 +35,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
     /**
      * Implementation of abstract bindSocket-method of super class. Called by
      * configureConnectionCreation-method of super class in onConnection-event. Creates a client
-     * object for incoming connection and adds it to list. TODO: Überprüfung ob
-     * SocketIOClient-Parameter nötig?
+     * object for incoming connection and adds it to list.
      *
      * @param socketFacade passed to new client-Object
      */
