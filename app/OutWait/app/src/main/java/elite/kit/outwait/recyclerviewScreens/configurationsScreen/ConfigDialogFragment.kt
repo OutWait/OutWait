@@ -54,8 +54,6 @@ class ConfigDialogFragment : Fragment() {
         displayValues()
 
         binding.btnSave.setOnClickListener {
-           // Log.i("settings changed","${areSettingsChanged()}")
-
             emitSettingChanges()
         }
 
@@ -93,8 +91,6 @@ class ConfigDialogFragment : Fragment() {
         var isPrioDurationSame =
             binding.configPrioDuration.duration == viewModel.prioritizationTime.millis
         var isModeSame = binding.sMode.isChecked == viewModel.isModeTwo
-        Log.i("valuesSettings","$isSlotDurationSame++$isDelayNotificationTimeSame++$isNotificationTimeSame++$isPrioDurationSame++$isModeSame")
-
         return !(isSlotDurationSame&&isDelayNotificationTimeSame&&isNotificationTimeSame&&isPrioDurationSame&&isModeSame)
     }
 

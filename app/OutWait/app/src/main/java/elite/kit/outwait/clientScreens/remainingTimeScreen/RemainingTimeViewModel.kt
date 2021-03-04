@@ -34,8 +34,7 @@ class RemainingTimeViewModel @Inject constructor(
     private val _remainingTime = MutableLiveData<String>("")
     val remainingTime get() = _remainingTime as LiveData<String>
 
-    private val _isTimeOver = MutableLiveData<Boolean>(false)
-    val isTimeOver get() = _isTimeOver as LiveData<Boolean>
+
 
     private val timer = object : CountDownTimer(TWO_DAYS, ONE_SEC) {
         override fun onTick(millisUntilFinished: Long) {
@@ -49,7 +48,6 @@ class RemainingTimeViewModel @Inject constructor(
                     _remainingTime.value = TransformationOutput.durationToString(diff)
                 else {
                     _remainingTime.value = TransformationOutput.durationToString(Duration(0))
-                    _isTimeOver.value=true
                 }
             }
         }

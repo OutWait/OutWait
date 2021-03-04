@@ -43,23 +43,17 @@ class RemainingTimeFragment : Fragment() {
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
 
-        viewModel.isTimeOver.observe(viewLifecycleOwner, Observer { isOver ->
-            Log.i("isTimeOver", "$isOver")
-            if (isOver) {
-                Toast.makeText(context,"Please go to your institution",Toast.LENGTH_LONG)
-            }
 
-        })
 
         viewModel.clientInfoList.observe(viewLifecycleOwner, Observer {
             Log.i("delete Slot","observe")
-            Log.i("clientInfo","${it[0].slotCode}")
+            //Log.i("clientInfo","${it.isEmpty()} ${it[0].slotCode}")
             if(it.isEmpty()){
                 Log.i("delete Slot","deleted")
-                findNavController().popBackStack()
-                //viewModel.navigateBack()
+                viewModel.navigateBack()
             }
         })
+
         exitApp()
 
         return binding.root

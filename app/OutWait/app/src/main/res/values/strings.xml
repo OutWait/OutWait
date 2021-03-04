@@ -61,4 +61,5 @@
     <string name="explanation_text_permission">Permission to access your camera is required to scan your QR-Code</string>
     <string name="text_scanning">Scanning Code</string>
     <string name="no_result">No Result</string>
+    <string name="failure_add_slot">Failed: Please enter an appointmentTime</string>
 </resources>

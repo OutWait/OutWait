@@ -13,42 +13,59 @@ import org.joda.time.DateTime
 import org.joda.time.Interval
 import javax.inject.Inject
 
+/**
+ * This is the viewModel of addSlotDialogFragment which keeps data for it
+ *
+ * @property repo
+ */
 @HiltViewModel
 class AddSlotDialogViewModel @Inject constructor(val repo: InstituteRepository) :
     ViewModel() {
-
+    /**
+     * Entered identifier of a slot by management
+     */
     val identifier = MutableLiveData("")
 
-
+    /**
+     * Entered appointment time of a slot by management
+     */
     var appointmentTime = MutableLiveData<DateTime>()
 
-
+    /**
+     * Entered interval of a slot by management
+     */
     var interval = MutableLiveData<Interval>()
 
-
+    /**
+     * Checks whether entered slot is a fixed one
+     */
     val isFixedSlot = MutableLiveData(false)
-
+    /**
+     * Checks whether management is in second mode
+     */
     var isModeTwo = MutableLiveData<Boolean>()
 
-
+    /**
+     * Gets default preferences from server which are entered by management
+     */
     val preferences = repo.getObservablePreferences()
 
+    /**
+     * Notifies that a spontaneous slot is added
+     *
+     */
     fun notifyAddSpontaneousSlot() {
         repo.newSpontaneousSlot(identifier.value!!,
             interval.value!!.toDuration())
-
-
-        Log.i("input", "${identifier.value}\n" +
-            "            ${interval.value!!.toDurationMillis()}")
     }
 
-
+    /**
+     * Notifies that a fixed slot is added
+     *
+     */
     fun notifyAddFixedSlot() {
         repo.newFixedSlot(identifier.value!!,
             appointmentTime.value!!,
             interval.value!!.toDuration())
-        Log.i("input", "${identifier.value}\n" +
-            "            ${appointmentTime.value}\n" +
-            "            ${interval.value!!.toDurationMillis()}")
     }
 }

@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -71,7 +72,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         displayingDialog = builder.create()
 
 
-        viewModel.slotQueue.observe(viewLifecycleOwner) { list ->
+        viewModel.slotQueue.observe(viewLifecycleOwner, Observer{ list ->
             var itemList: MutableList<DataItem> = list.toMutableList().map {
                 TimeSlotItem(it)
             }.toMutableList()
@@ -85,21 +86,18 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
                 slotAdapter.updateSlots(itemList)
             }
             displayingDialog.dismiss()
-        }
+        })
 
 
-        movementInfo.observe(viewLifecycleOwner) {
+        movementInfo.observe(viewLifecycleOwner, Observer {
 
           if(it.isNotEmpty()) {
               viewModel.moveSlotAfterAnother(it.first(), it.last())
                 displayingDialog.dismiss()
           }
-        }
+        })
 
-        viewModel.isInTransaction.observe(viewLifecycleOwner) {
-            Log.i("observerTransaction", "VALUE:  ${viewModel.isInTransaction.value}")
 
-        }
 
 
 
