@@ -46,11 +46,8 @@ class RemainingTimeFragment : Fragment() {
 
 
         viewModel.clientInfoList.observe(viewLifecycleOwner, Observer {
-            Log.i("delete Slot","observe")
-            //Log.i("clientInfo","${it.isEmpty()} ${it[0].slotCode}")
             if(it.isEmpty()){
-                Log.i("delete Slot","deleted")
-                viewModel.navigateBack()
+                findNavController().popBackStack()
             }
         })
 

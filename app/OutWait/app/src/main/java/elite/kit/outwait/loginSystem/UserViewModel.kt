@@ -57,6 +57,7 @@ class UserViewModel @Inject constructor(
      *
      */
     fun enterSlotCode() {
+        Log.i("enterSlotCode","executed again++++++++++++++++++++++++++")
         viewModelScope.launch {
             repoClient.newCodeEntered(clientSlotCode.value)
         }
