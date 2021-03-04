@@ -2,6 +2,14 @@ package elite.kit.outwait.instituteRepository
 
 import elite.kit.outwait.R
 
+/**
+ * Collection of errors that the institute repo can use to inform others
+ * (especially the GUI with LiveData) about errors which happen.
+ * Errors are always used to notify when methods (e.g. for queue manipulations)
+ * do not succeed.
+ *
+ * @property message String resource ID where the error message can be found.
+ */
 enum class InstituteErrors(val message: Int) {
     TRANSACTION_DENIED(R.string.TRANSACTION_DENIED),
     LOGIN_DENIED(R.string.LOGIN_DENIED),
