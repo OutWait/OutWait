@@ -9,6 +9,7 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import elite.kit.outwait.R
@@ -20,6 +21,12 @@ import elite.kit.outwait.waitingQueue.timeSlotModel.FixedTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.Type
 
+/**
+ * Dialog to show a slot information
+ *
+ * @property clientTimeSlot Selected slot
+ */
+private const val START=0
 
 class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : DialogFragment() {
 
@@ -28,31 +35,27 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
     private lateinit var binding: SlotDetailDialogFragmentBinding
     private val qrCodeGenerator: QRCodeGenerator = QRCodeGenerator()
 
-
+    /**
+     * Creates layout of detail slot and data binding
+     *
+     * @param savedInstanceState Passed data from previous fragment
+     * @return layout with data binding
+     */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        //TODO Fragment design wrong, appointmenttime not showing
 
-
-        // Initialize a new foreground color span instance
-
-        // Initialize a new foreground color span instance
-        val foregroundColorSpan = ForegroundColorSpan(Color.parseColor("#38B6FF"))
-
-        // Initialize a new spannable string builder instance
-        // Initialize a new spannable string builder instance
+        val foregroundColorSpan = ForegroundColorSpan(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.outwait_color
+            )
+        )
         val ssBuilder = SpannableStringBuilder(getString(R.string.slot_details))
-
-        // Apply the text color span
-
-        // Apply the text color span
         ssBuilder.setSpan(
             foregroundColorSpan,
-            0,
+            START,
             getString(R.string.slot_details).length,
             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-
-
         val builder = AlertDialog.Builder(activity)
         binding = SlotDetailDialogFragmentBinding.inflate(LayoutInflater.from(context))
         binding.viewModel = this.viewModel
@@ -71,10 +74,20 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
         return builder.create()
     }
 
+    /**
+     * Checks whether selected slot is a fixed slot
+     *
+     * @return fixed slot-> true, else false
+     */
     private fun isFixedSlot(): Boolean {
         return clientTimeSlot.getType().ordinal == Type.FIXED_SLOT.ordinal
     }
 
+    /**
+     * Decides which type of slot is present
+     *
+     * @param slot Selected slot
+     */
     private fun displayProperties(slot: ClientTimeSlot) {
             when (viewModel.isFixedSlot.value) {
                 true -> displayFixedSlot(slot as FixedTimeSlot)
@@ -83,19 +96,26 @@ class SlotDetailDialogFragment(private var clientTimeSlot: ClientTimeSlot) : Dia
 
     }
 
+    /**
+     * Displays values of a spontaneous slot
+     *
+     * @param spontaneousSlot
+     */
     private fun displaySpontaneousSlot(spontaneousSlot: SpontaneousTimeSlot) {
         viewModel.slotCode.value=spontaneousSlot.slotCode
         viewModel.identifier.value=spontaneousSlot.auxiliaryIdentifier
-        Log.i("stringAddDialog","${spontaneousSlot.interval.toString()}")
         viewModel.interval.value=TransformationOutput.intervalToString(spontaneousSlot.interval)
-        Log.i("stringAddDialog2", TransformationOutput.intervalToString(spontaneousSlot.interval))
-
         viewModel.qrCode.value=qrCodeGenerator.generateQRCode(spontaneousSlot.slotCode)
         binding.ivQRCode.setImageBitmap(viewModel.qrCode.value)
 
 
     }
 
+    /**
+     * Displays values of a fixed slot
+     *
+     * @param fixedSlot
+     */
     private fun displayFixedSlot(fixedSlot: FixedTimeSlot) {
         viewModel.slotCode.value=fixedSlot.slotCode
         viewModel.identifier.value=fixedSlot.auxiliaryIdentifier
