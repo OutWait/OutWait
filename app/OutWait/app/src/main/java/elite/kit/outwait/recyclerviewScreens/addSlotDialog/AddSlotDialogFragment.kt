@@ -51,7 +51,7 @@ class AddSlotDialogFragment : DialogFragment() {
      *Displays a dialog to add fixed or spontaneous slot
      *
      * @param savedInstanceState Passed data from before fragment
-     * @return
+     * @return Layout of screen
      */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)

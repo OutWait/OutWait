@@ -70,4 +70,7 @@
     <string name="text_scanning">Scanning Code</string>
     <string name="no_result">No Result</string>
     <string name="failure_add_slot">Failed: Please enter an appointmentTime</string>
+    <string name="text_save_config">Your settings are saved</string>
+    <string name="text_denied_save_config">Your queue is not empty to switch your mode and your settings are not saved</string>
+    <string name="text_avoid_back_press_management">Please only possibility to logout</string>
 </resources>
