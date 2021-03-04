@@ -15,6 +15,7 @@ import org.joda.time.Duration
 // insb. login- und transaction- related sachen?
 
 private const val MAX_WAITTIME_FOR_RESPONSE = 10000L
+private const val TIME_STEP_FOR_RESPONSE_WAIT = 1000L
 
 
 class SocketIOManagementHandler : ManagementHandler {
@@ -58,7 +59,6 @@ class SocketIOManagementHandler : ManagementHandler {
 
     init {
         mSocket = SocketAdapter(namespaceManagement)
-
 
         // configure HashMap that maps receiving events to callbacks
         managementEventToCallbackMapping[Event.TRANSACTION_STARTED_M] = { receivedData ->
@@ -128,8 +128,8 @@ class SocketIOManagementHandler : ManagementHandler {
                 "SocketIOManagHandl",
                 "Wait with loginAttempt till loginRequest event (since $curWaitTimeForLogReq millis)"
             )
-            curWaitTimeForLogReq += 1000L
-            Thread.sleep(1_000)
+            curWaitTimeForLogReq += TIME_STEP_FOR_RESPONSE_WAIT
+            Thread.sleep(TIME_STEP_FOR_RESPONSE_WAIT)
 
         }
         if (!loginRequested) {
@@ -146,8 +146,8 @@ class SocketIOManagementHandler : ManagementHandler {
         var curWaitTimeForResponse = 0L
         while (!this.loggedIn and !this.loginDenied and (curWaitTimeForResponse < MAX_WAITTIME_FOR_RESPONSE)) {
             Log.i("SocketIOManagHandl", "Waiting on server for LoginResponse (since $curWaitTimeForResponse millis)")
-            curWaitTimeForResponse += 1000L
-            Thread.sleep(1_000)
+            curWaitTimeForResponse += TIME_STEP_FOR_RESPONSE_WAIT
+            Thread.sleep(TIME_STEP_FOR_RESPONSE_WAIT)
         }
         if (!this.loggedIn and !this.loginDenied) {
             Log.i("SocketMHandler", "Server did not respond to login attempt since $curWaitTimeForResponse millis")
@@ -164,7 +164,12 @@ class SocketIOManagementHandler : ManagementHandler {
             Log.i("SocketIOManagementHandl", "Login was denied")
             pushError(ManagementServerErrors.LOGIN_DENIED)
             endCommunication()
+            Log.i("SocketMHandler", "We ended Comm")
+            //TODO >>>>>>>>>>>>>>< Hier gehts kaputt >>>>>>>>>>>>>>>
             initCommunication()
+            // Yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+
+            Log.i("SocketMHandler", "We initComm again")
         }
         return false
     }
@@ -202,20 +207,30 @@ class SocketIOManagementHandler : ManagementHandler {
         mSocket.emitEventToServer(event.getEventString(), data)
 
         // warte in while loop auf Antwort vom Server
-        while (!transactionDenied and !transactionStarted) {
-            Log.i(
-                "SocketIOManagementHandl",
-                "Waiting on server response for transactionStart"
-            )
-            Thread.sleep(1_000)
+        var curWaitTimeForResp = 0L
+        while (!transactionDenied and !transactionStarted and (curWaitTimeForResp < MAX_WAITTIME_FOR_RESPONSE)) {
+            Log.i("SocketIOManagementHandl",
+                "Waiting on server response for transactionStart since $curWaitTimeForResp millis")
+            curWaitTimeForResp += TIME_STEP_FOR_RESPONSE_WAIT
+            Thread.sleep(TIME_STEP_FOR_RESPONSE_WAIT)
         }
 
-        if (transactionStarted) {
-            Log.i("SocketIOManagementHandl", "Transaction was started")
-            return true
-        } else if (transactionDenied) {
-            Log.i("SocketIOManagementHandl", "Transaction was denied")
-            resetTransactionState()
+        when {
+            transactionStarted -> {
+                Log.i("SocketIOManagementHandl", "Transaction was started")
+                return true
+            }
+            transactionDenied -> {
+                Log.i("SocketIOManagementHandl", "Transaction was denied")
+                resetTransactionState()
+                pushError(ManagementServerErrors.TRANSACTION_DENIED)
+                return false
+            }
+            else -> {
+                Log.i("SocketMHandler", "No response for startTrans@S since $curWaitTimeForResp")
+                pushError(ManagementServerErrors.SERVER_DID_NOT_RESPOND)
+                endCommunication()
+            }
         }
         return false
     }
@@ -322,13 +337,12 @@ class SocketIOManagementHandler : ManagementHandler {
         this.loginRequested = true
     }
 
-    //TODO Muss und wenn ja, wie errorMessage an Repo hochreichen?
+    //TODO Error Message String hochreichen ans Repo
     private fun onInvalidRequest(wrappedJSONData: JSONErrorMessageWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
         pushError(ManagementServerErrors.INVALID_REQUEST)
     }
 
-    //TODO Muss und wenn ja, wie errorMessage an Repo hochreichen?
     private fun onInternalServerError(wrappedJSONData: JSONErrorMessageWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
         pushError(ManagementServerErrors.INTERNAL_SERVER_ERROR)
@@ -340,9 +354,6 @@ class SocketIOManagementHandler : ManagementHandler {
 
     private fun onLoginDenied(wrappedJSONData: JSONEmptyWrapper) {
         this.loginDenied = true
-        pushError(ManagementServerErrors.LOGIN_DENIED)
-
-        //TODO("Server will hier Verbindung abbrechen?!! Was tun? (siehe gitlab issue)")
     }
 
 
@@ -363,5 +374,6 @@ class SocketIOManagementHandler : ManagementHandler {
         }else{
             this._errors.postValue(listOf(error))
         }
+        Log.i("SocketMHandler", "Error $error was pushed")
     }
 }
