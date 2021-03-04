@@ -76,7 +76,11 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
         // Handle the login
         socketFacade.onReceive(Event.MANAGEMENT_LOGIN) { json ->
-            timeoutTimer.cancel()
+            try {
+                timeoutTimer.cancel()
+            } catch (e: IllegalStateException) {
+                // Timer has not been started jet. Ignore this
+            }
 
             val wrapper = (json as JSONCredentialsWrapper)
             Logger.debug(LOG_ID, "New login of: " + wrapper)
@@ -105,7 +109,11 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
         // Handle the reset password function
         socketFacade.onReceive(Event.RESET_PASSWORD) { json ->
-            timeoutTimer.cancel()
+            try {
+                timeoutTimer.cancel()
+            } catch (e: IllegalStateException) {
+                // Timer has not been started jet. Ignore this
+            }
 
             Logger.debug(LOG_ID, "Password resetting routine started")
             resetManagementPassword((json as JSONResetPasswordWrapper).getUsername())
@@ -316,7 +324,11 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             "Queue delay change is set to " + time + " for management " + managementId
         )
 
-        nextDelayAlarm.cancel()
+        try {
+            nextDelayAlarm.cancel()
+        } catch (e: IllegalStateException) {
+            // Timer has not been started jet. Ignore this
+        }
         nextDelayAlarm.schedule(
             object : java.util.TimerTask() {
                 override fun run() = queueDelayAlarmHandler()
