@@ -181,7 +181,7 @@ class SocketIOManagementHandler : ManagementHandler {
         val data: JSONObjectWrapper = JSONEmptyWrapper()
 
         mSocket.emitEventToServer(event.getEventString(), data)
-        this.loggedIn = false
+        endCommunication()
     }
 
     override fun resetPassword(username: String) {
