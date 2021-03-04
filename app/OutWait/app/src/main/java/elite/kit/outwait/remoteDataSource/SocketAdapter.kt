@@ -14,6 +14,7 @@ import java.net.URI
 //TODO Welche Zustände sollen/müssen alles hier gehalten werden?
 
 private const val MAX_AMOUNT_CONNECT_WAITTIME = 10000L
+private const val TIME_STEP_FOR_CONNECT_WAIT = 1000L
 
 class SocketAdapter(namespace: String) {
 
@@ -54,9 +55,9 @@ class SocketAdapter(namespace: String) {
         }
         var waitedTimeToConnect = 0L
         while (!isConnected() and (waitedTimeToConnect < MAX_AMOUNT_CONNECT_WAITTIME)) {
-            waitedTimeToConnect += 1000L
+            waitedTimeToConnect += TIME_STEP_FOR_CONNECT_WAIT
             Log.i("SocketAdaper", "Waiting for connection establishing since $waitedTimeToConnect millis")
-            Thread.sleep(1000L)
+            Thread.sleep(TIME_STEP_FOR_CONNECT_WAIT)
         }
         if (isConnected()) {
             Log.d("SocketAdapter", "socket successfully connected for first time")
