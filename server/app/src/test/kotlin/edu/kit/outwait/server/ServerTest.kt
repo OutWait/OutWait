@@ -81,7 +81,7 @@ class ServerTest {
             )
 
         val server = Server()
-        server.run()
+        server.start_server()
     }
 }
 
