@@ -11,6 +11,14 @@ enum class ManagementServerErrors {
     LOGIN_DENIED,
     INTERNAL_SERVER_ERROR,
     INVALID_REQUEST,
+
+    /**
+     * Errors indicating that the connection could not be established or
+     * server did not respond after a max. amount of waiting time or
+     * the connection was lost,
+     * initComm has to be called again for further communication attempts
+     */
     COULD_NOT_CONNECT,
-    SERVER_DID_NOT_RESPOND
+    SERVER_DID_NOT_RESPOND,
+    NETWORK_ERROR
 }
