@@ -1,27 +1,42 @@
 package elite.kit.outwait.services
 
 import android.app.Notification
-import android.app.PendingIntent
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
-import androidx.core.app.NotificationCompat
-import elite.kit.outwait.MainActivity
-import elite.kit.outwait.R
-import android.app.*
 import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
+import elite.kit.outwait.R
+import elite.kit.outwait.channel_1NotificationBuilder
+import elite.kit.outwait.channel_2NotificationBuilder
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.joda.time.DateTime
+import org.joda.time.Duration
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
-// TODO: Wie Zugriff oder Referenz aufs Repo halten?
 @AndroidEntryPoint
 class TimerService @Inject constructor(): LifecycleService() {
+
+    @channel_1NotificationBuilder
+    @Inject
+    lateinit var permNotificationBuilder: NotificationCompat.Builder
+
+    @channel_2NotificationBuilder
+    @Inject
+    lateinit var secondNotificationBuilder: NotificationCompat.Builder
 
     @Inject
     lateinit var db : ClientInfoDao
@@ -29,7 +44,7 @@ class TimerService @Inject constructor(): LifecycleService() {
     @Inject
     lateinit var handler: ServiceHandler
 
-    private lateinit var allClientInfoAsLiveData: LiveData<List<ClientInfo>> //db.getAllClientInfoObservable()
+    private lateinit var allClientInfoAsLiveData: LiveData<List<ClientInfo>>
 
     private lateinit var nextAppointmentClientInfo: ClientInfo
 
@@ -43,58 +58,71 @@ class TimerService @Inject constructor(): LifecycleService() {
 
         // TODO NotifChannel konfigurieren (Sound, Buzz etc)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
             val serviceChannel1 = NotificationChannel(
-                getString(R.string.permanentChannel),
-                "Example Service Channel 1",
-                NotificationManager.IMPORTANCE_HIGH
+                PERM_CHANNEL_ID,
+                PERM_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_HIGH,
             )
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(serviceChannel1)
-        }
-        Log.i( "TimerService", "Permanent notifChannel was created")
+            serviceChannel1.description = PERM_CHANNEL_DESCRIPTION
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //TODO macht das einen Unterschied?
+            //val manager = getSystemService(NotificationManager::class.java) //-> CodingInFlow
+            manager.createNotificationChannel(serviceChannel1)                 //-> RunningApp
+            Log.i( "TimerService", "Permanent notifChannel was created")
+       // }
+
+      //  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel2 = NotificationChannel(
-                getString(R.string.secondChannel),
-                "Example Service Channel 2",
+                SECOND_CHANNEL_ID,
+                SECOND_CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_HIGH
             )
-            val manager = getSystemService(NotificationManager::class.java)
+            serviceChannel2.description = SECOND_CHANNEL_DESCRIPTION
+            //val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(serviceChannel2)
+            Log.i("TimerService", "Second NotifChannel was created")
         }
-        Log.i("ForegroundService", "Second NotifChannel was created")
-        db.getAllClientInfoObservable()
-        Log.i("TimerService", "Second NotifChannel was created")
 
+        CoroutineScope(Dispatchers.IO).launch {
+            if(db.getAllClientInfo().isEmpty()) {
+                Log.i("TimerService", "DB WAS empty?!")
+            } else {
+                val currEnt = db.getAllClientInfo().first()
+                Log.i("TimerService", "DB WAS NOT empty?!")
+                Log.i("TimerService", "Entry: "+"code: "+ currEnt.slotCode+", instiName: "+currEnt.institutionName)
+
+            }
+        }
 
     }
 
-    override
-    fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        // Pending Intent für die Notification
-        val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this,
-            0, notificationIntent, 0)
+        val permNotification = permNotificationBuilder.build()
+        Log.i("TimerService", " default permNotification was build")
+        startForeground(PERM_NOTIFICATION_ID, permNotification)
+        Log.i("TimerService", "startForegroundService called")
 
-        // Baue die (permanente) Notification für den TimerService
-        val notification: Notification = NotificationCompat.Builder(this, getString(R.string.permanentChannel))
-            .setContentTitle("Example Service")
-            .setContentText("example text")
-            .setSmallIcon(R.drawable.ic_timer)
-            .setContentIntent(pendingIntent)
-            .build()
+        //TODO Background Work auf Nebenthread /susp function, alternativ nur LD observen mit
+        // AlarmManager oder Workmanager (-> recurring task um imminentAppointments zu checken)
 
-        startForeground(1, notification)
-        Log.i("TimerService", "service was started")
+        CoroutineScope(Dispatchers.Main).launch {
+            doWork()
+        }
 
-        //TODO Background Work auf Nebenthread /susp function
-        //here: do "heavy work" on a background thread
-        //doWork()
-        //stopSelf()
+        CoroutineScope(Dispatchers.IO).launch {
+            while(db.getAllClientInfo().isNotEmpty()) {
+                checkNotifiedForExpiredSlotCodes(db.getAllClientInfo())
+                checkForPendingAppointment(db.getAllClientInfo())
+                Thread.sleep(50000L)
+            }
+            Log.i("TimerService","DB empty in IODispatch -> Service should stop")
+            stopSelf()
+        }
 
-        //TODO mit was returnen sticky oder redeliver_intent?
-        // mit was returned super.onStartCommand?
+        Log.i("TimerService", "super.onStartCommand was returned")
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -111,51 +139,65 @@ class TimerService @Inject constructor(): LifecycleService() {
 
     private fun doWork() {
         Log.i("TimerService", "backgroundWork was started")
-        // TODO >>>>>>>>>>>>AUF DB KANN NOCH NICHT ZUGEGRIFFEN WERDEN <<<<<<<<<<<<<<<<
+
         allClientInfoAsLiveData = db.getAllClientInfoObservable()
         Log.i("TimerService", "db was accessed")
-        // TODO >>>>>>>>>>>>AUF DB KANN NOCH NICHT ZUGEGRIFFEN WERDEN <<<<<<<<<<<<<<<<
 
-        val allClientInfo = allClientInfoAsLiveData.value
-        if (allClientInfo == null || allClientInfo.isEmpty()) {
-            stopSelf() // TODO stopSelf sauber machen
-        } else {
-            this.nextAppointmentClientInfo = getNextClientInfo(allClientInfo)
-        }
+/*
+        allClientInfoAsLiveData.observe(this, Observer { newList ->
+            Log.i("TimerService", "LiveData changed")
+            if (newList.isEmpty()) {
+                Log.i("TimerService", "LiveData empty-> Service should stop")
+                stopSelf() // TODO Service richtig beenden, Notif löschen
+            } else {
+                this.nextAppointmentClientInfo = getNextClientInfo(newList)
+            }
+            checkNotifiedForExpiredSlotCodes(newList)
+            updatePermanentNotification(newList)
+            checkForDelay(newList)
+            checkForPendingAppointment(newList)
+        })
+
+ */
 
 
         allClientInfoAsLiveData.observe(this, Observer { newList ->
             Log.i("TimerService", "LiveData changed")
-            if (newList.isEmpty()) stopSelf()
-            // TODO Service richtig beenden, Notif löschen
-            checkNotifiedForExpiredSlotCodes(newList)
-            updateNotification(newList)
-            checkForDelay(newList)
-            checkForPendingAppointment(newList)
+            if (newList.isNotEmpty()) {
+                this.nextAppointmentClientInfo = getNextClientInfo(newList)
+                checkNotifiedForExpiredSlotCodes(newList)
+                updatePermanentNotification(newList)
+                checkForDelay(newList)
+                checkForPendingAppointment(newList)
+            } else {
+                Log.i("TimerService", "LiveData empty in doWork() -> Service should stop")
+                stopSelf() // TODO Service richtig beenden, Notif löschen
+            }
 
         })
 
-        // TODO While loop mit LiveData observen um Notification upzudaten (a la Timer?)
-
-
-        // TODO("DB regelmäßig überprüfen um auf immamentAppointment zu checken")
-        // TODO debugge um zu prüfen ob & wann die clientDB null oder nulllables returned (returnen kann)
-        while (db.getAllClientInfo().isNotEmpty() || db.getAllClientInfo() != null) {
-            checkForPendingAppointment(db.getAllClientInfo())
-            checkNotifiedForExpiredSlotCodes(db.getAllClientInfo())
-            // sleep for 5min
-            Thread.sleep(300000)
-        }
-
-        stopSelf() //TODO stopSelf sauber machen
 
     }
 
-    private fun updateNotification(allClientInfoList : List<ClientInfo>) {
+    private fun updatePermanentNotification(allClientInfoList: List<ClientInfo>) {
         val newNextClientInfo = getNextClientInfo(allClientInfoList)
-        val newNextAppointmentTime = newNextClientInfo.approximatedTime
+        val instituteName = newNextClientInfo.institutionName
+        val appointmentTime = newNextClientInfo.approximatedTime
 
-        TODO ("Permanent Notification updaten mit aktueller Zeit des nächsten Slots")
+        val formatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
+        val appointmentString = formatter.print(appointmentTime) + " o'clock"
+
+
+        val notification: Notification = permNotificationBuilder
+            .setContentTitle(getString(R.string.Perm_Notif_BaseTitle))
+            .setContentText(getString(R.string.Perm_Notif_Basetext1)
+                + instituteName
+                + getString(R.string.Perm_Notif_Basetext2)
+                + appointmentString)
+            .build()
+
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.notify(PERM_NOTIFICATION_ID, notification)
     }
 
     private fun checkForDelay(allClientInfoList : List<ClientInfo>) {
@@ -168,13 +210,35 @@ class TimerService @Inject constructor(): LifecycleService() {
             if(next.approximatedTime.millis - next.originalAppointmentTime.millis
                  > next.delayNotificationTime.millis) {
 
-               // TODO("erzeuge secondNotif mit Verspätungsbenachrichtigung")
+               // erzeuge auf secondChannel eine DelayNotification push Notification
+                val approxTime = next.approximatedTime
+                val delayDuration = Duration(next.approximatedTime.millis - next.originalAppointmentTime.millis)
+
+                val formatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
+                val appointmentString = formatter.print(approxTime) + " o'clock"
+                val delayString = delayDuration.toStandardMinutes().toString() + " min"
+
+                val delayNotification: Notification = secondNotificationBuilder
+                    .setContentTitle(getString(R.string.Delay_Notif_BaseTitle) + next.institutionName)
+                    .setContentText(getString(R.string.Delay_Notif_BaseText1)
+                        + delayString
+                        + getString(R.string.Delay_Notif_BaseText2)
+                        + appointmentString)
+                    .build()
+
+                val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                manager.notify(DELAY_NOTIFICATION_ID, delayNotification)
+
 
                 // Setze originalTime auf aktuell approxTime für zukünftige Verspätungsüberprüfung
-                val updatedClientInfo = ClientInfo(
-                    next.slotCode, next.institutionName, next.approximatedTime,
-                    next.approximatedTime, next.notificationTime, next.delayNotificationTime)
-                db.update(updatedClientInfo)
+                //TODO Da DB access darf das nicht auf main thread erfolgen!
+                CoroutineScope(Dispatchers.IO).launch {
+                    val updatedClientInfo = ClientInfo(
+                        next.slotCode, next.institutionName, next.approximatedTime,
+                        next.approximatedTime, next.notificationTime, next.delayNotificationTime
+                    )
+                    db.update(updatedClientInfo)
+                }
             }
 
             // Falls verspätete Slot pending war, setze sein NotifiedFlag zurück für wenn er wieder pending wird
@@ -191,7 +255,17 @@ class TimerService @Inject constructor(): LifecycleService() {
 
             if ((next.approximatedTime.millis - DateTime().millis < next.notificationTime.millis)
                 && !pendingSlotCodesNotified.contains(next.slotCode)) {
-               //  TODO("erzeuge secondNotification für kurzbevorstehenden Termin")
+               // create pending Notification for Benachrichtigungszeit push notification
+                val pendingNotification: Notification = secondNotificationBuilder
+                    .setContentTitle(getString(R.string.Pending_Notif_BaseTitle1)
+                        + next.institutionName
+                        + getString(R.string.Pending_Notif_BaseTitle2))
+                    .setContentText(getString(R.string.Pending_Notif_BaseText))
+                    .build()
+
+                val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                manager.notify(PENDING_NOTIFICATION_ID, pendingNotification)
+
                 pendingSlotCodesNotified.add(next.slotCode)
             }
 
