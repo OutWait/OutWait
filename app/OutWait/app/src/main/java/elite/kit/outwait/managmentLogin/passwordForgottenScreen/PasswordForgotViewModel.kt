@@ -10,15 +10,22 @@ import elite.kit.outwait.managmentLogin.institutLoginScreen.InstitutCoordinator
 import org.joda.time.DateTime
 import javax.inject.Inject
 
+/***
+ * Keeps data from passwordForgotFragment
+ */
 @HiltViewModel
 class PasswordForgotViewModel @Inject constructor(private val repo : InstituteRepository, private val coordinator: InstitutCoordinator) : ViewModel() {
 
-    /*
-    * - passwordForgotten is void- CHECK
-    * */
-    val institutName=MutableLiveData<String>("")
+    /**
+     * Entered name from management
+     */
+    val instituteName=MutableLiveData<String>("")
 
+    /**
+     * Transmits to reset the password from management
+     *
+     */
     fun resetPassword(){
-        repo.passwordForgotten(institutName.value!!)
+        repo.passwordForgotten(instituteName.value!!)
     }
 }
