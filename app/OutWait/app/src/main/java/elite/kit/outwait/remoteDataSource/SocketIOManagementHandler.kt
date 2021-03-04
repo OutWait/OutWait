@@ -14,7 +14,11 @@ import org.joda.time.Duration
 // TODO Interne Zustandsvariablen richtig benutzt? Threading beachtet?
 // insb. login- und transaction- related sachen?
 
+private const val MAX_RESPONSE_WAIT = 10
+
 class SocketIOManagementHandler : ManagementHandler {
+
+
 
     // Ein Haufen unschöner (intern, da bisher prozedural) Zustandsvariablen
     // TODO LiveData schöner?
@@ -48,6 +52,8 @@ class SocketIOManagementHandler : ManagementHandler {
             (wrappedJSONData: JSONObjectWrapper) -> Unit> = hashMapOf()
 
     private val mSocket: SocketAdapter
+
+    private var currentSessionID: String = ""
 
     init {
         mSocket = SocketAdapter(namespaceManagement)
@@ -85,12 +91,13 @@ class SocketIOManagementHandler : ManagementHandler {
 
     //TODO initComm was noch zu tun?
     override fun initCommunication(): Boolean {
-        mSocket.initializeConnection(managementEventToCallbackMapping)
-
-        // wait until connection is established
-        while(!mSocket.isConnected()) {
-            Log.i("SocketIOManagHand", "While loop until Socket.isConnected() == true")
-            Thread.sleep(1000)
+        if (!mSocket.initializeConnection(managementEventToCallbackMapping)) {
+            pushError(ManagementServerErrors.COULD_NOT_CONNECT)
+            endCommunication()
+            return false
+        } else {
+            this.currentSessionID = mSocket.getCurrentSessionID()
+            Log.i("SocketMHandler", "Connection established with $currentSessionID id")
         }
 
         // wait until server requested a login try
@@ -119,13 +126,16 @@ class SocketIOManagementHandler : ManagementHandler {
     und Boolsche Rückgabe wird erst nach entspr. Event des Servers geschickt
      */
     override fun login(username: String, password: String): Boolean {
-        while (!this.loginRequested) {
+        var responseWait = 0
+        while (!this.loginRequested and (responseWait < MAX_RESPONSE_WAIT)) {
             Log.i(
-                "SocketIOManagementHandl",
-                "Waiting on server LoginRequest for LoginAttempt"
+                "SocketIOManagHandl",
+                "Waiting on server LoginRequest for LoginAttempt ($responseWait Try)"
             )
             Thread.sleep(1_000)
+            responseWait++
         }
+        if (responseWait >= MAX_RESPONSE_WAIT) return false //TODO ERROR pushen maxResponse waited on loginRequest
 
         val event: Event = Event.MANAGEMENT_LOGIN
         val data: JSONObjectWrapper = JSONLoginWrapper(username, password)
@@ -136,16 +146,15 @@ class SocketIOManagementHandler : ManagementHandler {
             "Login attempted"
         )
 
-        while (!this.loggedIn and !this.loginDenied) {
+        responseWait = 0
+        while (!this.loggedIn and !this.loginDenied and (responseWait < MAX_RESPONSE_WAIT)) {
             Log.i(
-                "SocketIOManagementHandl",
-                "Waiting on server for LoginResponse"
+                "SocketIOManagHandl",
+                "Waiting on server for LoginResponse ($responseWait Try)"
             )
-            //hab das hier mal rausgemacht - hat auch bei erfolgreichem
-            //login den error gepusht. Dafür bei onLoginDenied() den push.
-            //pushError(ManagementServerErrors.LOGIN_DENIED)
             Thread.sleep(1_000)
         }
+        if (responseWait >= MAX_RESPONSE_WAIT) return false //TODO ERROR pushen maxResponse waited on Response
 
         if (this.loggedIn) {
             Log.i(

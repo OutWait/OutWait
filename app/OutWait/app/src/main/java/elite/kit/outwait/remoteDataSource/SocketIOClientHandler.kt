@@ -27,6 +27,8 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
     private val cSocket: SocketAdapter
 
+    private var currentSessionID: String = ""
+
 
     init {
         cSocket = SocketAdapter(namespaceClient)
@@ -55,14 +57,15 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     override fun initCommunication(): Boolean {
         Log.d("initCom::SIOCliHandler", "reached")
 
-        cSocket.initializeConnection(clientEventToCallbackMapping)
-
-        // Mit return warten bis SocketIOSocket connected ist
-        // TODO geht auch schöner? LiveData?
-        while (!cSocket.isConnected()){
-            Log.d("initCom::SIOCliHandler", "in der 1 Whileschleife")
-            Thread.sleep(1000)
+        if (!cSocket.initializeConnection(clientEventToCallbackMapping)) {
+            pushError(ClientServerErrors.COULD_NOT_CONNECT)
+            endCommunication()
+            return false
+        } else {
+            this.currentSessionID = cSocket.getCurrentSessionID()
+            Log.i("SocketMHandler", "Connection established with $currentSessionID id")
         }
+
 
         // Mit return warten bis Server readyToServe signalisiert
         // TODO geht auch schöner? LiveData?
