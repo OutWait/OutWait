@@ -56,4 +56,9 @@
     <string name="title_auxiliary_identifier">Auxiliary Identifier:</string>
     <string name="title_duration">Duration:</string>
     <string name="title_appointment">Appointment:</string>
+    <string name="permission_allowed">permission allowed</string>
+    <string name="title_permission_dialog">Permission required</string>
+    <string name="explanation_text_permission">Permission to access your camera is required to scan your QR-Code</string>
+    <string name="text_scanning">Scanning Code</string>
+    <string name="no_result">No Result</string>
 </resources>

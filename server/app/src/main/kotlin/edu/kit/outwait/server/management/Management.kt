@@ -164,11 +164,15 @@ class Management(
         databaseWrapper: DatabaseWrapper
     ) {
         // First check if the constructionTime is valid
-        if (constructionTime.toInstant().isBefore(Date().toInstant())) {
+        if (constructionTime.toInstant().isBefore(Date().toInstant() - Duration.ofMinutes(1))) {
             val json = JSONErrorMessageWrapper()
             json.setMessage("Tried to create slot in the past")
             socketFacade.send(Event.INVALID_MANAGEMENT_REQUEST, json)
-            Logger.debug(LOG_ID, "Tried to create slot in the past")
+            Logger.debug(
+                LOG_ID,
+                "Tried to create slot in the past. Server time: " + Date() +
+                    ". Tried to create at: " + constructionTime
+            )
         } else if (constructionTime.toInstant().isAfter(Date().toInstant() + Duration.ofHours(24))
         ) {
             val json = JSONErrorMessageWrapper()

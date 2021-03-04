@@ -21,10 +21,13 @@ private const val TWO_DAYS = 172800000L
 private const val ONE_SEC = 1000L
 
 @HiltViewModel
-class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepository, private var coordinator: RemainingTimeCoordinator): ViewModel() {
+class RemainingTimeViewModel @Inject constructor(
+    private val repo: ClientRepository,
+    private var coordinator: RemainingTimeCoordinator
+) : ViewModel() {
 
     val clientInfoList = repo.getActiveSlots()
-     var instituteName=MutableLiveData(clientInfoList.value!!.first().institutionName)
+    var instituteName = MutableLiveData(clientInfoList.value!!.first().institutionName)
 
     private var approximatedTime: DateTime? = null
 
@@ -32,53 +35,52 @@ class RemainingTimeViewModel  @Inject constructor(private val repo : ClientRepos
     val remainingTime get() = _remainingTime as LiveData<String>
 
     private val _isTimeOver = MutableLiveData<Boolean>(false)
-    val isTimeOver get() = _remainingTime as LiveData<Boolean>
+    val isTimeOver get() = _isTimeOver as LiveData<Boolean>
 
-    private val timer = object : CountDownTimer(TWO_DAYS, ONE_SEC){
+    private val timer = object : CountDownTimer(TWO_DAYS, ONE_SEC) {
         override fun onTick(millisUntilFinished: Long) {
-            if (approximatedTime !== null){
+            if (approximatedTime !== null) {
                 val now = DateTime.now()
                 val diff = Duration(
                     approximatedTime!!.millis - now.millis
                 )
-                _remainingTime.value =
-                    if(diff > Duration(0))
-                        TransformationOutput.durationToString(diff)
-                    else
-                        TransformationOutput.durationToString(Duration(0))
+
+                if (diff > Duration(0))
+                    _remainingTime.value = TransformationOutput.durationToString(diff)
+                else {
+                    _remainingTime.value = TransformationOutput.durationToString(Duration(0))
+                    _isTimeOver.value=true
+                }
             }
         }
 
         override fun onFinish() {
-            TODO("Not yet implemented")
-            _isTimeOver.value=true
         }
 
     }
-
 
 
     init {
         timer.start()
         repo.getActiveSlots().observeForever {
-            if (it !== null){
-                if (it.isNotEmpty()){
+            if (it !== null) {
+                if (it.isNotEmpty()) {
                     approximatedTime = it.last().approximatedTime
                 }
             }
         }
+
     }
 
 
-
-    fun refreshWaitingTime(){
+    fun refreshWaitingTime() {
         val showingSlot = repo.getActiveSlots().value?.last()?.slotCode ?: ""
-        if (showingSlot != ""){
+        if (showingSlot != "") {
             repo.refreshWaitingTime(showingSlot)
         }
     }
 
-    fun navigateBack(){
+    fun navigateBack() {
         coordinator.navigateToForwarderFragment()
     }
 }

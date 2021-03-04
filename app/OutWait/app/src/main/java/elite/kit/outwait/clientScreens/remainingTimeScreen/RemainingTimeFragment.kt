@@ -34,29 +34,50 @@ class RemainingTimeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        binding = DataBindingUtil.inflate(inflater,
+        binding = DataBindingUtil.inflate(
+            inflater,
             R.layout.remaining_time_fragment,
             container,
-            false)
+            false
+        )
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
+
+        viewModel.isTimeOver.observe(viewLifecycleOwner, Observer { isOver ->
+            Log.i("isTimeOver", "$isOver")
+            if (isOver) {
+                Toast.makeText(context,"Please go to your institution",Toast.LENGTH_LONG)
+            }
+
+        })
+
+        viewModel.clientInfoList.observe(viewLifecycleOwner, Observer {
+            Log.i("delete Slot","observe")
+            Log.i("clientInfo","${it[0].slotCode}")
+            if(it.isEmpty()){
+                Log.i("delete Slot","deleted")
+                findNavController().popBackStack()
+                //viewModel.navigateBack()
+            }
+        })
         exitApp()
 
         return binding.root
     }
+
 
     private fun exitApp() {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
 
                 override fun handleOnBackPressed() {
-                    viewModel.isTimeOver.observe(viewLifecycleOwner, Observer{isTimeOver->
-                        if(isTimeOver){
-                            viewModel.navigateBack()
-                        }
-                    })
-                        Toast.makeText(context, "You can enter a new appointment after your appointment is finished", Toast.LENGTH_LONG)
-                            .show()
+
+                    Toast.makeText(
+                        context,
+                        "You can enter a new appointment after your appointment is finished",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
 
                 }
             }

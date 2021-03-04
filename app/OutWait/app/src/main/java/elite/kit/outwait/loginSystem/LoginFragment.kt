@@ -30,14 +30,26 @@ import elite.kit.outwait.managmentLogin.institutLoginScreen.InstitutLoginViewMod
 import elite.kit.outwait.qrCode.scanner.CaptureAct
 import kotlinx.android.synthetic.main.login_fragment.*
 
+/**
+ * Represents the login screen for client and management
+ *
+ */
+private const val CAMERA_RQ = 102
+private const val CAMERA_NAME = "camera"
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
-
     private lateinit var binding:LoginFragmentBinding
     private val viewModel: UserViewModel by activityViewModels()
-    val CAMERA_RQ = 102
 
+    /**
+     * Creates view of this fragment
+     *
+     * @param inflater Instantiates a layout XML file into its corresponding View objects.
+     * @param container Includes all view of this fragment
+     * @param savedInstanceState A mapping from String keys to various Parcelable values.
+     * @return Instantiates a layout XML file into its corresponding View objects.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -47,10 +59,10 @@ class LoginFragment : Fragment() {
         binding.lifecycleOwner=viewLifecycleOwner
 
         binding.ivScan.setOnClickListener {
-            checkForPermission(android.Manifest.permission.CAMERA, "camera", CAMERA_RQ)
+            checkForPermission(android.Manifest.permission.CAMERA, CAMERA_NAME, CAMERA_RQ)
         }
 
-        val navController = findNavController()
+         val navController = findNavController()
 
         viewModel.loginResponse.observe(viewLifecycleOwner){listOfUsers->
             when {
@@ -58,7 +70,6 @@ class LoginFragment : Fragment() {
                     Toast.makeText(context,"FAILED",Toast.LENGTH_LONG)
                 }
                 listOfUsers.component1() == false -> {
-                    //TODO failed login should override loggedIn with false
                     Toast.makeText(context,"FAILED",Toast.LENGTH_LONG)
                 }
                 listOfUsers.component1() == true -> {
@@ -70,21 +81,6 @@ class LoginFragment : Fragment() {
             }
         }
 
-        binding.etInstituteName.setOnFocusChangeListener { v, hasFocus ->
-            if(viewModel.instituteName.value!!.isNotBlank() && !hasFocus){
-                binding.boxesInstituteName.secondaryColor=R.color.code_edit_text_bottom_line
-            }else{
-                binding.boxesInstituteName.secondaryColor=R.color.text_missing
-
-            }
-        }
-        binding.etInstitutePassword.setOnFocusChangeListener { v, hasFocus ->
-            if(viewModel.institutePassword.value!!.isNotBlank() && !hasFocus){
-                binding.boxesInstitutePassword.secondaryColor=R.color.code_edit_text_bottom_line
-            }else{
-                binding.boxesInstitutePassword.secondaryColor=R.color.text_missing
-            }
-        }
        binding.etSlotCode.setBackgroundResource(R.drawable.shape_code_edit_text)
 
         binding.etSlotCode.setOnCodeChangedListener { (code, completed) ->
@@ -94,11 +90,16 @@ class LoginFragment : Fragment() {
                 Log.i("slotCode","${viewModel.clientSlotCode.value}")            }
         }
 
-
-
         return binding.root
     }
 
+    /**
+     * Validates whether user has allowed to scan with his camera
+     *
+     * @param permission Type of permission
+     * @param name Name of permission
+     * @param requestCode Identifier of permission
+     */
     private fun checkForPermission(permission: String, name: String, requestCode: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             when {
@@ -108,7 +109,7 @@ class LoginFragment : Fragment() {
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     Toast.makeText(
                         requireActivity().applicationContext,
-                        "$name permisson allowed",
+                        "$name ${getString(R.string.permission_allowed)}",
                         Toast.LENGTH_LONG
                     )
                         .show()
@@ -128,6 +129,13 @@ class LoginFragment : Fragment() {
         }
     }
 
+    /**
+     * Callback for the result from requesting permissions. This method is invoked for every call on requestPermissions()
+     *
+     * @param requestCode Identifier of request
+     * @param permissions Permissions
+     * @param grantResults Result whether denied or allowed
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -152,13 +160,20 @@ class LoginFragment : Fragment() {
         }
     }
 
+    /**
+     * Displays a dialog which explains reason for using the camera
+     *
+     * @param permission Type of permission
+     * @param name Name of permission
+     * @param requestCode Identifier of request
+     */
     private fun showDialog(permission: String, name: String, requestCode: Int) {
         val builder = AlertDialog.Builder(requireActivity())
 
         builder.apply {
-            setMessage("Permission to access your $name is required to scan your qr scan")
-            setTitle("Permission required")
-            setPositiveButton("OK") { dialog, which ->
+            setMessage(getString(R.string.explanation_text_permission))
+            setTitle(getString(R.string.title_permission_dialog))
+            setPositiveButton(getString(R.string.ok)) { dialog, which ->
                 requestPermissions(
                     arrayOf(permission),
                     requestCode
@@ -169,16 +184,27 @@ class LoginFragment : Fragment() {
         dialog.show()
     }
 
+    /**
+     * Starts to open a new activity to scan with the camera
+     *
+     */
     private fun scanCode() {
         val integrator: IntentIntegrator = IntentIntegrator.forSupportFragment(this@LoginFragment)
         integrator.captureActivity = CaptureAct::class.java
         integrator.setOrientationLocked(true)
         integrator.setBeepEnabled(true)
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-        integrator.setPrompt("Scanning Code")
+        integrator.setPrompt(getString(R.string.text_scanning))
         integrator.initiateScan()
     }
 
+    /**
+     * Returns dedicated scanned qr code
+     *
+     * @param requestCode Identifier of request
+     * @param resultCode Integer result code returned by the child activity
+     * @param data Returned data from scan
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         var result: IntentResult =
             IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
@@ -192,7 +218,7 @@ class LoginFragment : Fragment() {
                 viewModel.clientSlotCode.value=result.contents
                 viewModel.enterSlotCode()
             } else {
-                Toast.makeText(requireActivity().applicationContext, "No Result", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireActivity().applicationContext, getString(R.string.no_result), Toast.LENGTH_LONG).show()
             }
 
         } else {

@@ -16,26 +16,36 @@ import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.PasswordForgotFragmentBinding
 
-
+/**
+ * Represents the screen to reset its password from management
+ *
+ */
 @AndroidEntryPoint
-class passwordForgotFragment : Fragment() {
+class PasswordForgotFragment : Fragment() {
 
 
 
     private val viewModel: PasswordForgotViewModel by viewModels()
     private lateinit var binding:PasswordForgotFragmentBinding
 
+    /**
+     * Creates view of this fragment
+     *
+     * @param inflater Instantiates a layout XML file into its corresponding View objects.
+     * @param container Includes all view of this fragment
+     * @param savedInstanceState A mapping from String keys to various Parcelable values.
+     * @return Instantiates a layout XML file into its corresponding View objects.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        binding = DataBindingUtil.inflate(inflater,
+       binding = DataBindingUtil.inflate(inflater,
             R.layout.password_forgot_fragment,
             container,
             false)
         binding.viewModel=this.viewModel
         binding.lifecycleOwner=this
-
         return binding.root
     }
 
