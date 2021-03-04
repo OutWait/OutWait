@@ -13,6 +13,9 @@ import java.net.URI
 //TODO Was ist Socket.IO mäßig noch zu beachten?
 //TODO Welche Zustände sollen/müssen alles hier gehalten werden?
 
+private const val MAX_AMOUNT_CONNECT_WAITTIME = 10000L
+private const val TIME_STEP_FOR_CONNECT_WAIT = 1000L
+
 class SocketAdapter(namespace: String) {
 
     private val serverURI: String = "http://161.97.168.24:567"
@@ -34,7 +37,7 @@ class SocketAdapter(namespace: String) {
     fun initializeConnection(
         mapEventToCallback: HashMap<Event,
                 (wrappedJSONData: JSONObjectWrapper) -> Unit>
-    ) {
+    ) : Boolean {
         // register SocketIO related connection listeners
         registerSocketIOListeners()
 
@@ -43,15 +46,29 @@ class SocketAdapter(namespace: String) {
 
         Log.i("SocketAdapter", "All listeners were registered")
 
-        // open the socket connection
-        if (socketIOSocket.open() == null) {
-            Log.d("SocketAdapter", "socket.open() returned null")
-        } else {
-            Log.d("SocketAdapter", "socket.open() returned not null")
+        // open the socket connection (try until max time waited)
+
+        if (socketIOSocket.connect() == null) {
+            Log.d("SocketAdapter", "socket could not connect for first time")
+            releaseConnection()
+            return false
         }
+        var waitedTimeToConnect = 0L
+        while (!isConnected() and (waitedTimeToConnect < MAX_AMOUNT_CONNECT_WAITTIME)) {
+            waitedTimeToConnect += TIME_STEP_FOR_CONNECT_WAIT
+            Log.i("SocketAdaper", "Waiting for connection establishing since $waitedTimeToConnect millis")
+            Thread.sleep(TIME_STEP_FOR_CONNECT_WAIT)
+        }
+        if (isConnected()) {
+            Log.d("SocketAdapter", "socket successfully connected for first time")
+            return true
+        }
+        Log.d("SocketAdapter", "Socket couldnt connect for first time (tried for  $waitedTimeToConnect millis)")
+        releaseConnection()
+        return false
     }
 
-    // TODO Fürs parsen hier eine JSON Exception werfen, falls es nicht klappt
+
     /*
     Emitte Event mit Daten zum Server
      */
@@ -68,6 +85,7 @@ class SocketAdapter(namespace: String) {
 
         // remove all registered listeners
         socketIOSocket.off()
+        Log.i("SocketAdapter", "Socket was closed, all listeners removed")
     }
 
     /*
@@ -75,6 +93,10 @@ class SocketAdapter(namespace: String) {
      */
     fun isConnected(): Boolean {
         return socketIOSocket.connected()
+    }
+
+    fun getCurrentSessionID(): String {
+        return socketIOSocket.id()
     }
 
     /*

@@ -9,6 +9,8 @@ import elite.kit.outwait.networkProtocol.*
 
 // TODO Falsche Zugriffe durch Repo abfangen (bspw.2x initComm hintereinander)
 // TODO InvalidRequest adäquat handlen (oder error pushen?) Welche Fehler sind möglich?
+private const val MAX_WAITTIME_FOR_RESPONSE = 10000L
+private const val TIME_STEP_FOR_RESPONSE_WAIT = 1000L
 
 class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
@@ -26,6 +28,8 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     private var serverReady = false
 
     private val cSocket: SocketAdapter
+
+    //private var currentSessionID: String = ""
 
 
     init {
@@ -55,23 +59,32 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     override fun initCommunication(): Boolean {
         Log.d("initCom::SIOCliHandler", "reached")
 
-        cSocket.initializeConnection(clientEventToCallbackMapping)
-
-        // Mit return warten bis SocketIOSocket connected ist
-        // TODO geht auch schöner? LiveData?
-        while (!cSocket.isConnected()){
-            Log.d("initCom::SIOCliHandler", "in der 1 Whileschleife")
-            Thread.sleep(1000)
+        if (!cSocket.initializeConnection(clientEventToCallbackMapping)) {
+            pushError(ClientServerErrors.COULD_NOT_CONNECT)
+            endCommunication()
+            return false
+        } else {
+            /*
+            this.currentSessionID = cSocket.getCurrentSessionID()
+            Log.i("SocketMHandler", "Connection established with $currentSessionID id")
+             */
         }
 
         // Mit return warten bis Server readyToServe signalisiert
-        // TODO geht auch schöner? LiveData?
-        while (!this.serverReady) {
-            Thread.sleep(1000)
-            Log.d("initCom::SIOCliHandler", "in der 2 Whileschleife")
+        var curWaitTimeForResponse = 0L
+        while (!this.serverReady and (curWaitTimeForResponse < MAX_WAITTIME_FOR_RESPONSE)) {
+            Log.d("SocketCHandler", "wait for readyToServe since $curWaitTimeForResponse millis")
+            curWaitTimeForResponse += TIME_STEP_FOR_RESPONSE_WAIT
+            Thread.sleep(TIME_STEP_FOR_RESPONSE_WAIT)
         }
-
-        return true
+        if (this.serverReady) {
+            return true
+        } else {
+            Log.i("SocketCHandler", "waited in vain for readyToServe since $curWaitTimeForResponse millis")
+            pushError(ClientServerErrors.SERVER_DID_NOT_RESPOND)
+            endCommunication()
+        }
+        return false
     }
 
     override fun endCommunication(): Boolean {
