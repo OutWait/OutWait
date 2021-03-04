@@ -12,4 +12,5 @@ enum class ManagementServerErrors {
     INTERNAL_SERVER_ERROR,
     INVALID_REQUEST,
     COULD_NOT_CONNECT,
+    SERVER_DID_NOT_RESPOND
 }

@@ -14,7 +14,8 @@ import org.joda.time.Duration
 // TODO Interne Zustandsvariablen richtig benutzt? Threading beachtet?
 // insb. login- und transaction- related sachen?
 
-private const val MAX_RESPONSE_WAIT = 10
+private const val MAX_WAITTIME_FOR_RESPONSE = 10000L
+
 
 class SocketIOManagementHandler : ManagementHandler {
 
@@ -100,12 +101,6 @@ class SocketIOManagementHandler : ManagementHandler {
             Log.i("SocketMHandler", "Connection established with $currentSessionID id")
         }
 
-        // wait until server requested a login try
-        while(!loginRequested) {
-            Log.i("SocketIOManagHand", "While loop until loginRequested == true")
-            Thread.sleep(1000)
-        }
-
         return true
     }
 
@@ -126,36 +121,39 @@ class SocketIOManagementHandler : ManagementHandler {
     und Boolsche Rückgabe wird erst nach entspr. Event des Servers geschickt
      */
     override fun login(username: String, password: String): Boolean {
-        var responseWait = 0
-        while (!this.loginRequested and (responseWait < MAX_RESPONSE_WAIT)) {
+
+        var curWaitTimeForLogReq = 0L
+        while (!this.loginRequested and (curWaitTimeForLogReq < MAX_WAITTIME_FOR_RESPONSE)) {
             Log.i(
                 "SocketIOManagHandl",
-                "Waiting on server LoginRequest for LoginAttempt ($responseWait Try)"
+                "Wait with loginAttempt till loginRequest event (since $curWaitTimeForLogReq millis)"
             )
+            curWaitTimeForLogReq += 1000L
             Thread.sleep(1_000)
-            responseWait++
+
         }
-        if (responseWait >= MAX_RESPONSE_WAIT) return false //TODO ERROR pushen maxResponse waited on loginRequest
+        if (!loginRequested) {
+            pushError(ManagementServerErrors.SERVER_DID_NOT_RESPOND)
+            endCommunication()
+            return false
+        }
 
         val event: Event = Event.MANAGEMENT_LOGIN
         val data: JSONObjectWrapper = JSONLoginWrapper(username, password)
         mSocket.emitEventToServer(event.getEventString(), data)
+        Log.i("SocketIOManagementHandl", "Login attempted")
 
-        Log.i(
-            "SocketIOManagementHandl",
-            "Login attempted"
-        )
-
-        responseWait = 0
-        while (!this.loggedIn and !this.loginDenied and (responseWait < MAX_RESPONSE_WAIT)) {
-            Log.i(
-                "SocketIOManagHandl",
-                "Waiting on server for LoginResponse ($responseWait Try)"
-            )
+        var curWaitTimeForResponse = 0L
+        while (!this.loggedIn and !this.loginDenied and (curWaitTimeForResponse < MAX_WAITTIME_FOR_RESPONSE)) {
+            Log.i("SocketIOManagHandl", "Waiting on server for LoginResponse (since $curWaitTimeForResponse millis)")
+            curWaitTimeForResponse += 1000L
             Thread.sleep(1_000)
         }
-        if (responseWait >= MAX_RESPONSE_WAIT) return false //TODO ERROR pushen maxResponse waited on Response
-
+        if (!this.loggedIn and !this.loginDenied) {
+            Log.i("SocketMHandler", "Server did not respond to login attempt since $curWaitTimeForResponse millis")
+            pushError(ManagementServerErrors.SERVER_DID_NOT_RESPOND)
+            endCommunication()
+        }
         if (this.loggedIn) {
             Log.i(
                 "SocketIOManagementHandl",
@@ -163,11 +161,10 @@ class SocketIOManagementHandler : ManagementHandler {
             )
             return true
         } else if (this.loginDenied) {
-            Log.i(
-                "SocketIOManagementHandl",
-                "Login was denied"
-            )
-            resetLoginState()
+            Log.i("SocketIOManagementHandl", "Login was denied")
+            pushError(ManagementServerErrors.LOGIN_DENIED)
+            endCommunication()
+            initCommunication()
         }
         return false
     }

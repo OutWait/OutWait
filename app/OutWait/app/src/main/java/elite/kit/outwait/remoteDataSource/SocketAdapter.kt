@@ -13,7 +13,7 @@ import java.net.URI
 //TODO Was ist Socket.IO mäßig noch zu beachten?
 //TODO Welche Zustände sollen/müssen alles hier gehalten werden?
 
-const val MAX_AMOUNT_CONNECT_WAITTIME = 10000L
+private const val MAX_AMOUNT_CONNECT_WAITTIME = 10000L
 
 class SocketAdapter(namespace: String) {
 
