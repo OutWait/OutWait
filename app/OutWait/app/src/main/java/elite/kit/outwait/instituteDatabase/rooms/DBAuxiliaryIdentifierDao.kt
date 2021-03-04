@@ -16,7 +16,7 @@ interface DBAuxiliaryIdentifierDao {
     @Query("DELETE FROM aux_identifiers")
     suspend fun clearTable()
 
-    @Query("Select * From aux_identifiers Where :slotCode")
+    @Query("Select * From aux_identifiers Where slotCode = :slotCode")
     suspend fun getAuxIdentifier(slotCode: String): DBAuxiliaryIdentifier?
 
     @Query("Select * From aux_identifiers")
