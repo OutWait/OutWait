@@ -14,8 +14,8 @@ import org.joda.time.Duration
 // TODO Interne Zustandsvariablen richtig benutzt? Threading beachtet?
 // insb. login- und transaction- related sachen?
 
-private const val MAX_WAITTIME_FOR_RESPONSE = 10000L
-private const val TIME_STEP_FOR_RESPONSE_WAIT = 1000L
+private const val MAX_WAITTIME_FOR_RESPONSE = 3000L
+private const val TIME_STEP_FOR_RESPONSE_WAIT = 100L
 
 
 class SocketIOManagementHandler : ManagementHandler {

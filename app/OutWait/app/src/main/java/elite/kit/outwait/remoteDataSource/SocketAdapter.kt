@@ -11,8 +11,8 @@ import java.net.URI
 
 //TODO Fehler werfen bei Verbindungsfehler/Abbruch (inkl. der Listener) usw. ?
 
-private const val MAX_AMOUNT_CONNECT_WAITTIME = 10000L
-private const val TIME_STEP_FOR_CONNECT_WAIT = 1000L
+private const val MAX_AMOUNT_CONNECT_WAITTIME = 5000L
+private const val TIME_STEP_FOR_CONNECT_WAIT = 100L
 
 class SocketAdapter(namespace: String) {
 
