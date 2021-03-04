@@ -61,6 +61,7 @@ class Server {
     fun stop_server() {
         Logger.info(LOG_ID, "Stopping server...")
         server.stop()
+        server.getAllClients().forEach { it.disconnect() }
         Logger.info(LOG_ID, "Starting stopped.")
     }
 }

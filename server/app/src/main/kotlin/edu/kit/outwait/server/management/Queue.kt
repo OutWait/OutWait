@@ -138,17 +138,6 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                 newQueue.add(chosenSlot)
                 fixSlots.removeAt(0)
 
-                // Store delay time
-                if (delayChangeTime == null && newQueue.isNotEmpty()) {
-                    // timeToNextFixSlot seems to be the only variable which indicates when a
-                    // "non-trivial" change happens
-                    delayChangeTime =
-                        Date.from(
-                            newQueue[0].approxTime.toInstant() + newQueue[0].expectedDuration +
-                                timeToNextFixSlot
-                        )
-                }
-
                 line = chosenSlot.approxTime.toInstant() + chosenSlot.expectedDuration
             } else {
                 val chosenSlot = nextSpontaneous.copy(approxTime = Date.from(line))
@@ -187,6 +176,19 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                 Logger.debug(LOG_ID, "Slot " + newSlot.slotCode + " at " + newSlot.approxTime)
                 line = newSlot.approxTime.toInstant() + newSlot.expectedDuration
             }
+        }
+
+        // Store delay time
+        if (newQueue.isNotEmpty()) {
+            val nextSlotEnd = newQueue[0].approxTime.toInstant() + newQueue[0].expectedDuration
+
+            delayChangeTime =
+                Date.from(
+                    (if (nextSlotEnd.isBefore(Date().toInstant()))
+                        Date().toInstant()
+                    else
+                        nextSlotEnd) + Duration.ofSeconds(30)
+                )
         }
 
         Logger.debug(LOG_ID, "Queue update algorithm finished. New queue: " + newQueue)
@@ -328,8 +330,6 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
             "Moving slot " + slotToMove + " after slot " + otherSlot + " in queue " + queueId +
                 "..."
         )
-        // TODO maybe we should use a more stable approach to store the slots in the queue (maybe
-        //  multiple lists and spontaneous slots are sorted by index instead of creation time)
         val slot = slots.find { it.slotCode == slotToMove }
         val targetSlot = slots.find { it.slotCode == otherSlot }
 

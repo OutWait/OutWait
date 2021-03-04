@@ -124,7 +124,7 @@ class UpdateMediator {
         Logger.debug(LOG_ID, "Ending slot " + slotCode)
 
         // Work around - iterator invalidation
-        while (!receivers[slotCode].isNullOrEmpty()) {
+        while (receivers[slotCode]?.isNotEmpty() ?: false) {
             receivers[slotCode]?.first()?.end()
         }
     }
@@ -139,7 +139,7 @@ class UpdateMediator {
         Logger.debug(LOG_ID, "Deleting slot " + slotCode)
 
         // Work around - iterator invalidation
-        while (!receivers[slotCode].isNullOrEmpty()) {
+        while (receivers[slotCode]?.isNotEmpty() ?: false) {
             receivers[slotCode]?.first()?.delete()
         }
     }
