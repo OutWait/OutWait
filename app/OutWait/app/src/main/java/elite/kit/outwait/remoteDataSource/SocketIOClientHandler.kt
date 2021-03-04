@@ -29,7 +29,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
 
     private val cSocket: SocketAdapter
 
-    private var currentSessionID: String = ""
+    //private var currentSessionID: String = ""
 
 
     init {
@@ -64,8 +64,10 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
             endCommunication()
             return false
         } else {
+            /*
             this.currentSessionID = cSocket.getCurrentSessionID()
             Log.i("SocketMHandler", "Connection established with $currentSessionID id")
+             */
         }
 
         // Mit return warten bis Server readyToServe signalisiert

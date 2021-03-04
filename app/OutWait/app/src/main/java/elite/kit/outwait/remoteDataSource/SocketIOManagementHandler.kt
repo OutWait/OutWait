@@ -55,7 +55,7 @@ class SocketIOManagementHandler : ManagementHandler {
 
     private val mSocket: SocketAdapter
 
-    private var currentSessionID: String = ""
+    //private var currentSessionID: String = ""
 
     init {
         mSocket = SocketAdapter(namespaceManagement)
@@ -97,10 +97,12 @@ class SocketIOManagementHandler : ManagementHandler {
             endCommunication()
             return false
         } else {
-            this.currentSessionID = mSocket.getCurrentSessionID()
+            //TODO Wenn man das rauslöscht funktionierts plötzlich?
+           /* this.currentSessionID = mSocket.getCurrentSessionID()
             Log.i("SocketMHandler", "Connection established with $currentSessionID id")
-        }
 
+            */
+        }
         return true
     }
 
@@ -167,9 +169,8 @@ class SocketIOManagementHandler : ManagementHandler {
             Log.i("SocketMHandler", "We ended Comm")
             //TODO >>>>>>>>>>>>>>< Hier gehts kaputt >>>>>>>>>>>>>>>
             initCommunication()
-            // Yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
-
             Log.i("SocketMHandler", "We initComm again")
+            // <<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>
         }
         return false
     }
