@@ -46,14 +46,29 @@ class InstituteRepository @Inject constructor(
                         -> pushError(InstituteErrors.LOGIN_DENIED)
 
                     ManagementServerErrors.TRANSACTION_DENIED
-                        -> doNothing()//error wird in Methode transaction() über Rückgabewert behandelt
+                        -> pushError(InstituteErrors.TRANSACTION_DENIED)
 
-                    else
-                        -> doNothing()
+                    ManagementServerErrors.COULD_NOT_CONNECT
+                        ->  {
+                        communicationEstablished = false
+                        pushError(InstituteErrors.NETWORK_ERROR)
+                        }
+
+                    ManagementServerErrors.NETWORK_ERROR
+                        ->  {
+                        communicationEstablished = false
+                        pushError(InstituteErrors.NETWORK_ERROR)
+                        }
+
+                    ManagementServerErrors.SERVER_DID_NOT_RESPOND
+                        ->  {
+                        communicationEstablished = false
+                        pushError(InstituteErrors.NETWORK_ERROR)
+                        }
                 }
             }
-
         }
+
         remote.getReceivedList().observeForever {
             if (it !== null) receivedNewList(it)
         }
@@ -85,6 +100,7 @@ class InstituteRepository @Inject constructor(
         CoroutineScope(IO).launch {
             if(communicationEstablished || remote.initCommunication()){
                 if(remote.login(username, password)){
+                    communicationEstablished = true
                     loggedIn.postValue(true)
                 }
             }
@@ -233,7 +249,7 @@ class InstituteRepository @Inject constructor(
                 inTransaction.postValue(true)
                 return true
             }
-            pushError(InstituteErrors.TRANSACTION_DENIED)
+            //errorNotification is pushed as reaction to an remote data source error
             return false
         }
     }
