@@ -97,7 +97,7 @@ class ConfigDialogFragment : Fragment() {
         }
 
         viewModel.slotListSize.observe(viewLifecycleOwner, Observer {
-            binding.countOfClients.text=it.size.toString()
+            binding.countOfClients.text="Count of Clients: "+it.size.toString()
         })
 
         return binding.root
