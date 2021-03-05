@@ -351,6 +351,9 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                     "OutWait team\n"
             );
             Transport.send(msg);
+
+            // Reset the password in the database
+            databaseWrapper.changeManagementPassword(username, newPassword)
         } catch (e:MessagingException) {
             Logger.error(
                 LOG_ID,
