@@ -46,7 +46,7 @@ class SocketAdapter(namespace: String) {
 
     /**
      * A state variable to detect if a network error occurred and the connection
-     * should be closed
+     * was closed and should therefore be released
      */
     private var errorReceived = false
 
@@ -78,7 +78,7 @@ class SocketAdapter(namespace: String) {
         registerEventListeners(mapEventToCallback)
 
         // open the socket connection
-        if (socketIOSocket.connect() == null) {
+        if (this.socketIOSocket.connect() == null) {
             Log.d("SocketAdapter", "Socket connection could not be established")
             releaseConnection()
             return false
@@ -86,11 +86,11 @@ class SocketAdapter(namespace: String) {
 
         // wait for established connection until time out
         var waitedTimeToConnect = 0L
-        while (!socketIOSocket.connected() and (waitedTimeToConnect < MAX_AMOUNT_CONNECT_WAITTIME)) {
+        while (!this.socketIOSocket.connected() and (waitedTimeToConnect < MAX_AMOUNT_CONNECT_WAITTIME)) {
             waitedTimeToConnect += TIME_STEP_FOR_CONNECT_WAIT
             Thread.sleep(TIME_STEP_FOR_CONNECT_WAIT)
         }
-        if (socketIOSocket.connected()) {
+        if (this.socketIOSocket.connected()) {
             Log.d("SocketAdapter", "Socket successfully connected")
             return true
         } else {
@@ -108,7 +108,7 @@ class SocketAdapter(namespace: String) {
      * @param wrappedJSONData associated data, transmitted as JSONString
      */
     fun emitEventToServer(event: String, wrappedJSONData: JSONObjectWrapper) {
-        socketIOSocket.emit(event, wrappedJSONData.getJSONString())
+        this.socketIOSocket.emit(event, wrappedJSONData.getJSONString())
         Log.i("SocketAdapter", "Event $event was emitted to server")
     }
 
@@ -116,9 +116,11 @@ class SocketAdapter(namespace: String) {
      * This method closes the current connection and removes all previously registered listeners
      */
     fun releaseConnection() {
-        socketIOSocket.close()
+        this.socketIOSocket.close()
         // remove all registered listeners
-        socketIOSocket.off()
+        this.socketIOSocket.off()
+        // reset error state
+        this.errorReceived = false
         Log.i("SocketAdapter", "Socket connection was closed")
     }
 
@@ -133,18 +135,18 @@ class SocketAdapter(namespace: String) {
                 (wrappedJSONData: JSONObjectWrapper) -> Unit>) {
 
         // register socket.io own listeners for network error callback
-        socketIOSocket.on(Socket.EVENT_ERROR, Emitter.Listener {
+        this.socketIOSocket.on(Socket.EVENT_ERROR, Emitter.Listener {
             Log.i("SocketAdapter", "Event " + Socket.EVENT_ERROR)
             this.errorReceived = true
         })
 
-        socketIOSocket.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
+        this.socketIOSocket.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
             Log.i("SocketAdapter", "Event " + Socket.EVENT_DISCONNECT)
             if(errorReceived) {
+                errorReceived = false
                 // error occurred, connection session is irrevocably lost on disconnect
                 val wrappedEmpty = Event.NETWORK_ERROR.createWrapper(JSONObject())
                 mapEventsToCallback[Event.NETWORK_ERROR]?.invoke(wrappedEmpty)
-                errorReceived = false
             }
         })
 
@@ -167,7 +169,7 @@ class SocketAdapter(namespace: String) {
                 }
 
             // register the listener on the socket
-            socketIOSocket.on(k.getEventString(), onEventListenerCallback)
+            this.socketIOSocket.on(k.getEventString(), onEventListenerCallback)
         }
     }
 
@@ -178,17 +180,17 @@ class SocketAdapter(namespace: String) {
         val onConnectCallback = Emitter.Listener {
             Log.i("SocketAdapter", "Event " + Socket.EVENT_CONNECT)
         }
-        socketIOSocket.on(Socket.EVENT_CONNECT, onConnectCallback)
+        this.socketIOSocket.on(Socket.EVENT_CONNECT, onConnectCallback)
 
         // called if socket.io automatically tries to reconnect (but unsuccessful)
         val onConnectErrorCallback = Emitter.Listener {
             Log.i("SocketAdapter", "Event " + Socket.EVENT_CONNECT_ERROR)
         }
-        socketIOSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectErrorCallback)
+        this.socketIOSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectErrorCallback)
 
         val onEventConnectTimeoutCallback = Emitter.Listener {
             Log.i("SocketAdapter", "Event " + Socket.EVENT_CONNECT_TIMEOUT)
         }
-        socketIOSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onEventConnectTimeoutCallback)
+        this.socketIOSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onEventConnectTimeoutCallback)
     }
 }

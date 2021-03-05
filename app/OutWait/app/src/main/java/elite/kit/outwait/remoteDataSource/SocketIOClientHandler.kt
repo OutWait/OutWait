@@ -270,12 +270,12 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
      * @param error of type ClientServerErrors, the error to be pushed
      */
     private fun pushError(error: ClientServerErrors){
+        Log.i("SocketCHandler", "Error $error was pushed")
         if (_errors.value !== null){
             val newList = _errors.value!!.plus(error).toMutableList()
             _errors.postValue(newList)
         }else{
             _errors.postValue(listOf(error))
         }
-        Log.i("SocketCHandler", "Error $error was pushed")
     }
 }
