@@ -63,7 +63,7 @@ class Server {
         Logger.info(LOG_ID, "Stopping server...")
         server.stop()
         server.getAllClients().forEach { it.disconnect() }
-        Logger.info(LOG_ID, "Starting stopped.")
+        Logger.info(LOG_ID, "Server stopped.")
     }
 }
 
