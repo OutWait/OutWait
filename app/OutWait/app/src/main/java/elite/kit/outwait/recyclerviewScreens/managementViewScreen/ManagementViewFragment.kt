@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -106,6 +107,10 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             if(!isLoggedIn&&viewModel.isInTransaction.value!!){
                 Log.i("logout","transaction is ${viewModel.isInTransaction.value}")
                deleteHeader()
+            }
+
+            if(!isLoggedIn){
+                findNavController().popBackStack()
             }
         })
 
