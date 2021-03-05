@@ -217,7 +217,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
         try {
             val getManagementByIdQuery =
                 connection.prepareStatement(
-                    "SELECT name, mode, default_slot_duration, notification_time, " +
+                    "SELECT name, email, mode, default_slot_duration, notification_time, " +
                         "delay_notification_time, prioritization_time " + "FROM Management " +
                         "WHERE Management.id = ?"
                 )
@@ -225,7 +225,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
             val rs = getManagementByIdQuery.executeQuery()
             rs.next()
             return ManagementInformation(
-                ManagementDetails(rs.getString("name")),
+                ManagementDetails(rs.getString("name"), rs.getString("Management.email")),
                 ManagementSettings(
                     Mode.valueOf(rs.getString("mode")),
                     Duration.ofMillis(rs.getLong("default_slot_duration")),
@@ -250,7 +250,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
         try {
             val getSlotManagementInformationQuery =
                 connection.prepareStatement(
-                    "SELECT Management.name, Management.notification_time, " +
+                    "SELECT Management.name, Management.email, Management.notification_time, " +
                         "Management.delay_notification_time " + "FROM Slot " +
                         "INNER JOIN Queue ON Slot.queue_id = Queue.queue_id " +
                         "INNER JOIN Management ON Queue.management_id = Management.id " +
@@ -260,7 +260,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
             val rs = getSlotManagementInformationQuery.executeQuery()
             rs.next()
             return SlotManagementInformation(
-                ManagementDetails(rs.getString("name")),
+                ManagementDetails(rs.getString("name"), rs.getString("email")),
                 Duration.ofMillis(rs.getLong("notification_time")),
                 Duration.ofMillis(rs.getLong("delay_notification_time"))
             )

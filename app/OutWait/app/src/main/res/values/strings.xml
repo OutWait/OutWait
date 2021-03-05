@@ -42,6 +42,9 @@
     <string name="LOGIN_DENIED">Login denied!</string>
     <string name="NOT_IN_TRANSACTION">no running transaction!</string>
     <string name="NETWORK_ERROR">Network error. Please check your Internet connection!</string>
+    <string name="COMMUNICATION_ERROR">Can´t reach the server. Wait a moment and try to log in again!</string>
+    <string name="SERVER_ERROR">A server error occurred. Please contact OutWait!</string>
+    <string name="INVALID_REQUEST">The server denies your request. Please contact OutWait!</string>
     <!-- Strings for Error-Notifications (Client) -->
     <string name="EXAMPLE_ERROR">Example Error!</string>
     <string name="INVALID_SLOT_CODE">Your code is not valid!</string>

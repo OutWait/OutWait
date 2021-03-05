@@ -33,6 +33,9 @@ dependencies {
 
     implementation("com.corundumstudio.socketio:netty-socketio:1.7.18")
 
+    implementation("com.sun.mail:jakarta.mail:2.0.0")
+    implementation("jakarta.mail:jakarta.mail-api:2.0.0")
+
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation("mysql:mysql-connector-java:8.0.23")
     implementation("org.junit.jupiter:junit-jupiter:5.4.2")

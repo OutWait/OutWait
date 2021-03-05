@@ -287,8 +287,8 @@ class Management(
      * needed.
      */
     private fun logout () {
-        socketFacade.disconnect()
         managementManager.removeManagement(this)
+        socketFacade.disconnect()
         Logger.debug(LOG_ID, "Manual logout completed")
     }
 
