@@ -12,10 +12,8 @@ import elite.kit.outwait.instituteDatabase.facade.InstituteDBFacade
 import elite.kit.outwait.instituteDatabase.facade.InstituteRoomDBFacade
 import elite.kit.outwait.instituteDatabase.rooms.DBAuxiliaryIdentifierDao
 import elite.kit.outwait.instituteDatabase.rooms.InstituteRoomDatabase
-import elite.kit.outwait.remoteDataSource.HandlerFactory
 import elite.kit.outwait.remoteDataSource.SocketIOHandlerFactory
 import elite.kit.outwait.services.ServiceHandler
-import elite.kit.outwait.services.TimerService
 import javax.inject.Singleton
 
 

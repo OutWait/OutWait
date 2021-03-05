@@ -3,28 +3,20 @@ package elite.kit.outwait.instituteRepository
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import elite.kit.outwait.clientRepository.ClientErrors
-import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.customDataTypes.ReceivedList
 import elite.kit.outwait.instituteDatabase.facade.InstituteDBFacade
 import elite.kit.outwait.remoteDataSource.ManagementHandler
 import elite.kit.outwait.remoteDataSource.ManagementServerErrors
-import elite.kit.outwait.waitingQueue.gravityQueue.FixedGravitySlot
 import elite.kit.outwait.waitingQueue.gravityQueue.GravityQueueConverter
-import elite.kit.outwait.waitingQueue.gravityQueue.SpontaneousGravitySlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.CoroutineContext
 
 /**
  * This class is the single source of truth for all institute-related information,
@@ -106,7 +98,7 @@ class InstituteRepository @Inject constructor(
         }
         remote.getUpdatedPreferences().observeForever {
             if (preferences !== null) preferences.value = it
-            Log.i("preferences", "${preferences?.value.toString()}")
+            Log.i("preferences", preferences?.value.toString())
         }
     }
 

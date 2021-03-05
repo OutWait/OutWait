@@ -2,8 +2,6 @@ package elite.kit.outwait.instituteDatabase.rooms
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import org.joda.time.DateTime
-import org.joda.time.Duration
 
 /**
  * This class helps room (through its annotations) to create a table

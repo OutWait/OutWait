@@ -1,7 +1,6 @@
 package elite.kit.outwait.clientDatabase
 
 import androidx.room.TypeConverter
-import androidx.room.TypeConverters
 import org.joda.time.DateTime
 import org.joda.time.Duration
 
@@ -12,6 +11,7 @@ import org.joda.time.Duration
  *
  */
 class Converter {
+
     /**
      * Transforms unix timestamp to Joda DateTime
      *
@@ -19,8 +19,7 @@ class Converter {
      * @return date as Joda DateTime
      */
     @TypeConverter
-    fun fromTimeStamp(stamp: Long): DateTime
-        = DateTime(stamp)
+    fun fromTimeStamp(stamp: Long): DateTime = DateTime(stamp)
 
     /**
      * Transforms Joda DateTime to unix timestamp
@@ -29,8 +28,7 @@ class Converter {
      * @return date as unix timestamp
      */
     @TypeConverter
-    fun toTimeStamp(dateTime: DateTime): Long
-        = dateTime.millis
+    fun toTimeStamp(dateTime: DateTime): Long = dateTime.millis
 
     /**
      * Transforms duration in milliseconds to a Joda Duration
@@ -39,8 +37,7 @@ class Converter {
      * @return duration as Joda Duration
      */
     @TypeConverter
-    fun fromTimeStampDuration(stamp: Long): Duration
-        = Duration.millis(stamp)
+    fun fromTimeStampDuration(stamp: Long): Duration = Duration.millis(stamp)
 
     /**
      * Transforms Joda Duration to a duration in milliseconds.
@@ -49,6 +46,5 @@ class Converter {
      * @return duration in milliseconds
      */
     @TypeConverter
-    fun toTimeStampDuration(duration: Duration): Long
-        = duration.millis
+    fun toTimeStampDuration(duration: Duration): Long = duration.millis
 }
