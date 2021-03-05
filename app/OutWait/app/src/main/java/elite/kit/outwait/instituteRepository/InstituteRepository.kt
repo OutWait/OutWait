@@ -67,22 +67,32 @@ class InstituteRepository @Inject constructor(
                     ManagementServerErrors.TRANSACTION_DENIED
                     -> pushError(InstituteErrors.TRANSACTION_DENIED)
 
-                    ManagementServerErrors.COULD_NOT_CONNECT
-                    -> {
-                        communicationEstablished = false
-                        pushError(InstituteErrors.NETWORK_ERROR)
-                    }
-
                     ManagementServerErrors.NETWORK_ERROR
                     -> {
-                        communicationEstablished = false
+                        cleanUp()
                         pushError(InstituteErrors.NETWORK_ERROR)
                     }
 
                     ManagementServerErrors.SERVER_DID_NOT_RESPOND
                     -> {
-                        communicationEstablished = false
-                        pushError(InstituteErrors.NETWORK_ERROR)
+                        cleanUp()
+                        pushError(InstituteErrors.COMMUNICATION_ERROR)
+                    }
+
+                    ManagementServerErrors.COULD_NOT_CONNECT
+                    -> {
+                        cleanUp()
+                        pushError(InstituteErrors.COMMUNICATION_ERROR)
+                    }
+                    ManagementServerErrors.INVALID_REQUEST
+                    -> {
+                        logout()
+                        pushError(InstituteErrors.INVALID_REQUEST)
+                    }
+                    ManagementServerErrors.INTERNAL_SERVER_ERROR
+                    -> {
+                        logout()
+                        pushError(InstituteErrors.SERVER_ERROR)
                     }
                 }
             }
@@ -189,9 +199,8 @@ class InstituteRepository @Inject constructor(
         CoroutineScope(IO).launch {
             remote.logout()
         }
-        loggedIn.value = false
-        communicationEstablished = false
-        inTransaction.value = false
+
+        cleanUp()
     }
 
     /**
@@ -411,5 +420,15 @@ class InstituteRepository @Inject constructor(
         } else {
             errorNotifications.postValue(listOf(error))
         }
+    }
+
+    /*
+    Resets the repository after logout or system error
+     */
+    private fun cleanUp(){
+        timeSlotList.value = listOf()
+        loggedIn.value = false
+        communicationEstablished = false
+        inTransaction.value = false
     }
 }
