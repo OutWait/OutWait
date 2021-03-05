@@ -309,7 +309,8 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
                 )
             getManagementByUsernameQuery.setString(1, username)
             val rs = getManagementByUsernameQuery.executeQuery()
-            rs.next()
+            if(!rs.next())
+                return null // invalid username
             val managementCredentials =
                 ManagementCredentials(
                     ManagementId(rs.getLong("id")),

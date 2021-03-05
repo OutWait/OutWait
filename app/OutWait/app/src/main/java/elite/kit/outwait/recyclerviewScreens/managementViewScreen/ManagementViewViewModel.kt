@@ -27,6 +27,8 @@ class ManagementViewViewModel @Inject constructor(
         }
     }
 
+    var isLoggedIn = repo.isLoggedIn()
+
     /**
      * Monitors current state of transaction
      */
