@@ -79,4 +79,6 @@
     <string name="text_avoid_back_press_management">Bitte zuerst abmelden</string>
     <string name="INTERNAL_ERROR">Ein interneres Probleme ist aufgetreten, bitte kontaktieren Sie Outwait</string>
     <string name="INTERNET_ERROR">Serververbindung verloren, bitte Internetverbindung überrprüfen und aktualisieren Sie!</string>
+    <string name="text_counter">Anzahl an Klienten: </string>
+
 </resources>
