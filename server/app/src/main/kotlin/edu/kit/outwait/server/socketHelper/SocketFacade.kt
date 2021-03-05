@@ -62,6 +62,6 @@ class SocketFacade(val socket: SocketIOClient, adapter: SocketAdapter) {
     /** Closes the connection */
     fun disconnect() {
         Logger.debug(LOG_ID, "Disconnecting socket")
-        socket.disconnect()
+        if (socket.isChannelOpen()) socket.disconnect()
     }
 }
