@@ -56,7 +56,8 @@ class JSONSlotDataWrapper(obj: JSONObject) : JSONSlotCodeWrapper(obj) {
      */
     fun getInformation(): SlotManagementInformation {
         return SlotManagementInformation(
-            ManagementDetails(obj.getString("instituteName")),
+            // The email is not part of the protocol, so it's set to ""
+            ManagementDetails(obj.getString("instituteName"), ""),
             Duration.ofMillis(obj.getLong("notificationTime")),
             Duration.ofMillis(obj.getLong("delayNotificationTime"))
         )

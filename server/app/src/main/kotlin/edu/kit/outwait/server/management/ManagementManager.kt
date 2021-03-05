@@ -10,7 +10,10 @@ import edu.kit.outwait.server.protocol.JSONCredentialsWrapper
 import edu.kit.outwait.server.protocol.JSONEmptyWrapper
 import edu.kit.outwait.server.protocol.JSONResetPasswordWrapper
 import edu.kit.outwait.server.socketHelper.SocketFacade
+import jakarta.mail.*
+import jakarta.mail.internet.*
 import java.util.Date
+import java.util.Properties
 import java.util.Timer
 
 /**
@@ -307,7 +310,53 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      */
     private fun resetManagementPassword(username: String) {
         Logger.debug(LOG_ID, "Reset password routine started")
-        // TODO implement the reset password procedure
+
+        val managementId = databaseWrapper.getManagementByUsername(username)?.id;
+        if (managementId == null) {
+            Logger.debug(LOG_ID, "User is not valid: " + username)
+            return // Not a valid account
+        }
+
+        val email = databaseWrapper.getManagementById(managementId)?.details?.email;
+
+        if (email == null || !email.contains('@')) {
+            Logger.debug(LOG_ID, "Email/user is not valid: " + email + " for user " + username)
+            return // Not a valid account/email
+        }
+
+        // Generate a new random password
+        var newPassword = ""
+        var allowedCharacters =
+            "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz!\"§$%&/()=?{[]}\\" +
+                "-_.:,;#'+*~<>|^´`"
+        for (i in 0..10) {
+            newPassword += allowedCharacters[(Math.random() * allowedCharacters.length).toInt()]
+        }
+
+        // Send the email with the new password
+        val props = Properties();
+        props.put("mail.smtp.host", "localhost");
+        val session = Session.getInstance(props, null);
+        try {
+            var msg = MimeMessage(session);
+            msg.setFrom("service@noreply.outwait.com");
+            msg.setRecipients(Message.RecipientType.TO, email);
+            msg.setSubject("OutWait service: Your password has been reset!");
+            msg.setSentDate(Date());
+            msg.setText(
+                "Dear " + username + ",\n\nThe password for your OutWait account '" + username +
+                    "' has been reset. Your new password is:\n" + newPassword +
+                    "\n\nIf you did not try to reset your password, please contact our service " +
+                    "team. Please do not reply to this email directly.\n\nBest regards, The " +
+                    "OutWait team\n"
+            );
+            Transport.send(msg);
+        } catch (e:MessagingException) {
+            Logger.error(
+                LOG_ID,
+                "Failed to send email for user " + username + " - " + email + ". With error: " + e
+            );
+        }
     }
 
     /**

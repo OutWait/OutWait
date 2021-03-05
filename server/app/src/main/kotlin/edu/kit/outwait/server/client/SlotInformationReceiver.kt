@@ -19,7 +19,7 @@ import java.util.Date
 class SlotInformationReceiver(val client: Client, val slotCode: SlotCode) {
     private var slotApprox = Date (0)
     private var slotManagementInformation =
-        SlotManagementInformation(ManagementDetails(""), Duration.ZERO, Duration.ZERO)
+        SlotManagementInformation(ManagementDetails("", ""), Duration.ZERO, Duration.ZERO)
     private val LOG_ID = "SLOT-INFO-RECV"
 
     /**
