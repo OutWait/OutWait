@@ -26,5 +26,5 @@ data class Slot(
      *
      * @return true if the slot is a fix slot, otherwise false.
      */
-    fun isFixedSlot() : Boolean = priority == Priority.FIX_APPOINTMENT
+    fun isFixedSlot(): Boolean = priority == Priority.FIX_APPOINTMENT
 }

@@ -442,7 +442,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
     }
 
     /**
-     * Unegisters (SlotInformation)receiver in updateMediator. Called after Client stops listening
+     * Unregisters (SlotInformation)receiver in updateMediator. Called after Client stops listening
      * to a Slot (f.ex. after disconnect)
      *
      * @param receiver SlotInformationReceiver to be registered
