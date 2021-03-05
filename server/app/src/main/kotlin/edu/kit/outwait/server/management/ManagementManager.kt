@@ -326,15 +326,21 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
         try {
             nextDelayAlarm.cancel()
-        } catch (e: IllegalStateException) {
+        } catch (e: java.lang.IllegalStateException) {
             // Timer has not been started jet. Ignore this
+            Logger.debug(LOG_ID, "Timer already cancelled")
         }
-        nextDelayAlarm.schedule(
-            object : java.util.TimerTask() {
-                override fun run() = queueDelayAlarmHandler()
-            },
-            queueDelayTimes.get(0).first.getTime()
-        )
+        try {
+            nextDelayAlarm.schedule(
+                object : java.util.TimerTask() {
+                    override fun run() = queueDelayAlarmHandler()
+                },
+                queueDelayTimes.get(0).first.getTime()
+            )
+        } catch (e: java.lang.IllegalStateException) {
+            // Timer has not been started jet. Ignore this
+            Logger.debug(LOG_ID, "Timer already cancelled (in re-schedule)")
+        }
         Logger.debug(
             LOG_ID,
             "New delay timer scheduled for " + queueDelayTimes.get(0).second + " to " +
@@ -400,23 +406,33 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                         }
 
                     // Ensure that the next timer is set
-                    nextDelayAlarm.schedule(
-                        object : java.util.TimerTask() {
-                            override fun run() = queueDelayAlarmHandler()
-                        },
-                        queueDelayTimes.get(0).first.getTime()
-                    )
+                    try {
+                        nextDelayAlarm.schedule(
+                            object : java.util.TimerTask() {
+                                override fun run() = queueDelayAlarmHandler()
+                            },
+                            queueDelayTimes.get(0).first.getTime()
+                        )
+                    } catch (e: java.lang.IllegalStateException) {
+                        // Timer has not been started jet. Ignore this
+                        Logger.debug(LOG_ID, "Timer already cancelled (in re-schedule)")
+                    }
                 }
             }
         } else if (queueDelayTimes.isNotEmpty()) {
             Logger.debug(LOG_ID, "Delayed queue is not ready yet")
             // Reset the next timer, if the trigger was invalid
-            nextDelayAlarm.schedule(
-                object : java.util.TimerTask() {
-                    override fun run() = queueDelayAlarmHandler()
-                },
-                queueDelayTimes.get(0).first.getTime()
-            )
+            try {
+                nextDelayAlarm.schedule(
+                    object : java.util.TimerTask() {
+                        override fun run() = queueDelayAlarmHandler()
+                    },
+                    queueDelayTimes.get(0).first.getTime()
+                )
+            } catch (e: java.lang.IllegalStateException) {
+                // Timer has not been started jet. Ignore this
+                Logger.debug(LOG_ID, "Timer already cancelled (in re-schedule)")
+            }
             Logger.debug(
                 LOG_ID,
                 "Scheduled next queue for " + queueDelayTimes.get(0).second + " to " +
