@@ -18,7 +18,7 @@ class JSONChangeSlotDurationWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jso
      * Secondary constructor, takes the data that is to be transmitted and stores it in the
      * (previously empty) JSONObject (of the primary constructor)
      * according to the specified (JSON) protocol
-     * //TODO Verweis auf Entwurfsdokument oder Protokoll? Bps. JSON syntax
+     * @see design documentation (section 9 "Kommunikation App-Server)
      *
      * @param slotCode as String, specifies the slot, whose duration should be changed
      * @param newDuration as Duration object, specifies the requested new duration of the given slot

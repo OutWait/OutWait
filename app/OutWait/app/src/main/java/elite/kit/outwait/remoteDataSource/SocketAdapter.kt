@@ -9,20 +9,50 @@ import io.socket.emitter.Emitter
 import org.json.JSONObject
 import java.net.URI
 
-//TODO Fehler werfen bei Verbindungsfehler/Abbruch (inkl. der Listener) usw. ?
-
+/**
+ * Defines the maximum amount of time waited for an successfully established connection until
+ * a time out
+ */
 private const val MAX_AMOUNT_CONNECT_WAITTIME = 5000L
+
+/**
+ * Defines the sampling granulation with which a successful established connection is checked
+ */
 private const val TIME_STEP_FOR_CONNECT_WAIT = 100L
 
+/**
+ * The server URI, used together with the namespace to connect to the "outwait server"
+ */
+private const val serverURI: String = "http://161.97.168.24:567"
+
+/**
+ * This class serves as a facade to the underlying websocket implementation of the
+ * SocketIO library, used by the SocketIOClient- and ManagementHandler.
+ * It emits and receives events and invokes their respective callbacks,
+ * after a successful connection to the server was established.
+ *
+ * @constructor
+ * The socket.io socket instance is constructed as a client or management instance depending
+ * on the given namespace
+ *
+ * @param namespace as String, specifies if socket connection is client or management connection
+ */
 class SocketAdapter(namespace: String) {
 
-    private val serverURI: String = "http://161.97.168.24:567"
-
+    /**
+     * The actual socket instance of the SocketIO library
+     */
     private val socketIOSocket: Socket
 
+    /**
+     * A state variable to detect if a network error occurred and the connection
+     * should be closed
+     */
     private var errorReceived = false
 
+
     init {
+        //Configure options of the socket.io socket
         val options = IO.Options()
         options.reconnection = true
 
@@ -30,86 +60,79 @@ class SocketAdapter(namespace: String) {
         Log.i("SocketAdapter", "SocketIOSocket was created")
     }
 
-    /*
-    Intialisiere Verbindung mit Server
-    Uund registriere die EventListener (in private Methode ausgelagert)
+    /**
+     * This method registers the given events and callbacks as listeners on the socket
+     * and then opens the connection to the server
+     *
+     * @param mapEventToCallback HashMap that maps events of type Event to their respective
+     * callback (which takes a wrapped JSON object as input)
+     * @return true if socket connection was successfully established, else false
      */
-    fun initializeConnection(
-        mapEventToCallback: HashMap<Event,
-                (wrappedJSONData: JSONObjectWrapper) -> Unit>
-    ) : Boolean {
-        // register remaining SocketIO related connection listeners
-        // registerRemainingSocketIOListeners() //TODO brauchen wir nicht mehr
+    fun initializeConnection(mapEventToCallback: HashMap<Event,
+                (wrappedJSONData: JSONObjectWrapper) -> Unit>) : Boolean {
+
+        // register remaining SocketIO related connection listeners for log purposes
+        registerRemainingSocketIOListeners()
 
         // register given listeners and their events
         registerEventListeners(mapEventToCallback)
 
-        Log.i("SocketAdapter", "All listeners were registered")
-
-        // open the socket connection (try until max time waited)
-
+        // open the socket connection
         if (socketIOSocket.connect() == null) {
-            Log.d("SocketAdapter", "socket could not connect for first time")
+            Log.d("SocketAdapter", "Socket connection could not be established")
             releaseConnection()
             return false
         }
+
+        // wait for established connection until time out
         var waitedTimeToConnect = 0L
-        while (!isConnected() and (waitedTimeToConnect < MAX_AMOUNT_CONNECT_WAITTIME)) {
+        while (!socketIOSocket.connected() and (waitedTimeToConnect < MAX_AMOUNT_CONNECT_WAITTIME)) {
             waitedTimeToConnect += TIME_STEP_FOR_CONNECT_WAIT
-            Log.i("SocketAdaper", "Waiting for connection establishing since $waitedTimeToConnect millis")
             Thread.sleep(TIME_STEP_FOR_CONNECT_WAIT)
         }
-        if (isConnected()) {
-            Log.d("SocketAdapter", "socket successfully connected for first time")
+        if (socketIOSocket.connected()) {
+            Log.d("SocketAdapter", "Socket successfully connected")
             return true
+        } else {
+            Log.d("SocketAdapter", "Socket couldn't connect until time out")
+            releaseConnection()
         }
-        Log.d("SocketAdapter", "Socket couldnt connect for first time (tried for  $waitedTimeToConnect millis)")
-        releaseConnection()
         return false
     }
 
-
-    /*
-    Emitte Event mit Daten zum Server
+    /**
+     * This method emits events and their respective data to the server using the
+     * emit/send function of the socket.io socket
+     *
+     * @param event as String, specifies the event that is being transmitted
+     * @param wrappedJSONData associated data, transmitted as JSONString
      */
     fun emitEventToServer(event: String, wrappedJSONData: JSONObjectWrapper) {
         socketIOSocket.emit(event, wrappedJSONData.getJSONString())
-        Log.i("SocketAdapter", "Event $event was emitted to server on SocketIOSocket")
+        Log.i("SocketAdapter", "Event $event was emitted to server")
     }
 
-    /*
-    Gibt die von SocketIOSocket gehaltene Verbindung frei und entfernt alle Listener
+    /**
+     * This method closes the current connection and removes all previously registered listeners
      */
     fun releaseConnection() {
         socketIOSocket.close()
-
         // remove all registered listeners
         socketIOSocket.off()
-        Log.i("SocketAdapter", "Socket was closed, all listeners removed")
+        Log.i("SocketAdapter", "Socket connection was closed")
     }
 
-    /*
-    Gibt Auskunft ob die SOcketIOSocket Instanz momentan mit Server verbunden ist oder nicht
+    /**
+     * This method takes the given mapping of Events and their respective callbacks and registers
+     * the listeners on the socket.io socket accordingly
+     *
+     * @param mapEventsToCallback HashMap that maps events of type Event to their respective
+     * callback (which takes a wrapped JSON object as input)
      */
-    fun isConnected(): Boolean {
-        return socketIOSocket.connected()
-    }
+    private fun registerEventListeners(mapEventsToCallback: HashMap<Event,
+                (wrappedJSONData: JSONObjectWrapper) -> Unit>) {
 
-    /* TODO Brauchen wir das schon/noch
-    fun getCurrentSessionID(): String {
-        return socketIOSocket.id()
-    }
-
-     */
-
-    /*
-    Methode um die EventListener auf dem Socket zu registrieren, aus dem übergebenen
-    Mapping von Event: Event und Callbacks
-     */
-    private fun registerEventListeners(
-        mapEventsToCallback: HashMap<Event,
-                (wrappedJSONData: JSONObjectWrapper) -> Unit>
-    ) {
+        // register socket.io own listeners for network error callback
         socketIOSocket.on(Socket.EVENT_ERROR, Emitter.Listener {
             Log.i("SocketAdapter", "Event " + Socket.EVENT_ERROR)
             this.errorReceived = true
@@ -118,6 +141,7 @@ class SocketAdapter(namespace: String) {
         socketIOSocket.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
             Log.i("SocketAdapter", "Event " + Socket.EVENT_DISCONNECT)
             if(errorReceived) {
+                // error occurred, connection session is irrevocably lost on disconnect
                 val wrappedEmpty = Event.NETWORK_ERROR.createWrapper(JSONObject())
                 mapEventsToCallback[Event.NETWORK_ERROR]?.invoke(wrappedEmpty)
                 errorReceived = false
@@ -133,27 +157,21 @@ class SocketAdapter(namespace: String) {
                     // parse the received data string as JSONObject
                     val data = args.last() as String
                     val jsonData = JSONObject(data)
-
                     // wrap the parsed JSONObject with appropriate JSONObjectWrapper
                     val wrappedJSONData = k.createWrapper(jsonData)
 
-                    Log.d("incoming event:", k.getEventString())
+                    Log.d("SocketAdapter","Incoming event:" + k.getEventString())
 
                     // Invoke the given callback with the parsed data
                     mapEventsToCallback[k]?.invoke(wrappedJSONData)
                 }
 
-            // register the listener
+            // register the listener on the socket
             socketIOSocket.on(k.getEventString(), onEventListenerCallback)
         }
     }
 
-    /*
-        Im Folgednen Implementierung von Listener für die ganzen Socket.IO seitigen Events
-        wobei entweder Zustand gesetzt (CONNECT) oder Fehlermeldungen (DISCONNECT, ERROR)
-        geworfen werden sollen
-        //TODO Brauchen wir das noch? -> bisher nur zu Log-Zwecken
-         */
+    // register remaining SocketIO related connection listeners for log purposes
     private fun registerRemainingSocketIOListeners() {
 
         // called on successful connection or reconnection
@@ -162,7 +180,7 @@ class SocketAdapter(namespace: String) {
         }
         socketIOSocket.on(Socket.EVENT_CONNECT, onConnectCallback)
 
-        // called wenn SocketIO erfolglos (selber) versucht zu (re)connecten
+        // called if socket.io automatically tries to reconnect (but unsuccessful)
         val onConnectErrorCallback = Emitter.Listener {
             Log.i("SocketAdapter", "Event " + Socket.EVENT_CONNECT_ERROR)
         }

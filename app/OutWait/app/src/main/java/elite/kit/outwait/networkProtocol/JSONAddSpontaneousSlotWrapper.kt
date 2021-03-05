@@ -19,7 +19,7 @@ class JSONAddSpontaneousSlotWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jso
      * Secondary constructor, takes the data that is to be transmitted and stores it in the
      * (previously empty) JSONObject (of the primary constructor)
      * according to the specified (JSON) protocol
-     * //TODO Verweis auf Entwurfsdokument oder Protokoll? Bps. JSON syntax
+     * @see design documentation (section 9 "Kommunikation App-Server)
      *
      * @param duration as a Duration object, the requested duration of a spontaneousSlot
      * @param timeOfCreation timestamp as DateTime object, representing the instant of the

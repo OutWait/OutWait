@@ -5,7 +5,7 @@ import org.json.JSONObject
 /**
  * These enums represent all the events specified in the server-client-communication protocol
  * with the associated event string and a JSONObjectWrapper for the sent data
- * //TODO Verweis auf ENtwurfsdokument? Oder Syntaxaufbau der Events erklären o.ä?
+ * @see design documentation (section 9 "Kommunikation App-Server for semantic meaning of the events)
  *
  * @property eventString the associated event String transmitted with the data
  * @property wrapperFromJSON the transmitted data for the respective event
@@ -13,9 +13,15 @@ import org.json.JSONObject
 enum class Event(private val eventString: String,
                  private val wrapperFromJSON: (JSONObject) -> JSONObjectWrapper) {
 
+    /**
+     * events related to client-server communcation
+     */
     LISTEN_SLOT("listenSlot@S", { JSONSlotCodeWrapper(it) }),
     REFRESH_SLOT_APPROX("refreshSlotApprox@S", { JSONSlotCodeWrapper(it) }),
 
+    /**
+     * events related to management-server communication
+     */
     READY_TO_SERVE_C("readyToServe@C", { JSONEmptyWrapper(it) }),
     SEND_SLOT_DATA_C("sendSlotData@C", { JSONSlotDataWrapper(it) }),
     END_SLOT_C("endSlot@C", { JSONSlotCodeWrapper(it) }),
@@ -47,6 +53,7 @@ enum class Event(private val eventString: String,
     UPDATE_QUEUE_M("updateQueue@M", { JSONQueueWrapper(it) }),
     INVALID_REQUEST_M("invalidRequest@M", { JSONErrorMessageWrapper(it) }),
     INTERNAL_SERVER_ERROR_M("internalServerError@M", { JSONErrorMessageWrapper(it) }),
+
     NETWORK_ERROR("NETWORK_ERROR", { JSONEmptyWrapper(it) });
 
     /**
