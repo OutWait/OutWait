@@ -28,7 +28,7 @@ class ConfigDialogViewModel @Inject constructor(
     /**
      * Size of current list
      */
-    val slotListSize = repo.getObservableTimeSlotList().value!!.size
+    val slotListSize = repo.getObservableTimeSlotList()
 
     /**
      * Keeps preferences from repository
