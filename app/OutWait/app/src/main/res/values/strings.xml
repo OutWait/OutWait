@@ -73,4 +73,5 @@
     <string name="text_save_config">Your settings are saved</string>
     <string name="text_denied_save_config">Your queue is not empty to switch your mode and your settings are not saved</string>
     <string name="text_avoid_back_press_management">Please only possibility to logout</string>
+    <string name="text_counter">\"Count of Clients: \"</string>
 </resources>
