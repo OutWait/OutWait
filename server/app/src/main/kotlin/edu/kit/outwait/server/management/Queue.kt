@@ -44,6 +44,8 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         Logger.debug(LOG_ID, "Updating queue " + queueId)
         delayChangeTime = null
 
+        val delayTimeBuffer = Duration.ofSeconds(30) // The time buffer on top of an overdue slot
+
         // Remove outdated slots (to keep the db clean)
         slots
             .filter {
@@ -89,6 +91,20 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                     endTime
                 } else {
                     // Slot hast started and expected end has been reached
+
+                    // Update the length of the slot to match the gravity-queue protocol
+                    // requirements
+                    newQueue[0] =
+                        newQueue[0]
+                            .copy(
+                                expectedDuration =
+                                    Duration.ofMillis(
+                                        Date().getTime() - newQueue[0].approxTime.getTime() +
+                                            delayTimeBuffer.toMillis()
+                                    )
+                            )
+
+                    // Return the position of the line
                     Date().toInstant()
                 }
             } else {
@@ -187,7 +203,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                     (if (nextSlotEnd.isBefore(Date().toInstant()))
                         Date().toInstant()
                     else
-                        nextSlotEnd) + Duration.ofSeconds(30)
+                        nextSlotEnd) + delayTimeBuffer
                 )
         }
 
