@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import elite.kit.outwait.R
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientRepository.ClientRepository
 import elite.kit.outwait.instituteRepository.InstituteRepository
@@ -38,6 +39,11 @@ class RemainingTimeViewModel @Inject constructor(
 
     private val timer = object : CountDownTimer(TWO_DAYS, ONE_SEC) {
         override fun onTick(millisUntilFinished: Long) {
+            if (!repo.isConnectedToServer()){
+                _remainingTime.value = "Internet Error. Try to refresh."
+                return
+            }
+
             if (approximatedTime !== null) {
                 val now = DateTime.now()
                 val diff = Duration(
