@@ -19,7 +19,7 @@ class JSONAddFixedSlotWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) 
      * Secondary constructor, takes the data that is to be transmitted and stores it in the
      * (previously empty) JSONObject (of the primary constructor)
      * according to the specified (JSON) protocol
-     * //TODO Verweis auf Entwurfsdokument oder Protokoll? Bps. JSON syntax
+     * @see design documentation (section 9 "Kommunikation App-Server)
      *
      * @param duration the requested duration of a fixedSlot as a Duration object
      * @param appointmentTime the requested appointment time of a fixedSlot as a DateTime object

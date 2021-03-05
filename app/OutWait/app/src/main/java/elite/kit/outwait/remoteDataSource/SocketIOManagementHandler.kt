@@ -9,21 +9,15 @@ import elite.kit.outwait.networkProtocol.*
 import org.joda.time.DateTime
 import org.joda.time.Duration
 
-// TODO Falschen Zugriff durchs Repo verhindern (bspw. Änderung ohne gestartete Transaction)
-// TODO InvalidRequest adäquat handlen (an Repo weiter?) Was für Fehler sind möglich?
-// TODO Interne Zustandsvariablen richtig benutzt? Threading beachtet?
-// insb. login- und transaction- related sachen?
 
-private const val MAX_WAITTIME_FOR_RESPONSE = 10000L
-private const val TIME_STEP_FOR_RESPONSE_WAIT = 1000L
+private const val MAX_WAITTIME_FOR_RESPONSE = 3000L
+private const val TIME_STEP_FOR_RESPONSE_WAIT = 100L
 
 
 class SocketIOManagementHandler : ManagementHandler {
 
 
-
-    // Ein Haufen unschöner (intern, da bisher prozedural) Zustandsvariablen
-    // TODO LiveData schöner?
+    // TODO Kann man die auch in ein object packen?
     private var loginRequested = false
     private var loggedIn = false
     private var loginDenied = false
@@ -55,7 +49,6 @@ class SocketIOManagementHandler : ManagementHandler {
 
     private val mSocket: SocketAdapter
 
-    //private var currentSessionID: String = ""
 
     init {
         mSocket = SocketAdapter(namespaceManagement)
@@ -93,18 +86,11 @@ class SocketIOManagementHandler : ManagementHandler {
         }
     }
 
-    //TODO initComm was noch zu tun?
     override fun initCommunication(): Boolean {
         if (!mSocket.initializeConnection(managementEventToCallbackMapping)) {
             pushError(ManagementServerErrors.COULD_NOT_CONNECT)
             endCommunication()
             return false
-        } else {
-            //TODO Wenn man das rauslöscht funktionierts plötzlich?
-           /* this.currentSessionID = mSocket.getCurrentSessionID()
-            Log.i("SocketMHandler", "Connection established with $currentSessionID id")
-
-            */
         }
         return true
     }
@@ -130,7 +116,7 @@ class SocketIOManagementHandler : ManagementHandler {
         var curWaitTimeForLogReq = 0L
         while (!this.loginRequested and (curWaitTimeForLogReq < MAX_WAITTIME_FOR_RESPONSE)) {
             Log.i(
-                "SocketIOManagHandl",
+                "SocketMHandler",
                 "Wait with loginAttempt till loginRequest event (since $curWaitTimeForLogReq millis)"
             )
             curWaitTimeForLogReq += TIME_STEP_FOR_RESPONSE_WAIT
@@ -146,11 +132,10 @@ class SocketIOManagementHandler : ManagementHandler {
         val event: Event = Event.MANAGEMENT_LOGIN
         val data: JSONObjectWrapper = JSONLoginWrapper(username, password)
         mSocket.emitEventToServer(event.getEventString(), data)
-        Log.i("SocketIOManagementHandl", "Login attempted")
+        Log.i("SocketMHandler", "Login attempted")
 
         var curWaitTimeForResponse = 0L
         while (!this.loggedIn and !this.loginDenied and (curWaitTimeForResponse < MAX_WAITTIME_FOR_RESPONSE)) {
-            Log.i("SocketIOManagHandl", "Waiting on server for LoginResponse (since $curWaitTimeForResponse millis)")
             curWaitTimeForResponse += TIME_STEP_FOR_RESPONSE_WAIT
             Thread.sleep(TIME_STEP_FOR_RESPONSE_WAIT)
         }
@@ -160,18 +145,13 @@ class SocketIOManagementHandler : ManagementHandler {
             endCommunication()
         }
         if (this.loggedIn) {
-            Log.i(
-                "SocketIOManagementHandl",
-                "Login was successful"
-            )
+            Log.i("SocketMHandler", "Login was successful")
             return true
         } else if (this.loginDenied) {
-            Log.i("SocketIOManagementHandl", "Login was denied")
+            Log.i("SocketMHandler", "Login was denied")
             pushError(ManagementServerErrors.LOGIN_DENIED)
             endCommunication()
-            Log.i("SocketMHandler", "We ended Comm")
             initCommunication()
-            Log.i("SocketMHandler", "We initComm again")
         }
         return false
     }
@@ -181,7 +161,7 @@ class SocketIOManagementHandler : ManagementHandler {
         val data: JSONObjectWrapper = JSONEmptyWrapper()
 
         mSocket.emitEventToServer(event.getEventString(), data)
-        this.loggedIn = false
+        endCommunication()
     }
 
     override fun resetPassword(username: String) {
@@ -211,19 +191,17 @@ class SocketIOManagementHandler : ManagementHandler {
         // warte in while loop auf Antwort vom Server
         var curWaitTimeForResp = 0L
         while (!transactionDenied and !transactionStarted and (curWaitTimeForResp < MAX_WAITTIME_FOR_RESPONSE)) {
-            Log.i("SocketIOManagementHandl",
-                "Waiting on server response for transactionStart since $curWaitTimeForResp millis")
             curWaitTimeForResp += TIME_STEP_FOR_RESPONSE_WAIT
             Thread.sleep(TIME_STEP_FOR_RESPONSE_WAIT)
         }
 
         when {
             transactionStarted -> {
-                Log.i("SocketIOManagementHandl", "Transaction was started")
+                Log.i("SocketMHandler", "Transaction was started")
                 return true
             }
             transactionDenied -> {
-                Log.i("SocketIOManagementHandl", "Transaction was denied")
+                Log.i("SocketMHandler", "Transaction was denied")
                 resetTransactionState()
                 pushError(ManagementServerErrors.TRANSACTION_DENIED)
                 return false
@@ -339,7 +317,6 @@ class SocketIOManagementHandler : ManagementHandler {
         this.loginRequested = true
     }
 
-    //TODO Error Message String hochreichen ans Repo
     private fun onInvalidRequest(wrappedJSONData: JSONErrorMessageWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
         pushError(ManagementServerErrors.INVALID_REQUEST)

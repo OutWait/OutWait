@@ -17,7 +17,7 @@ class JSONMoveSlotWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
      * Secondary constructor, takes the data that is to be transmitted and stores it in the
      * (previously empty) JSONObject (of the primary constructor)
      * according to the specified (JSON) protocol
-     * //TODO Verweis auf Entwurfsdokument oder Protokoll? Bps. JSON syntax
+     * @see design documentation (section 9 "Kommunikation App-Server)
      *
      * @param movedSlot as String, specifies the slot that is to be moved
      * @param otherSlot as String, specifies the slot, to which the "movedSlot" should be moved after

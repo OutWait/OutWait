@@ -19,7 +19,9 @@ import org.json.JSONObject
 class JSONQueueWrapper(jsonObj: JSONObject) : JSONObjectWrapper(jsonObj) {
 
     /**
-     * Getter for the new Queue, as ReceivedList object, contained in the received JSONObject
+     * Getter for the new Queue, as ReceivedList object, contained in the received JSONObject,
+     * parsed according to the specified (JSON) protocol
+     * @see design documentation (section 9 "Kommunikation App-Server)
      *
      * @return new Queue as ReceivedList (with the parsed values from the received JSONObject)
      */

@@ -17,7 +17,7 @@ class JSONLoginWrapper(jsonObj: JSONObject): JSONObjectWrapper(jsonObj) {
      * Secondary constructor, takes the data that is to be transmitted and stores it in the
      * (previously empty) JSONObject (of the primary constructor)
      * according to the specified (JSON) protocol
-     * //TODO Verweis auf Entwurfsdokument oder Protokoll? Bps. JSON syntax
+     * @see design documentation (section 9 "Kommunikation App-Server)
      *
      * @param username as String, specifies the user account for the requested login
      * @param password as String, specifies the password for the requested login

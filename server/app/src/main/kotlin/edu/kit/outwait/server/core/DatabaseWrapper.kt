@@ -253,16 +253,16 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
                     "SELECT Management.name, Management.notification_time, " +
                         "Management.delay_notification_time " + "FROM Slot " +
                         "INNER JOIN Queue ON Slot.queue_id = Queue.queue_id " +
-                        "INNER JOIN Management ON Queue.management_id = Queue.management_id " +
+                        "INNER JOIN Management ON Queue.management_id = Management.id " +
                         "WHERE Slot.code = ?"
                 )
             getSlotManagementInformationQuery.setString(1, slotCode.code)
             val rs = getSlotManagementInformationQuery.executeQuery()
             rs.next()
             return SlotManagementInformation(
-                ManagementDetails(rs.getString("Management.name")),
-                Duration.ofMillis(rs.getLong("Management.notification_time")),
-                Duration.ofMillis(rs.getLong("Management.delay_notification_time"))
+                ManagementDetails(rs.getString("name")),
+                Duration.ofMillis(rs.getLong("notification_time")),
+                Duration.ofMillis(rs.getLong("delay_notification_time"))
             )
         } catch (e: SQLException) {
             e.printStackTrace()
@@ -391,7 +391,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
                 val rs = getSlotsByManagementIdQuery.executeQuery()
                 val slotCodes = mutableListOf<SlotCode>()
                 while (rs.next()) {
-                    slotCodes.add(SlotCode(rs.getString("Slot.code")))
+                    slotCodes.add(SlotCode(rs.getString("code")))
                 }
                 if (!slotCodes.isEmpty()) {
                     val slotManagementInformation =
