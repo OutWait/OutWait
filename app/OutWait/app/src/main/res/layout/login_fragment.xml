@@ -47,7 +47,7 @@
             app:layout_constraintTop_toBottomOf="@+id/boxes_institute_name"
             app:panelBackgroundColor="@color/code_edit_text_background"
             app:primaryColor="@color/code_edit_text_bottom_line"
-            app:secondaryColor="@color/text_missing">
+            app:secondaryColor="@color/outwait_color_dark">
 
             <studio.carbonylgroup.textfieldboxes.ExtendedEditText
                 android:id="@+id/etInstitutePassword"
@@ -80,7 +80,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tvTitleLogin"
             app:panelBackgroundColor="@color/code_edit_text_background"
             app:primaryColor="@color/code_edit_text_bottom_line"
-            app:secondaryColor="@color/text_missing">
+            app:secondaryColor="@color/outwait_color_dark">
 
             <studio.carbonylgroup.textfieldboxes.ExtendedEditText
                 android:id="@+id/etInstituteName"
@@ -154,7 +154,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:gravity="center|center_horizontal|center_vertical"
-            android:text="@string/are_you_a_institute"
+            android:text="@string/are_you_an_institute"
             android:textColor="@color/outwait_color"
             android:textSize="@dimen/title"
             app:layout_constraintEnd_toEndOf="parent"
