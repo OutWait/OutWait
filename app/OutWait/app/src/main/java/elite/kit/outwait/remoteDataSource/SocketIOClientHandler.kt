@@ -9,12 +9,11 @@ import elite.kit.outwait.networkProtocol.*
 
 /**
  * Defines the maximum amount of time waited for an awaited response of the server
- * of type "readyToServe@C"
  */
 private const val MAX_TIME_WAIT_FOR_RESPONSE = 3000L
 
 /**
- * Defines the sampling granulation with which the receiving of "readyToServe@C" is checked
+ * Defines the sampling granulation with which received server response is checked
  */
 private const val TIME_STEP_FOR_RESPONSE_WAIT = 100L
 
@@ -24,7 +23,7 @@ private const val TIME_STEP_FOR_RESPONSE_WAIT = 100L
 private const val namespaceClient: String = "/client"
 
 /**
- * This class represents the "concrete product"
+ * This class represents the "concrete product" of ClientHandler
  * in the, here used and commonly known as, "abstract factory pattern".
  * It implements all methods for network communication, that the
  * client repository (or higher tier) can use to send to and receive data from the server,
@@ -277,5 +276,6 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         }else{
             _errors.postValue(listOf(error))
         }
+        Log.i("SocketCHandler", "Error $error was pushed")
     }
 }
