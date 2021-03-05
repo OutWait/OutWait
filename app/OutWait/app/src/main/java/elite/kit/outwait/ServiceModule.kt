@@ -1,7 +1,6 @@
 package elite.kit.outwait
 
 import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
@@ -25,10 +24,7 @@ object ServiceModule {
     @ServiceScoped
     @Provides
     fun provideMainActivityPendingIntent(@ApplicationContext app: Context) = PendingIntent.getActivity(
-        app,
-        0,
-        Intent(app, MainActivity::class.java), 0 //TODO: FLAG_UPDATE_CURRENT -> hilft das mit issue#31?
-    )
+        app, 0, Intent(app, MainActivity::class.java), 0)
 
     /**
      * Dependency Injection, providing the NotificationBuilder for the permanent push notifications
