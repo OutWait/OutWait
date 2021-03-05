@@ -28,3 +28,4 @@ const val CURRENT_SLOT_STARTED_TIME = "currentSlotStartedTime"
 const val SLOT_ORDER = "slotOrder"
 const val SPONTANEOUS_SLOTS = "spontaneousSlots"
 const val FIXED_SLOTS = "fixedSlots"
+

@@ -30,6 +30,16 @@ import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.HeaderTransaction
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import kotlinx.android.synthetic.main.full_screen_progress_bar.*
+import kotlinx.android.synthetic.main.management_view_fragment.*
+
+/**
+ * This is a dialog to keeps the slot queue
+ *
+ */
+private const val FIRST_POSITION = 0
+private const val CURRENT_SLOT1 = 0
+private const val CURRENT_SLOT2 = 1
+private const val TWO = 2
 
 @AndroidEntryPoint
 class ManagementViewFragment : Fragment(), ItemActionListener {
@@ -45,11 +55,16 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     private lateinit var slotAdapter: SlotAdapter
     private lateinit var builder: AlertDialog.Builder
-    private var FIRST_POSITION = 0
-    private var CURREND_SLOT1 = 0
-    private var CURREND_SLOT2 = 1
 
 
+    /**
+     * Creates layout and uses data binding
+     *
+     * @param inflater Inflates layout with data binding
+     * @param container Keeper of layout
+     * @param savedInstanceState Passed data from previous fragment
+     * @return layout with data binding
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -58,25 +73,22 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             DataBindingUtil.inflate(inflater, R.layout.management_view_fragment, container, false)
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
-
-        //RecyclerView SetUp
         binding.slotList.layoutManager = LinearLayoutManager(activity)
         binding.slotList.setHasFixedSize(true)
-
         builder = AlertDialog.Builder(activity)
         builder.apply {
             setView(R.layout.full_screen_progress_bar)
             setTitle(getString(R.string.process_title))
+            //TODO SET FALSE BEFORE PASS IT TO REPORTERS
             setCancelable(true)
         }
         displayingDialog = builder.create()
 
 
-        viewModel.slotQueue.observe(viewLifecycleOwner, Observer{ list ->
+        viewModel.slotQueue.observe(viewLifecycleOwner, Observer { list ->
             var itemList: MutableList<DataItem> = list.toMutableList().map {
                 TimeSlotItem(it)
             }.toMutableList()
-            Log.i("observeQUEUE", "VALUE:  ${viewModel.isInTransaction.value}")
 
             if (viewModel.isInTransaction.value!!) {
                 itemList.add(FIRST_POSITION, HeaderItem())
@@ -88,20 +100,23 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             displayingDialog.dismiss()
         })
 
-
-        movementInfo.observe(viewLifecycleOwner, Observer {
-
-          if(it.isNotEmpty()) {
-              viewModel.moveSlotAfterAnother(it.first(), it.last())
-                displayingDialog.dismiss()
-          }
+        viewModel.isLoggedIn.observe(viewLifecycleOwner, Observer { isLoggedIn->
+            Log.i("logout","observer $isLoggedIn")
+            Log.i("transaction","observer ${viewModel.isInTransaction.value}")
+            if(!isLoggedIn&&viewModel.isInTransaction.value!!){
+                Log.i("logout","transaction is ${viewModel.isInTransaction.value}")
+               deleteHeader()
+            }
         })
 
 
+        movementInfo.observe(viewLifecycleOwner, Observer {
 
-
-
-        //Add listener for recyclerview
+            if (it.isNotEmpty()) {
+                viewModel.moveSlotAfterAnother(it.first(), it.last())
+                displayingDialog.dismiss()
+            }
+        })
 
         slotAdapter = SlotAdapter(mutableListOf<DataItem>(), this)
         var callback: ItemTouchHelper.Callback = SlotItemTouchHelper(slotAdapter)
@@ -110,7 +125,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         itemTouchHelper.attachToRecyclerView(binding.slotList)
         binding.slotList.adapter = slotAdapter
 
-        //Add action bar icon
         setHasOptionsMenu(true)
 
         exitApp()
@@ -118,23 +132,35 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
     }
 
 
-
-
+    /**
+     * Displays a dialog to show all details of a slot
+     *
+     * @param position Selected slot
+     */
     override fun onItemClicked(position: Int) {
         var detailDialog =
             SlotDetailDialogFragment((slotAdapter.slotList[position] as TimeSlotItem).timeSlot as ClientTimeSlot)
         detailDialog.show(childFragmentManager, "ssss")
     }
 
-
+    /**
+     * Executes remove of a slot
+     *
+     * @param position Position of a removed slot
+     * @param removedSlot Removed slot
+     */
     override fun onItemSwiped(position: Int, removedSlot: TimeSlotItem) {
-        //TODO block delete of multiple slots simuntanously
         var resetDelete =
-            Snackbar.make(binding.slotList,
+            Snackbar.make(
+                binding.slotList,
                 "${getIdentifier(removedSlot.timeSlot)}",
-                Snackbar.LENGTH_LONG)
-                .setAction(getString(
-                    R.string.undo)) {
+                Snackbar.LENGTH_LONG
+            )
+                .setAction(
+                    getString(
+                        R.string.undo
+                    )
+                ) {
                     slotAdapter.slotList.add(position, removedSlot)
                     slotAdapter.notifyItemInserted(position)
                     slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 1)
@@ -152,15 +178,19 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         resetDelete.show()
     }
 
+    /**
+     * Notifies repository that a slot is deleted
+     *
+     * @param position Position of removed slot
+     * @param removedSlot Removed slot
+     */
     private fun notifyDeleteSlot(position: Int, removedSlot: TimeSlot) {
         var removedClientSlot = removedSlot as ClientTimeSlot
-        var firstPosition = if (viewModel.isInTransaction.value!!) CURREND_SLOT2 else CURREND_SLOT1
+        var firstPosition = if (viewModel.isInTransaction.value!!) CURRENT_SLOT2 else CURRENT_SLOT1
         when (position) {
             firstPosition -> viewModel.deleteCurrentSlot()
             else -> {
                 viewModel.deleteSlot(removedClientSlot.slotCode)
-
-                //TODO  except response from server to dismiss
                 slotAdapter.slotList.add(FIRST_POSITION, HeaderItem())
                 slotAdapter.updateSlots(slotAdapter.slotList.toMutableList())
                 displayingDialog.show()
@@ -170,59 +200,94 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     }
 
+    /**
+     * Displays a dialog to edit slot
+     *
+     * @param position Selected slot
+     */
     override fun editTimeSlot(position: Int) {
         var editDialog =
             EditTimeSlotDialogFragment((slotAdapter.slotList[position] as TimeSlotItem).timeSlot as ClientTimeSlot)
         editDialog.show(childFragmentManager, "aaa")
     }
 
-
+    /**
+     * Notifies that the transaction is saved
+     *
+     */
     override fun saveTransaction() {
-        Log.i("save", "call")
         viewModel.saveTransaction()
         deleteHeader()
     }
 
+    /**
+     * Notifies that the transaction is aborted
+     *
+     */
     override fun abortTransaction() {
-        Log.i("abort", "call")
         viewModel.abortTransaction()
         deleteHeader()
         displayingDialog.show()
         displayingDialog.fullScreenProgressBar.indeterminateMode = true
     }
 
+    /**
+     * Deletes header (transaction panel) of queue
+     *
+     */
     private fun deleteHeader() {
         slotAdapter.slotList.removeAt(FIRST_POSITION)
         slotAdapter.notifyItemRemoved(FIRST_POSITION)
-        slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 2)
+        slotAdapter.notifyItemRangeChanged(FIRST_POSITION, slotAdapter.slotList.size - TWO)
     }
 
-
+    /**
+     * Returns an identifier
+     *
+     * @param slot Selected slot
+     * @return identifier of selected slot
+     */
     private fun getIdentifier(slot: TimeSlot): String {
-        //Guarantee slot is only fixed or spo by GUI
         return (slot as ClientTimeSlot).auxiliaryIdentifier
     }
 
+    /**
+     * Displays a custom menu
+     *
+     * @param menu Menu with items
+     * @param inflater Inflates menu
+     */
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.overflow, menu)
 
     }
 
-
+    /**
+     * Navigates to configDialog by clicking icon setting
+     *
+     * @param item Selected item
+     * @return always true
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         viewModel.navigateToConfigDialog()
         return true
     }
 
+    /**
+     * Avoids back press, only possible to logout in the settings
+     *
+     */
     private fun exitApp() {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
 
                 override fun handleOnBackPressed() {
-                    Toast.makeText(context,
-                        "Please only possibility to logout",
-                        Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        context,
+                        getString(R.string.text_avoid_back_press_management),
+                        Toast.LENGTH_LONG
+                    )
                         .show()
                 }
             }

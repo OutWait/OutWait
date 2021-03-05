@@ -10,8 +10,6 @@ import org.json.JSONObject
 import java.net.URI
 
 //TODO Fehler werfen bei Verbindungsfehler/Abbruch (inkl. der Listener) usw. ?
-//TODO Was ist Socket.IO mäßig noch zu beachten?
-//TODO Welche Zustände sollen/müssen alles hier gehalten werden?
 
 private const val MAX_AMOUNT_CONNECT_WAITTIME = 10000L
 private const val TIME_STEP_FOR_CONNECT_WAIT = 1000L
@@ -21,6 +19,8 @@ class SocketAdapter(namespace: String) {
     private val serverURI: String = "http://161.97.168.24:567"
 
     private val socketIOSocket: Socket
+
+    private var errorReceived = false
 
     init {
         val options = IO.Options()
@@ -38,8 +38,8 @@ class SocketAdapter(namespace: String) {
         mapEventToCallback: HashMap<Event,
                 (wrappedJSONData: JSONObjectWrapper) -> Unit>
     ) : Boolean {
-        // register SocketIO related connection listeners
-        registerSocketIOListeners()
+        // register remaining SocketIO related connection listeners
+        // registerRemainingSocketIOListeners() //TODO brauchen wir nicht mehr
 
         // register given listeners and their events
         registerEventListeners(mapEventToCallback)
@@ -95,9 +95,12 @@ class SocketAdapter(namespace: String) {
         return socketIOSocket.connected()
     }
 
+    /* TODO Brauchen wir das schon/noch
     fun getCurrentSessionID(): String {
         return socketIOSocket.id()
     }
+
+     */
 
     /*
     Methode um die EventListener auf dem Socket zu registrieren, aus dem übergebenen
@@ -107,6 +110,20 @@ class SocketAdapter(namespace: String) {
         mapEventsToCallback: HashMap<Event,
                 (wrappedJSONData: JSONObjectWrapper) -> Unit>
     ) {
+        socketIOSocket.on(Socket.EVENT_ERROR, Emitter.Listener {
+            Log.i("SocketAdapter", "Event " + Socket.EVENT_ERROR)
+            this.errorReceived = true
+        })
+
+        socketIOSocket.on(Socket.EVENT_DISCONNECT, Emitter.Listener {
+            Log.i("SocketAdapter", "Event " + Socket.EVENT_DISCONNECT)
+            if(errorReceived) {
+                val wrappedEmpty = Event.NETWORK_ERROR.createWrapper(JSONObject())
+                mapEventsToCallback[Event.NETWORK_ERROR]?.invoke(wrappedEmpty)
+                errorReceived = false
+            }
+        })
+
         for (k in mapEventsToCallback.keys) {
 
             val onEventListenerCallback =
@@ -135,45 +152,25 @@ class SocketAdapter(namespace: String) {
         Im Folgednen Implementierung von Listener für die ganzen Socket.IO seitigen Events
         wobei entweder Zustand gesetzt (CONNECT) oder Fehlermeldungen (DISCONNECT, ERROR)
         geworfen werden sollen
-        //TODO Sollen hier Fehlermeldungen auch ans repo hoch zum gui display für Nutzer
+        //TODO Brauchen wir das noch? -> bisher nur zu Log-Zwecken
          */
-    private fun registerSocketIOListeners() {
+    private fun registerRemainingSocketIOListeners() {
 
         // called on successful connection or reconnection
         val onConnectCallback = Emitter.Listener {
-            Log.i("SocketAdapter", "Event" + Socket.EVENT_CONNECT)
+            Log.i("SocketAdapter", "Event " + Socket.EVENT_CONNECT)
         }
         socketIOSocket.on(Socket.EVENT_CONNECT, onConnectCallback)
 
-        // called on failed connection (server didn`t respond or accepted the connection)
+        // called wenn SocketIO erfolglos (selber) versucht zu (re)connecten
         val onConnectErrorCallback = Emitter.Listener {
-            Log.i("SocketAdapter", "Event" + Socket.EVENT_CONNECT_ERROR)
-            //TODO Hier muss manually reconnected werden
+            Log.i("SocketAdapter", "Event " + Socket.EVENT_CONNECT_ERROR)
         }
         socketIOSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectErrorCallback)
 
-        // called //TODO when?
-        val onEventErrorCallback = Emitter.Listener {
-            Log.i("SocketAdapter", "Event" + Socket.EVENT_ERROR)
-        }
-        socketIOSocket.on(Socket.EVENT_ERROR, onEventErrorCallback)
-
-        // called // TODO when?
         val onEventConnectTimeoutCallback = Emitter.Listener {
-            Log.i("SocketAdapter", "Event" + Socket.EVENT_CONNECT_TIMEOUT)
+            Log.i("SocketAdapter", "Event " + Socket.EVENT_CONNECT_TIMEOUT)
         }
         socketIOSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onEventConnectTimeoutCallback)
-
-        //TODO Hierfür Exception werfen sinnvoll? -> erst wenn auch reconnect endgültig failed!!!!
-        // called on disconnection, either connection got interrupted or disconnected
-        val onEventDisconnectCallback = Emitter.Listener {
-            Log.i("SocketAdapter", "Event" + Socket.EVENT_DISCONNECT)
-        }
-        socketIOSocket.on(Socket.EVENT_DISCONNECT, onEventDisconnectCallback)
-        //TODO SocketIO versucht automatisch zu reconnecten (wie oft/lange?)
-
-        //TODO Was ist mit EVENT_DISCONNECT, EVENT_CONNECT_TIMEOUT, EVENT_ERROR, EVENT_RECONNECT etc?
-        // soll Fehler geworfen werden, wenn Verbindung dauerhaft nicht möglich?
     }
-
 }

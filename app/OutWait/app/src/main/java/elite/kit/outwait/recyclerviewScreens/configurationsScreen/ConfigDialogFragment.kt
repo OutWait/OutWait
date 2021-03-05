@@ -22,6 +22,15 @@ import java.util.concurrent.TimeUnit
 import kotlin.time.milliseconds
 import kotlin.time.toDuration
 
+/**
+ * Dialog to show the configurations of the management system for the queue
+ *
+ */
+private const val MODE_FIRST = "Mode 1"
+private const val MODE_SECOND = "Mode 2"
+private const val SLOT_LIST_EMPTY = 0
+
+
 @AndroidEntryPoint
 class ConfigDialogFragment : Fragment() {
 
@@ -29,9 +38,16 @@ class ConfigDialogFragment : Fragment() {
     private val viewModel: ConfigDialogViewModel by viewModels()
     private lateinit var builder: AlertDialog.Builder
     private lateinit var displayingDialog: AlertDialog
-    private var firstFragmentCall=true
+    private var firstFragmentCall = true
 
-
+    /**
+     * Builds layout and observes data from repository
+     *
+     * @param inflater Instance to inflate databinding layout
+     * @param container Layout
+     * @param savedInstanceState Passed data from former fragment
+     * @return layout with data binding
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -64,14 +80,14 @@ class ConfigDialogFragment : Fragment() {
             binding.configPrioDuration.duration = it.prioritizationTime.millis
             binding.sMode.isChecked = it.mode == Mode.TWO
             displayingDialog.dismiss()
-            if(!firstFragmentCall){
+            if (!firstFragmentCall) {
                 Toast.makeText(
                     context,
-                    "Your settings are saved",
+                    getString(R.string.text_save_config),
                     Toast.LENGTH_LONG
                 ).show()
             }
-            firstFragmentCall=false
+            firstFragmentCall = false
         }
 
         setSwitchTextOnState(binding.sMode.isChecked)
@@ -81,27 +97,23 @@ class ConfigDialogFragment : Fragment() {
         return binding.root
     }
 
-    private fun areSettingsChanged():Boolean {
-        var isSlotDurationSame =
-            binding.configStandardDuration.duration == viewModel.standardSlotDuration.millis
-        var isDelayNotificationTimeSame =
-            binding.configDelayDuration.duration == viewModel.delayNotificationTime.millis
-        var isNotificationTimeSame =
-            binding.configDurationNotification.duration == viewModel.notificationTime.millis
-        var isPrioDurationSame =
-            binding.configPrioDuration.duration == viewModel.prioritizationTime.millis
-        var isModeSame = binding.sMode.isChecked == viewModel.isModeTwo
-        return !(isSlotDurationSame&&isDelayNotificationTimeSame&&isNotificationTimeSame&&isPrioDurationSame&&isModeSame)
-    }
-
+    /**
+     * Depend on mode the text is set
+     *
+     * @param isChecked switch is checked-> true, else false
+     */
     private fun setSwitchTextOnState(isChecked: Boolean) {
         if (isChecked) {
-            binding.tvSwitchText.text = "Mode 2"
+            binding.tvSwitchText.text = MODE_SECOND
         } else {
-            binding.tvSwitchText.text = "Mode 1"
+            binding.tvSwitchText.text = MODE_FIRST
         }
     }
 
+    /**
+     * Emits entered data to viewModel
+     *
+     */
     private fun emitSettingChanges() {
         if (viewModel.isModeTwo == binding.sMode.isChecked) {
             viewModel.saveConfigValues(
@@ -113,7 +125,7 @@ class ConfigDialogFragment : Fragment() {
             displayingDialog.show()
             displayingDialog.fullScreenProgressBar.indeterminateMode = true
 
-        } else if (viewModel.slotListSize == 0 && viewModel.isModeTwo != binding.sMode.isChecked) {
+        } else if (viewModel.slotListSize == SLOT_LIST_EMPTY && viewModel.isModeTwo != binding.sMode.isChecked) {
             viewModel.saveConfigValues(
                 Duration(binding.configStandardDuration.duration),
                 Duration(binding.configDurationNotification.duration),
@@ -127,18 +139,16 @@ class ConfigDialogFragment : Fragment() {
         } else {
             Toast.makeText(
                 context,
-                "Your queue is not empty to switch your mode",
-                Toast.LENGTH_LONG
-            ).show()
-            Toast.makeText(
-                context,
-                "Your settings are not saved",
+                getString(R.string.text_denied_save_config),
                 Toast.LENGTH_LONG
             ).show()
         }
     }
 
-
+    /**
+     * Displays values from repository in the screen
+     *
+     */
     private fun displayValues() {
         binding.configStandardDuration.duration = viewModel.standardSlotDuration.millis
         binding.configDelayDuration.duration = viewModel.delayNotificationTime.millis

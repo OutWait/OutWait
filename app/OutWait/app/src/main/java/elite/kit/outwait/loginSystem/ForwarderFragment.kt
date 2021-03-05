@@ -35,22 +35,16 @@ class ForwarderFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        return inflater.inflate(R.layout.fragment_forwarder, container, false)
-    }
-
-    /**
-     * Called to have the fragment instantiate its user interface view.
-     *
-     * @param view Current view
-     * @param savedInstanceState A mapping from String keys to various Parcelable values.
-     */
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
         userViewModel.loginResponse.observeOnce(viewLifecycleOwner, Observer { listOfUsers ->
             when {
+                listOfUsers.isEmpty() -> {
+                    Log.i("navigate", "loginFragment")
+                    userViewModel.navigateToLoginFragment()
+                }
+
                 listOfUsers.isNotEmpty() && listOfUsers.component1() is ClientInfo -> {
-                    Log.i("navigate","remainingFragment")
+                    Log.i("navigate", "remainingFragment")
                     userViewModel.navigateToRemainingTimeFragment()
                 }
 
@@ -62,14 +56,10 @@ class ForwarderFragment : Fragment() {
                     userViewModel.navigateToLoginFragment()
                 }
 
-                listOfUsers.isEmpty() -> {
-                    Log.i("navigate","loginFragment")
-                    userViewModel.navigateToLoginFragment()
-                }
-
             }
         })
 
+        return inflater.inflate(R.layout.fragment_forwarder, container, false)
     }
 
     /**

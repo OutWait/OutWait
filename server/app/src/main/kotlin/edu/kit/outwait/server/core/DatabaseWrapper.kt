@@ -89,7 +89,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
      * @param slotCode code of the slot which approximated "time of arrival" is retrieved.
      * @return approximated "time of arrival" in Date type,
      */
-    fun getSlotApprox(slotCode: SlotCode): Date? {
+    private fun getSlotApprox(slotCode: SlotCode): Date? {
         try {
             val getSlotApproxQuery =
                 connection.prepareStatement(
@@ -331,7 +331,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
      * @param slotCode SlotCode of Slot
      * @return true if Slot exists else false
      */
-    fun checkIfSlotExists (slotCode: SlotCode) : Boolean {
+    private fun checkIfSlotExists (slotCode: SlotCode) : Boolean {
         try {
             val checkIfSlotExistsQuery =
                 connection.prepareStatement("SELECT code " + "FROM Slot " + "WHERE Slot.code = ?")

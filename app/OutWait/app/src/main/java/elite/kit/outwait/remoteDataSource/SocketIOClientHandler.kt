@@ -54,6 +54,9 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
         clientEventToCallbackMapping[Event.INVALID_REQUEST_C] = { receivedData ->
             onInvalidRequest(receivedData as JSONErrorMessageWrapper)
         }
+        clientEventToCallbackMapping[Event.NETWORK_ERROR] = { receivedData ->
+            onNetworkError(receivedData as JSONEmptyWrapper)
+        }
     }
 
     override fun initCommunication(): Boolean {
@@ -63,12 +66,13 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
             pushError(ClientServerErrors.COULD_NOT_CONNECT)
             endCommunication()
             return false
-        } else {
-            /*
+        } /*else {
+
             this.currentSessionID = cSocket.getCurrentSessionID()
             Log.i("SocketMHandler", "Connection established with $currentSessionID id")
-             */
+
         }
+        */
 
         // Mit return warten bis Server readyToServe signalisiert
         var curWaitTimeForResponse = 0L
@@ -172,6 +176,11 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
     private fun onInvalidRequest(wrappedJSONData: JSONErrorMessageWrapper) {
         val errorMessage = wrappedJSONData.getErrorMessage()
         pushError(ClientServerErrors.INVALID_REQUEST)
+    }
+
+    private fun onNetworkError(wrappedJSONData: JSONEmptyWrapper) {
+        pushError(ClientServerErrors.NETWORK_ERROR)
+        endCommunication()
     }
 
     private fun pushError(error: ClientServerErrors){

@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
+
 }
 apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
@@ -35,6 +36,7 @@ android {
     }
 
     buildFeatures{
+
         dataBinding=true
     }
 
