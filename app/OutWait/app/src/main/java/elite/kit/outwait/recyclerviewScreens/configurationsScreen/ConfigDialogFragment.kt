@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
@@ -94,6 +95,11 @@ class ConfigDialogFragment : Fragment() {
         binding.sMode.setOnCheckedChangeListener { buttonView, isChecked ->
             setSwitchTextOnState(isChecked)
         }
+
+        viewModel.slotListSize.observe(viewLifecycleOwner, Observer {
+            binding.countOfClients.text="Count of Clients: "+it.size.toString()
+        })
+
         return binding.root
     }
 
@@ -125,7 +131,7 @@ class ConfigDialogFragment : Fragment() {
             displayingDialog.show()
             displayingDialog.fullScreenProgressBar.indeterminateMode = true
 
-        } else if (viewModel.slotListSize == SLOT_LIST_EMPTY && viewModel.isModeTwo != binding.sMode.isChecked) {
+        } else if (viewModel.slotListSize.value!!.size== SLOT_LIST_EMPTY && viewModel.isModeTwo != binding.sMode.isChecked) {
             viewModel.saveConfigValues(
                 Duration(binding.configStandardDuration.duration),
                 Duration(binding.configDurationNotification.duration),
