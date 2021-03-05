@@ -65,8 +65,32 @@ class ClientRepository @Inject constructor(
     init {
         //Get notified with server errors
         remote.getErrors().observeForever {
-            if (it.last() == ClientServerErrors.INVALID_SLOT_CODE){
-                pushError(ClientErrors.INVALID_SLOT_CODE)
+            if (it !== null && it.isNotEmpty()){
+                when (it.last()){
+                    ClientServerErrors.INVALID_SLOT_CODE
+                    ->{
+                        pushError(ClientErrors.INVALID_SLOT_CODE)
+                    }
+                    ClientServerErrors.INVALID_REQUEST
+                    -> {
+                        pushError(ClientErrors.INTERNAL_ERROR)
+                    }
+                    ClientServerErrors.NETWORK_ERROR
+                    -> {
+                        pushError(ClientErrors.INTERNET_ERROR)
+                        remoteConnected = false
+                    }
+                    ClientServerErrors.SERVER_DID_NOT_RESPOND
+                    ->{
+                        pushError(ClientErrors.INTERNET_ERROR)
+                        remoteConnected = false
+                    }
+                    ClientServerErrors.COULD_NOT_CONNECT
+                    -> {
+                        pushError(ClientErrors.INTERNET_ERROR)
+                        remoteConnected = false
+                    }
+                }
             }
         }
 
@@ -122,9 +146,17 @@ class ClientRepository @Inject constructor(
      */
     fun refreshWaitingTime(code : String){
         CoroutineScope(IO).launch {
-            remote.refreshWaitingTime(code)
+            if (remoteConnected) remote.refreshWaitingTime(code)
+            else newCodeEntered(code)
         }
     }
+
+    /**
+     * returns true if the app is connected to the server and receives
+     * waiting time updates and false elsewise.
+     *
+     */
+    fun isConnectedToServer() = remoteConnected
 
     /*
     updates the error notifications list with the passed error in a way that

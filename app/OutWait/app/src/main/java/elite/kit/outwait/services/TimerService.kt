@@ -27,32 +27,60 @@ import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+/**
+ * Granularity of the time steps with which the client database is checked for pending appointments
+ */
 private const val TIME_STEP_FOR_PENDING_CHECK = 30000L
 
-//TODO stopSelf() auslagern und dabei NotifChannels bzw Notifs löschen? -> RYT Tutorial?
-//TODO NotifChannels / Notifs schön machen mit Sound oderso
-
+/**
+ * The timer service is started, once a slot was entered into the client database and stops itself
+ * once the last slot was deleted from the client database. It is responsible for background work,
+ * and pushes notification to the user informing about incoming changes regarding his appointments,
+ * even when the app is in the background.
+ *
+ */
 @AndroidEntryPoint
 class TimerService @Inject constructor(): LifecycleService() {
 
+    /**
+     * Injected NotificationBuilder for the permanent notification(s) of the foreground service
+     */
     @channel_1NotificationBuilder
     @Inject
     lateinit var permNotificationBuilder: NotificationCompat.Builder
 
+    /**
+     * Injected NotificationBuilder for the non-permanent notification(s) of the foreground service
+     */
     @channel_2NotificationBuilder
     @Inject
     lateinit var secondNotificationBuilder: NotificationCompat.Builder
 
+    /**
+     * Injected access to the client database
+     */
     @Inject
     lateinit var db : ClientInfoDao
 
+    /**
+     * Injected reference to the service handler that started the service
+     */
     @Inject
     lateinit var handler: ServiceHandler
 
+    /**
+     * Observed LiveData from the client database
+     */
     private lateinit var allClientInfoAsLiveData: LiveData<List<ClientInfo>>
 
+    /**
+     * The ClientInfo object of the currently next slot in the client database
+     */
     private lateinit var nextAppointmentClientInfo: ClientInfo
 
+    /**
+     * This list stores slot codes of pending appointments for which the user was already notified
+     */
     private var pendingSlotCodesNotified: MutableList<String> = mutableListOf()
 
     /**
@@ -70,45 +98,49 @@ class TimerService @Inject constructor(): LifecycleService() {
                 NotificationManager.IMPORTANCE_HIGH,
             )
             serviceChannel1.description = PERM_CHANNEL_DESCRIPTION
-
             manager.createNotificationChannel(serviceChannel1)
-            Log.i( "TimerService", "Permanent notifChannel was created")
 
             val serviceChannel2 = NotificationChannel(
                 SECOND_CHANNEL_ID,
                 SECOND_CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH
-            )
+                NotificationManager.IMPORTANCE_HIGH)
             serviceChannel2.description = SECOND_CHANNEL_DESCRIPTION
             manager.createNotificationChannel(serviceChannel2)
-            Log.i("TimerService", "Second NotifChannel was created")
         }
-
+        Log.i("TimerService", "NotifChannels created")
     }
 
+    /**
+     * Called when the service was started (after onCreate) (@see android documentation for further
+     * information).
+     * This method actually starts the service and its background work / logic.
+     *
+     * @param intent The Intent supplied to Context.startService(Intent), as given
+     * @param flags Additional data about this start request
+     * @param startId A unique integer representing this specific request to start
+     * @return indicates what semantics the system should use for the service's current started state
+     */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         val permNotification = permNotificationBuilder.build()
-        Log.i("TimerService", " default permNotification was build")
         startForeground(PERM_NOTIFICATION_ID, permNotification)
         Log.i("TimerService", "startForegroundService called")
-
 
         CoroutineScope(Dispatchers.Main).launch {
             doWork()
         }
 
+        // check for pending appointments, independent of LiveData changes
         CoroutineScope(Dispatchers.IO).launch {
             while(db.getAllClientInfo().isNotEmpty()) {
                 checkNotifiedForExpiredSlotCodes(db.getAllClientInfo())
                 checkForPendingAppointment(db.getAllClientInfo())
                 Thread.sleep(TIME_STEP_FOR_PENDING_CHECK)
             }
-            Log.i("TimerService","DB empty in IODispatch -> Service should stop")
+            Log.i("TimerService","DB empty, Service should stop")
             stopSelf()
         }
 
-        Log.i("TimerService", "super.onStartCommand was returned")
+        Log.i("TimerService", "super.onStartCommand was called")
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -123,9 +155,13 @@ class TimerService @Inject constructor(): LifecycleService() {
         Log.i("TimerService", "Service onDestroy was called")
     }
 
+    /**
+     * This method observers the client database via LiveData and reacts to changes with
+     * pushing respective notifications to the user or stopping the service
+     *
+     */
     private fun doWork() {
         Log.i("TimerService", "backgroundWork was started")
-
         allClientInfoAsLiveData = db.getAllClientInfoObservable()
         Log.i("TimerService", "db was accessed")
 
@@ -138,12 +174,18 @@ class TimerService @Inject constructor(): LifecycleService() {
                 checkForDelay(newList)
                 checkForPendingAppointment(newList)
             } else {
-                Log.i("TimerService", "LiveData empty in doWork() -> Service should stop")
-                stopSelf() // TODO Service richtig beenden, Notif löschen
+                Log.i("TimerService/doWork()", "LiveData empty, Service should stop")
+                stopSelf()
             }
         })
     }
 
+    /**
+     * Updates the permanent notification with information regarding the current next
+     * slot / appointment
+     *
+     * @param allClientInfoList all ClientInfos currently in the client database
+     */
     private fun updatePermanentNotification(allClientInfoList: List<ClientInfo>) {
         val newNextClientInfo = getNextClientInfo(allClientInfoList)
         val instituteName = newNextClientInfo.institutionName
@@ -151,7 +193,6 @@ class TimerService @Inject constructor(): LifecycleService() {
 
         val formatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
         val appointmentString = formatter.print(appointmentTime) + " o'clock"
-
 
         val notification: Notification = permNotificationBuilder
             .setContentTitle(getString(R.string.Perm_Notif_BaseTitle))
@@ -165,6 +206,14 @@ class TimerService @Inject constructor(): LifecycleService() {
         manager.notify(PERM_NOTIFICATION_ID, notification)
     }
 
+    /**
+     * Checks the current slots in the client database for delays, meaning that the difference between
+     * their currently approximated and original time is greater than their current delayNotificationTime.
+     * If that is the case, an appropriate push notification is created and the original time is reset allowing
+     * to check for further delays in the future.
+     *
+     * @param allClientInfoList all ClientInfos currently in the client database
+     */
     private fun checkForDelay(allClientInfoList : List<ClientInfo>) {
 
         val iterator = allClientInfoList.iterator()
@@ -175,14 +224,13 @@ class TimerService @Inject constructor(): LifecycleService() {
             if(next.approximatedTime.millis - next.originalAppointmentTime.millis
                  > next.delayNotificationTime.millis) {
 
-               // erzeuge auf secondChannel eine DelayNotification push Notification
+               // create delay push notification on the second notification channel
                 val approxTime = next.approximatedTime
                 val delayDuration = Duration(next.approximatedTime.millis - next.originalAppointmentTime.millis)
 
                 val formatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
                 val appointmentString = formatter.print(approxTime) + " o'clock"
                 val delayString = TransformationOutput.durationToString(delayDuration)
-                    // delayDuration.toStandardMinutes().toString() + " min"
 
                 val delayNotification: Notification = secondNotificationBuilder
                     .setContentTitle(getString(R.string.Delay_Notif_BaseTitle) + next.institutionName)
@@ -210,6 +258,14 @@ class TimerService @Inject constructor(): LifecycleService() {
         }
     }
 
+    /**
+     * Checks the current slots in the client database, if any of them is pending meaning the difference
+     * between the currently approximated time and the current time is smaller than their current
+     * notification time. If thats the case an appropriate push notification is created and the
+     * respective slot (code) is marked as already notified
+     *
+     * @param allClientInfoList all ClientInfos currently in the client database
+     */
     private fun checkForPendingAppointment(allClientInfoList : List<ClientInfo>) {
         val iterator = allClientInfoList.iterator()
         while (iterator.hasNext()) {
@@ -236,6 +292,12 @@ class TimerService @Inject constructor(): LifecycleService() {
         }
     }
 
+    /**
+     * Gets the ClientInfo of the appointment that is currently the next one
+     *
+     * @param allClientInfoList all ClientInfos currently in the client database
+     * @return the ClientInfo of the slot that is currently the next one
+     */
     private fun getNextClientInfo(allClientInfoList: List<ClientInfo>) : ClientInfo {
         var nextClientInfo = allClientInfoList.first()
 
@@ -247,6 +309,12 @@ class TimerService @Inject constructor(): LifecycleService() {
         return nextClientInfo
     }
 
+    /**
+     * Checks the list of already notified slot codes for expired slot codes, meaning these slot codes
+     * are no longer stored in the client database (or rather contained in the LiveData)
+     *
+     * @param allClientInfoList all ClientInfos currently in the client database
+     */
     private fun checkNotifiedForExpiredSlotCodes(allClientInfoList : List<ClientInfo>) {
         for (notified in pendingSlotCodesNotified) {
             var isExpired = true

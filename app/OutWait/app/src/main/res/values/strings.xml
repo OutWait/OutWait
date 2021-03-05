@@ -48,6 +48,8 @@
     <!-- Strings for Error-Notifications (Client) -->
     <string name="EXAMPLE_ERROR">Example Error!</string>
     <string name="INVALID_SLOT_CODE">Your code is not valid!</string>
+    <string name="INTERNAL_ERROR">A internal App Error has occurred. Please contact OutWait!</string>
+    <string name="INTERNET_ERROR">Lost connection to server. Proof your internet connection and try to refresh!</string>
     <string name="process_title">Process</string>
     <!-- Strings related to push notifications -->
     <string name="Perm_Notif_BaseTitle">Your Next Appointment Today</string>

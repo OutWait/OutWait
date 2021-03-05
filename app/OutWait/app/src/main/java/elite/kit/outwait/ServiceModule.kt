@@ -17,6 +17,11 @@ import elite.kit.outwait.services.*
 @InstallIn(ServiceComponent::class)
 object ServiceModule {
 
+    /**
+     * Dependency Injection, providing a pending intent for the main activity
+     *
+     * @param app the application context
+     */
     @ServiceScoped
     @Provides
     fun provideMainActivityPendingIntent(@ApplicationContext app: Context) = PendingIntent.getActivity(
@@ -25,6 +30,14 @@ object ServiceModule {
         Intent(app, MainActivity::class.java), 0 //TODO: FLAG_UPDATE_CURRENT -> hilft das mit issue#31?
     )
 
+    /**
+     * Dependency Injection, providing the NotificationBuilder for the permanent push notifications
+     * posted on the first notification channel
+     *
+     * @param app the application context
+     * @param pendingIntent the pending intent for the main activity, used to navigate back into the app
+     * on touch of the respective notification
+     */
     @channel_1NotificationBuilder
     @ServiceScoped
     @Provides
@@ -36,6 +49,14 @@ object ServiceModule {
         .setSmallIcon(R.drawable.ic_timer)
         .setContentIntent(pendingIntent)
 
+    /**
+     * Dependency Injection, providing the NotificationBuilder for the non-permanent push notifications
+     * posted on the second notification channel
+     *
+     * @param app the application context
+     * @param pendingIntent the pending intent for the main activity, used to navigate back into the app
+     * on touch of the respective notification
+     */
     @channel_2NotificationBuilder
     @ServiceScoped
     @Provides
