@@ -78,7 +78,5 @@ class RemainingTimeViewModel @Inject constructor(
         }
     }
 
-    fun navigateBack() {
-        coordinator.navigateToForwarderFragment()
-    }
+
 }

@@ -189,8 +189,8 @@ class InstituteRepository @Inject constructor(
         CoroutineScope(IO).launch {
             remote.logout()
         }
-        communicationEstablished = false
         loggedIn.value = false
+        communicationEstablished = false
         inTransaction.value = false
     }
 
