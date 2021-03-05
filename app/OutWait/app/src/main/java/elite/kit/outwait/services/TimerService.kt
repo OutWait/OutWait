@@ -17,6 +17,7 @@ import elite.kit.outwait.channel_1NotificationBuilder
 import elite.kit.outwait.channel_2NotificationBuilder
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
+import elite.kit.outwait.utils.TransformationOutput
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,6 +28,9 @@ import org.joda.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 private const val TIME_STEP_FOR_PENDING_CHECK = 30000L
+
+//TODO stopSelf() auslagern und dabei NotifChannels bzw Notifs löschen? -> RYT Tutorial?
+//TODO NotifChannels / Notifs schön machen mit Sound oderso
 
 @AndroidEntryPoint
 class TimerService @Inject constructor(): LifecycleService() {
@@ -177,7 +181,8 @@ class TimerService @Inject constructor(): LifecycleService() {
 
                 val formatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
                 val appointmentString = formatter.print(approxTime) + " o'clock"
-                val delayString = delayDuration.toStandardMinutes().toString() + " min"
+                val delayString = TransformationOutput.durationToString(delayDuration)
+                    // delayDuration.toStandardMinutes().toString() + " min"
 
                 val delayNotification: Notification = secondNotificationBuilder
                     .setContentTitle(getString(R.string.Delay_Notif_BaseTitle) + next.institutionName)
