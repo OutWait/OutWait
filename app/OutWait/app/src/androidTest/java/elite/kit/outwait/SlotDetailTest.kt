@@ -54,17 +54,19 @@ class SlotDetailTest {
         Thread.sleep(2000)
         onView(withId(R.id.etIdentifierAddDialog)).perform(typeText(SLOT_IDENTIFIER))
         onView(withText(getResourceString(R.string.confirm))).perform(click())
+        onView(withId(R.id.ivSaveTransaction)).perform(click())
+
         Thread.sleep(4000)
 
 
     }
 
-    //T26
+    //T26 and T27
     @Test
     fun showSlotDetail(){
         onView(withId(R.id.slotList)).perform(
             actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                1,
+                0,
                 click()
             )
         )
@@ -73,7 +75,6 @@ class SlotDetailTest {
         onView(withId(R.id.tvIdentifierDetail)).check(matches(not(withText(""))))
         onView(withId(R.id.tvDurationDetail)).check(matches(not(withText(""))))
         onView(withText(getResourceString(R.string.confirm))).perform(click())
-        onView(withId(R.id.ivSaveTransaction)).perform(click())
         Thread.sleep(3000)
 
     }
