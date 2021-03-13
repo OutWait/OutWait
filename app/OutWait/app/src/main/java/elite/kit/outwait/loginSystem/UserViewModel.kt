@@ -69,8 +69,7 @@ class UserViewModel @Inject constructor(
      *
      */
     fun login() {
-        wrapEspressoIdlingResource{
-        repoInstitute.login(instituteName.value!!, institutePassword.value!!)}
+        repoInstitute.login(instituteName.value!!, institutePassword.value!!)
     }
 
     /**

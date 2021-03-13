@@ -151,7 +151,7 @@ class InstituteRepository @Inject constructor(
      * @param password password of the institute
      */
     fun login(username: String, password: String) {
-
+        wrapEspressoIdlingResource {
             CoroutineScope(IO).launch {
                 if (communicationEstablished || remote.initCommunication()) {
                     if (remote.login(username, password)) {
@@ -160,7 +160,7 @@ class InstituteRepository @Inject constructor(
                     }
                 }
             }
-
+        }
     }
 
     /*
