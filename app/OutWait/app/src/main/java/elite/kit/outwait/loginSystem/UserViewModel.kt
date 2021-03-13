@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientRepository.ClientRepository
 import elite.kit.outwait.instituteRepository.InstituteRepository
+import elite.kit.outwait.utils.EspressoIdlingResource.wrapEspressoIdlingResource
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -68,7 +69,8 @@ class UserViewModel @Inject constructor(
      *
      */
     fun login() {
-        repoInstitute.login(instituteName.value!!, institutePassword.value!!)
+        wrapEspressoIdlingResource{
+        repoInstitute.login(instituteName.value!!, institutePassword.value!!)}
     }
 
     /**

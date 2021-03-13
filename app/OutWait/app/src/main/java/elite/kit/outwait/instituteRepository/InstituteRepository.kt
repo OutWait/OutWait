@@ -8,6 +8,8 @@ import elite.kit.outwait.customDataTypes.ReceivedList
 import elite.kit.outwait.instituteDatabase.facade.InstituteDBFacade
 import elite.kit.outwait.remoteDataSource.ManagementHandler
 import elite.kit.outwait.remoteDataSource.ManagementServerErrors
+import elite.kit.outwait.utils.EspressoIdlingResource
+import elite.kit.outwait.utils.EspressoIdlingResource.wrapEspressoIdlingResource
 import elite.kit.outwait.waitingQueue.gravityQueue.GravityQueueConverter
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 import kotlinx.coroutines.CoroutineScope
@@ -149,14 +151,16 @@ class InstituteRepository @Inject constructor(
      * @param password password of the institute
      */
     fun login(username: String, password: String) {
-        CoroutineScope(IO).launch {
-            if (communicationEstablished || remote.initCommunication()) {
-                if (remote.login(username, password)) {
-                    communicationEstablished = true
-                    loggedIn.postValue(true)
+
+            CoroutineScope(IO).launch {
+                if (communicationEstablished || remote.initCommunication()) {
+                    if (remote.login(username, password)) {
+                        communicationEstablished = true
+                        loggedIn.postValue(true)
+                    }
                 }
             }
-        }
+
     }
 
     /*
@@ -167,19 +171,21 @@ class InstituteRepository @Inject constructor(
     that we can provide to the GUI.
      */
     private fun receivedNewList(receivedList: ReceivedList) {
-        CoroutineScope(IO).launch {
-            Log.d("InstiRepo", "receivedList empfangen")
+        wrapEspressoIdlingResource {
+            CoroutineScope(IO).launch {
+                Log.d("InstiRepo", "receivedList empfangen")
 
-            val newAuxMap = auxHelper.receivedList(
-                receivedList,
-                inTransaction.value!!
-            ) //we never set inTransaction null, so we can assure it has a non null value
+                val newAuxMap = auxHelper.receivedList(
+                    receivedList,
+                    inTransaction.value!!
+                ) //we never set inTransaction null, so we can assure it has a non null value
 
-            val timeSlots = GravityQueueConverter().receivedListToTimeSlotList(
-                receivedList,
-                newAuxMap
-            )
-            timeSlotList.postValue(timeSlots)
+                val timeSlots = GravityQueueConverter().receivedListToTimeSlotList(
+                    receivedList,
+                    newAuxMap
+                )
+                timeSlotList.postValue(timeSlots)
+            }
         }
     }
 
@@ -214,10 +220,12 @@ class InstituteRepository @Inject constructor(
      * @param duration how much time is scheduled for the slot.
      */
     fun newSpontaneousSlot(auxiliaryIdentifier: String, duration: Duration) {
-        CoroutineScope(IO).launch {
-            if (transaction()) {
-                auxHelper.newAux(auxiliaryIdentifier)
-                remote.addSpontaneousSlot(duration, DateTime.now())
+        wrapEspressoIdlingResource {
+            CoroutineScope(IO).launch {
+                if (transaction()) {
+                    auxHelper.newAux(auxiliaryIdentifier)
+                    remote.addSpontaneousSlot(duration, DateTime.now())
+                }
             }
         }
     }
