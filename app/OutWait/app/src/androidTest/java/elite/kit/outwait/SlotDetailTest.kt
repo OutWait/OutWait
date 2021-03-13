@@ -1,4 +1,4 @@
-package elite.kit.outwait.util
+package elite.kit.outwait
 
 import android.content.Context
 import androidx.test.InstrumentationRegistry.getTargetContext
@@ -19,6 +19,7 @@ import elite.kit.outwait.R
 import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import org.hamcrest.CoreMatchers.not
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -47,7 +48,7 @@ class SlotDetailTest {
                 ViewActions.closeSoftKeyboard()
             )
         Espresso.onView(ViewMatchers.withId(R.id.btnLoginFrag)).perform(ViewActions.click())
-        Thread.sleep(4000)
+        Thread.sleep(8000)
         //Verify of forwarding
         onView(withId(R.id.floatingActionButton)).perform(click())
         Thread.sleep(2000)
@@ -73,33 +74,22 @@ class SlotDetailTest {
         onView(withId(R.id.tvDurationDetail)).check(matches(not(withText(""))))
         onView(withText(getResourceString(R.string.confirm))).perform(click())
         onView(withId(R.id.ivSaveTransaction)).perform(click())
-        openActivityRule.scenario.close()
-
+        Thread.sleep(3000)
 
     }
 
-    @Before
+    @After
     fun emptyQueue(){
-        //Input of correct login data
-       /* Espresso.onView(ViewMatchers.withId(R.id.etInstituteName))
-            .perform(ViewActions.typeText(elite.kit.outwait.INSTITUTION_NAME_CORRECT), ViewActions.closeSoftKeyboard())
-        Espresso.onView(ViewMatchers.withId(R.id.etInstitutePassword))
-            .perform(ViewActions.typeText(elite.kit.outwait.INSTITUTION_PASSWORD_CORRECT), ViewActions.closeSoftKeyboard())
-        Espresso.onView(ViewMatchers.withId(R.id.btnLoginFrag)).perform(ViewActions.click())
-        Thread.sleep(4000)
-        //Verify of forwarding
-        Espresso.onView(ViewMatchers.withId(R.id.floatingActionButton))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        onView(withId(R.id.config)).check(matches(isDisplayed()))*/
-
-       /* onView(withId(R.id.slotList)).perform(
+       onView(withId(R.id.slotList)).perform(
             actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 0,
                 swipeLeft()
             )
         )
         Thread.sleep(5000)
-        onView(withId(R.id.ivSaveTransaction)).perform(click())*/
+        onView(withId(R.id.ivSaveTransaction)).perform(click())
+        openActivityRule.scenario.close()
+
     }
 
     private fun getResourceString(id: Int): String? {
