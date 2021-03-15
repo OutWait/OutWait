@@ -2,6 +2,7 @@ package elite.kit.outwait
 
 import android.content.Context
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
@@ -16,6 +17,7 @@ import elite.kit.outwait.*
 import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.util.StringResource
+import elite.kit.outwait.utils.EspressoIdlingResource
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -41,6 +43,8 @@ class CountOfClientsTest {
 
     @Before
     fun addSlots() {
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
+
         //Login
         onView(withId(R.id.etInstituteName))
             .perform(
@@ -53,73 +57,74 @@ class CountOfClientsTest {
                 closeSoftKeyboard()
             )
         onView(withId(R.id.btnLoginFrag)).perform(click())
-        Thread.sleep(4000)
         //Verify of forwarding
         onView(withId(R.id.floatingActionButton)).perform(click())
-        Thread.sleep(2000)
+
         //Add first slot
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(typeText(SLOT_IDENTIFIER_ONE), closeSoftKeyboard())
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        Thread.sleep(2000)
+
         //Add second slot
         onView(withId(R.id.floatingActionButton)).perform(click())
-        Thread.sleep(2000)
+
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(typeText(SLOT_IDENTIFIER_TWO),closeSoftKeyboard())
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        Thread.sleep(2000)
+
         //Add third slot
         onView(withId(R.id.floatingActionButton)).perform(click())
-        Thread.sleep(2000)
+
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(typeText(SLOT_IDENTIFIER_THREE), closeSoftKeyboard())
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        Thread.sleep(2000)
+
 
         onView(withId(R.id.ivSaveTransaction)).perform(click())
 
-        Thread.sleep(4000)
+
     }
 
     //T30
     @Test
     fun areThreeClientsAdded() {
         onView(withId(R.id.config)).perform(click())
-        Thread.sleep(1000)
+
         onView(withId(R.id.countOfClients)).check(matches(withText(StringResource.getResourceString(R.string.text_counter) + THREE)))
     }
 
     @After
     fun emptyQueue() {
         onView(ViewMatchers.isRoot()).perform(pressBack())
-        Thread.sleep(1000)
+
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FIRST_SLOT,
                 swipeLeft()
             )
         )
-        Thread.sleep(4000)
+
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FIRST_SLOT_TRANSACTION,
                 swipeLeft()
             )
         )
-        Thread.sleep(4000)
+
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FIRST_SLOT_TRANSACTION,
                 swipeLeft()
             )
         )
-        Thread.sleep(3100)
         onView(withId(R.id.ivSaveTransaction)).perform(click())
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
     }
+
+
 
 }

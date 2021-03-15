@@ -13,7 +13,11 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.dataItem.TimeSlotItem
+import elite.kit.outwait.instituteRepository.InstituteRepository
+import elite.kit.outwait.recyclerviewScreens.managementViewScreen.Hilt_ManagementViewFragment
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.util.StringResource
 import org.hamcrest.*
@@ -46,6 +50,7 @@ class AddSlotsTest {
     @get:Rule
     var openActivityRule = activityScenarioRule<MainActivity>()
 
+
     @Before
     fun loginAndModeOne() {
         //Login
@@ -66,6 +71,7 @@ class AddSlotsTest {
 
     }
 
+    //TEST 6
     @Test
     fun addSlots() {
         //Add first slot
@@ -193,7 +199,6 @@ class AddSlotsTest {
         )
         onView(withId(R.id.tvDurationDetail)).check(matches((withText(THIRD_DURATION))))
         onView(withText(StringResource.getResourceString(R.string.confirm))).perform(click())
-
 
     }
 

@@ -114,6 +114,7 @@ class InstituteRepository @Inject constructor(
 
     /** Provides an observable object that stores all institute preferences */
     fun getObservablePreferences() = preferences as LiveData<Preferences>
+
     /**
      * Provides an observable List that stores the waiting queue. All slots
      * are ordered by their time of beginning and contain all slot specific
@@ -121,6 +122,7 @@ class InstituteRepository @Inject constructor(
      * there is a pause slot in between them.
      */
     fun getObservableTimeSlotList() = timeSlotList as LiveData<List<TimeSlot>>
+
     /**
      * Returns all pushed error notifications in an observable list,
      * sorted chronologically by their point of occurrence. Those errors
@@ -129,10 +131,12 @@ class InstituteRepository @Inject constructor(
      * the same time). See [InstituteErrors]
      */
     fun getErrorNotifications() = errorNotifications as LiveData<List<InstituteErrors>>
+
     /** Provides an observable boolean that tells if there is an opened queue manipulation
      * transaction on this device
      */
     fun isInTransaction() = inTransaction as LiveData<Boolean>
+
     /** Provides an observable boolean that tells if the institute is logged in*/
     fun isLoggedIn() = loggedIn as LiveData<Boolean>
 
@@ -151,8 +155,8 @@ class InstituteRepository @Inject constructor(
      * @param password password of the institute
      */
     fun login(username: String, password: String) {
-        wrapEspressoIdlingResource {
-            CoroutineScope(IO).launch {
+        CoroutineScope(IO).launch {
+            wrapEspressoIdlingResource {
                 if (communicationEstablished || remote.initCommunication()) {
                     if (remote.login(username, password)) {
                         communicationEstablished = true
@@ -160,6 +164,7 @@ class InstituteRepository @Inject constructor(
                     }
                 }
             }
+
         }
     }
 
@@ -171,23 +176,24 @@ class InstituteRepository @Inject constructor(
     that we can provide to the GUI.
      */
     private fun receivedNewList(receivedList: ReceivedList) {
-        wrapEspressoIdlingResource {
-            CoroutineScope(IO).launch {
-                Log.d("InstiRepo", "receivedList empfangen")
 
-                val newAuxMap = auxHelper.receivedList(
-                    receivedList,
-                    inTransaction.value!!
-                ) //we never set inTransaction null, so we can assure it has a non null value
+        CoroutineScope(IO).launch {
+            Log.d("InstiRepo", "receivedList empfangen")
 
-                val timeSlots = GravityQueueConverter().receivedListToTimeSlotList(
-                    receivedList,
-                    newAuxMap
-                )
-                timeSlotList.postValue(timeSlots)
-            }
+            val newAuxMap = auxHelper.receivedList(
+                receivedList,
+                inTransaction.value!!
+            ) //we never set inTransaction null, so we can assure it has a non null value
+
+            val timeSlots = GravityQueueConverter().receivedListToTimeSlotList(
+                receivedList,
+                newAuxMap
+            )
+            timeSlotList.postValue(timeSlots)
         }
+
     }
+
 
     /**
      * Sends a logout request to the server.
@@ -195,7 +201,10 @@ class InstituteRepository @Inject constructor(
      */
     fun logout() {
         CoroutineScope(IO).launch {
-            remote.logout()
+            wrapEspressoIdlingResource {
+
+                remote.logout()
+            }
         }
 
         cleanUp()
@@ -208,7 +217,10 @@ class InstituteRepository @Inject constructor(
      */
     fun changePreferences(preferences: Preferences) {
         CoroutineScope(IO).launch {
-            remote.changePreferences(preferences)
+            wrapEspressoIdlingResource {
+
+                remote.changePreferences(preferences)
+            }
         }
     }
 
@@ -220,8 +232,9 @@ class InstituteRepository @Inject constructor(
      * @param duration how much time is scheduled for the slot.
      */
     fun newSpontaneousSlot(auxiliaryIdentifier: String, duration: Duration) {
-        wrapEspressoIdlingResource {
             CoroutineScope(IO).launch {
+                wrapEspressoIdlingResource {
+
                 if (transaction()) {
                     auxHelper.newAux(auxiliaryIdentifier)
                     remote.addSpontaneousSlot(duration, DateTime.now())
@@ -241,9 +254,12 @@ class InstituteRepository @Inject constructor(
     fun newFixedSlot(auxiliaryIdentifier: String, appointmentTime: DateTime, duration: Duration) {
         //add aux to db
         CoroutineScope(IO).launch {
-            if (transaction()) {
-                auxHelper.newAux(auxiliaryIdentifier)
-                remote.addFixedSlot(duration, appointmentTime)
+            wrapEspressoIdlingResource {
+
+                if (transaction()) {
+                    auxHelper.newAux(auxiliaryIdentifier)
+                    remote.addFixedSlot(duration, appointmentTime)
+                }
             }
         }
     }
@@ -263,9 +279,12 @@ class InstituteRepository @Inject constructor(
         auxiliaryIdentifier: String
     ) {
         CoroutineScope(IO).launch {
-            if (transaction()) {
-                auxHelper.changeAux(slotCode, auxiliaryIdentifier)
-                remote.changeSlotDuration(slotCode, duration)
+            wrapEspressoIdlingResource {
+
+                if (transaction()) {
+                    auxHelper.changeAux(slotCode, auxiliaryIdentifier)
+                    remote.changeSlotDuration(slotCode, duration)
+                }
             }
         }
     }
@@ -287,10 +306,13 @@ class InstituteRepository @Inject constructor(
         newAppointmentTime: DateTime
     ) {
         CoroutineScope(IO).launch {
-            if (transaction()) {
-                auxHelper.changeAux(slotCode, auxiliaryIdentifier)
-                remote.changeFixedSlotTime(slotCode, newAppointmentTime)
-                remote.changeSlotDuration(slotCode, duration)
+            wrapEspressoIdlingResource {
+
+                if (transaction()) {
+                    auxHelper.changeAux(slotCode, auxiliaryIdentifier)
+                    remote.changeFixedSlotTime(slotCode, newAppointmentTime)
+                    remote.changeSlotDuration(slotCode, duration)
+                }
             }
         }
     }
@@ -307,8 +329,11 @@ class InstituteRepository @Inject constructor(
      */
     fun moveSlotAfterAnother(movedSlot: String, otherSlot: String) {
         CoroutineScope(IO).launch {
-            if (transaction()) {
-                remote.moveSlotAfterAnother(movedSlot, otherSlot)
+            wrapEspressoIdlingResource {
+
+                if (transaction()) {
+                    remote.moveSlotAfterAnother(movedSlot, otherSlot)
+                }
             }
         }
     }
@@ -320,8 +345,11 @@ class InstituteRepository @Inject constructor(
      */
     fun endCurrentSlot() {
         CoroutineScope(IO).launch {
-            if (transaction()) {
-                remote.endCurrentSlot()
+            wrapEspressoIdlingResource {
+
+                if (transaction()) {
+                    remote.endCurrentSlot()
+                }
             }
         }
     }
@@ -334,8 +362,11 @@ class InstituteRepository @Inject constructor(
      */
     fun deleteSlot(slotCode: String) {
         CoroutineScope(IO).launch {
-            if (transaction()) {
-                remote.deleteSlot(slotCode)
+            wrapEspressoIdlingResource {
+
+                if (transaction()) {
+                    remote.deleteSlot(slotCode)
+                }
             }
         }
     }
@@ -351,7 +382,10 @@ class InstituteRepository @Inject constructor(
         if (inTransaction.value == true) {
             inTransaction.value = false
             CoroutineScope(IO).launch {
-                remote.saveTransaction()
+                wrapEspressoIdlingResource {
+
+                    remote.saveTransaction()
+                }
             }
         } else {
             pushError(InstituteErrors.NOT_IN_TRANSACTION)
@@ -369,7 +403,10 @@ class InstituteRepository @Inject constructor(
         if (inTransaction.value == true) {
             inTransaction.value = false
             CoroutineScope(IO).launch {
-                remote.abortTransaction()
+                wrapEspressoIdlingResource {
+
+                    remote.abortTransaction()
+                }
             }
         } else {
             pushError(InstituteErrors.NOT_IN_TRANSACTION)
@@ -383,9 +420,12 @@ class InstituteRepository @Inject constructor(
      */
     fun passwordForgotten(username: String) {
         CoroutineScope(IO).launch {
-            if (!communicationEstablished) remote.initCommunication()
-            remote.resetPassword(username)
-            remote.endCommunication()
+            wrapEspressoIdlingResource {
+
+                if (!communicationEstablished) remote.initCommunication()
+                remote.resetPassword(username)
+                remote.endCommunication()
+            }
         }
     }
 
@@ -395,7 +435,7 @@ class InstituteRepository @Inject constructor(
     this is successful and false if not. If necessary, the method updates the value
     of [inTransaction]
      */
-    private suspend fun transaction(): Boolean {
+    private fun transaction(): Boolean {
         if (inTransaction.value == true) {
             return true
         } else {
@@ -425,7 +465,7 @@ class InstituteRepository @Inject constructor(
     /*
     Resets the repository after logout or system error
      */
-    private fun cleanUp(){
+    private fun cleanUp() {
         timeSlotList.value = listOf()
         loggedIn.value = false
         communicationEstablished = false

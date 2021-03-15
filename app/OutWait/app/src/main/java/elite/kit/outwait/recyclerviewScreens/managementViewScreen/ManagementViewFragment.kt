@@ -29,6 +29,7 @@ import elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogFr
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.functionality.SlotItemTouchHelper
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.HeaderTransaction
+import elite.kit.outwait.utils.EspressoIdlingResource
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import kotlinx.android.synthetic.main.full_screen_progress_bar.*
 import kotlinx.android.synthetic.main.management_view_fragment.*
@@ -155,6 +156,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
      * @param removedSlot Removed slot
      */
     override fun onItemSwiped(position: Int, removedSlot: TimeSlotItem) {
+        EspressoIdlingResource.increment()
         var resetDelete =
             Snackbar.make(
                 binding.slotList,
@@ -176,7 +178,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
                 super.onDismissed(snackbar, event)
                 if (event == DISMISS_EVENT_TIMEOUT) {
                     notifyDeleteSlot(position, removedSlot.timeSlot)
-
+                    EspressoIdlingResource.decrement()
                 }
             }
         })
