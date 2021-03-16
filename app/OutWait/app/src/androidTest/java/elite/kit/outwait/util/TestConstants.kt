@@ -1,4 +1,11 @@
 package elite.kit.outwait.util
 
-const val validUsername = "test1"
-const val validPassword = "test1"
+/**
+ * The valid username of the test account
+ */
+const val validUsername = "test2"
+
+/**
+ * The valid password of the test account
+ */
+const val validPassword = "test2"

@@ -1,7 +1,5 @@
 package elite.kit.outwait
 
-import android.content.Context
-import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
@@ -12,21 +10,19 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 
 import androidx.test.ext.junit.rules.activityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import elite.kit.outwait.*
 import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.util.StringResource
+import elite.kit.outwait.util.validPassword
+import elite.kit.outwait.util.validUsername
 import elite.kit.outwait.utils.EspressoIdlingResource
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import javax.inject.Inject
 
 private const val INSTITUTION_NAME_CORRECT = "test2"
@@ -64,7 +60,10 @@ class CountOfClientsTest {
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
 
         // login via injected repository
-        instituteRepo.login(validUsername, validPassword)
+        instituteRepo.login(
+            validUsername,
+            validPassword
+        )
         /*
         //Login
         onView(withId(R.id.etInstituteName))
