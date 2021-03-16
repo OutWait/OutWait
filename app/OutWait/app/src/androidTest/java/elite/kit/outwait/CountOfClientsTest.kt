@@ -1,6 +1,7 @@
 package elite.kit.outwait
 
 import android.content.Context
+import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
@@ -93,7 +94,6 @@ class CountOfClientsTest {
     @Test
     fun areThreeClientsAdded() {
         onView(withId(R.id.config)).perform(click())
-
         onView(withId(R.id.countOfClients)).check(matches(withText(StringResource.getResourceString(R.string.text_counter) + THREE)))
     }
 
@@ -121,9 +121,11 @@ class CountOfClientsTest {
                 swipeLeft()
             )
         )
+        Thread.sleep(100)
         onView(withId(R.id.ivSaveTransaction)).perform(click())
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
+
     }
 
 

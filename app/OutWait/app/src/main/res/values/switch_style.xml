@@ -1,15 +1,3 @@
 <resources>
 
-    <style name="SCBSwitch" parent="Theme.AppCompat.Light">
-        <!-- active thumb & track color (30% transparency) -->
-        <item name="colorControlActivated">@color/outwait_color</item>
-
-        <!-- inactive thumb color -->
-        <item name="colorSwitchThumbNormal">@color/light_red
-        </item>
-
-        <!-- inactive track color (30% transparency) -->
-        <item name="android:colorForeground">@color/light_red
-        </item>
-    </style>
 </resources>

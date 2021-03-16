@@ -1,26 +1,24 @@
 package elite.kit.outwait
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.PickerActions
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.dataItem.TimeSlotItem
-import elite.kit.outwait.instituteRepository.InstituteRepository
-import elite.kit.outwait.recyclerviewScreens.managementViewScreen.Hilt_ManagementViewFragment
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.util.StringResource
-import org.hamcrest.*
+import elite.kit.outwait.utils.EspressoIdlingResource
+import org.hamcrest.Description
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers
+import org.hamcrest.TypeSafeMatcher
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -41,18 +39,21 @@ private const val THIRD_DURATION = "00:50"
 private const val FIRST_SLOT = 0
 private const val SECOND_SLOT = 1
 private const val THIRD_SLOT = 2
-
 private const val FIRST_SLOT_TRANSACTION = 1
+private const val FIRST_ROW  = 0
+private const val SECOND_ROW = 1
+private const val FOURTH_ROW = 3
+private const val SECOND_COLUMN  = 1
+
 
 @RunWith(AndroidJUnit4::class)
-class AddSlotsTest {
-
+class ManagementAddSlotsTest {
     @get:Rule
     var openActivityRule = activityScenarioRule<MainActivity>()
 
-
     @Before
     fun loginAndModeOne() {
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         //Login
         onView(withId(R.id.etInstituteName))
             .perform(
@@ -64,64 +65,55 @@ class AddSlotsTest {
                 typeText(INSTITUTION_PASSWORD_CORRECT),
                 closeSoftKeyboard()
             )
-        onView(withId(R.id.btnLoginFrag)).perform(ViewActions.click())
-        Thread.sleep(4000)
-        //TODO save in the account always mode 1
-        //onView(withId(R.id.sMode)).perform(click())
-
+        onView(withId(R.id.btnLoginFrag)).perform(click())
     }
 
     //TEST 6
     @Test
     fun addSlots() {
         //Add first slot
-        onView(withId(R.id.floatingActionButton)).perform(ViewActions.click())
-        Thread.sleep(2000)
+        onView(withId(R.id.floatingActionButton)).perform(click())
+
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(typeText(SLOT_IDENTIFIER_ONE), closeSoftKeyboard())
 
         onView(withId(R.id.clear)).perform(click())
-
-
         val digitTwo = onView(
             Matchers.allOf(
                 withId(R.id.numPad2), withText(SLOT_DURATION_TWO),
                 childAtPosition(
                     childAtPosition(
                         withId(R.id.numPad),
-                        0
+                        FIRST_ROW
                     ),
-                    1
+                    SECOND_COLUMN
                 ),
-                ViewMatchers.isDisplayed()
+                isDisplayed()
             )
         )
         digitTwo.perform(click())
-
         val digitZero = onView(
             Matchers.allOf(
                 withId(R.id.numPad0), withText(SLOT_DURATION_ZERO),
                 childAtPosition(
                     childAtPosition(
                         withId(R.id.numPad),
-                        3
+                        FOURTH_ROW
                     ),
-                    1
+                    SECOND_COLUMN
                 ),
-                ViewMatchers.isDisplayed()
+                isDisplayed()
             )
         )
         digitZero.perform(click())
 
 
 
-        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
-            .perform(ViewActions.click())
-        Thread.sleep(2000)
-
+        onView(withText(StringResource.getResourceString(R.string.confirm)))
+            .perform(click())
         //Add second slot
-        onView(withId(R.id.floatingActionButton)).perform(ViewActions.click())
-        Thread.sleep(2000)
+        onView(withId(R.id.floatingActionButton)).perform(click())
+
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(typeText(SLOT_IDENTIFIER_TWO), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
@@ -129,29 +121,26 @@ class AddSlotsTest {
 
 
         digitTwo.perform(click())
-
         val digitFive = onView(
             Matchers.allOf(
                 withId(R.id.numPad5), withText(SLOT_DURATION_FIVE),
                 childAtPosition(
                     childAtPosition(
                         withId(R.id.numPad),
-                        1
+                        SECOND_ROW
                     ),
-                    1
+                    SECOND_COLUMN
                 ),
-                ViewMatchers.isDisplayed()
+                isDisplayed()
             )
         )
         digitFive.perform(click())
 
-        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
-            .perform(ViewActions.click())
-        Thread.sleep(2000)
-
+        onView(withText(StringResource.getResourceString(R.string.confirm)))
+            .perform(click())
         //Add third slot
-        onView(withId(R.id.floatingActionButton)).perform(ViewActions.click())
-        Thread.sleep(2000)
+        onView(withId(R.id.floatingActionButton)).perform(click())
+
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(typeText(SLOT_IDENTIFIER_THREE), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
@@ -163,76 +152,78 @@ class AddSlotsTest {
         digitZero.perform(click())
 
 
-        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
-            .perform(ViewActions.click())
-        Thread.sleep(2000)
-
+        onView(withText(StringResource.getResourceString(R.string.confirm)))
+            .perform(click())
         //Save
-
-        onView(withId(R.id.ivSaveTransaction)).perform(ViewActions.click())
-        Thread.sleep(4000)
-
+        onView(withId(R.id.ivSaveTransaction)).perform(click())
         //Verify order
         onView(withId(R.id.slotList)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
+            actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FIRST_SLOT,
                 click()
             )
         )
-        onView(withId(R.id.tvDurationDetail)).check(matches((withText(FIRST_DURATION))))
-        onView(withText(StringResource.getResourceString(R.string.confirm))).perform(click())
+        onView(withId(R.id.tvDurationDetail))
+            .check(matches((withText(FIRST_DURATION))))
+        onView(withText(StringResource.getResourceString(R.string.confirm)))
+            .perform(click())
 
         onView(withId(R.id.slotList)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
+            actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 SECOND_SLOT,
                 click()
             )
         )
-        onView(withId(R.id.tvDurationDetail)).check(matches((withText(SECOND_DURATION))))
-        onView(withText(StringResource.getResourceString(R.string.confirm))).perform(click())
+        onView(withId(R.id.tvDurationDetail))
+            .check(matches((withText(SECOND_DURATION))))
+        onView(withText(StringResource.getResourceString(R.string.confirm)))
+            .perform(click())
 
         onView(withId(R.id.slotList)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
+            actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 THIRD_SLOT,
                 click()
             )
         )
-        onView(withId(R.id.tvDurationDetail)).check(matches((withText(THIRD_DURATION))))
-        onView(withText(StringResource.getResourceString(R.string.confirm))).perform(click())
+        onView(withId(R.id.tvDurationDetail))
+            .check(matches((withText(THIRD_DURATION))))
+        onView(withText(StringResource.getResourceString(R.string.confirm)))
+            .perform(click())
 
     }
 
     @After
     fun emptyQueue() {
         onView(withId(R.id.slotList)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
+            actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FIRST_SLOT,
                 swipeLeft()
             )
         )
-        Thread.sleep(4000)
+
         onView(withId(R.id.slotList)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
+            actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FIRST_SLOT_TRANSACTION,
                 swipeLeft()
             )
         )
-        Thread.sleep(4000)
+
         onView(withId(R.id.slotList)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
+            actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FIRST_SLOT_TRANSACTION,
                 swipeLeft()
             )
         )
-        Thread.sleep(3100)
+        Thread.sleep(100)
         onView(withId(R.id.ivSaveTransaction)).perform(click())
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
+
         openActivityRule.scenario.close()
     }
 
     private fun childAtPosition(
         parentMatcher: Matcher<View>, position: Int
     ): Matcher<View> {
-
         return object : TypeSafeMatcher<View>() {
             override fun describeTo(description: Description) {
                 description.appendText("Child at position $position in parent ")

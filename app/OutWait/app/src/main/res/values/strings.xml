@@ -2,22 +2,12 @@
 <resources>
     <string name="app_name">OutWait</string>
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome!"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
     <string name="sign_in">Sign in</string>
     <string name="hint_name">Name</string>
     <string name="hint_password">Password</string>
     <string name="forgot_password">Forgot password?</string>
-    <string name="forgot_password_underline"><u>Forgot password?</u></string>
     <string name="reset_password">Reset</string>
     <string name="reset_text">Enter your name in order to send a new password by your email</string>
-    <string name="pause_text">Free time</string>
     <string name="slotcode">Slotcode</string>
     <string name="identifier">Identifier</string>
     <string name="duration">Duration</string>
@@ -33,8 +23,6 @@
     <string name="notificationtime">Notificationtime</string>
     <string name="delay_notificationtime">Delay notificationtime</string>
     <string name="prioritizationtime">Prioritizationtime</string>
-    <string name="mode_1">Mode 1</string>
-    <string name="mode_2">Mode 2</string>
     <string name="title_edit_dialog">Edit the slot</string>
     <string name="logout">Logout</string>
     <string name="refresh">Refresh</string>
@@ -47,7 +35,6 @@
     <string name="SERVER_ERROR">A server error occurred. Please contact OutWait!</string>
     <string name="INVALID_REQUEST">The server denies your request. Please contact OutWait!</string>
     <!-- Strings for Error-Notifications (Client) -->
-    <string name="EXAMPLE_ERROR">Example Error!</string>
     <string name="INVALID_SLOT_CODE">Your code is not valid!</string>
     <string name="INTERNAL_ERROR">A internal App Error has occurred. Please contact OutWait!</string>
     <string name="INTERNET_ERROR">Lost connection to server. Proof your internet connection and try to refresh!</string>
@@ -63,8 +50,6 @@
     <string name="Pending_Notif_BaseTitle2">\u00A0will begin shortly!</string>
     <string name="Pending_Notif_BaseText">Please go to the institution immediately!</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="sss">\@string/forgot_password_underline</string>
     <string name="are_you_a_client"><i>Are you a client?</i></string>
     <string name="are_you_an_institute"><i>Are you an institute ?</i></string>
     <string name="title_auxiliary_identifier">Auxiliary Identifier:</string>
