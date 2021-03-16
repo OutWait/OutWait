@@ -38,6 +38,8 @@ private const val THREE = "3"
 
 @RunWith(AndroidJUnit4::class)
 class CountOfClientsTest {
+
+
     @get:Rule
     var openActivityRule = activityScenarioRule<MainActivity>()
 
@@ -84,7 +86,6 @@ class CountOfClientsTest {
 
 
         onView(withId(R.id.ivSaveTransaction)).perform(click())
-
 
     }
 

@@ -23,8 +23,6 @@ class UserViewModel @Inject constructor(
     private val repoInstitute: InstituteRepository,
     private val coordinator: LoginCoordinator
 ) : ViewModel() {
-
-
     /**
      * Saves entered input from client
      */
@@ -58,9 +56,11 @@ class UserViewModel @Inject constructor(
      *
      */
     fun enterSlotCode() {
-        Log.i("enterSlotCode","executed again++++++++++++++++++++++++++")
+        Log.i("enterSlotCode", "executed again++++++++++++++++++++++++++")
         viewModelScope.launch {
-            repoClient.newCodeEntered(clientSlotCode.value)
+            wrapEspressoIdlingResource {
+                repoClient.newCodeEntered(clientSlotCode.value)
+            }
         }
     }
 

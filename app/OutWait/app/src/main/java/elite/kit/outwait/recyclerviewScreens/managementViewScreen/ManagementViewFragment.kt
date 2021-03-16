@@ -82,7 +82,7 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             setView(R.layout.full_screen_progress_bar)
             setTitle(getString(R.string.process_title))
             //TODO SET FALSE BEFORE PASS IT TO REPORTERS
-            setCancelable(true)
+            setCancelable(false)
         }
         displayingDialog = builder.create()
 
