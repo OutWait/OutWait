@@ -14,8 +14,11 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.*
 import elite.kit.outwait.dataItem.TimeSlotItem
+import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.util.StringResource
 import elite.kit.outwait.utils.EspressoIdlingResource
@@ -24,6 +27,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import javax.inject.Inject
 
 private const val INSTITUTION_NAME_CORRECT = "test2"
 private const val INSTITUTION_PASSWORD_CORRECT = "test2"
@@ -37,17 +41,31 @@ private const val FIRST_SLOT_TRANSACTION     = 1
 
 private const val THREE = "3"
 
-@RunWith(AndroidJUnit4::class)
+//@RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class CountOfClientsTest {
 
+    @get:Rule(order = 0)
+    var hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
+    @get:Rule(order = 1)
     var openActivityRule = activityScenarioRule<MainActivity>()
+
+    @Inject
+    lateinit var instituteRepo: InstituteRepository
+
+    @Before
+    fun init() {
+        hiltRule.inject()
+    }
 
     @Before
     fun addSlots() {
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
 
+        // login via injected repository
+        instituteRepo.login(validUsername, validPassword)
+        /*
         //Login
         onView(withId(R.id.etInstituteName))
             .perform(
@@ -60,6 +78,8 @@ class CountOfClientsTest {
                 closeSoftKeyboard()
             )
         onView(withId(R.id.btnLoginFrag)).perform(click())
+
+         */
         //Verify of forwarding
         onView(withId(R.id.floatingActionButton)).perform(click())
 

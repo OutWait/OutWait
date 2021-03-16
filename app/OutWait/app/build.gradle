@@ -23,7 +23,11 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // entfernt, da globale Config, darf nur einmal deklariert werden
+       // testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // CustomTestRunner for using HiltTestApplication in (Instrumented) AndroidTests
+        testInstrumentationRunner "elite.kit.outwait.CustomTestRunner"
     }
 
     buildTypes {
