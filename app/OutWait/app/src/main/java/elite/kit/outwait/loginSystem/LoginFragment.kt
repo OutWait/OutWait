@@ -155,7 +155,6 @@ class LoginFragment : Fragment() {
                 Toast.LENGTH_LONG
             )
                 .show()
-            //TODO test below line
             scanCode()
         }
     }

@@ -16,7 +16,7 @@
     <ScrollView
         android:id="@+id/scrollViewAdd"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:nextFocusDown="@string/appointment_time">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -59,13 +59,18 @@
 
             <mobi.upod.timedurationpicker.TimeDurationPicker
                 android:id="@+id/addSlotDuration"
-                android:layout_width="200dp"
-                android:layout_height="250dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="24dp"
+                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:background="@color/duration_digit_color"
                 android:paddingHorizontal="10dp"
+                android:visibility="visible"
+                app:backspaceIcon="@drawable/ic_backspace"
+                app:clearIcon="@drawable/ic_clear"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.496"
                 app:layout_constraintStart_toStartOf="parent"

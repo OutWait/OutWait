@@ -9,5 +9,7 @@ import elite.kit.outwait.R
  * @property message String resource ID where the error message can be found.
  */
 enum class ClientErrors(val message: Int) {
-    INVALID_SLOT_CODE(R.string.INVALID_SLOT_CODE)
+    INVALID_SLOT_CODE(R.string.INVALID_SLOT_CODE),
+    INTERNAL_ERROR(R.string.INTERNAL_ERROR),
+    INTERNET_ERROR(R.string.INTERNET_ERROR)
 }

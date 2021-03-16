@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientRepository.ClientRepository
 import elite.kit.outwait.instituteRepository.InstituteRepository
+import elite.kit.outwait.utils.EspressoIdlingResource.wrapEspressoIdlingResource
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,8 +23,6 @@ class UserViewModel @Inject constructor(
     private val repoInstitute: InstituteRepository,
     private val coordinator: LoginCoordinator
 ) : ViewModel() {
-
-
     /**
      * Saves entered input from client
      */
@@ -57,9 +56,11 @@ class UserViewModel @Inject constructor(
      *
      */
     fun enterSlotCode() {
-        Log.i("enterSlotCode","executed again++++++++++++++++++++++++++")
+        Log.i("enterSlotCode", "executed again++++++++++++++++++++++++++")
         viewModelScope.launch {
-            repoClient.newCodeEntered(clientSlotCode.value)
+            wrapEspressoIdlingResource {
+                repoClient.newCodeEntered(clientSlotCode.value)
+            }
         }
     }
 

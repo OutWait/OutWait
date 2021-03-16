@@ -1,9 +1,8 @@
-package elite.kit.outwait
+package elite.kit.outwait.waitingQueue.gravityQueue
 
 import elite.kit.outwait.customDataTypes.FixedSlot
 import elite.kit.outwait.customDataTypes.ReceivedList
 import elite.kit.outwait.customDataTypes.SpontaneousSlot
-import elite.kit.outwait.waitingQueue.gravityQueue.GravityQueueConverter
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.FixedTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.Pause
@@ -11,7 +10,11 @@ import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.joda.time.Interval
+import org.junit.After
 import org.junit.Assert
+import org.junit.Before
+
+import org.junit.Assert.*
 import org.junit.Test
 import kotlin.random.Random
 
@@ -21,11 +24,20 @@ import kotlin.random.Random
  * Identifiers to their slots
  *
  */
-class GravityTest {
+class GravityQueueConverterTest {
+
+    @Before
+    fun setUp() {
+    }
+
+    @After
+    fun tearDown() {
+    }
+
     @Test
     fun `input of empty queue produces empty queue output`() {
         val receivedList = ReceivedList(
-            DateTime.now(),
+            DateTime.parse("2021-03-15T11:20:00.000+01:00"),
             listOf(),
             listOf(),
             listOf()
@@ -40,14 +52,17 @@ class GravityTest {
 
     @Test
     fun `number of slots is consistent`(){
+        //choose the numbers you want
+        val nrOfSlots = 12
+        val slotDurationInMinutes = 30L
+
         val spontaneousSlots = mutableListOf<SpontaneousSlot>()
         val order = mutableListOf<String>()
-        val nrOfSlots = Random.nextInt(10)
         for (i in 1..nrOfSlots) {
             order.add(i.toString())
             spontaneousSlots.add(
                 SpontaneousSlot(
-                    Duration.standardMinutes(1 + Random.nextInt(30).toLong()),
+                    Duration.standardMinutes(slotDurationInMinutes),
                     i.toString()
                 )
             )
@@ -68,18 +83,25 @@ class GravityTest {
 
     @Test
     fun `aux Identifiers get matched correctly`(){
+        //choose the numbers you want
+        val nrOfSlots = 12
+        val slotDurationInMinutes = 30L
+
         val spontaneousSlots = mutableListOf<SpontaneousSlot>()
         val order = mutableListOf<String>()
         val auxIdentifiers = hashMapOf<String, String>()
-        val nrOfSlots = 10
         for (i in 1..nrOfSlots) {
             order.add(i.toString())
             spontaneousSlots.add(
                 SpontaneousSlot(
-                    Duration.standardMinutes(1 + Random.nextInt(30).toLong()),
+                    Duration.standardMinutes(slotDurationInMinutes),
                     i.toString()
                 )
             )
+            /*
+            For every Slot we set the slotCode as auxiliary identifier so that
+            we can compare easily if they are matched correctly to the TimeSlots
+            */
             auxIdentifiers[i.toString()] = i.toString()
         }
         val receivedList = ReceivedList(
@@ -89,28 +111,36 @@ class GravityTest {
             listOf()
         )
 
-
         val converter = GravityQueueConverter()
         val timeSlotList = converter.receivedListToTimeSlotList(receivedList, auxIdentifiers)
 
         for (slot in timeSlotList){
             val clientSlot = slot as ClientTimeSlot
-            Assert.assertEquals(clientSlot.slotCode.toString(), clientSlot.auxiliaryIdentifier)
+            Assert.assertEquals(clientSlot.slotCode, clientSlot.auxiliaryIdentifier)
         }
     }
 
+    /*
+    IMPORTANT: receivedListToTimeSlotList() requests the current system time.
+    If the System time changes during the test more tan [slotDurationInMinutes],
+    there can be side effects. This is almost impossible, so we don´t mock the
+    system time, but for the completeness of the documentation,
+    in theory it is possible
+    */
     @Test
     fun `summation of times is correct`(){
+        //choose the numbers you want
+        val nrOfSlots = 12
+        val slotDurationInMinutes = 30L
+
         val spontaneousSlots = mutableListOf<SpontaneousSlot>()
         val order = mutableListOf<String>()
         val auxIdentifiers = hashMapOf<String, String>()
-        val nrOfSlots = 10
-        val slotDuration = 30L
         for (i in 1..nrOfSlots) {
             order.add(i.toString())
             spontaneousSlots.add(
                 SpontaneousSlot(
-                    Duration.standardMinutes(slotDuration),
+                    Duration.standardMinutes(slotDurationInMinutes),
                     i.toString()
                 )
             )
@@ -129,10 +159,21 @@ class GravityTest {
         val timeSlotList = converter.receivedListToTimeSlotList(receivedList, auxIdentifiers)
 
         val lastSlotEnd = timeSlotList.last().interval.end
-        val lastSlotRequiredEnd = now + Duration.standardMinutes(nrOfSlots * slotDuration)
+        val lastSlotRequiredEnd = now + Duration.standardMinutes(nrOfSlots * slotDurationInMinutes)
         Assert.assertEquals(lastSlotEnd, lastSlotRequiredEnd)
     }
 
+    /*
+    This Method passes a list of three slots to the GravityQueueConverters
+    receivedListToTimeSlotList() method. The List contains a fixed slot which does
+    not directly follow the precedent spontaneous slot, so the method
+    receivedListToTimeSlotList() has to insert a pause.
+
+    Firstly, we assert that the slots are in the right order and that the pause
+    is inserted in the right place.
+    Secondly, we check if the pause and the fixed slot have the correct starting
+    and ending time
+     */
     @Test
     fun `fixed slot not before appointment time and insert pause in free time`(){
 
@@ -146,7 +187,7 @@ class GravityTest {
         val fixed1 = FixedSlot(
             Duration.standardMinutes(30),
             "fixed1",
-            DateTime.now().plus(Duration.standardHours(1))
+            now.plus(Duration.standardHours(1))
         )
         val spontaneous2 = SpontaneousSlot(
             Duration.standardMinutes(50),

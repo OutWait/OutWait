@@ -1,11 +1,6 @@
 package elite.kit.outwait.clientScreens.remainingTimeScreen
 
-import android.graphics.Color
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,14 +11,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import dagger.hilt.android.AndroidEntryPoint
 import elite.kit.outwait.R
 import elite.kit.outwait.databinding.RemainingTimeFragmentBinding
-import elite.kit.outwait.utils.TransformationOutput
-import org.joda.time.Interval
 
-
+/**
+ * Represents the screen that shows the waiting time to the client
+ *
+ */
 @AndroidEntryPoint
 class RemainingTimeFragment : Fragment() {
 
@@ -56,7 +51,10 @@ class RemainingTimeFragment : Fragment() {
         return binding.root
     }
 
-
+    /**
+     * does not let the client leave the screen until his appointment is finished
+     *
+     */
     private fun exitApp() {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {

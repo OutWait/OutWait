@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OutWait</string>
+    <!-- Strings related to login -->
+    <string name="sign_in">Anmelden</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_password">Passwort</string>
+    <string name="forgot_password">Passwort vergessen?</string>
+    <string name="reset_password">Zurücksetzen</string>
+    <string name="reset_text">Geben Sie Ihren Benutzernamen ein um Ihr Passwort mit Ihrer Email zurückzusetzen</string>
+    <string name="slotcode">Slot-Code</string>
+    <string name="identifier">Identifizierer</string>
+    <string name="duration">Dauer</string>
+    <string name="appointment_time">Terminzeitpunkt</string>
+    <string name="title_add_slot">Slot hinzufügen</string>
+    <string name="confirm">OK</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="fixed_slot">Fixer Slot</string>
+    <string name="undo">Rückgängig</string>
+    <string name="enter_slotcode_text">Bitte gib deinen Slot-Code ein</string>
+    <string name="slot_details">Slot Details</string>
+    <string name="standard_slot_duration">Standardslotdauer</string>
+    <string name="notificationtime">Benachrichtungszeit</string>
+    <string name="delay_notificationtime">Verspätungs Benachrichtigungszeit</string>
+    <string name="prioritizationtime">Priorisierungszeitpunkt</string>
+    <string name="title_edit_dialog">Slot bearbeiten</string>
+    <string name="logout">Abmelden</string>
+    <string name="refresh">Aktualisieren</string>
+    <!-- Strings for Error-Notifications (Institute) -->
+    <string name="TRANSACTION_DENIED">Transaktion abgelehnt!</string>
+    <string name="LOGIN_DENIED">Anmeldung fehlgeschlagen!</string>
+    <string name="NOT_IN_TRANSACTION">Keine aktiven Transaktionen!</string>
+    <string name="NETWORK_ERROR">Netzwerk-Fehler. Bitte überprüfen Sie ihre Internetverbindung!</string>
+    <string name="COMMUNICATION_ERROR">Server nicht erreichbar, bitte probieren Sie es gleich erneut!</string>
+    <string name="SERVER_ERROR">Es ist ein Serverfehler aufgetreten. Bitte kontaktieren Sie OutWait!</string>
+    <string name="INVALID_REQUEST">Der Server lehnt Ihre Anfrage ab. Bitte kontaktieren Sie OutWait!</string>
+    <!-- Strings for Error-Notifications (Client) -->
+    <string name="INVALID_SLOT_CODE">Ihr Code ist ungültig!</string>
+    <string name="process_title">Verarbeiten</string>
+    <!-- Strings related to push notifications -->
+    <string name="Perm_Notif_BaseTitle">Ihr nächster Termin für heute</string>
+    <string name="Perm_Notif_Basetext1">with\u00A0</string>
+    <string name="Perm_Notif_Basetext2">\u00A0ist bei\u00A0</string>
+    <string name="Delay_Notif_BaseTitle">Verspätung des Termins um\u00A0</string>
+    <string name="Delay_Notif_BaseText1">von\u00A0</string>
+    <string name="Delay_Notif_BaseText2">\u00A0, jetzt bei\u00A0</string>
+    <string name="Pending_Notif_BaseTitle1">Ihre Termin mit\u00A0</string>
+    <string name="Pending_Notif_BaseTitle2">\u00A0wird bald beginnen!</string>
+    <string name="Pending_Notif_BaseText">Bitte begeben Sie sich unverzüglich zur Einrichtung!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="are_you_a_client"><i>Sind Sie ein Klient?</i></string>
+    <string name="are_you_an_institute"><i>Sind Sie eine Einrichtung?</i></string>
+    <string name="title_auxiliary_identifier">Hilfsbezeichner:</string>
+    <string name="title_duration">Dauer:</string>
+    <string name="title_appointment">Termin:</string>
+    <string name="permission_allowed">Erlaubnis erteilt</string>
+    <string name="title_permission_dialog">Erlaubnis abgelehnt</string>
+    <string name="explanation_text_permission">Wir benötigen einen Zugriff auf Ihre Kamera um QR-Codes zu scannen</string>
+    <string name="text_scanning">Scanne Code</string>
+    <string name="no_result">Kein Ergebnis</string>
+    <string name="failure_add_slot">Fehlgeschlagen: Bitte gib einen Terminzeitpunkt ein</string>
+    <string name="text_save_config">Ihre Einstellungen wurden gespeichert</string>
+    <string name="text_denied_save_config">Die Warteschlange ist nicht leer. Modus kann nicht gewechselt werden, die Einstellungen werden nicht gespeichert.</string>
+    <string name="text_avoid_back_press_management">Bitte zuerst abmelden</string>
+    <string name="INTERNAL_ERROR">Ein interneres Probleme ist aufgetreten, bitte kontaktieren Sie Outwait</string>
+    <string name="INTERNET_ERROR">Serververbindung verloren, bitte Internetverbindung überrprüfen und aktualisieren Sie!</string>
+    <string name="text_counter">Anzahl an Klienten: </string>
+
+</resources>

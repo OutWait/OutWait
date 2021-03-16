@@ -1,32 +1,39 @@
 package elite.kit.outwait.clientScreens.remainingTimeScreen
 
 import android.os.CountDownTimer
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientRepository.ClientRepository
-import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.utils.TransformationOutput
 import org.joda.time.DateTime
 import org.joda.time.Duration
-import org.joda.time.Interval
 import javax.inject.Inject
-import kotlin.time.milliseconds
 
 private const val TWO_DAYS = 172800000L
 private const val ONE_SEC = 1000L
 
+/**
+ * Abstraction of the screen where the client can see his waiting time.
+ *
+ * @property repo
+ * @property coordinator
+ */
 @HiltViewModel
 class RemainingTimeViewModel @Inject constructor(
     private val repo: ClientRepository,
     private var coordinator: RemainingTimeCoordinator
 ) : ViewModel() {
 
+    /**
+     * List that contains all active client slots
+     */
     val clientInfoList = repo.getActiveSlots()
+
+    /**
+     * Live Data containing the institutes name
+     */
     var instituteName = MutableLiveData(clientInfoList.value!!.first().institutionName)
 
     private var approximatedTime: DateTime? = null
@@ -35,9 +42,18 @@ class RemainingTimeViewModel @Inject constructor(
     val remainingTime get() = _remainingTime as LiveData<String>
 
 
-
+    /*
+    The ViewModel refreshes the waiting Time every second,
+    it has to calculate the difference between the approximated
+    time and the current time
+     */
     private val timer = object : CountDownTimer(TWO_DAYS, ONE_SEC) {
         override fun onTick(millisUntilFinished: Long) {
+            if (!repo.isConnectedToServer()){
+                _remainingTime.value = "Internet Error. Try to refresh."
+                return
+            }
+
             if (approximatedTime !== null) {
                 val now = DateTime.now()
                 val diff = Duration(
@@ -70,7 +86,11 @@ class RemainingTimeViewModel @Inject constructor(
 
     }
 
-
+    /**
+     * Delegates to the repo that the client manually wants to receive new waiting time
+     * information
+     *
+     */
     fun refreshWaitingTime() {
         val showingSlot = repo.getActiveSlots().value?.last()?.slotCode ?: ""
         if (showingSlot != "") {

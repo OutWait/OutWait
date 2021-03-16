@@ -8,6 +8,8 @@ import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.remoteDataSource.ClientHandler
 import elite.kit.outwait.remoteDataSource.ClientServerErrors
 import elite.kit.outwait.services.ServiceHandler
+import elite.kit.outwait.utils.EspressoIdlingResource
+import elite.kit.outwait.utils.EspressoIdlingResource.wrapEspressoIdlingResource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -65,29 +67,55 @@ class ClientRepository @Inject constructor(
     init {
         //Get notified with server errors
         remote.getErrors().observeForever {
-            if (it.last() == ClientServerErrors.INVALID_SLOT_CODE){
-                pushError(ClientErrors.INVALID_SLOT_CODE)
+            if (it !== null && it.isNotEmpty()){
+                when (it.last()){
+                    ClientServerErrors.INVALID_SLOT_CODE
+                    ->{
+                        pushError(ClientErrors.INVALID_SLOT_CODE)
+                    }
+                    ClientServerErrors.INVALID_REQUEST
+                    -> {
+                        pushError(ClientErrors.INTERNAL_ERROR)
+                    }
+                    ClientServerErrors.NETWORK_ERROR
+                    -> {
+                        pushError(ClientErrors.INTERNET_ERROR)
+                        remoteConnected = false
+                    }
+                    ClientServerErrors.SERVER_DID_NOT_RESPOND
+                    ->{
+                        pushError(ClientErrors.INTERNET_ERROR)
+                        remoteConnected = false
+                    }
+                    ClientServerErrors.COULD_NOT_CONNECT
+                    -> {
+                        pushError(ClientErrors.INTERNET_ERROR)
+                        remoteConnected = false
+                    }
+                }
             }
         }
 
 
         CoroutineScope(IO).launch {
-            withContext(Main){
-                activeSlots.observeForever {
-                    if (it.isNotEmpty() && !serviceStarted){
-                        /*
+            wrapEspressoIdlingResource {
+                withContext(Main) {
+                    activeSlots.observeForever {
+                        if (it.isNotEmpty() && !serviceStarted) {
+                            /*
                         when the first slot the client wants to observe is
                         received, start the service to get updated info in
                         the background
                          */
-                        serviceStarted = true
-                        serviceHandler.startTimerService(this)
-                    } else if (it.isEmpty() && serviceStarted) {
-                        /*
+                            serviceStarted = true
+                            serviceHandler.startTimerService(this)
+                        } else if (it.isEmpty() && serviceStarted) {
+                            /*
                         There is an agreement that the service kills itself
                         when there are no more running slots for the client
                          */
-                        serviceStarted = false
+                            serviceStarted = false
+                        }
                     }
                 }
             }
@@ -105,13 +133,14 @@ class ClientRepository @Inject constructor(
             pushError(ClientErrors.INVALID_SLOT_CODE)
             return
         }
-        withContext(IO){
-            Log.d("newCodeEntered::cRepo", "entered code: $code")
-            if(remoteConnected || remote.initCommunication()) {
-                remoteConnected = true
-                remote.newCodeEntered(code)
+        withContext(IO) {
+                Log.d("newCodeEntered::cRepo", "entered code: $code")
+                if (remoteConnected || remote.initCommunication()) {
+                    remoteConnected = true
+                    remote.newCodeEntered(code)
+                }
             }
-        }
+
     }
 
     /**
@@ -122,9 +151,19 @@ class ClientRepository @Inject constructor(
      */
     fun refreshWaitingTime(code : String){
         CoroutineScope(IO).launch {
-            remote.refreshWaitingTime(code)
+            wrapEspressoIdlingResource {
+                if (remoteConnected) remote.refreshWaitingTime(code)
+                else newCodeEntered(code)
+            }
         }
     }
+
+    /**
+     * returns true if the app is connected to the server and receives
+     * waiting time updates and false elsewise.
+     *
+     */
+    fun isConnectedToServer() = remoteConnected
 
     /*
     updates the error notifications list with the passed error in a way that

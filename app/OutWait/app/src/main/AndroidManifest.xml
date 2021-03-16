@@ -34,6 +34,7 @@
             android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
         <service android:name=".services.TimerService" />
+
     </application>
 
 </manifest>

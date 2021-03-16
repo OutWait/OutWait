@@ -33,7 +33,7 @@ class FixedGravitySlot(
 ) : ClientGravitySlot(slotCode, duration, auxiliaryIdentifier) {
 
     override fun toClientTimeSlot(predecessor: TimeSlot): TimeSlot {
-        var interval = interval(predecessor.interval.end)
+        val interval = interval(predecessor.interval.end)
         return FixedTimeSlot(interval, slotCode, auxiliaryIdentifier, appointmentTime)
     }
 

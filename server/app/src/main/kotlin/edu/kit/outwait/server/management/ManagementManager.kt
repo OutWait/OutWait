@@ -193,7 +193,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      *     temporarily created slot couldn't be deleted.
      */
     @Throws(InternalServerErrorException::class)
-    fun abortTransaction(managementId: ManagementId): Queue? {
+    fun abortTransaction(managementId: ManagementId): Queue {
         Logger.debug(LOG_ID, "Aborting transaction of management " + managementId + "...")
         assert(activeTransactions.contains(managementId))
 

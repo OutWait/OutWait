@@ -6,7 +6,6 @@ import elite.kit.outwait.customDataTypes.SpontaneousSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.Pause
 import elite.kit.outwait.waitingQueue.timeSlotModel.TimeSlot
 import org.joda.time.DateTime
-import org.joda.time.Duration
 import org.joda.time.Interval
 
 /**
@@ -45,7 +44,7 @@ class GravityQueueConverter {
         receivedList: ReceivedList,
         auxiliaryIdentifiers: Map<String, String>
     ): List<ClientGravitySlot> {
-        var gravityList = mutableListOf<ClientGravitySlot>()
+        val gravityList = mutableListOf<ClientGravitySlot>()
         for (code in receivedList.order) {
             /*
             a slot can either be fixed or spontaneous, but not both

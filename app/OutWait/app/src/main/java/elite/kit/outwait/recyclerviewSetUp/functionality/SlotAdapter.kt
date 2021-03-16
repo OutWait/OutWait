@@ -14,8 +14,11 @@ import elite.kit.outwait.recyclerviewSetUp.viewHolder.PauseSlotViewHolder
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.SpontaneousSlotViewHolder
 import elite.kit.outwait.recyclerviewScreens.managementViewScreen.ManagementViewFragment
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.*
+import elite.kit.outwait.utils.EspressoIdlingResource
 import elite.kit.outwait.waitingQueue.timeSlotModel.*
 import kotlinx.android.synthetic.main.full_screen_progress_bar.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import org.joda.time.Interval
 import java.util.*
 
@@ -41,6 +44,8 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
     RecyclerView.Adapter<BaseViewHolder<*>>(),
     ItemTouchHelperAdapter {
     private lateinit var itemTouchHelper: ItemTouchHelper
+    private val adapterScope = CoroutineScope(Dispatchers.Default)
+
 
     /**
      * Current slot list from the server
@@ -53,12 +58,14 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
      * @param newTimeSlotList List of latest slots
      */
     fun updateSlots(newTimeSlotList: MutableList<DataItem>?) {
-        slotList.clear()
-        notifyDataSetChanged()
-        if (newTimeSlotList != null) {
-            slotList.addAll(newTimeSlotList)
-        }
-        notifyDataSetChanged()
+
+            slotList.clear()
+            notifyDataSetChanged()
+            if (newTimeSlotList != null) {
+                slotList.addAll(newTimeSlotList)
+            }
+            notifyDataSetChanged()
+
     }
 
     /**

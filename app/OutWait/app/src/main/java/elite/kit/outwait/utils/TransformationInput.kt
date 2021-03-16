@@ -1,11 +1,7 @@
 package elite.kit.outwait.utils
 
-import android.util.Log
 import org.joda.time.DateTime
-import org.joda.time.DateTimeFieldType
-import org.joda.time.Duration
 import org.joda.time.Interval
-import java.util.*
 
 object TransformationInput {
     private const val START_TIME_DURATION=0L
