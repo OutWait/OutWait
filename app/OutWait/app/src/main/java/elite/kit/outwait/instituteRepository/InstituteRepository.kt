@@ -344,15 +344,17 @@ class InstituteRepository @Inject constructor(
      *
      */
     fun endCurrentSlot() {
+        EspressoIdlingResource.increment()
         CoroutineScope(IO).launch {
-            wrapEspressoIdlingResource {
 
                 if (transaction()) {
                     remote.endCurrentSlot()
                 }
             }
-        }
+        EspressoIdlingResource.decrement()
+
     }
+
 
     /**
      * Requests the server to delete the slot with the given slot code
@@ -379,17 +381,18 @@ class InstituteRepository @Inject constructor(
      *
      */
     fun saveTransaction() {
+        EspressoIdlingResource.increment()
         if (inTransaction.value == true) {
-            inTransaction.value = false
+            inTransaction.postValue( false)
             CoroutineScope(IO).launch {
-                wrapEspressoIdlingResource {
 
                     remote.saveTransaction()
                 }
-            }
+
         } else {
             pushError(InstituteErrors.NOT_IN_TRANSACTION)
         }
+        EspressoIdlingResource.decrement()
     }
 
     /**
