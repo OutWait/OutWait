@@ -30,8 +30,8 @@ class Server {
         config.setPort(567)
         config.setBossThreads(1)
         config.setWorkerThreads(1)
-        config.pingInterval = 5000
-        config.pingTimeout = 120000
+        config.pingInterval = 10000
+        config.pingTimeout = 25000
         config.getSocketConfig().setReuseAddress(true)
 
         server = SocketIOServer(config)
