@@ -10,6 +10,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 
 import androidx.test.ext.junit.rules.activityScenarioRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.dataItem.TimeSlotItem
@@ -21,6 +22,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import javax.inject.Inject
 
 private const val INSTITUTION_NAME_CORRECT = "test2"
@@ -29,8 +31,8 @@ private const val FIRST_SLOT     = 0
 private const val FIRST_SLOT_TRANSACTION     = 1
 private const val THREE = "3"
 
-//@RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
+// @RunWith(AndroidJUnit4::class)
 class CountOfClientsTest {
 
     @get:Rule(order = 0)
@@ -53,8 +55,8 @@ class CountOfClientsTest {
 
         // login via injected repository
         instituteRepo.login(
-            validUsername,
-            validPassword
+            VALID_TEST_USERNAME,
+            VALID_TEST_PASSWORD
         )
 
         //Verify of forwarding

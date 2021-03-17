@@ -3,12 +3,14 @@ package elite.kit.outwait.util
 /**
  * The valid username of the test account
  */
-const val validUsername = "test2"
+const val VALID_TEST_USERNAME = "test2"
 
 /**
  * The valid password of the test account
  */
-const val validPassword = "test2"
+const val VALID_TEST_PASSWORD = "test2"
+
+
 const val FIRST_SLOT_IDENTIFIER = "Slot1"
 const val SECOND_SLOT_IDENTIFIER = "Slot2"
 const val THIRD_SLOT_IDENTIFIER = "Slot3"
