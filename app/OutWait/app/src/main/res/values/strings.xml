@@ -7,7 +7,7 @@
     <string name="hint_password">Password</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="reset_password">Reset</string>
-    <string name="reset_text">Enter your name in order to send a new password by your email</string>
+    <string name="reset_text">Enter your username in order to get a new password by your email</string>
     <string name="slotcode">Slotcode</string>
     <string name="identifier">Identifier</string>
     <string name="duration">Duration</string>
@@ -19,34 +19,34 @@
     <string name="undo">UNDO</string>
     <string name="enter_slotcode_text">Please enter your slot code</string>
     <string name="slot_details">Slot details</string>
-    <string name="standard_slot_duration">Standard slot duration</string>
+    <string name="standard_slot_duration">Default slot duration</string>
     <string name="notificationtime">Notificationtime</string>
     <string name="delay_notificationtime">Delay notificationtime</string>
     <string name="prioritizationtime">Prioritizationtime</string>
-    <string name="title_edit_dialog">Edit the slot</string>
+    <string name="title_edit_dialog">Edit slot</string>
     <string name="logout">Logout</string>
     <string name="refresh">Refresh</string>
     <!-- Strings for Error-Notifications (Institute) -->
     <string name="TRANSACTION_DENIED">Transaction denied!</string>
     <string name="LOGIN_DENIED">Login denied!</string>
-    <string name="NOT_IN_TRANSACTION">no running transaction!</string>
+    <string name="NOT_IN_TRANSACTION">No running transaction!</string>
     <string name="NETWORK_ERROR">Network error. Please check your Internet connection!</string>
-    <string name="COMMUNICATION_ERROR">Can´t reach the server. Wait a moment and try to log in again!</string>
+    <string name="COMMUNICATION_ERROR">Can\'t reach the server. Wait a moment and try to log in again!</string>
     <string name="SERVER_ERROR">A server error occurred. Please contact OutWait!</string>
     <string name="INVALID_REQUEST">The server denies your request. Please contact OutWait!</string>
     <!-- Strings for Error-Notifications (Client) -->
     <string name="INVALID_SLOT_CODE">Your code is not valid!</string>
-    <string name="INTERNAL_ERROR">A internal App Error has occurred. Please contact OutWait!</string>
-    <string name="INTERNET_ERROR">Lost connection to server. Proof your internet connection and try to refresh!</string>
-    <string name="process_title">Process</string>
+    <string name="INTERNAL_ERROR">An internal server error has occurred. Please contact OutWait!</string>
+    <string name="INTERNET_ERROR">Lost connection to server. Check your internet connection and try to refresh!</string>
+    <string name="process_title">Processing</string>
     <!-- Strings related to push notifications -->
-    <string name="Perm_Notif_BaseTitle">Your Next Appointment Today</string>
+    <string name="Perm_Notif_BaseTitle">Your next appointment today</string>
     <string name="Perm_Notif_Basetext1">with\u00A0</string>
     <string name="Perm_Notif_Basetext2">\u00A0is at\u00A0</string>
-    <string name="Delay_Notif_BaseTitle">Delay Of Your Appointment with\u00A0</string>
+    <string name="Delay_Notif_BaseTitle">Delay of your appointment with\u00A0</string>
     <string name="Delay_Notif_BaseText1">by\u00A0</string>
     <string name="Delay_Notif_BaseText2">\u00A0, now at\u00A0</string>
-    <string name="Pending_Notif_BaseTitle1">Your Appointment with\u00A0</string>
+    <string name="Pending_Notif_BaseTitle1">Your appointment with\u00A0</string>
     <string name="Pending_Notif_BaseTitle2">\u00A0will begin shortly!</string>
     <string name="Pending_Notif_BaseText">Please go to the institution immediately!</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -55,14 +55,14 @@
     <string name="title_auxiliary_identifier">Auxiliary Identifier:</string>
     <string name="title_duration">Duration:</string>
     <string name="title_appointment">Appointment:</string>
-    <string name="permission_allowed">permission allowed</string>
+    <string name="permission_allowed">Permission allowed</string>
     <string name="title_permission_dialog">Permission required</string>
     <string name="explanation_text_permission">Permission to access your camera is required to scan your QR-Code</string>
     <string name="text_scanning">Scanning Code</string>
     <string name="no_result">No Result</string>
-    <string name="failure_add_slot">Failed: Please enter an appointmentTime</string>
-    <string name="text_save_config">Your settings are saved</string>
-    <string name="text_denied_save_config">Your queue is not empty to switch your mode and your settings are not saved</string>
-    <string name="text_avoid_back_press_management">Please only possibility to logout</string>
+    <string name="failure_add_slot">Failed: Please enter an appointment time</string>
+    <string name="text_save_config">Settings saved</string>
+    <string name="text_denied_save_config">Queue is not empty. Mode can't be changed, changes won't be saved</string>
+    <string name="text_avoid_back_press_management">Please logout first</string>
     <string name="text_counter">Count of Clients: </string>
 </resources>
