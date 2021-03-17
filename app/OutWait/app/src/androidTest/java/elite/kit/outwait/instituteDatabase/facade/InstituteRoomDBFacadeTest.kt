@@ -62,4 +62,41 @@ class InstituteRoomDBFacadeTest {
         assertEquals(storedIdentifiers.keys.size, 1)
         assertEquals("aux1",storedIdentifiers["aux2forSlot1"])
     }
+
+    @Test
+    fun deleteOneOfThreeAuxiliaryIdentifiersCorrectly() = runBlocking {
+        dbFacade.insertUpdateAux("slot1", "aux1")
+        dbFacade.insertUpdateAux("slot2", "aux2")
+        dbFacade.insertUpdateAux("slot3", "aux3")
+
+        assertEquals(dbFacade.getAuxiliaryIdentifiers().keys.size, 3)
+
+        dbFacade.deleteAux("slot2")
+
+        val storedIdentifiers = dbFacade.getAuxiliaryIdentifiers()
+
+        assertEquals(storedIdentifiers.keys.size, 2)
+        assertEquals("aux1",storedIdentifiers["slot1"])
+        assertEquals(null, storedIdentifiers["slot2"])
+        assertEquals("aux3",storedIdentifiers["slot3"])
+    }
+
+    @Test
+    fun testClearingTable() = runBlocking {
+        dbFacade.insertUpdateAux("slot1", "aux1")
+        dbFacade.insertUpdateAux("slot2", "aux2")
+        dbFacade.insertUpdateAux("slot3", "aux3")
+
+        assertEquals(dbFacade.getAuxiliaryIdentifiers().keys.size, 3)
+
+        dbFacade.deleteAll()
+
+        val storedIdentifiers = dbFacade.getAuxiliaryIdentifiers()
+
+        assertEquals(storedIdentifiers.keys.size, 0)
+    }
+
+    /*
+    getAuxiliaryIdentifiers() is tested implicitly in all the other methods
+     */
 }
