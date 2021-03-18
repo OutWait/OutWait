@@ -6,6 +6,7 @@ import androidx.test.espresso.Root
 import org.hamcrest.TypeSafeMatcher
 import org.junit.runner.Description
 
+@Suppress("DEPRECATION")
 class ToastMatcher: TypeSafeMatcher<Root?>(){
 
 

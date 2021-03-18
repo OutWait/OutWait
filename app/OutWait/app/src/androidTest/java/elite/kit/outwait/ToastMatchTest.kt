@@ -30,7 +30,6 @@ class ToastMatchTest {
         onView(withId(R.id.etSlotCode)).perform(TextSetter.setTextEditText("xxxxxxxxx"), closeSoftKeyboard())
         onView(withText("Ihr Code ist ungültig!")).inRoot(ToastMatcher()).check(matches(isDisplayed()))
 
-        Thread.sleep(5000)
         onView(withId(R.id.btnLoginFrag)).perform(click())
 
         onView(withText("Anmeldung fehlgeschlagen!")).inRoot(ToastMatcher()).check(matches(isDisplayed()))

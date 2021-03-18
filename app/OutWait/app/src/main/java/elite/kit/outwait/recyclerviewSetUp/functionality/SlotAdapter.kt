@@ -44,7 +44,6 @@ class SlotAdapter(slotList: MutableList<DataItem>, private val listener: ItemAct
     RecyclerView.Adapter<BaseViewHolder<*>>(),
     ItemTouchHelperAdapter {
     private lateinit var itemTouchHelper: ItemTouchHelper
-    private val adapterScope = CoroutineScope(Dispatchers.Default)
 
 
     /**
