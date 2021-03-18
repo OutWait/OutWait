@@ -105,6 +105,7 @@
             android:inputType="textCapCharacters"
             android:maxLength="9"
             app:cet_codePlaceholder="*"
+            android:backgroundTint="@color/outwait_color"
             app:cet_scrollDurationInMillis="300"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
