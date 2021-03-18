@@ -1,4 +1,4 @@
-package elite.kit.outwait
+package elite.kit.outwait.management
 
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso
@@ -13,6 +13,8 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import elite.kit.outwait.MainActivity
+import elite.kit.outwait.R
 import elite.kit.outwait.utils.EspressoIdlingResource
 import org.junit.After
 import org.junit.Before

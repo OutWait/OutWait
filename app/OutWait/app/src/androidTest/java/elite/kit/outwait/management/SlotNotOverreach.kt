@@ -1,4 +1,4 @@
-package elite.kit.outwait
+package elite.kit.outwait.management
 
 
 import androidx.test.espresso.Espresso.onView
@@ -11,6 +11,8 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.activityScenarioRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import elite.kit.outwait.MainActivity
+import elite.kit.outwait.R
 import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder

@@ -1,4 +1,4 @@
-package elite.kit.outwait
+package elite.kit.outwait.management
 
 import android.content.Context
 import androidx.test.InstrumentationRegistry.getTargetContext

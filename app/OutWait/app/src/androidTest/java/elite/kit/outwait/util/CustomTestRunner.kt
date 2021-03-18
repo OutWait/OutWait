@@ -1,10 +1,9 @@
-package elite.kit.outwait
+package elite.kit.outwait.util
 
 import android.app.Application
 import android.content.Context
 import androidx.test.runner.AndroidJUnitRunner
 import dagger.hilt.android.testing.HiltTestApplication
-import elite.kit.outwait.instituteRepository.InstituteRepository
 
 class CustomTestRunner : AndroidJUnitRunner() {
 

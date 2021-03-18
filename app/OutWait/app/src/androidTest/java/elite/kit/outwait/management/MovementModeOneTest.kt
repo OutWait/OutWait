@@ -1,12 +1,10 @@
-package elite.kit.outwait
+package elite.kit.outwait.management
 
 import android.util.Log
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.swipeLeft
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
@@ -15,6 +13,8 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.activityScenarioRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import elite.kit.outwait.MainActivity
+import elite.kit.outwait.R
 import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
@@ -22,7 +22,6 @@ import elite.kit.outwait.util.*
 import elite.kit.outwait.util.ReadText.getText
 import elite.kit.outwait.utils.EspressoIdlingResource
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
-import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
