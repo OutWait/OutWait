@@ -125,7 +125,11 @@ class UpdateMediator {
 
         // Work around - iterator invalidation
         while (receivers[slotCode]?.isNotEmpty() ?: false) {
-            receivers[slotCode]?.first()?.end()
+            val first = receivers[slotCode]?.first()
+            if (first != null) {
+                first.end()
+                receivers[slotCode]?.remove(first)
+            }
         }
     }
 
@@ -140,7 +144,11 @@ class UpdateMediator {
 
         // Work around - iterator invalidation
         while (receivers[slotCode]?.isNotEmpty() ?: false) {
-            receivers[slotCode]?.first()?.delete()
+            val first = receivers[slotCode]?.first()
+            if (first != null) {
+                first.delete()
+                receivers[slotCode]?.remove(first)
+            }
         }
     }
 }
