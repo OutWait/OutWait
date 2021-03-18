@@ -2,8 +2,7 @@ package elite.kit.outwait.management
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.pressBack
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -40,10 +39,6 @@ private const val DEFAULT_DURATION = 600000L
 class ChangeToModeOneTest {
 
 
-    private val preconditionPrefs = Preferences(Duration(DEFAULT_DURATION), Duration(DEFAULT_DURATION),
-        Duration(DEFAULT_DURATION),Duration(DEFAULT_DURATION), Mode.TWO)
-
-
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
 
@@ -72,13 +67,7 @@ class ChangeToModeOneTest {
 
         // check that we are logged in
         assert(instituteRepo.isLoggedIn().value!!)
-        /*
-        onView(withId(R.id.floatingActionButton)).check(
-            matches(
-                isDisplayed()
-            )
-        )
-         */
+        
 
         // ensure that waiting queue is empty to begin with
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
@@ -95,6 +84,9 @@ class ChangeToModeOneTest {
         }
 
         // set default preferences (all durations to 10mins) and ensure that mode 2 is active
+        val preconditionPrefs = Preferences(Duration(DEFAULT_DURATION), Duration(DEFAULT_DURATION),
+            Duration(DEFAULT_DURATION),Duration(DEFAULT_DURATION), Mode.TWO)
+
         instituteRepo.changePreferences(preconditionPrefs)
         Thread.sleep(WAIT_FOR_SERVER_RESPONSE)
 
@@ -102,15 +94,9 @@ class ChangeToModeOneTest {
         // all specified preconditions are met
     }
 
-    /*
-    @After
-    fun unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
-    }
-     */
 
     @After
-    fun cleanUp(){
+    fun cleanUp() {
         // clean up waiting queue (on server side also)
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
 
@@ -145,7 +131,7 @@ class ChangeToModeOneTest {
         onView(withId(R.id.tvSwitchText)).check(matches(withText("Mode 1")))
 
         // perform action 3 (save the settings)
-        onView(withId(R.id.btnSave)).perform(click())
+        onView(withId(R.id.btnSave)).perform(scrollTo(), click())
         Thread.sleep(WAIT_FOR_SERVER_RESPONSE)
         // navigate back to the waiting queue
         onView(isRoot()).perform((pressBack()))
@@ -155,7 +141,6 @@ class ChangeToModeOneTest {
         Thread.sleep(WAIT_FOR_UI_RESPONSE)
 
         // check if only spontaneous slots are possible to add
-        // TODO Klappt das so?
         onView(withId(R.id.cbIsFixedSlot)).check(
             matches(withEffectiveVisibility(Visibility.INVISIBLE))
         )
