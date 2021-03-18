@@ -65,4 +65,6 @@
     <string name="text_denied_save_config">Queue is not empty. Mode can\'t be changed, changes won\'t be saved</string>
     <string name="text_avoid_back_press_management">Please logout first</string>
     <string name="text_counter">Count of Clients: </string>
+    <string name="modeOne">Mode 1</string>
+    <string name="modeTwo">Mode 2</string>
 </resources>

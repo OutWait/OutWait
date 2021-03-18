@@ -27,8 +27,6 @@ import kotlin.time.toDuration
  * Dialog to show the configurations of the management system for the queue
  *
  */
-private const val MODE_FIRST = "Mode 1"
-private const val MODE_SECOND = "Mode 2"
 private const val SLOT_LIST_EMPTY = 0
 
 
@@ -110,9 +108,9 @@ class ConfigDialogFragment : Fragment() {
      */
     private fun setSwitchTextOnState(isChecked: Boolean) {
         if (isChecked) {
-            binding.tvSwitchText.text = MODE_SECOND
+            binding.tvSwitchText.text = getString(R.string.modeTwo)
         } else {
-            binding.tvSwitchText.text = MODE_FIRST
+            binding.tvSwitchText.text = getString(R.string.modeOne)
         }
     }
 

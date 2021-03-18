@@ -132,7 +132,6 @@ class MovementModeOneTest {
         )
         instituteRepo.moveSlotAfterAnother(fourthPosSlotCode, firstPosSlotCode)
         instituteRepo.saveTransaction()
-        Thread.sleep(1000)
 
         //Check right order
         //First slot
