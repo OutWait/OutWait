@@ -23,6 +23,9 @@ import elite.kit.outwait.util.ReadText.getText
 import elite.kit.outwait.utils.EspressoIdlingResource
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -45,7 +48,7 @@ class MovementModeOneTest {
     fun init() {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
-        instituteRepo.login("global-test", "global-test")
+        instituteRepo.login("test2", "test2")
     }
 
     //TEST 9
@@ -133,12 +136,13 @@ class MovementModeOneTest {
             "$firstPosSlotCode++$secondPosSlotCode++$thirdPosSlotCode++$fourthPosSlotCode"
         )
         instituteRepo.moveSlotAfterAnother(fourthPosSlotCode, firstPosSlotCode)
-        Thread.sleep(WAIT_RESPONSE_SERVER_SHORT)
-        instituteRepo.saveTransaction()
-        Thread.sleep(WAIT_RESPONSE_SERVER_SHORT)
+        CoroutineScope(Dispatchers.Main).launch {
+            instituteRepo.saveTransaction()
+        }
 
         //Check right order
         //First slot
+        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FIRST_SLOT,
@@ -195,7 +199,9 @@ class MovementModeOneTest {
                 Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
             }
             // save the transaction and the changes made
-            instituteRepo.saveTransaction()
+            CoroutineScope(Dispatchers.Main).launch {
+                instituteRepo.saveTransaction()
+            }
         }
 
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)

@@ -381,18 +381,17 @@ class InstituteRepository @Inject constructor(
      *
      */
     fun saveTransaction() {
-        EspressoIdlingResource.increment()
         if (inTransaction.value == true) {
-            inTransaction.postValue( false)
+            inTransaction.value=false
             CoroutineScope(IO).launch {
-
+                wrapEspressoIdlingResource {
                     remote.saveTransaction()
                 }
+            }
 
         } else {
             pushError(InstituteErrors.NOT_IN_TRANSACTION)
         }
-        EspressoIdlingResource.decrement()
     }
 
     /**
