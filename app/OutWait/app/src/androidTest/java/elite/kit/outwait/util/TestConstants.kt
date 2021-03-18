@@ -32,6 +32,8 @@ const val FIRST_SLOT = 0
 const val SECOND_SLOT = 1
 const val THIRD_SLOT = 2
 const val FOURTH_SLOT = 3
+const val WAIT_RESPONSE_SERVER_LONG = 3000L
+const val WAIT_RESPONSE_SERVER_SHORT = 1000L
 
 
 

@@ -21,6 +21,7 @@ import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.util.*
 import elite.kit.outwait.util.ReadText.getText
 import elite.kit.outwait.utils.EspressoIdlingResource
+import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
 import elite.kit.outwait.waitingQueue.timeSlotModel.SpontaneousTimeSlot
 import org.junit.After
 import org.junit.Before
@@ -47,6 +48,7 @@ class MovementModeOneTest {
         instituteRepo.login("global-test", "global-test")
     }
 
+    //TEST 9
     @Test
     fun moveSlots() {
         //Add first slot
@@ -131,7 +133,9 @@ class MovementModeOneTest {
             "$firstPosSlotCode++$secondPosSlotCode++$thirdPosSlotCode++$fourthPosSlotCode"
         )
         instituteRepo.moveSlotAfterAnother(fourthPosSlotCode, firstPosSlotCode)
+        Thread.sleep(WAIT_RESPONSE_SERVER_SHORT)
         instituteRepo.saveTransaction()
+        Thread.sleep(WAIT_RESPONSE_SERVER_SHORT)
 
         //Check right order
         //First slot
@@ -179,12 +183,22 @@ class MovementModeOneTest {
 
     @After
     fun emptySlot() {
-        instituteRepo.endCurrentSlot()
-        instituteRepo.endCurrentSlot()
-        instituteRepo.endCurrentSlot()
-        instituteRepo.endCurrentSlot()
-        Thread.sleep(1000)
-        instituteRepo.saveTransaction()
+        // clean up waiting queue (on server side also)
+        val timeSlots = instituteRepo.getObservableTimeSlotList().value
+
+
+        if (timeSlots != null && timeSlots.isNotEmpty()) {
+            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots){
+                // delete slot with retrieved slotCode from waiting queue
+                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
+                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+            }
+            // save the transaction and the changes made
+            instituteRepo.saveTransaction()
+        }
+
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
+        openActivityRule.scenario.close()
     }
 }
