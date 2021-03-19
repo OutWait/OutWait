@@ -11,6 +11,7 @@ import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.instituteDatabase.facade.InstituteDBFacade
 import elite.kit.outwait.instituteDatabase.facade.InstituteRoomDBFacade
 import elite.kit.outwait.instituteDatabase.rooms.DBAuxiliaryIdentifierDao
+import elite.kit.outwait.instituteDatabase.rooms.DBLoginDataDao
 import elite.kit.outwait.instituteDatabase.rooms.InstituteRoomDatabase
 import elite.kit.outwait.remoteDataSource.SocketIOHandlerFactory
 import elite.kit.outwait.services.ServiceHandler
@@ -58,6 +59,11 @@ object MainModule {
 
     @Provides
     @Singleton
-    fun provideInstituteDBFacade(auxDao: DBAuxiliaryIdentifierDao): InstituteDBFacade
-        = InstituteRoomDBFacade(auxDao)
+    fun provideDBLoginDataDao(db: InstituteRoomDatabase)
+        = db.getDBLoginDataDao()
+
+    @Provides
+    @Singleton
+    fun provideInstituteDBFacade(auxDao: DBAuxiliaryIdentifierDao, loginDao: DBLoginDataDao): InstituteDBFacade
+        = InstituteRoomDBFacade(auxDao, loginDao)
 }

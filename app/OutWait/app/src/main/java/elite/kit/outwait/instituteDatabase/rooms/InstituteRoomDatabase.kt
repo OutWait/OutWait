@@ -12,7 +12,10 @@ import androidx.room.RoomDatabase
  * entered by the receptionist.
  *
  */
-@Database(version = 1, entities = [DBAuxiliaryIdentifier::class])
+@Database(
+    version = 2,
+    entities = [DBAuxiliaryIdentifier::class, DBLoginData::class]
+)
 abstract class InstituteRoomDatabase : RoomDatabase() {
 
     /**
@@ -21,6 +24,8 @@ abstract class InstituteRoomDatabase : RoomDatabase() {
      * @return object that can access the aux_identifiers Table
      */
     abstract fun getDBAuxiliaryIdentifierDao(): DBAuxiliaryIdentifierDao
+
+    abstract fun getDBLoginDataDao(): DBLoginDataDao
 
     companion object {
         /**

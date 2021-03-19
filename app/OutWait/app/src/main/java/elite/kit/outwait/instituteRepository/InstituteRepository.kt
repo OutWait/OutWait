@@ -102,6 +102,14 @@ class InstituteRepository @Inject constructor(
             if (preferences !== null) preferences.value = it
             Log.i("preferences", preferences?.value.toString())
         }
+
+        CoroutineScope(IO).launch {
+            if (db.loginDataSaved()){
+                val password = db.getPassword()
+                val username = db.getUserName()
+                loginData.postValue(Pair(username, password))
+            }
+        }
     }
 
 
@@ -110,7 +118,7 @@ class InstituteRepository @Inject constructor(
     private val errorNotifications = MutableLiveData<List<InstituteErrors>>()
     private val inTransaction = MutableLiveData<Boolean>(false)
     private val loggedIn = MutableLiveData<Boolean>(false)
-
+    private val loginData = MutableLiveData<Pair<String, String>>(null)
 
     /** Provides an observable object that stores all institute preferences */
     fun getObservablePreferences() = preferences as LiveData<Preferences>
@@ -140,6 +148,9 @@ class InstituteRepository @Inject constructor(
     /** Provides an observable boolean that tells if the institute is logged in*/
     fun isLoggedIn() = loggedIn as LiveData<Boolean>
 
+    fun getLoginData(): LiveData<Pair<String, String>> = loginData
+
+
 
     private var communicationEstablished = false
 
@@ -161,6 +172,8 @@ class InstituteRepository @Inject constructor(
                     if (remote.login(username, password)) {
                         communicationEstablished = true
                         loggedIn.postValue(true)
+                        loginData.postValue(Pair(username, password))
+                        db.insertUpdateLoginData(username, password)
                     }
                 }
             }
