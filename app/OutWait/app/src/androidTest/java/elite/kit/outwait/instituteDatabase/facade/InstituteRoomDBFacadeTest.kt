@@ -5,6 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import elite.kit.outwait.instituteDatabase.rooms.DBAuxiliaryIdentifierDao
+import elite.kit.outwait.instituteDatabase.rooms.DBLoginDataDao
 import elite.kit.outwait.instituteDatabase.rooms.InstituteRoomDatabase
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -20,6 +21,7 @@ class InstituteRoomDBFacadeTest {
     private lateinit var dataBase: InstituteRoomDatabase
     private lateinit var dbFacade: InstituteDBFacade
     private lateinit var dao: DBAuxiliaryIdentifierDao
+    private lateinit var loginDao: DBLoginDataDao
 
     @Before
     fun setUp(){
@@ -29,8 +31,9 @@ class InstituteRoomDBFacadeTest {
         ).allowMainThreadQueries().build()
 
         dao = dataBase.getDBAuxiliaryIdentifierDao()
+        loginDao = dataBase.getDBLoginDataDao()
 
-        dbFacade = InstituteRoomDBFacade(dao)
+        dbFacade = InstituteRoomDBFacade(dao, loginDao)
     }
 
     @After
