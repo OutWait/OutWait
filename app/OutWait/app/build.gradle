@@ -27,7 +27,7 @@ android {
        // testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // CustomTestRunner for using HiltTestApplication in (Instrumented) AndroidTests
-        testInstrumentationRunner "elite.kit.outwait.CustomTestRunner"
+        testInstrumentationRunner "elite.kit.outwait.util.CustomTestRunner"
     }
 
     buildTypes {
