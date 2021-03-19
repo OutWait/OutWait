@@ -69,7 +69,9 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
             receivers[slotCode] = slotInformationReceiver
         } else {
             Logger.debug(LOG_ID, "Slot does not exist (can't add it to receiver list)")
-            socketFacade.send(Event.INVALID_CODE, JSONEmptyWrapper())
+            val toSend = JSONSlotCodeWrapper()
+            toSend.setSlotCode(slotCode)
+            socketFacade.send(Event.INVALID_CODE, toSend)
         }
     }
 
@@ -99,7 +101,9 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
             Logger.debug(LOG_ID, "Slot ended")
         } else {
             Logger.debug(LOG_ID, "Could not end slot (code not registered)")
-            socketFacade.send(Event.INVALID_CODE, JSONEmptyWrapper())
+            val toSend = JSONSlotCodeWrapper()
+            toSend.setSlotCode(slotCode)
+            socketFacade.send(Event.INVALID_CODE, toSend)
         }
     }
 
@@ -117,7 +121,9 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
             Logger.debug(LOG_ID, "Slot deleted")
         } else {
             Logger.debug(LOG_ID, "Could not delete slot (code not registered)")
-            socketFacade.send(Event.INVALID_CODE, JSONEmptyWrapper())
+            val toSend = JSONSlotCodeWrapper()
+            toSend.setSlotCode(slotCode)
+            socketFacade.send(Event.INVALID_CODE, toSend)
         }
     }
 

@@ -49,7 +49,7 @@ enum class Event(private val tag: String, private val wrapper: (String) -> JSONO
     SEND_SLOT_DATA("sendSlotData@C", { JSONSlotDataWrapper(JSONObject(it)) }),
     SLOT_ENDED("endSlot@C", { JSONSlotCodeWrapper(JSONObject(it)) }),
     SLOT_DELETED("deleteSlot@C", { JSONSlotCodeWrapper(JSONObject(it)) }),
-    INVALID_CODE("invalidCode@C", { JSONEmptyWrapper(JSONObject(it)) }),
+    INVALID_CODE("invalidCode@C", { JSONSlotCodeWrapper(JSONObject(it)) }),
     INVALID_CLIENT_REQUEST("invalidRequest@C", { JSONErrorMessageWrapper(JSONObject(it)) });
 
     /**
