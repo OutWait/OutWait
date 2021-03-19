@@ -36,6 +36,7 @@
     <string name="INVALID_REQUEST">Der Server lehnt Ihre Anfrage ab. Bitte kontaktieren Sie OutWait!</string>
     <!-- Strings for Error-Notifications (Client) -->
     <string name="INVALID_SLOT_CODE">Ihr Code ist ungültig!</string>
+    <string name="EXPIRED_SLOT_CODE">Ihr Slot ist abgelaufen!</string>
     <string name="process_title">Verarbeiten</string>
     <!-- Strings related to push notifications -->
     <string name="Perm_Notif_BaseTitle">Ihr nächster Termin für heute</string>
