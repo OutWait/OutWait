@@ -43,6 +43,7 @@
     <string name="INVALID_REQUEST">Der Server lehnt Ihre Anfrage ab. Bitte kontaktieren Sie OutWait!</string>
     <!-- Strings for Error-Notifications (Client) -->
     <string name="INVALID_SLOT_CODE">Ihr Code ist ungültig!</string>
+    <string name="EXPIRED_SLOT_CODE">Ihr Slot ist abgelaufen!</string>
     <string name="process_title">Verarbeiten</string>
     <string name="INTERNAL_ERROR">Ein internes Server-Problem ist aufgetreten, bitte kontaktieren Sie Outwait</string>
     <string name="INTERNET_ERROR">Serververbindung verloren, bitte Internetverbindung überprüfen und aktualisieren Sie</string>

@@ -92,6 +92,10 @@ class ClientRepository @Inject constructor(
                         pushError(ClientErrors.INTERNET_ERROR)
                         remoteConnected = false
                     }
+                    ClientServerErrors.EXPIRED_SLOT_CODE
+                    -> {
+                        pushError(ClientErrors.EXPIRED_SLOT_CODE)
+                    }
                 }
             }
         }
@@ -101,6 +105,12 @@ class ClientRepository @Inject constructor(
             wrapEspressoIdlingResource {
                 withContext(Main) {
                     activeSlots.observeForever {
+
+                        if (it.isEmpty()) {
+                            remote.endCommunication()
+                            remoteConnected = false
+                        }
+
                         if (it.isNotEmpty() && !serviceStarted) {
                             /*
                         when the first slot the client wants to observe is
