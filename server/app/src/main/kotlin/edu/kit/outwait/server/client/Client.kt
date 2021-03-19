@@ -56,6 +56,13 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
                 }
             }
         )
+
+        socketFacade.onDisconnect {
+            for ((code, receiver) in receivers) {
+                clientManager.removeReceiver(receiver)
+            }
+            clientManager.removeClient(this)
+        }
     }
 
     /**
