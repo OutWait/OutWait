@@ -144,7 +144,7 @@ class MovementModeOneTest {
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                FIRST_SLOT,
+                FIRST_SLOT_POSITION,
                 click()
             )
         )
@@ -154,7 +154,7 @@ class MovementModeOneTest {
         //Second slot former fourth slot
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                SECOND_SLOT,
+                SECOND_SLOT_POSITION,
                 click()
             )
         )
@@ -164,7 +164,7 @@ class MovementModeOneTest {
         //Third slot
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                THIRD_SLOT,
+                THIRD_SLOT_POSITION,
                 click()
             )
         )
@@ -174,7 +174,7 @@ class MovementModeOneTest {
         //Fourth slot former third slot
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                FOURTH_SLOT,
+                FOURTH_SLOT_POSITION,
                 click()
             )
         )
