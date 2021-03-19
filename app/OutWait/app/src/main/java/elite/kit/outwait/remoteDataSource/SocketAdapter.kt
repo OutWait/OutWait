@@ -6,6 +6,7 @@ import elite.kit.outwait.networkProtocol.JSONObjectWrapper
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
+import io.socket.engineio.client.transports.WebSocket
 import org.json.JSONObject
 import java.net.URI
 
@@ -54,6 +55,7 @@ class SocketAdapter(namespace: String) {
     init {
         //Configure options of the socket.io socket
         val options = IO.Options()
+        options.transports = arrayOf(WebSocket.NAME)
         options.reconnection = true
 
         socketIOSocket = IO.socket(URI.create(serverURI + namespace), options)
