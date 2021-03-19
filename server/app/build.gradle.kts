@@ -11,6 +11,8 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+
+    jacoco
 }
 
 repositories {
@@ -52,9 +54,33 @@ dependencies {
 
     // Create a client mock
     testImplementation("io.socket:socket.io-client:1.0.0")
+
+    // Mockk testing framework
+    testImplementation("io.mockk:mockk:1.10.6")
+
+    // Test coverage
+    testImplementation("org.jacoco:org.jacoco.core:0.8.6")
 }
 
-tasks.test { useJUnitPlatform() }
+tasks.test {
+    useJUnitPlatform()
+
+    testLogging {
+        outputs.upToDateWhen { false }
+        showStandardStreams = true
+    }
+
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+jacoco {
+    toolVersion = "0.8.6"
+    reportsDirectory.set(file("$buildDir/coverage_report"))
+}
 
 application {
     // Define the main class for the application.
