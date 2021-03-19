@@ -2,13 +2,16 @@
 <resources>
     <string name="app_name">OutWait</string>
     <!-- Strings related to login -->
+    <string name="are_you_a_client"><i>Are you a client?</i></string>
+    <string name="are_you_an_institute"><i>Are you an institute ?</i></string>
     <string name="sign_in">Sign in</string>
     <string name="hint_name">Name</string>
     <string name="hint_password">Password</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="reset_password">Reset</string>
-    <string name="reset_text">Enter your username in order to get a new password by your email</string>
-    <string name="slotcode">Slotcode</string>
+    <string name="reset_text">Enter your username in order to get a new password via your email</string>
+    <!-- Strings related to management -->
+    <string name="slotcode">Slot code</string>
     <string name="identifier">Identifier</string>
     <string name="duration">Duration</string>
     <string name="appointment_time">Appointment Time</string>
@@ -17,14 +20,18 @@
     <string name="cancel">Cancel</string>
     <string name="fixed_slot">Fixed Slot</string>
     <string name="undo">UNDO</string>
-    <string name="enter_slotcode_text">Please enter your slot code</string>
     <string name="slot_details">Slot details</string>
     <string name="standard_slot_duration">Default slot duration</string>
-    <string name="notificationtime">Notificationtime</string>
-    <string name="delay_notificationtime">Delay notificationtime</string>
-    <string name="prioritizationtime">Prioritizationtime</string>
+    <string name="notificationtime">Notification time</string>
+    <string name="delay_notificationtime">Delay notification time</string>
+    <string name="prioritizationtime">Prioritization time</string>
     <string name="title_edit_dialog">Edit slot</string>
+    <string name="title_auxiliary_identifier">Auxiliary Identifier:</string>
+    <string name="title_duration">Duration:</string>
+    <string name="title_appointment">Appointment:</string>
     <string name="logout">Logout</string>
+    <!-- Strings related to edit/enter slotCode -->
+    <string name="enter_slotcode_text">Please enter your slot code</string>
     <string name="refresh">Refresh</string>
     <!-- Strings for Error-Notifications (Institute) -->
     <string name="TRANSACTION_DENIED">Transaction denied!</string>
@@ -49,16 +56,12 @@
     <string name="Pending_Notif_BaseTitle1">Your appointment with\u00A0</string>
     <string name="Pending_Notif_BaseTitle2">\u00A0will begin shortly!</string>
     <string name="Pending_Notif_BaseText">Please go to the institution immediately!</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="are_you_a_client"><i>Are you a client?</i></string>
-    <string name="are_you_an_institute"><i>Are you an institute ?</i></string>
-    <string name="title_auxiliary_identifier">Auxiliary Identifier:</string>
-    <string name="title_duration">Duration:</string>
-    <string name="title_appointment">Appointment:</string>
+    <!-- Strings related to QR scan -->
     <string name="permission_allowed">Permission allowed</string>
     <string name="title_permission_dialog">Permission required</string>
     <string name="explanation_text_permission">Permission to access your camera is required to scan your QR-Code</string>
     <string name="text_scanning">Scanning Code</string>
+    <!-- Strings related to management settings -->
     <string name="no_result">No Result</string>
     <string name="failure_add_slot">Failed: Please enter an appointment time</string>
     <string name="text_save_config">Settings saved</string>
