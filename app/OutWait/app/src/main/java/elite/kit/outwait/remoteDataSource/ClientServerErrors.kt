@@ -12,6 +12,12 @@ enum class ClientServerErrors {
     INVALID_SLOT_CODE,
 
     /**
+     * indicates that the received slot code is already expired
+     *
+     */
+    EXPIRED_SLOT_CODE,
+
+    /**
      * indicated that the server deemed the performed request as invalid
      */
     INVALID_REQUEST,

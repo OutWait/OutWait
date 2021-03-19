@@ -14,21 +14,21 @@ enum class Event(private val eventString: String,
                  private val wrapperFromJSON: (JSONObject) -> JSONObjectWrapper) {
 
     /**
-     * events related to client-server communcation
+     * events related only to client-server communcation
      */
     LISTEN_SLOT("listenSlot@S", { JSONSlotCodeWrapper(it) }),
     REFRESH_SLOT_APPROX("refreshSlotApprox@S", { JSONSlotCodeWrapper(it) }),
-
-    /**
-     * events related to management-server communication
-     */
     READY_TO_SERVE_C("readyToServe@C", { JSONEmptyWrapper(it) }),
     SEND_SLOT_DATA_C("sendSlotData@C", { JSONSlotDataWrapper(it) }),
     END_SLOT_C("endSlot@C", { JSONSlotCodeWrapper(it) }),
     DELETE_SLOT_C("deleteSlot@C", { JSONSlotCodeWrapper(it) }),
-    INVALID_CODE_C("invalidCode@C", { JSONEmptyWrapper(it) }),
+    INVALID_CODE_C("invalidCode@C", { JSONSlotCodeWrapper(it) }),
     INVALID_REQUEST_C("invalidRequest@C", { JSONErrorMessageWrapper(it) }),
 
+
+    /**
+     * events related to management-server communication
+     */
     MANAGEMENT_LOGIN("managementLogin@S", { JSONLoginWrapper(it) }),
     MANAGEMENT_LOGOUT("managementLogout@S", { JSONEmptyWrapper(it) }),
     START_TRANSACTION("startTransaction@S", { JSONEmptyWrapper(it) }),

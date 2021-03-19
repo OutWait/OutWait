@@ -73,7 +73,7 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
             onDeleteSlot(receivedData as JSONSlotCodeWrapper)
         }
         clientEventToCallbackMapping[Event.INVALID_CODE_C] = { receivedData ->
-            onInvalidCode(receivedData as JSONEmptyWrapper)
+            onInvalidCode(receivedData as JSONSlotCodeWrapper)
         }
         clientEventToCallbackMapping[Event.INVALID_REQUEST_C] = { receivedData ->
             onInvalidRequest(receivedData as JSONErrorMessageWrapper)
@@ -236,7 +236,17 @@ class SocketIOClientHandler(private val dao: ClientInfoDao) : ClientHandler {
      *
      * @param wrappedJSONData JSONEmptyWrapper, as no data was transmitted
      */
-    private fun onInvalidCode(wrappedJSONData: JSONEmptyWrapper) {
+    private fun onInvalidCode(wrappedJSONData: JSONSlotCodeWrapper) {
+        val invalidSlotCode = wrappedJSONData.getSlotCode()
+        val expiredClientInfo = dao.getClientInfo(invalidSlotCode)
+
+        // delete expired ClientInfo from ClientDB if it exists and push respective error
+        if (expiredClientInfo != null) {
+            dao.deleteClientInfo(expiredClientInfo)
+            pushError(ClientServerErrors.EXPIRED_SLOT_CODE)
+            return
+        }
+
         pushError(ClientServerErrors.INVALID_SLOT_CODE)
     }
 
