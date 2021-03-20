@@ -36,10 +36,10 @@ import kotlinx.android.synthetic.main.login_fragment.*
  */
 private const val CAMERA_RQ = 102
 private const val CAMERA_NAME = "camera"
+
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
-
-    private lateinit var binding:LoginFragmentBinding
+    private lateinit var binding: LoginFragmentBinding
     private val viewModel: UserViewModel by activityViewModels()
 
     /**
@@ -54,23 +54,22 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        binding=DataBindingUtil.inflate(inflater,R.layout.login_fragment, container, false)
-        binding.viewModel=this.viewModel
-        binding.lifecycleOwner=viewLifecycleOwner
+        binding = DataBindingUtil.inflate(inflater, R.layout.login_fragment, container, false)
+        binding.viewModel = this.viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
 
         binding.ivScan.setOnClickListener {
             checkForPermission(android.Manifest.permission.CAMERA, CAMERA_NAME, CAMERA_RQ)
         }
+        val navController = findNavController()
 
-         val navController = findNavController()
-
-        viewModel.loginResponse.observe(viewLifecycleOwner){listOfUsers->
+        viewModel.loginResponse.observe(viewLifecycleOwner) { listOfUsers ->
             when {
                 listOfUsers.isEmpty() -> {
-                    Toast.makeText(context,"FAILED",Toast.LENGTH_LONG)
+                    Toast.makeText(context, "FAILED", Toast.LENGTH_LONG)
                 }
                 listOfUsers.component1() == false -> {
-                    Toast.makeText(context,"FAILED",Toast.LENGTH_LONG)
+                    Toast.makeText(context, "FAILED", Toast.LENGTH_LONG)
                 }
                 listOfUsers.component1() == true -> {
                     navController.popBackStack()
@@ -81,13 +80,15 @@ class LoginFragment : Fragment() {
             }
         }
 
-       binding.etSlotCode.setBackgroundResource(R.drawable.shape_code_edit_text)
+        binding.etSlotCode.setBackgroundResource(R.drawable.shape_code_edit_text)
 
         binding.etSlotCode.setOnCodeChangedListener { (code, completed) ->
+            //TODO dennis if ones completed to delete a char to ty again
             if (completed) {
-                viewModel.clientSlotCode.value= code
+                viewModel.clientSlotCode.value = code
                 viewModel.enterSlotCode()
-                Log.i("slotCode","${viewModel.clientSlotCode.value}")            }
+                Log.i("slotCode", "${viewModel.clientSlotCode.value}")
+            }
         }
 
         return binding.root
@@ -124,7 +125,6 @@ class LoginFragment : Fragment() {
                     arrayOf(permission),
                     requestCode
                 )
-
             }
         }
     }
@@ -214,10 +214,14 @@ class LoginFragment : Fragment() {
                     "${result.contents}",
                     Toast.LENGTH_LONG
                 ).show()
-                viewModel.clientSlotCode.value=result.contents
+                viewModel.clientSlotCode.value = result.contents
                 viewModel.enterSlotCode()
             } else {
-                Toast.makeText(requireActivity().applicationContext, getString(R.string.no_result), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    requireActivity().applicationContext,
+                    getString(R.string.no_result),
+                    Toast.LENGTH_LONG
+                ).show()
             }
 
         } else {

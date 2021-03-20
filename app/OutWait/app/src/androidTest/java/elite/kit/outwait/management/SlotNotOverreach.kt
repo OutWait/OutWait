@@ -94,7 +94,9 @@ class SlotNotOverreach {
         onView(withId(R.id.config)).perform(click())
         onView(withId(R.id.btnLogout)).perform(click())
         onView(withId(R.id.etSlotCode)).perform(TextSetter.setTextEditText(thirdPosSlotCode))
-        Thread.sleep(TIME_DECREASES)
+        Thread.sleep(100)
+        //TODO check logic from test 2 min + 5 min
+        //TODO remaining time calculation is wrong 
         onView(withId(R.id.btn)).check(matches(withText(DECREASED_TIME)))
         Thread.sleep(TIME_STAGNATES)
         onView(withId(R.id.btn)).check(matches(withText(STAGNATED_TIME)))

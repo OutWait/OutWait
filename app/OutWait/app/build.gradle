@@ -8,8 +8,8 @@ plugins {
 apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 android {
-
     useLibrary 'android.test.runner'
+
     useLibrary 'android.test.base'
     useLibrary 'android.test.mock'
 
@@ -27,7 +27,7 @@ android {
        // testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // CustomTestRunner for using HiltTestApplication in (Instrumented) AndroidTests
-        testInstrumentationRunner "elite.kit.outwait.CustomTestRunner"
+        testInstrumentationRunner "elite.kit.outwait.util.CustomTestRunner"
     }
 
     buildTypes {

@@ -135,6 +135,7 @@ class ForbidMovementBeforeFirstSlot {
             "$firstPosSlotCode++$secondPosSlotCode++$thirdPosSlotCode++$fourthPosSlotCode"
         )
         //TODO how to move a slot before first?
+        //TODO call registerMovement move before first and check new order
         instituteRepo.moveSlotAfterAnother(fourthPosSlotCode, firstPosSlotCode)
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.saveTransaction()
@@ -145,7 +146,7 @@ class ForbidMovementBeforeFirstSlot {
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                FIRST_SLOT,
+                FIRST_SLOT_POSITION,
                 click()
             )
         )
@@ -155,7 +156,7 @@ class ForbidMovementBeforeFirstSlot {
         //Second slot former fourth slot
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                SECOND_SLOT,
+                SECOND_SLOT_POSITION,
                 click()
             )
         )
@@ -165,7 +166,7 @@ class ForbidMovementBeforeFirstSlot {
         //Third slot
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                THIRD_SLOT,
+                THIRD_SLOT_POSITION,
                 click()
             )
         )
@@ -175,7 +176,7 @@ class ForbidMovementBeforeFirstSlot {
         //Fourth slot former third slot
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                FOURTH_SLOT,
+                FOURTH_SLOT_POSITION,
                 click()
             )
         )

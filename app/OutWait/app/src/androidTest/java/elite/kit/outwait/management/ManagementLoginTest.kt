@@ -24,7 +24,6 @@ import org.junit.runner.RunWith
 
 private const val INSTITUTION_NAME_CORRECT = "test1"
 private const val INSTITUTION_PASSWORD_CORRECT = "test1"
-private const val INSTITUTION_PASSWORD_WRONG = "Test2"
 
 
 @RunWith(AndroidJUnit4::class)
