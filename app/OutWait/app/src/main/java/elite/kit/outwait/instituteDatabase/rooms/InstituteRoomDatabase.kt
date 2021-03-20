@@ -25,6 +25,11 @@ abstract class InstituteRoomDatabase : RoomDatabase() {
      */
     abstract fun getDBAuxiliaryIdentifierDao(): DBAuxiliaryIdentifierDao
 
+    /**
+     * returns object that can access the login_data Table
+     *
+     * @return object that can access the login_data Table
+     */
     abstract fun getDBLoginDataDao(): DBLoginDataDao
 
     companion object {
