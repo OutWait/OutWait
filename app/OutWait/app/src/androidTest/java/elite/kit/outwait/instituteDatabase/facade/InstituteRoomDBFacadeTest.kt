@@ -63,7 +63,7 @@ class InstituteRoomDBFacadeTest {
         val storedIdentifiers = dbFacade.getAuxiliaryIdentifiers()
 
         assertEquals(storedIdentifiers.keys.size, 1)
-        assertEquals("aux1",storedIdentifiers["aux2forSlot1"])
+        assertEquals("aux2forSlot1",storedIdentifiers["slot1"])
     }
 
     @Test
@@ -102,4 +102,31 @@ class InstituteRoomDBFacadeTest {
     /*
     getAuxiliaryIdentifiers() is tested implicitly in all the other methods
      */
+
+
+    /*
+    Following: Tests related to login data saving
+     */
+
+    @Test
+    fun savingLoginDataWorksCorrectly() = runBlocking {
+        dbFacade.insertUpdateLoginData("institutionName", "institutionPassword")
+        assertEquals("institutionPassword", dbFacade.getPassword())
+        assertEquals("institutionName", dbFacade.getUserName())
+    }
+
+    @Test
+    fun testLoginDataSaved() = runBlocking {
+        dbFacade.insertUpdateLoginData("institutionName", "institutionPassword")
+        assertTrue(dbFacade.loginDataSaved())
+    }
+
+    @Test
+    fun oldLoginDataIsOverwrittenCorrectly() = runBlocking {
+        dbFacade.insertUpdateLoginData("institutionName", "institutionPassword")
+        dbFacade.insertUpdateLoginData("institutionName2", "institutionPassword2")
+        dbFacade.insertUpdateLoginData("institutionName3", "institutionPassword3")
+        assertEquals("institutionPassword3", dbFacade.getPassword())
+        assertEquals("institutionName3", dbFacade.getUserName())
+    }
 }
