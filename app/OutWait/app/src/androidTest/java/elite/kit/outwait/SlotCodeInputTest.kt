@@ -1,5 +1,6 @@
 package elite.kit.outwait
 
+import android.util.Log
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
@@ -94,6 +95,7 @@ class SlotCodeInputTest {
 
         // generate (invalid) slotCode by reversing the only valid slotCode
         invalidSlotCodeToEnter = StringBuilder(validSlotCodeToEnter).reverse().toString()
+        Log.i("slotcode","$invalidSlotCodeToEnter+++$validSlotCodeToEnter")
 
         // logout of management
         CoroutineScope(Dispatchers.Main).launch {

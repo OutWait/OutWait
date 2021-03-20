@@ -135,6 +135,7 @@ class ForbidMovementBeforeFirstSlot {
             "$firstPosSlotCode++$secondPosSlotCode++$thirdPosSlotCode++$fourthPosSlotCode"
         )
         //TODO how to move a slot before first?
+        //TODO call registerMovement move before first and check new order
         instituteRepo.moveSlotAfterAnother(fourthPosSlotCode, firstPosSlotCode)
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.saveTransaction()

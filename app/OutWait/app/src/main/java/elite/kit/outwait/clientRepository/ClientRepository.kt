@@ -144,12 +144,14 @@ class ClientRepository @Inject constructor(
             return
         }
         withContext(IO) {
+            wrapEspressoIdlingResource {
                 Log.d("newCodeEntered::cRepo", "entered code: $code")
                 if (remoteConnected || remote.initCommunication()) {
                     remoteConnected = true
                     remote.newCodeEntered(code)
                 }
             }
+        }
 
     }
 
