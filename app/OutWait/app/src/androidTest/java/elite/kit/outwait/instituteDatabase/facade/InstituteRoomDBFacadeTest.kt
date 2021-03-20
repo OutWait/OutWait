@@ -116,9 +116,14 @@ class InstituteRoomDBFacadeTest {
     }
 
     @Test
-    fun testLoginDataSaved() = runBlocking {
+    fun test_LoginDataSaved_expectingTrue() = runBlocking {
         dbFacade.insertUpdateLoginData("institutionName", "institutionPassword")
         assertTrue(dbFacade.loginDataSaved())
+    }
+
+    @Test
+    fun test_LoginDataSaved_expectingFalse() = runBlocking {
+        assertFalse(dbFacade.loginDataSaved())
     }
 
     @Test
@@ -128,5 +133,12 @@ class InstituteRoomDBFacadeTest {
         dbFacade.insertUpdateLoginData("institutionName3", "institutionPassword3")
         assertEquals("institutionPassword3", dbFacade.getPassword())
         assertEquals("institutionName3", dbFacade.getUserName())
+    }
+
+    @Test
+    fun clearingTableDeletesLoginData() = runBlocking {
+        dbFacade.insertUpdateLoginData("institutionName", "institutionPassword")
+        dbFacade.deleteAll()
+        assertFalse(dbFacade.loginDataSaved())
     }
 }

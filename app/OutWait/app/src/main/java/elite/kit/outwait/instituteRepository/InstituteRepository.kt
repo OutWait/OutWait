@@ -80,12 +80,12 @@ class InstituteRepository @Inject constructor(
                     }
                     ManagementServerErrors.INVALID_REQUEST
                     -> {
-                        logout()
+                        logout(false)
                         pushError(InstituteErrors.INVALID_REQUEST)
                     }
                     ManagementServerErrors.INTERNAL_SERVER_ERROR
                     -> {
-                        logout()
+                        logout(false)
                         pushError(InstituteErrors.SERVER_ERROR)
                     }
                 }
@@ -212,16 +212,19 @@ class InstituteRepository @Inject constructor(
      * Sends a logout request to the server.
      *
      */
-    fun logout() {
+    fun logout(){ logout(true)}
+
+    fun logout(manual: Boolean) {
         CoroutineScope(IO).launch {
             wrapEspressoIdlingResource {
-
                 remote.logout()
+                if (manual) db.deleteAll()
             }
         }
-
         cleanUp()
     }
+
+
 
     /**
      * Sends new institute preferences to the server
