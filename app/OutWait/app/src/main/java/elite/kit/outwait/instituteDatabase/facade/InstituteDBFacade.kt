@@ -1,7 +1,7 @@
 package elite.kit.outwait.instituteDatabase.facade
 
 /**
- * Encapsulates the institute database where the auxiliary identifiers are saved
+ * Encapsulates the institute database where auxiliary identifiers and login data are saved
  *
  */
 interface InstituteDBFacade {
