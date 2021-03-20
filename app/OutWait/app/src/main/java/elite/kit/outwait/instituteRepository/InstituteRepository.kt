@@ -212,7 +212,7 @@ class InstituteRepository @Inject constructor(
      * Sends a logout request to the server.
      *
      */
-    fun logout(){ logout(true)}
+    fun logout() = logout(true)
 
     fun logout(manual: Boolean) {
         CoroutineScope(IO).launch {
