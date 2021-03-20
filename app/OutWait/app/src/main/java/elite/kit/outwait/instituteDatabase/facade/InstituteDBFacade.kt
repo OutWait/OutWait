@@ -36,4 +36,12 @@ interface InstituteDBFacade {
      *
      */
     suspend fun deleteAll()
+
+    suspend fun insertUpdateLoginData(username: String, password: String)
+
+    suspend fun getUserName(): String
+
+    suspend fun getPassword(): String
+
+    suspend fun loginDataSaved(): Boolean
 }
