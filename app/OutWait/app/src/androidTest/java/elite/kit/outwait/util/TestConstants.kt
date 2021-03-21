@@ -46,6 +46,8 @@ const val TRANSACTION_PAUSE = 100L
  const val EMPTY_TEXT = ""
 const val RESET_ACCOUNT_NAME="globale-test"
 const val INTERACTION_TIME=10000L
+const val INTERACTION_TIME_LARGE=15000L
+
 
 
 

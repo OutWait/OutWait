@@ -71,4 +71,7 @@
     <string name="text_counter">Count of Clients: </string>
     <string name="modeOne">Mode 1</string>
     <string name="modeTwo">Mode 2</string>
+    <string name="navigateUp">Navigate up</string>
+    <string name="it_s_your_turn_in">It\'s your turn in:</string>
+
 </resources>

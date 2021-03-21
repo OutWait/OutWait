@@ -44,7 +44,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:gravity="center_horizontal|center_vertical"
-            android:text="It's your turn in:"
+            android:text="@string/it_s_your_turn_in"
             android:textAlignment="center"
             android:textColor="@color/outwait_color_dark"
             android:textSize="35sp"

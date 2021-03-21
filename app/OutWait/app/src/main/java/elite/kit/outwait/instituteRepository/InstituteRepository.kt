@@ -41,7 +41,6 @@ class InstituteRepository @Inject constructor(
     private val remote: ManagementHandler,
     private val db: InstituteDBFacade
 ) {
-
     //The repositories [AuxHelper]. See documentation of [AuxHelper] class
     private val auxHelper = AuxHelper(db)
 
@@ -54,25 +53,20 @@ class InstituteRepository @Inject constructor(
         remote.getErrors().observeForever {
             if (it.isNotEmpty()) {
                 when (it.last()) {
-
                     ManagementServerErrors.LOGIN_DENIED
                     -> pushError(InstituteErrors.LOGIN_DENIED)
-
                     ManagementServerErrors.TRANSACTION_DENIED
                     -> pushError(InstituteErrors.TRANSACTION_DENIED)
-
                     ManagementServerErrors.NETWORK_ERROR
                     -> {
                         cleanUp()
                         pushError(InstituteErrors.NETWORK_ERROR)
                     }
-
                     ManagementServerErrors.SERVER_DID_NOT_RESPOND
                     -> {
                         cleanUp()
                         pushError(InstituteErrors.COMMUNICATION_ERROR)
                     }
-
                     ManagementServerErrors.COULD_NOT_CONNECT
                     -> {
                         cleanUp()
@@ -91,7 +85,6 @@ class InstituteRepository @Inject constructor(
                 }
             }
         }
-
         /*
         Receiving new preferences or new waiting queue from the server
          */
@@ -104,7 +97,7 @@ class InstituteRepository @Inject constructor(
         }
 
         CoroutineScope(IO).launch {
-            if (db.loginDataSaved()){
+            if (db.loginDataSaved()) {
                 val password = db.getPassword()
                 val username = db.getUserName()
                 loginData.postValue(Pair(username, password))
@@ -151,7 +144,6 @@ class InstituteRepository @Inject constructor(
     fun getLoginData(): LiveData<Pair<String, String>> = loginData
 
 
-
     private var communicationEstablished = false
 
     /**
@@ -177,7 +169,6 @@ class InstituteRepository @Inject constructor(
                     }
                 }
             }
-
         }
     }
 
@@ -189,15 +180,12 @@ class InstituteRepository @Inject constructor(
     that we can provide to the GUI.
      */
     private fun receivedNewList(receivedList: ReceivedList) {
-
         CoroutineScope(IO).launch {
             Log.d("InstiRepo", "receivedList empfangen")
-
             val newAuxMap = auxHelper.receivedList(
                 receivedList,
                 inTransaction.value!!
             ) //we never set inTransaction null, so we can assure it has a non null value
-
             val timeSlots = GravityQueueConverter().receivedListToTimeSlotList(
                 receivedList,
                 newAuxMap
@@ -206,7 +194,6 @@ class InstituteRepository @Inject constructor(
         }
 
     }
-
 
     /**
      * Sends a logout request to the server.
@@ -224,8 +211,6 @@ class InstituteRepository @Inject constructor(
         cleanUp()
     }
 
-
-
     /**
      * Sends new institute preferences to the server
      *
@@ -234,7 +219,6 @@ class InstituteRepository @Inject constructor(
     fun changePreferences(preferences: Preferences) {
         CoroutineScope(IO).launch {
             wrapEspressoIdlingResource {
-
                 remote.changePreferences(preferences)
             }
         }
@@ -249,14 +233,14 @@ class InstituteRepository @Inject constructor(
      */
     fun newSpontaneousSlot(auxiliaryIdentifier: String, duration: Duration) {
             CoroutineScope(IO).launch {
-                wrapEspressoIdlingResource {
+                EspressoIdlingResource.increment()
 
                 if (transaction()) {
                     auxHelper.newAux(auxiliaryIdentifier)
                     remote.addSpontaneousSlot(duration, DateTime.now())
                 }
+                EspressoIdlingResource.decrement()
             }
-        }
     }
 
     /**
@@ -271,7 +255,6 @@ class InstituteRepository @Inject constructor(
         //add aux to db
         CoroutineScope(IO).launch {
             wrapEspressoIdlingResource {
-
                 if (transaction()) {
                     auxHelper.newAux(auxiliaryIdentifier)
                     remote.addFixedSlot(duration, appointmentTime)
@@ -296,7 +279,6 @@ class InstituteRepository @Inject constructor(
     ) {
         CoroutineScope(IO).launch {
             wrapEspressoIdlingResource {
-
                 if (transaction()) {
                     auxHelper.changeAux(slotCode, auxiliaryIdentifier)
                     remote.changeSlotDuration(slotCode, duration)
@@ -323,7 +305,6 @@ class InstituteRepository @Inject constructor(
     ) {
         CoroutineScope(IO).launch {
             wrapEspressoIdlingResource {
-
                 if (transaction()) {
                     auxHelper.changeAux(slotCode, auxiliaryIdentifier)
                     remote.changeFixedSlotTime(slotCode, newAppointmentTime)
@@ -346,7 +327,6 @@ class InstituteRepository @Inject constructor(
     fun moveSlotAfterAnother(movedSlot: String, otherSlot: String) {
         CoroutineScope(IO).launch {
             wrapEspressoIdlingResource {
-
                 if (transaction()) {
                     remote.moveSlotAfterAnother(movedSlot, otherSlot)
                 }
@@ -362,15 +342,13 @@ class InstituteRepository @Inject constructor(
     fun endCurrentSlot() {
         EspressoIdlingResource.increment()
         CoroutineScope(IO).launch {
-
-                if (transaction()) {
-                    remote.endCurrentSlot()
-                }
+            if (transaction()) {
+                remote.endCurrentSlot()
             }
+        }
         EspressoIdlingResource.decrement()
 
     }
-
 
     /**
      * Requests the server to delete the slot with the given slot code
@@ -381,7 +359,6 @@ class InstituteRepository @Inject constructor(
     fun deleteSlot(slotCode: String) {
         CoroutineScope(IO).launch {
             wrapEspressoIdlingResource {
-
                 if (transaction()) {
                     remote.deleteSlot(slotCode)
                 }
@@ -398,7 +375,7 @@ class InstituteRepository @Inject constructor(
      */
     fun saveTransaction() {
         if (inTransaction.value == true) {
-            inTransaction.value=false
+            inTransaction.value = false
             CoroutineScope(IO).launch {
                 wrapEspressoIdlingResource {
                     remote.saveTransaction()
@@ -422,7 +399,6 @@ class InstituteRepository @Inject constructor(
             inTransaction.value = false
             CoroutineScope(IO).launch {
                 wrapEspressoIdlingResource {
-
                     remote.abortTransaction()
                 }
             }
@@ -439,7 +415,6 @@ class InstituteRepository @Inject constructor(
     fun passwordForgotten(username: String) {
         CoroutineScope(IO).launch {
             wrapEspressoIdlingResource {
-
                 if (!communicationEstablished) remote.initCommunication()
                 remote.resetPassword(username)
                 remote.endCommunication()

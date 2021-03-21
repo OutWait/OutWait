@@ -79,7 +79,7 @@ class   SlotNotOverreach {
         DigitSelector.digitZero.perform(click())
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        //Save first slot its slotcode
+        //Save third slot its slotcode
         onView(withId(R.id.slotList)).perform(
             actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 THIRD_SLOT_TRANSACTION,
