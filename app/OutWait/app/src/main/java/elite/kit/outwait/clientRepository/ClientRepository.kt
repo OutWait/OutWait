@@ -106,6 +106,10 @@ class ClientRepository @Inject constructor(
                 withContext(Main) {
                     activeSlots.observeForever {
 
+                        /*
+                        When there are no more active Slots, there is no reason to
+                        keep the connection to the server.
+                         */
                         if (it.isEmpty()) {
                             remote.endCommunication()
                             remoteConnected = false

@@ -1,7 +1,7 @@
 package elite.kit.outwait.instituteDatabase.facade
 
 /**
- * Encapsulates the institute database where the auxiliary identifiers are saved
+ * Encapsulates the institute database where auxiliary identifiers and login data are saved
  *
  */
 interface InstituteDBFacade {
@@ -37,11 +37,33 @@ interface InstituteDBFacade {
      */
     suspend fun deleteAll()
 
+    /**
+     * Inserts new login Data to the database (username + password). If there
+     * are already saved other login data, it will be overwritten
+     *
+     * @param username the username of the institution
+     * @param password the password of the institution
+     */
     suspend fun insertUpdateLoginData(username: String, password: String)
 
+    /**
+     * Returns the username
+     *
+     * @return username or empty string if no username is saved
+     */
     suspend fun getUserName(): String
 
+    /**
+     * Returns the password
+     *
+     * @return password or empty string if no password is saved
+     */
     suspend fun getPassword(): String
 
+    /**
+     * Checks if there is saved login data in the database
+     *
+     * @return true if there is saved login data and false if not.
+     */
     suspend fun loginDataSaved(): Boolean
 }

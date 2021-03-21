@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase
  * This abstract class is required by the room framework so that it
  * can build the database.
  * The database "institute_db" has a table that stores all the auxiliary identifiers
- * entered by the receptionist.
+ * entered by the receptionist and another table for login data.
  *
  */
 @Database(
@@ -25,6 +25,11 @@ abstract class InstituteRoomDatabase : RoomDatabase() {
      */
     abstract fun getDBAuxiliaryIdentifierDao(): DBAuxiliaryIdentifierDao
 
+    /**
+     * returns object that can access the login_data Table
+     *
+     * @return object that can access the login_data Table
+     */
     abstract fun getDBLoginDataDao(): DBLoginDataDao
 
     companion object {
