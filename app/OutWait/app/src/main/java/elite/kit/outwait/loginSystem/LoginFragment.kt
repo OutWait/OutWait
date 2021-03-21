@@ -17,6 +17,8 @@ import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
@@ -79,6 +81,14 @@ class LoginFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.loginData.observe(viewLifecycleOwner, Observer {
+            if(it!=null){
+                viewModel.instituteName.value= it.first
+                viewModel.institutePassword.value= it.second
+
+            }
+        })
 
         binding.etSlotCode.setBackgroundResource(R.drawable.shape_code_edit_text)
 

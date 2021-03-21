@@ -31,12 +31,12 @@ class UserViewModel @Inject constructor(
     /**
      * Saves entered input from management
      */
-    val instituteName = MutableLiveData<String>("")
+    var instituteName = MutableLiveData<String>("")
 
     /**
      * Saves entered input from management
      */
-    val institutePassword = MutableLiveData<String>("")
+    var institutePassword = MutableLiveData<String>("")
 
     /**
      * Observes whether client or management is logged
@@ -48,6 +48,12 @@ class UserViewModel @Inject constructor(
 
         addSource(repoInstitute.isLoggedIn()) {
             value = listOf(it)
+        }
+    }
+
+    val loginData= MediatorLiveData<Pair<String, String>>().apply {
+        addSource(repoInstitute.getLoginData()){
+            value=it
         }
     }
 
