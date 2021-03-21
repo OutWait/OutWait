@@ -10,7 +10,6 @@ import androidx.core.view.size
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -45,8 +44,6 @@ private const val TWO = 2
 
 @AndroidEntryPoint
 class ManagementViewFragment : Fragment(), ItemActionListener {
-
-
     private val viewModel: ManagementViewViewModel by viewModels()
     private lateinit var binding: ManagementViewFragmentBinding
 
@@ -57,7 +54,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
 
     private lateinit var slotAdapter: SlotAdapter
     private lateinit var builder: AlertDialog.Builder
-
 
     /**
      * Creates layout and uses data binding
@@ -102,22 +98,21 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             displayingDialog.dismiss()
         })
 
-        viewModel.isLoggedIn.observe(viewLifecycleOwner, Observer { isLoggedIn->
-            Log.i("logout","observer $isLoggedIn")
-            Log.i("transaction","observer ${viewModel.isInTransaction.value}")
-            if(!isLoggedIn&&viewModel.isInTransaction.value!!){
-                Log.i("logout","transaction is ${viewModel.isInTransaction.value}")
-               deleteHeader()
+        viewModel.isLoggedIn.observe(viewLifecycleOwner, Observer { isLoggedIn ->
+            Log.i("logout", "observer $isLoggedIn")
+            Log.i("transaction", "observer ${viewModel.isInTransaction.value}")
+            if (!isLoggedIn && viewModel.isInTransaction.value!!) {
+                Log.i("logout", "transaction is ${viewModel.isInTransaction.value}")
+                deleteHeader()
             }
 
-            if(!isLoggedIn){
+            if (!isLoggedIn) {
                 findNavController().popBackStack()
             }
         })
 
 
         movementInfo.observe(viewLifecycleOwner, Observer {
-
             if (it.isNotEmpty()) {
                 viewModel.moveSlotAfterAnother(it.first(), it.last())
                 displayingDialog.dismiss()
@@ -136,7 +131,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         exitApp()
         return binding.root
     }
-
 
     /**
      * Displays a dialog to show all details of a slot
@@ -157,32 +151,9 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
      */
     override fun onItemSwiped(position: Int, removedSlot: TimeSlotItem) {
         EspressoIdlingResource.increment()
-        var resetDelete =
-            Snackbar.make(
-                binding.slotList,
-                "${getIdentifier(removedSlot.timeSlot)}",
-                Snackbar.LENGTH_LONG
-            )
-                .setAction(
-                    getString(
-                        R.string.undo
-                    )
-                ) {
-                    slotAdapter.slotList.add(position, removedSlot)
-                    slotAdapter.notifyItemInserted(position)
-                    slotAdapter.notifyItemRangeChanged(0, slotAdapter.slotList.size - 1)
-                }
+        notifyDeleteSlot(position, removedSlot.timeSlot)
+        EspressoIdlingResource.decrement()
 
-        resetDelete.addCallback(object : Callback() {
-            override fun onDismissed(snackbar: Snackbar, event: Int) {
-                super.onDismissed(snackbar, event)
-                if (event == DISMISS_EVENT_TIMEOUT) {
-                    notifyDeleteSlot(position, removedSlot.timeSlot)
-                    EspressoIdlingResource.decrement()
-                }
-            }
-        })
-        resetDelete.show()
     }
 
     /**
@@ -198,7 +169,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
             firstPosition -> viewModel.deleteCurrentSlot()
             else -> {
                 viewModel.deleteSlot(removedClientSlot.slotCode)
-                slotAdapter.slotList.add(FIRST_POSITION, HeaderItem())
                 slotAdapter.updateSlots(slotAdapter.slotList.toMutableList())
                 displayingDialog.show()
                 displayingDialog.fullScreenProgressBar.indeterminateMode = true
@@ -288,7 +258,6 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
     private fun exitApp() {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
-
                 override fun handleOnBackPressed() {
                     Toast.makeText(
                         context,

@@ -2,9 +2,11 @@ package elite.kit.outwait.clientScreens.remainingTimeScreen
 
 import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientRepository.ClientRepository
 import elite.kit.outwait.utils.TransformationOutput
 import org.joda.time.DateTime
@@ -29,12 +31,20 @@ class RemainingTimeViewModel @Inject constructor(
     /**
      * List that contains all active client slots
      */
-    val clientInfoList = repo.getActiveSlots()
+    val clientInfoList = MediatorLiveData<List<ClientInfo>>().apply {
+        addSource(repo.getActiveSlots()) {
+            value = it
+        }
+    }
 
     /**
      * Live Data containing the institutes name
      */
-    var instituteName = MutableLiveData(clientInfoList.value!!.first().institutionName)
+    var instituteName: MediatorLiveData<String> = MediatorLiveData<String>().apply {
+        addSource(repo.getActiveSlots()) {
+            value = it.first().institutionName
+        }
+    }
 
     private var approximatedTime: DateTime? = null
 
