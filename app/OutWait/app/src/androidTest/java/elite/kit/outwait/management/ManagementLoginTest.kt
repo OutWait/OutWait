@@ -13,8 +13,12 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.MainActivity
 import elite.kit.outwait.R
+import elite.kit.outwait.util.VALID_TEST_PASSWORD
+import elite.kit.outwait.util.VALID_TEST_USERNAME
 import elite.kit.outwait.utils.EspressoIdlingResource
 import org.junit.After
 import org.junit.Before
@@ -22,14 +26,15 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private const val INSTITUTION_NAME_CORRECT = "test1"
-private const val INSTITUTION_PASSWORD_CORRECT = "test1"
 
 
-@RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class ManagementLoginTest {
 
-    @get:Rule
+    @get:Rule(order = 0)
+    var hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
     var openActivityRule = activityScenarioRule<MainActivity>()
 
 
@@ -45,12 +50,12 @@ class ManagementLoginTest {
         //Input of correct login data
         onView(withId(R.id.etInstituteName))
             .perform(
-                ViewActions.typeText(INSTITUTION_NAME_CORRECT),
+                ViewActions.typeText(VALID_TEST_USERNAME),
                 ViewActions.closeSoftKeyboard()
             )
         onView(withId(R.id.etInstitutePassword))
             .perform(
-                ViewActions.typeText(INSTITUTION_PASSWORD_CORRECT),
+                ViewActions.typeText(VALID_TEST_PASSWORD),
                 ViewActions.closeSoftKeyboard()
             )
         onView(withId(R.id.btnLoginFrag)).perform(click())

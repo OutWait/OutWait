@@ -1,6 +1,5 @@
 package elite.kit.outwait.management
 
-import android.util.Log
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
@@ -47,7 +46,7 @@ class MovementModeOneTest {
     fun init() {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
-        instituteRepo.login("test2", "test2")
+        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
     }
 
     //TEST 9
@@ -130,10 +129,6 @@ class MovementModeOneTest {
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Drag and drop fourth slot at position after first
-        Log.i(
-            "slotcodes",
-            "$firstPosSlotCode++$secondPosSlotCode++$thirdPosSlotCode++$fourthPosSlotCode"
-        )
         instituteRepo.moveSlotAfterAnother(fourthPosSlotCode, firstPosSlotCode)
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.saveTransaction()

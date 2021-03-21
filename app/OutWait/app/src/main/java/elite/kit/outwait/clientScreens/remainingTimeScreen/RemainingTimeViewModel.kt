@@ -38,7 +38,7 @@ class RemainingTimeViewModel @Inject constructor(
 
     private var approximatedTime: DateTime? = null
 
-    private val _remainingTime = MutableLiveData<String>("")
+    private val _remainingTime = MutableLiveData("")
     val remainingTime get() = _remainingTime as LiveData<String>
 
 

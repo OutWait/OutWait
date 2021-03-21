@@ -3,6 +3,7 @@ package  util
 import android.view.View
 import android.view.ViewGroup
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.matcher.ViewMatchers
 import elite.kit.outwait.R
 import elite.kit.outwait.util.*
@@ -29,7 +30,7 @@ object DigitSelector {
         }
     }
 
-    val digitTwo = Espresso.onView(
+    val digitTwo: ViewInteraction = Espresso.onView(
         Matchers.allOf(
             ViewMatchers.withId(R.id.numPad2),
             ViewMatchers.withText( SLOT_DURATION_TWO),
@@ -44,7 +45,7 @@ object DigitSelector {
         )
     )
 
-    val digitZero = Espresso.onView(
+    val digitZero :ViewInteraction  = Espresso.onView(
         Matchers.allOf(
             ViewMatchers.withId(R.id.numPad0),
             ViewMatchers.withText( SLOT_DURATION_ZERO),
@@ -59,7 +60,7 @@ object DigitSelector {
         )
     )
 
-    val digitFive = Espresso.onView(
+    val digitFive :ViewInteraction  = Espresso.onView(
         Matchers.allOf(
             ViewMatchers.withId(R.id.numPad5),
             ViewMatchers.withText( SLOT_DURATION_FIVE),
@@ -74,7 +75,7 @@ object DigitSelector {
         )
     )
 
-    val digitEight = Espresso.onView(
+    val digitEight: ViewInteraction  = Espresso.onView(
         Matchers.allOf(
             ViewMatchers.withId(R.id.numPad8),
             ViewMatchers.withText( SLOT_DURATION_EIGHT),

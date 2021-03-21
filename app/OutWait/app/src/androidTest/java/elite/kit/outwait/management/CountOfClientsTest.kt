@@ -27,14 +27,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import javax.inject.Inject
 
-private const val INSTITUTION_NAME_CORRECT = "test2"
-private const val INSTITUTION_PASSWORD_CORRECT = "test2"
 private const val FIRST_SLOT     = 0
 private const val FIRST_SLOT_TRANSACTION     = 1
 private const val THREE = "3"
 
 @HiltAndroidTest
-// @RunWith(AndroidJUnit4::class)
 class CountOfClientsTest {
 
     @get:Rule(order = 0)
@@ -85,8 +82,6 @@ class CountOfClientsTest {
             .perform(typeText(THIRD_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-
-
         onView(withId(R.id.ivSaveTransaction)).perform(click())
 
     }
@@ -122,7 +117,7 @@ class CountOfClientsTest {
                 swipeLeft()
             )
         )
-        Thread.sleep(100)
+        Thread.sleep(TRANSACTION_PAUSE)
         onView(withId(R.id.ivSaveTransaction)).perform(click())
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()

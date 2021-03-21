@@ -1,8 +1,6 @@
 package elite.kit.outwait.management
 
-import android.util.Log
-import android.view.View
-import android.view.ViewGroup
+
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
@@ -11,46 +9,38 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.MainActivity
 import elite.kit.outwait.R
 import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
-import elite.kit.outwait.util.StringResource
+import elite.kit.outwait.util.*
 import elite.kit.outwait.utils.EspressoIdlingResource
-import org.hamcrest.Description
-import org.hamcrest.Matcher
-import org.hamcrest.Matchers
-import org.hamcrest.TypeSafeMatcher
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import util.DigitSelector
 
 private const val INSTITUTION_NAME_CORRECT = "test2"
 private const val INSTITUTION_PASSWORD_CORRECT = "test2"
 private const val SLOT_IDENTIFIER_ONE = "Slot1"
 private const val SLOT_IDENTIFIER_TWO = "Slot2"
 private const val SLOT_IDENTIFIER_THREE = "Slot3"
-private const val SLOT_DURATION_TWO = "2"
-private const val SLOT_DURATION_FIVE = "5"
-private const val SLOT_DURATION_ZERO = "0"
 private const val FIRST_DURATION = "00:20"
 private const val SECOND_DURATION = "00:25"
 private const val THIRD_DURATION = "00:50"
-private const val FIRST_SLOT = 0
-private const val SECOND_SLOT = 1
-private const val THIRD_SLOT = 2
 private const val FIRST_SLOT_TRANSACTION = 1
-private const val FIRST_ROW  = 0
-private const val SECOND_ROW = 1
-private const val FOURTH_ROW = 3
-private const val SECOND_COLUMN  = 1
 
 
-@RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class ManagementAddSlotsTest {
-    @get:Rule
+    @get:Rule(order = 0)
+    var hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
     var openActivityRule = activityScenarioRule<MainActivity>()
 
     @Before
@@ -80,34 +70,10 @@ class ManagementAddSlotsTest {
             .perform(typeText(SLOT_IDENTIFIER_ONE), closeSoftKeyboard())
 
         onView(withId(R.id.clear)).perform(click())
-        val digitTwo = onView(
-            Matchers.allOf(
-                withId(R.id.numPad2), withText(SLOT_DURATION_TWO),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.numPad),
-                        FIRST_ROW
-                    ),
-                    SECOND_COLUMN
-                ),
-                isDisplayed()
-            )
-        )
-        digitTwo.perform(click())
-        val digitZero = onView(
-            Matchers.allOf(
-                withId(R.id.numPad0), withText(SLOT_DURATION_ZERO),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.numPad),
-                        FOURTH_ROW
-                    ),
-                    SECOND_COLUMN
-                ),
-                isDisplayed()
-            )
-        )
-        digitZero.perform(click())
+
+        DigitSelector.digitTwo.perform(click())
+
+        DigitSelector.digitZero.perform(click())
 
 
 
@@ -122,21 +88,8 @@ class ManagementAddSlotsTest {
 
 
 
-        digitTwo.perform(click())
-        val digitFive = onView(
-            Matchers.allOf(
-                withId(R.id.numPad5), withText(SLOT_DURATION_FIVE),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.numPad),
-                        SECOND_ROW
-                    ),
-                    SECOND_COLUMN
-                ),
-                isDisplayed()
-            )
-        )
-        digitFive.perform(click())
+        DigitSelector.digitTwo.perform(click())
+        DigitSelector.digitFive.perform(click())
 
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
@@ -148,10 +101,8 @@ class ManagementAddSlotsTest {
         onView(withId(R.id.clear)).perform(click())
 
 
-        digitFive.perform(click())
-
-
-        digitZero.perform(click())
+        DigitSelector.digitFive.perform(click())
+        DigitSelector.digitZero.perform(click())
 
 
         onView(withText(StringResource.getResourceString(R.string.confirm)))
@@ -161,7 +112,7 @@ class ManagementAddSlotsTest {
         //Verify order
         onView(withId(R.id.slotList)).perform(
             actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                FIRST_SLOT,
+                FIRST_SLOT_POSITION,
                 click()
             )
         )
@@ -172,7 +123,7 @@ class ManagementAddSlotsTest {
 
         onView(withId(R.id.slotList)).perform(
             actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                SECOND_SLOT,
+                SECOND_SLOT_POSITION,
                 click()
             )
         )
@@ -183,7 +134,7 @@ class ManagementAddSlotsTest {
 
         onView(withId(R.id.slotList)).perform(
             actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                THIRD_SLOT,
+                THIRD_SLOT_POSITION,
                 click()
             )
         )
@@ -198,7 +149,7 @@ class ManagementAddSlotsTest {
     fun emptyQueue() {
         onView(withId(R.id.slotList)).perform(
             actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                FIRST_SLOT,
+                FIRST_SLOT_POSITION,
                 swipeLeft()
             )
         )
@@ -216,27 +167,10 @@ class ManagementAddSlotsTest {
                 swipeLeft()
             )
         )
-        Thread.sleep(100)
+        Thread.sleep(TRANSACTION_PAUSE)
         onView(withId(R.id.ivSaveTransaction)).perform(click())
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
 
         openActivityRule.scenario.close()
-    }
-
-    private fun childAtPosition(
-        parentMatcher: Matcher<View>, position: Int
-    ): Matcher<View> {
-        return object : TypeSafeMatcher<View>() {
-            override fun describeTo(description: Description) {
-                description.appendText("Child at position $position in parent ")
-                parentMatcher.describeTo(description)
-            }
-
-            public override fun matchesSafely(view: View): Boolean {
-                val parent = view.parent
-                return parent is ViewGroup && parentMatcher.matches(parent)
-                    && view == parent.getChildAt(position)
-            }
-        }
     }
 }

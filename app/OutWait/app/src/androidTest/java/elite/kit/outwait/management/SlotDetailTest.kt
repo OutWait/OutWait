@@ -19,6 +19,8 @@ import elite.kit.outwait.MainActivity
 import elite.kit.outwait.R
 import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
+import elite.kit.outwait.util.*
+import elite.kit.outwait.util.StringResource.getResourceString
 import elite.kit.outwait.utils.EspressoIdlingResource
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
@@ -27,11 +29,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private const val INSTITUTION_NAME_CORRECT = "test2"
-private const val INSTITUTION_PASSWORD_CORRECT = "test2"
-private const val SLOT_IDENTIFIER = "Hans"
-private const val EMPTY_TEXT = ""
-private const val FIRST_POSITION = 0
+
+
 
 
 
@@ -46,12 +45,12 @@ class SlotDetailTest {
         //Input of correct login data
         onView(withId(R.id.etInstituteName))
             .perform(
-                typeText(INSTITUTION_NAME_CORRECT),
+                typeText(VALID_TEST_USERNAME),
                 closeSoftKeyboard()
             )
         onView(withId(R.id.etInstitutePassword))
             .perform(
-                typeText(INSTITUTION_PASSWORD_CORRECT),
+                typeText(VALID_TEST_PASSWORD),
                 closeSoftKeyboard()
             )
         onView(withId(R.id.btnLoginFrag)).perform(click())
@@ -73,7 +72,7 @@ class SlotDetailTest {
     fun showSlotDetail() {
         onView(withId(R.id.slotList)).perform(
             actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                FIRST_POSITION,
+                FIRST_SLOT_POSITION,
                 click()
             )
         )
@@ -92,19 +91,12 @@ class SlotDetailTest {
             )
         )
         //Necessary due to no coroutine
-        Thread.sleep(100)
+        Thread.sleep(TRANSACTION_PAUSE)
         onView(withId(R.id.ivSaveTransaction)).perform(click())
-
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
-
-
         openActivityRule.scenario.close()
 
     }
 
-    private fun getResourceString(id: Int): String? {
-        val targetContext: Context =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
-        return targetContext.resources.getString(id)
-    }
+
 }

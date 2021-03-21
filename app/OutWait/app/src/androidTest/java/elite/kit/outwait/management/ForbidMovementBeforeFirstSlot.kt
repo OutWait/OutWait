@@ -17,6 +17,7 @@ import elite.kit.outwait.MainActivity
 import elite.kit.outwait.R
 import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.instituteRepository.InstituteRepository
+import elite.kit.outwait.recyclerviewSetUp.functionality.SlotAdapter
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.util.*
 import elite.kit.outwait.util.ReadText.getText
@@ -43,11 +44,13 @@ class ForbidMovementBeforeFirstSlot {
     @Inject
     lateinit var instituteRepo: InstituteRepository
 
+
+
     @Before
     fun init() {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
-        instituteRepo.login("test2", "test2")
+        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
     }
 
     //TEST 9
@@ -130,20 +133,14 @@ class ForbidMovementBeforeFirstSlot {
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Drag and drop fourth slot at position after first
-        Log.i(
-            "slotcodes",
-            "$firstPosSlotCode++$secondPosSlotCode++$thirdPosSlotCode++$fourthPosSlotCode"
-        )
-        //TODO how to move a slot before first?
-        //TODO call registerMovement move before first and check new order
-        instituteRepo.moveSlotAfterAnother(fourthPosSlotCode, firstPosSlotCode)
+
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.saveTransaction()
         }
-
+        //Drag fourth slot and move it to first position
+        Thread.sleep(INTERACTION_TIME)
         //Check right order
         //First slot
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FIRST_SLOT_POSITION,
@@ -160,7 +157,7 @@ class ForbidMovementBeforeFirstSlot {
                 click()
             )
         )
-        onView(withId(R.id.tvSlotCodeDetail)).check(matches(withText(fourthPosSlotCode)))
+        onView(withId(R.id.tvSlotCodeDetail)).check(matches(withText(secondPosSlotCode)))
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Third slot
@@ -170,7 +167,7 @@ class ForbidMovementBeforeFirstSlot {
                 click()
             )
         )
-        onView(withId(R.id.tvSlotCodeDetail)).check(matches(withText(secondPosSlotCode)))
+        onView(withId(R.id.tvSlotCodeDetail)).check(matches(withText(thirdPosSlotCode)))
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Fourth slot former third slot
@@ -180,7 +177,7 @@ class ForbidMovementBeforeFirstSlot {
                 click()
             )
         )
-        onView(withId(R.id.tvSlotCodeDetail)).check(matches(withText(thirdPosSlotCode)))
+        onView(withId(R.id.tvSlotCodeDetail)).check(matches(withText(fourthPosSlotCode)))
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
 

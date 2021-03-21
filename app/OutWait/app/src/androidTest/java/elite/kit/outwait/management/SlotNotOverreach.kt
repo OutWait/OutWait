@@ -30,7 +30,7 @@ import util.DigitSelector
 import javax.inject.Inject
 
 @HiltAndroidTest
-class SlotNotOverreach {
+class   SlotNotOverreach {
 
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
@@ -96,7 +96,7 @@ class SlotNotOverreach {
         onView(withId(R.id.etSlotCode)).perform(TextSetter.setTextEditText(thirdPosSlotCode))
         Thread.sleep(100)
         //TODO check logic from test 2 min + 5 min
-        //TODO remaining time calculation is wrong 
+        //TODO remaining time calculation is wrong
         onView(withId(R.id.btn)).check(matches(withText(DECREASED_TIME)))
         Thread.sleep(TIME_STAGNATES)
         onView(withId(R.id.btn)).check(matches(withText(STAGNATED_TIME)))

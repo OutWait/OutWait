@@ -41,6 +41,11 @@ const val TIME_STAGNATES = 120000L
 const val DECREASED_TIME="00:06"
 const val STAGNATED_TIME="00:05"
 const val DEFAULT_DURATION = 600000L
+const val TRANSACTION_PAUSE = 100L
+ const val SLOT_IDENTIFIER = "Hans"
+ const val EMPTY_TEXT = ""
+const val RESET_ACCOUNT_NAME="globale-test"
+const val INTERACTION_TIME=10000L
 
 
 

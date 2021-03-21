@@ -9,10 +9,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 android {
     useLibrary 'android.test.runner'
-
     useLibrary 'android.test.base'
     useLibrary 'android.test.mock'
-
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
@@ -22,6 +20,8 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+
+        
 
         // entfernt, da globale Config, darf nur einmal deklariert werden
        // testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -42,6 +42,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+
     }
 
     buildFeatures{
