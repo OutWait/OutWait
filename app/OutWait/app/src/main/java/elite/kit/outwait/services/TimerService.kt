@@ -247,6 +247,8 @@ class TimerService @Inject constructor(): LifecycleService() {
                     .build()
 
                 val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                // cancel old pending appointment notification if existing
+                manager.cancel(PENDING_NOTIFICATION_ID)
                 // update delay notification (replacing old delay notification if existing)
                 manager.notify(DELAY_NOTIFICATION_ID, delayNotification)
 
@@ -292,6 +294,8 @@ class TimerService @Inject constructor(): LifecycleService() {
                     .build()
 
                val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                // cancel old delay notification if existing
+                manager.cancel(DELAY_NOTIFICATION_ID)
                 // update pending appointment notification (replacing old pending appointment notif if existing)
                 manager.notify(PENDING_NOTIFICATION_ID, pendingNotification)
 

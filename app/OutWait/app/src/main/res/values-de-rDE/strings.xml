@@ -53,7 +53,7 @@
     <string name="Perm_Notif_Basetext2">\u00A0ist um\u00A0</string>
     <string name="Delay_Notif_BaseTitle">Verspätung des Termins bei\u00A0</string>
     <string name="Delay_Notif_BaseText1">um\u00A0</string>
-    <string name="Delay_Notif_BaseText2">\u00A0, jetzt um\u00A0</string>
+    <string name="Delay_Notif_BaseText2">\u00A0h, jetzt um\u00A0</string>
     <string name="Pending_Notif_BaseTitle1">Ihr Termin bei\u00A0</string>
     <string name="Pending_Notif_BaseTitle2">\u00A0wird bald beginnen!</string>
     <string name="Pending_Notif_BaseText">Bitte begeben Sie sich unverzüglich zur Einrichtung!</string>
