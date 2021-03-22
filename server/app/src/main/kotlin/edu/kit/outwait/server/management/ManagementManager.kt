@@ -32,7 +32,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
     private val managements = mutableListOf<Management>()
     private val activeTransactions = hashSetOf<ManagementId>()
     private val queueDelayTimes = mutableListOf<Pair<Date, ManagementId>>()
-    private val nextDelayAlarm = Timer()
+    private var nextDelayAlarm = Timer()
     private val LOG_ID = "MGMT-MGR"
 
     init {
@@ -378,6 +378,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
         try {
             nextDelayAlarm.cancel()
+            nextDelayAlarm = Timer()
         } catch (e: java.lang.IllegalStateException) {
             // Timer has not been started jet. Ignore this
             Logger.debug(LOG_ID, "Timer already cancelled")
@@ -387,7 +388,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                 object : java.util.TimerTask() {
                     override fun run() = queueDelayAlarmHandler()
                 },
-                queueDelayTimes.get(0).first.getTime()
+                queueDelayTimes.get(0).first
             )
         } catch (e: java.lang.IllegalStateException) {
             // Timer has not been started jet. Ignore this
@@ -415,7 +416,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         Logger.debug(LOG_ID, "Delayed update for management " + urgentQueueManagementId)
 
         // Check if the trigger is valid
-        if (urgentQueueTime.getTime() >= Date().getTime()) {
+        if (urgentQueueTime.getTime() <= Date().getTime()) {
             queueDelayTimes.removeAt(0)
 
             // Update the queue
