@@ -1,4 +1,4 @@
-package elite.kit.outwait
+package elite.kit.outwait.client
 
 import android.util.Log
 import androidx.test.espresso.Espresso.onView
@@ -9,6 +9,8 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.activityScenarioRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import elite.kit.outwait.MainActivity
+import elite.kit.outwait.R
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.util.*
 import elite.kit.outwait.utils.EspressoIdlingResource
@@ -77,7 +79,7 @@ class SlotCodeInputTest {
         }
 
         // generate valid and invalid slot code
-        instituteRepo.newSpontaneousSlot(DEFAULT_AUX_IDENTIFIER, Duration(DEFAULT_DURATION))
+        instituteRepo.newSpontaneousSlot(DEFAULT_AUX_IDENTIFIER, Duration(DEFAULT_DURATION_MILLIS))
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.saveTransaction()
