@@ -38,7 +38,13 @@ class RemainingTimeFragment : Fragment() {
         binding.viewModel = this.viewModel
         binding.lifecycleOwner = this
 
-
+        viewModel.remainingTime.observe(viewLifecycleOwner, Observer {
+            if (it == "?"){
+                binding.btn.text = getText(R.string.try_refresh)
+            } else {
+                binding.btn.text = it
+            }
+        })
 
         viewModel.clientInfoList.observe(viewLifecycleOwner, Observer {
             if(it.isEmpty()){
