@@ -19,7 +19,7 @@ class QueueTest {
     val calendar = Calendar.getInstance()
 
     // Is used internally by the queue to position delayed slots
-    val delayTimeBuffer = Duration.ofSeconds(30)
+    val delayTimeBuffer = Duration.ofSeconds(20)
 
     private fun createSimpleSlot(code: String) : Slot {
         calendar.add(Calendar.MINUTE, simpleSlotDurationMinutes)

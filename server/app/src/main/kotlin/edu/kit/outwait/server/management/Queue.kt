@@ -45,7 +45,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         Logger.debug(LOG_ID, "Updating queue " + queueId)
         delayChangeTime = null
 
-        val delayTimeBuffer = Duration.ofSeconds(30) // The time buffer on top of an overdue slot
+        val delayTimeBuffer = Duration.ofSeconds(20) // The time buffer on top of an overdue slot
 
         // Remove outdated slots (to keep the db clean)
         slots
