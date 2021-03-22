@@ -43,9 +43,9 @@ class ManagementLogoutTest {
 
     @Before
     fun registerIdlingResource() {
+        hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         //Input of correct login data
-        hiltRule.inject()
         instituteRepository.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
     }
 
@@ -59,14 +59,9 @@ class ManagementLogoutTest {
         onView(withId(R.id.config)).perform(ViewActions.click())
         //Logout
         onView(withId(R.id.btnLogout)).perform(ViewActions.click())
-
         //Try again to login
         onView(withId(R.id.btnLoginFrag)).perform(ViewActions.click())
         //Verify on loginFragment
-        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.LOGIN_DENIED))).inRoot(ToastMatcher()).check(
-            ViewAssertions.matches(ViewMatchers.isDisplayed())
-        )
-
         onView(withId(R.id.tvTitleLogin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         openActivityRule.scenario.close()
@@ -75,6 +70,5 @@ class ManagementLogoutTest {
     @After
     fun unRegisterIdlingResource() {
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
-
     }
 }

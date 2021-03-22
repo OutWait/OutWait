@@ -10,6 +10,8 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import elite.kit.outwait.MainActivity
 import elite.kit.outwait.R
+import elite.kit.outwait.util.INTERACTION_TIME
+import elite.kit.outwait.util.INTERACTION_TIME_LARGE
 import elite.kit.outwait.util.RESET_ACCOUNT_NAME
 import elite.kit.outwait.util.StringResource
 import elite.kit.outwait.utils.EspressoIdlingResource
@@ -33,11 +35,16 @@ class ResetPasswordTest {
     //T5
     @Test
     fun resetPassword(){
+        //Forward to reset password screen
         onView(withId(R.id.tvPForgotton)).perform(click())
+        //Type account name
         onView(withId(R.id.etInstituteNamePasswordForgotten)).perform(typeText(RESET_ACCOUNT_NAME),closeSoftKeyboard())
         onView(withId(R.id.btnPasswordForgot)).perform(click())
+        //Go back to login screen
         onView(isRoot()).perform(pressBack())
         onView(withId(R.id.tvTitleLogin)).check(matches(isDisplayed()))
+        //Interaction: check your emails to find your new password
+        Thread.sleep(INTERACTION_TIME)
     }
 
     @After

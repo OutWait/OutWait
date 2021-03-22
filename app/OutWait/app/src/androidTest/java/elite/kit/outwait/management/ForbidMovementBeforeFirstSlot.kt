@@ -44,8 +44,6 @@ class ForbidMovementBeforeFirstSlot {
     @Inject
     lateinit var instituteRepo: InstituteRepository
 
-
-
     @Before
     fun init() {
         hiltRule.inject()
@@ -53,7 +51,7 @@ class ForbidMovementBeforeFirstSlot {
         instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
     }
 
-    //TEST 9
+    //TEST 10
     @Test
     fun moveSlots() {
         //Add first slot
@@ -62,10 +60,9 @@ class ForbidMovementBeforeFirstSlot {
             .perform(ViewActions.typeText(FIRST_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         DigitSelector.digitTwo.perform(click())
-        DigitSelector.digitZero.perform(click())
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        //Save second slot its slotcode
+        //Save first slot its slotcode
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FIRST_SLOT_TRANSACTION,
@@ -100,10 +97,9 @@ class ForbidMovementBeforeFirstSlot {
             .perform(ViewActions.typeText(THIRD_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         DigitSelector.digitFive.perform(click())
-        DigitSelector.digitZero.perform(click())
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        //Save first slot its slotcode
+        //Save third slot its slotcode
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 THIRD_SLOT_TRANSACTION,
@@ -122,7 +118,7 @@ class ForbidMovementBeforeFirstSlot {
         DigitSelector.digitFive.perform(click())
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        //Save first slot its slotcode
+        //Save fourth slot its slotcode
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FOURTH_SLOT_TRANSACTION,
@@ -132,12 +128,11 @@ class ForbidMovementBeforeFirstSlot {
         val fourthPosSlotCode = getText(onView(withId(R.id.tvSlotCodeDetail)))
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        //Drag and drop fourth slot at position after first
 
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.saveTransaction()
         }
-        //Drag fourth slot and move it to first position
+        //Interaction: Drag fourth slot and move it to first position
         Thread.sleep(INTERACTION_TIME)
         //Check right order
         //First slot
@@ -150,7 +145,7 @@ class ForbidMovementBeforeFirstSlot {
         onView(withId(R.id.tvSlotCodeDetail)).check(matches(withText(firstPosSlotCode)))
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        //Second slot former fourth slot
+        //Second slot
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 SECOND_SLOT_POSITION,
@@ -170,7 +165,7 @@ class ForbidMovementBeforeFirstSlot {
         onView(withId(R.id.tvSlotCodeDetail)).check(matches(withText(thirdPosSlotCode)))
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        //Fourth slot former third slot
+        //Fourth slot
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FOURTH_SLOT_POSITION,
@@ -201,7 +196,6 @@ class ForbidMovementBeforeFirstSlot {
                 instituteRepo.saveTransaction()
             }
         }
-
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
     }

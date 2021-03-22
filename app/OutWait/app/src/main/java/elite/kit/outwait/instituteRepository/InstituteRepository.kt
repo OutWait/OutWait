@@ -159,16 +159,16 @@ class InstituteRepository @Inject constructor(
      * @param password password of the institute
      */
     fun login(username: String, password: String) {
+        EspressoIdlingResource.increment()
         CoroutineScope(IO).launch {
-            wrapEspressoIdlingResource {
-                if (communicationEstablished || remote.initCommunication()) {
-                    if (remote.login(username, password)) {
-                        communicationEstablished = true
-                        loggedIn.postValue(true)
-                        loginData.postValue(Pair(username, password))
-                        db.insertUpdateLoginData(username, password)
-                    }
+            if (communicationEstablished || remote.initCommunication()) {
+                if (remote.login(username, password)) {
+                    communicationEstablished = true
+                    loggedIn.postValue(true)
+                    loginData.postValue(Pair(username, password))
+                    db.insertUpdateLoginData(username, password)
                 }
+                EspressoIdlingResource.decrement()
             }
         }
     }
@@ -203,14 +203,15 @@ class InstituteRepository @Inject constructor(
     fun logout() = logout(true)
 
     fun logout(manual: Boolean) {
+        EspressoIdlingResource.increment()
+
         CoroutineScope(IO).launch {
-            wrapEspressoIdlingResource {
-                remote.logout()
-                if (manual) {
-                    db.deleteAll()
-                    loginData.postValue(Pair("",""))
-                }
+            remote.logout()
+            if (manual) {
+                db.deleteAll()
+                loginData.postValue(Pair("", ""))
             }
+            EspressoIdlingResource.decrement()
         }
         cleanUp()
     }
@@ -221,10 +222,10 @@ class InstituteRepository @Inject constructor(
      * @param preferences see [Preferences]
      */
     fun changePreferences(preferences: Preferences) {
+        EspressoIdlingResource.increment()
         CoroutineScope(IO).launch {
-            wrapEspressoIdlingResource {
-                remote.changePreferences(preferences)
-            }
+            remote.changePreferences(preferences)
+            EspressoIdlingResource.decrement()
         }
     }
 
@@ -236,15 +237,14 @@ class InstituteRepository @Inject constructor(
      * @param duration how much time is scheduled for the slot.
      */
     fun newSpontaneousSlot(auxiliaryIdentifier: String, duration: Duration) {
-            CoroutineScope(IO).launch {
-                EspressoIdlingResource.increment()
-
-                if (transaction()) {
-                    auxHelper.newAux(auxiliaryIdentifier)
-                    remote.addSpontaneousSlot(duration, DateTime.now())
-                }
-                EspressoIdlingResource.decrement()
+        EspressoIdlingResource.increment()
+        CoroutineScope(IO).launch {
+            if (transaction()) {
+                auxHelper.newAux(auxiliaryIdentifier)
+                remote.addSpontaneousSlot(duration, DateTime.now())
             }
+            EspressoIdlingResource.decrement()
+        }
     }
 
     /**
@@ -256,14 +256,14 @@ class InstituteRepository @Inject constructor(
      * @param duration how much time is scheduled for the slot.
      */
     fun newFixedSlot(auxiliaryIdentifier: String, appointmentTime: DateTime, duration: Duration) {
+        EspressoIdlingResource.increment()
         //add aux to db
         CoroutineScope(IO).launch {
-            wrapEspressoIdlingResource {
-                if (transaction()) {
-                    auxHelper.newAux(auxiliaryIdentifier)
-                    remote.addFixedSlot(duration, appointmentTime)
-                }
+            if (transaction()) {
+                auxHelper.newAux(auxiliaryIdentifier)
+                remote.addFixedSlot(duration, appointmentTime)
             }
+            EspressoIdlingResource.decrement()
         }
     }
 
@@ -281,13 +281,13 @@ class InstituteRepository @Inject constructor(
         duration: Duration,
         auxiliaryIdentifier: String
     ) {
+        EspressoIdlingResource.increment()
         CoroutineScope(IO).launch {
-            wrapEspressoIdlingResource {
-                if (transaction()) {
-                    auxHelper.changeAux(slotCode, auxiliaryIdentifier)
-                    remote.changeSlotDuration(slotCode, duration)
-                }
+            if (transaction()) {
+                auxHelper.changeAux(slotCode, auxiliaryIdentifier)
+                remote.changeSlotDuration(slotCode, duration)
             }
+            EspressoIdlingResource.decrement()
         }
     }
 
@@ -307,14 +307,14 @@ class InstituteRepository @Inject constructor(
         auxiliaryIdentifier: String,
         newAppointmentTime: DateTime
     ) {
+        EspressoIdlingResource.increment()
         CoroutineScope(IO).launch {
-            wrapEspressoIdlingResource {
-                if (transaction()) {
-                    auxHelper.changeAux(slotCode, auxiliaryIdentifier)
-                    remote.changeFixedSlotTime(slotCode, newAppointmentTime)
-                    remote.changeSlotDuration(slotCode, duration)
-                }
+            if (transaction()) {
+                auxHelper.changeAux(slotCode, auxiliaryIdentifier)
+                remote.changeFixedSlotTime(slotCode, newAppointmentTime)
+                remote.changeSlotDuration(slotCode, duration)
             }
+            EspressoIdlingResource.decrement()
         }
     }
 
@@ -329,12 +329,12 @@ class InstituteRepository @Inject constructor(
      * be the predecessor of the [movedSlot]
      */
     fun moveSlotAfterAnother(movedSlot: String, otherSlot: String) {
+        EspressoIdlingResource.increment()
         CoroutineScope(IO).launch {
-            wrapEspressoIdlingResource {
-                if (transaction()) {
-                    remote.moveSlotAfterAnother(movedSlot, otherSlot)
-                }
+            if (transaction()) {
+                remote.moveSlotAfterAnother(movedSlot, otherSlot)
             }
+            EspressoIdlingResource.decrement()
         }
     }
 
@@ -349,8 +349,8 @@ class InstituteRepository @Inject constructor(
             if (transaction()) {
                 remote.endCurrentSlot()
             }
+            EspressoIdlingResource.decrement()
         }
-        EspressoIdlingResource.decrement()
 
     }
 
@@ -361,11 +361,11 @@ class InstituteRepository @Inject constructor(
      * @param slotCode the unique code, generated by the server, to identify the slot
      */
     fun deleteSlot(slotCode: String) {
+        EspressoIdlingResource.increment()
         CoroutineScope(IO).launch {
-            wrapEspressoIdlingResource {
-                if (transaction()) {
-                    remote.deleteSlot(slotCode)
-                }
+            if (transaction()) {
+                remote.deleteSlot(slotCode)
+                EspressoIdlingResource.decrement()
             }
         }
     }
@@ -378,12 +378,12 @@ class InstituteRepository @Inject constructor(
      *
      */
     fun saveTransaction() {
+        EspressoIdlingResource.increment()
         if (inTransaction.value == true) {
             inTransaction.value = false
             CoroutineScope(IO).launch {
-                wrapEspressoIdlingResource {
-                    remote.saveTransaction()
-                }
+                remote.saveTransaction()
+                EspressoIdlingResource.decrement()
             }
 
         } else {
@@ -399,12 +399,13 @@ class InstituteRepository @Inject constructor(
      *
      */
     fun abortTransaction() {
+        EspressoIdlingResource.increment()
+
         if (inTransaction.value == true) {
             inTransaction.value = false
             CoroutineScope(IO).launch {
-                wrapEspressoIdlingResource {
                     remote.abortTransaction()
-                }
+                EspressoIdlingResource.decrement()
             }
         } else {
             pushError(InstituteErrors.NOT_IN_TRANSACTION)
@@ -417,12 +418,12 @@ class InstituteRepository @Inject constructor(
      * @param username username of the institution
      */
     fun passwordForgotten(username: String) {
+        EspressoIdlingResource.increment()
         CoroutineScope(IO).launch {
-            wrapEspressoIdlingResource {
                 if (!communicationEstablished) remote.initCommunication()
                 remote.resetPassword(username)
                 remote.endCommunication()
-            }
+            EspressoIdlingResource.decrement()
         }
     }
 

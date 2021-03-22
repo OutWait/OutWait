@@ -69,7 +69,7 @@ class RemainingTimeFragment : Fragment() {
 
                     Toast.makeText(
                         context,
-                        "You can enter a new appointment after your appointment is finished",
+                        getString(R.string.back_press_client),
                         Toast.LENGTH_LONG
                     )
                         .show()
@@ -79,5 +79,4 @@ class RemainingTimeFragment : Fragment() {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
-
 }
