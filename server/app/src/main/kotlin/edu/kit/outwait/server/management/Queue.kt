@@ -136,7 +136,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
             // Check if the next spontaneous slot fits in between the line and the next fix slot and
             // if the next spontaneous slot is not prioritized
             if ((timeToNextFixSlot - nextSpontaneous.expectedDuration).isNegative() &&
-                !remainingPrioritizationBuffer.isNegative()
+                remainingPrioritizationBuffer.negated().isNegative()
             ) {
                 // Choose the fix slot
                 val chosenSlot =
