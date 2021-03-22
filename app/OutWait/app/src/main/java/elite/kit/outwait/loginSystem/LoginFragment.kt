@@ -81,7 +81,7 @@ class LoginFragment : Fragment() {
         }
 
         viewModel.loginData.observe(viewLifecycleOwner, Observer {
-            if (it != null) {
+            if (!(it.first==""&&it.second=="")) {
                 viewModel.instituteName.value = it.first
                 viewModel.institutePassword.value = it.second
             } else {

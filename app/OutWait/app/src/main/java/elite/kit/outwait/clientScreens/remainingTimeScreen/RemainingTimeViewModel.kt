@@ -42,7 +42,9 @@ class RemainingTimeViewModel @Inject constructor(
      */
     var instituteName: MediatorLiveData<String> = MediatorLiveData<String>().apply {
         addSource(repo.getActiveSlots()) {
-            value = it.first().institutionName
+            if (!it.isNullOrEmpty()) {
+                value = it.first().institutionName
+            }
         }
     }
 
