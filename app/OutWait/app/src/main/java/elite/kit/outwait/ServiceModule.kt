@@ -1,9 +1,11 @@
 package elite.kit.outwait
 
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.getSystemService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,7 +26,8 @@ object ServiceModule {
     @ServiceScoped
     @Provides
     fun provideMainActivityPendingIntent(@ApplicationContext app: Context) = PendingIntent.getActivity(
-        app, 0, Intent(app, MainActivity::class.java), 0)
+        app, 0, Intent(app, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
+
 
     /**
      * Dependency Injection, providing the NotificationBuilder for the permanent push notifications
@@ -44,6 +47,8 @@ object ServiceModule {
         .setContentText(NOTIFICATION_CHANNEL_DEFAULT_TEXT)
         .setSmallIcon(R.drawable.ic_timer)
         .setContentIntent(pendingIntent)
+        // needed for devices with API Level 25 or lower
+        .setPriority(NotificationCompat.PRIORITY_LOW)
 
     /**
      * Dependency Injection, providing the NotificationBuilder for the non-permanent push notifications
@@ -64,4 +69,7 @@ object ServiceModule {
         .setContentText(NOTIFICATION_CHANNEL_DEFAULT_TEXT)
         .setSmallIcon(R.drawable.ic_timer)
         .setContentIntent(pendingIntent)
+        .setAutoCancel(true)
+        // needed for devices with API Level 25 or lower
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
 }
