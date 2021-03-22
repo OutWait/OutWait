@@ -191,15 +191,15 @@ class TimerService @Inject constructor(): LifecycleService() {
         val instituteName = newNextClientInfo.institutionName
         val appointmentTime = newNextClientInfo.approximatedTime
 
-        val formatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
-        val appointmentString = formatter.print(appointmentTime) + " o'clock"
+        val appointmentString = TransformationOutput.appointmentToString(appointmentTime)
 
         val notification: Notification = permNotificationBuilder
             .setContentTitle(getString(R.string.Perm_Notif_BaseTitle))
             .setContentText(getString(R.string.Perm_Notif_Basetext1)
                 + instituteName
                 + getString(R.string.Perm_Notif_Basetext2)
-                + appointmentString)
+                + appointmentString
+                + getString(R.string.Notfi_Basetext_oClock))
             .build()
 
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -228,8 +228,8 @@ class TimerService @Inject constructor(): LifecycleService() {
                 val approxTime = next.approximatedTime
                 val delayDuration = Duration(next.approximatedTime.millis - next.originalAppointmentTime.millis)
 
-                val formatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
-                val appointmentString = formatter.print(approxTime) + " o'clock"
+                val appointmentString = TransformationOutput.appointmentToString(approxTime)
+
                 val delayString = TransformationOutput.durationToString(delayDuration)
 
                 val delayNotification: Notification = secondNotificationBuilder
@@ -237,7 +237,8 @@ class TimerService @Inject constructor(): LifecycleService() {
                     .setContentText(getString(R.string.Delay_Notif_BaseText1)
                         + delayString
                         + getString(R.string.Delay_Notif_BaseText2)
-                        + appointmentString)
+                        + appointmentString
+                        + getString(R.string.Notfi_Basetext_oClock))
                     .build()
 
                 val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

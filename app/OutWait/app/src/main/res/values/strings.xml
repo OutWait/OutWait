@@ -57,6 +57,7 @@
     <string name="Pending_Notif_BaseTitle1">Your appointment with\u00A0</string>
     <string name="Pending_Notif_BaseTitle2">\u00A0will begin shortly!</string>
     <string name="Pending_Notif_BaseText">Please go to the institution immediately!</string>
+    <string name="Notfi_Basetext_oClock">\u00A0o\'clock</string>
     <!-- Strings related to QR scan -->
     <string name="permission_allowed">Permission allowed</string>
     <string name="title_permission_dialog">Permission required</string>
