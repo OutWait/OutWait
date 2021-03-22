@@ -79,7 +79,7 @@ class SlotCodeInputTest {
         }
 
         // generate valid and invalid slot code
-        instituteRepo.newSpontaneousSlot(DEFAULT_AUX_IDENTIFIER, Duration(DEFAULT_DURATION))
+        instituteRepo.newSpontaneousSlot(DEFAULT_AUX_IDENTIFIER, Duration(DEFAULT_DURATION_MILLIS))
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.saveTransaction()
