@@ -10,6 +10,7 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="reset_password">Reset</string>
     <string name="reset_text">Enter your username in order to get a new password via your email</string>
+    <string name="password">"Password</string>
     <!-- Strings related to management -->
     <string name="slotcode">Slot code</string>
     <string name="identifier">Identifier</string>
