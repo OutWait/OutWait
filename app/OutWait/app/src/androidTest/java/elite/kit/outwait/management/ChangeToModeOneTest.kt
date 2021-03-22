@@ -82,8 +82,8 @@ class ChangeToModeOneTest {
         }
 
         // set default preferences (with default durations) and ensure that mode 2 is active
-        val preconditionPrefs = Preferences(Duration(DEFAULT_DURATION), Duration(DEFAULT_DURATION),
-            Duration(DEFAULT_DURATION),Duration(DEFAULT_DURATION), Mode.TWO)
+        val preconditionPrefs = Preferences(Duration(DEFAULT_DURATION_MILLIS), Duration(DEFAULT_DURATION_MILLIS),
+            Duration(DEFAULT_DURATION_MILLIS),Duration(DEFAULT_DURATION_MILLIS), Mode.TWO)
 
         instituteRepo.changePreferences(preconditionPrefs)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
