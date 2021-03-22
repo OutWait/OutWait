@@ -60,7 +60,7 @@ class RemainingTimeViewModel @Inject constructor(
     private val timer = object : CountDownTimer(TWO_DAYS, ONE_SEC) {
         override fun onTick(millisUntilFinished: Long) {
             if (!repo.isConnectedToServer()){
-                _remainingTime.value = "Internet Error. Try to refresh."
+                _remainingTime.value = "?"
                 return
             }
 

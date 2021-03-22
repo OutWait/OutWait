@@ -33,6 +33,7 @@
     <!-- Strings related to edit/enter slotCode -->
     <string name="enter_slotcode_text">Please enter your slot code</string>
     <string name="refresh">Refresh</string>
+    <string name="try_refresh">Internet Error. Try to refresh.</string>
     <!-- Strings for Error-Notifications (Institute) -->
     <string name="TRANSACTION_DENIED">Transaction denied!</string>
     <string name="LOGIN_DENIED">Login denied!</string>
