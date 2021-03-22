@@ -67,7 +67,7 @@ tasks.test {
 
     testLogging {
         outputs.upToDateWhen { false }
-        showStandardStreams = true
+        showStandardStreams = false // Enable this to see the logs in the tests
     }
 
     finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
