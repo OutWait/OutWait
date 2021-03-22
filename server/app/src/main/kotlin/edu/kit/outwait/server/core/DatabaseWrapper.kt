@@ -27,9 +27,6 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
     private val connectionProps: Properties = Properties()
     private val LOG_ID = "DB"
 
-    /**
-     * Setting connection properties and trying to connect to the database.
-     */
     init {
         this.connectionProps["user"] = "outwait"
         this.connectionProps["password"] = "OurOutwaitDB"
