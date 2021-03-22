@@ -330,11 +330,9 @@ class Management(
             Logger.debug(LOG_ID, "Aborting transaction")
             try {
                 val original_queue = managementManager.abortTransaction(managementId)
-                if (original_queue != null) {
-                    // Update the queue as it might have been loaded in wrong order.
-                    original_queue.updateQueue(managementInformation.settings.prioritizationTime)
-                    sendUpdatedQueue(original_queue)
-                }
+                // Update the queue as it might have been loaded in wrong order.
+                original_queue.updateQueue(managementInformation.settings.prioritizationTime)
+                sendUpdatedQueue(original_queue)
                 queue = null // transaction ended
             } catch (e: InternalServerErrorException) {
                 sendInternalErrorMessage(e.message!!)
