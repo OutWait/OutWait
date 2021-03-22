@@ -48,7 +48,7 @@ object DigitSelector {
     val digitZero :ViewInteraction  = Espresso.onView(
         Matchers.allOf(
             ViewMatchers.withId(R.id.numPad0),
-            ViewMatchers.withText( SLOT_DURATION_ZERO),
+            ViewMatchers.withText(SLOT_DURATION_ZERO),
             childAtPosition(
                 childAtPosition(
                     ViewMatchers.withId(R.id.numPad),
