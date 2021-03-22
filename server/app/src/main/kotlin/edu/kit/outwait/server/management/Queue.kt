@@ -2,6 +2,7 @@ package edu.kit.outwait.server.management
 
 import edu.kit.outwait.server.core.DatabaseWrapper
 import edu.kit.outwait.server.core.Logger
+import edu.kit.outwait.server.slot.Priority
 import edu.kit.outwait.server.slot.Slot
 import edu.kit.outwait.server.slot.SlotCode
 import java.time.Duration
@@ -90,7 +91,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                     // Slot has started, but expected end has not been reached
                     endTime
                 } else {
-                    // Slot hast started and expected end has been reached
+                    // Slot has started and expected end has been reached
 
                     // Update the length of the slot to match the gravity-queue protocol
                     // requirements
@@ -156,7 +157,15 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
 
                 line = chosenSlot.approxTime.toInstant() + chosenSlot.expectedDuration
             } else {
-                val chosenSlot = nextSpontaneous.copy(approxTime = Date.from(line))
+                val chosenSlot =
+                    nextSpontaneous.copy(
+                        approxTime = Date.from(line),
+                        priority =
+                            if (remainingPrioritizationBuffer.negated().isNegative())
+                                Priority.NORMAL
+                            else
+                                Priority.URGENT
+                    )
                 Logger.debug(
                     LOG_ID,
                     "Chose spontaneous slot " + chosenSlot.slotCode + " at " + chosenSlot.approxTime
