@@ -100,16 +100,16 @@ class QueueTest {
     }
 
     private fun checkSlotOrder(toCheck: List<Slot>, testList: List<Slot>) {
-        assertEquals(toCheck.size, testList.size)
+        assertEquals(testSlot.size, toCheck.size)
         for (i in 0 until toCheck.size) {
-            assertEquals(toCheck[i].slotCode, testList[i].slotCode)
+            assertEquals(testSlot[i].slotCode, toCheck[i].slotCode)
         }
     }
 
     private fun compareSlot(toCheck: Slot, testSlot: Slot) {
-        assertEquals(toCheck.slotCode, testSlot.slotCode)
-        assertEquals(toCheck.priority, testSlot.priority)
-        assertEquals(toCheck.constructorTime, testSlot.constructorTime)
+        assertEquals(testSlot.slotCode, toCheck.slotCode)
+        assertEquals(testSlot.priority, toCheck.priority)
+        assertEquals(testSlot.constructorTime, toCheck.constructorTime)
 
         // expectedDuration approxTime may be off by a few milliseconds due to the time the
         // algorithm runs.
@@ -122,9 +122,9 @@ class QueueTest {
         )
     }
     private fun compareSlots(toCheck: List<Slot>, testList: List<Slot>) {
-        assertEquals(toCheck.size, testList.size)
+        assertEquals(testList.size, toCheck.size)
         for (i in 0 until toCheck.size) {
-            compareSlot(toCheck[i], testList[i])
+            compareSlot(testList[i], toCheck[i])
         }
     }
 
@@ -140,7 +140,7 @@ class QueueTest {
 
         val queue = Queue(QueueId(1), db)
         queue.storeToDB(db)
-        assertEquals(outSlots.captured, simpleTestSlots)
+        assertEquals(simplteTestSlots, outSlots.captured)
     }
 
     /** Checks whether the json construction works. */
@@ -164,15 +164,15 @@ class QueueTest {
 
         // Check if all slots are in the slot order array
         val order = json.getJSONArray("slotOrder")
-        assertEquals(order.length(), inSlots.size)
+        assertEquals(inSlots.size, order.length())
         for (i in 0 until order.length()) {
-            assertEquals(order.getString(i), inSlots[i].slotCode.code)
+            assertEquals(inSlots[i].slotCode.code, order.getString(i))
         }
 
         // Check if all slots can be found in the other two arrays
         val fixedSlots = json.getJSONArray("fixedSlots")
         val spontaneousSlots = json.getJSONArray("spontaneousSlots")
-        assertEquals(fixedSlots.length() + spontaneousSlots.length(), inSlots.size)
+        assertEquals(inSlots.size, fixedSlots.length() + spontaneousSlots.length())
         for (slot in order) {
             var occurrences = 0
             for (i in 0 until fixedSlots.length()) {
@@ -184,7 +184,7 @@ class QueueTest {
                     occurrences++
             }
             // Exactly one (checks also that the arrays contain no copies)
-            assertEquals(occurrences, 1)
+            assertEquals(1, occurrences)
         }
     }
 
@@ -722,7 +722,7 @@ class QueueTest {
 
         compareSlots(outSlots, checkSlots)
 
-        assertEquals(deletedSlots, listOf(inSlots[2].slotCode))
+        assertEquals(listOf(inSlots[2].slotCode), deletedSlots)
     }
 
     // Tests for manipulating the queue
@@ -787,7 +787,7 @@ class QueueTest {
             )
 
         compareSlots(outSlots, checkSlots)
-        assertEquals(deletedSlots, listOf(inSlots[2].slotCode))
+        assertEquals(listOf(inSlots[2].slotCode), deletedSlots)
     }
 
     /** Checks whether deletion of the first slot works. */
@@ -836,7 +836,7 @@ class QueueTest {
             )
 
         compareSlots(outSlots, checkSlots)
-        assertEquals(endedSlots, listOf(inSlots[0].slotCode))
+        assertEquals(listOf(inSlots[0].slotCode), endedSlots)
     }
 
     /** Checks whether moving of slots works. */
