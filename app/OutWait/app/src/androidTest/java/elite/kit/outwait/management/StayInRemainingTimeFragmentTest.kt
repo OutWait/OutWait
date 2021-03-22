@@ -86,6 +86,7 @@ class StayInRemainingTimeFragmentTest {
         onView(withId(R.id.etSlotCode)).perform(TextSetter.setTextEditText(firstPosSlotCode))
         Thread.sleep(WAIT_FOR_UI_RESPONSE)
         openActivityRule.scenario.close()
+        //Interaction: reopen the app manuel
         Thread.sleep(INTERACTION_TIME_LARGE)
         onView(withId(R.id.tvRemainingTimeText)).check(matches(withText(StringResource.getResourceString(R.string.it_s_your_turn_in))))
     }

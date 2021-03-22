@@ -53,10 +53,10 @@ class UserViewModel @Inject constructor(
 
     val loginData= MediatorLiveData<Pair<String, String>>().apply {
         addSource(repoInstitute.getLoginData()){
-            value=it
+                value = it
+
         }
     }
-
     /**
      * Transmits login data from client to server
      *
