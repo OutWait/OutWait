@@ -68,10 +68,8 @@ class LoginFragment : Fragment() {
         viewModel.loginResponse.observe(viewLifecycleOwner) { listOfUsers ->
             when {
                 listOfUsers.isEmpty() -> {
-                    Toast.makeText(context, "FAILED", Toast.LENGTH_LONG)
                 }
                 listOfUsers.component1() == false -> {
-                    Toast.makeText(context, "FAILED", Toast.LENGTH_LONG)
                 }
                 listOfUsers.component1() == true -> {
                     navController.popBackStack()
@@ -83,17 +81,20 @@ class LoginFragment : Fragment() {
         }
 
         viewModel.loginData.observe(viewLifecycleOwner, Observer {
-            if(it!=null){
-                viewModel.instituteName.value= it.first
-                viewModel.institutePassword.value= it.second
-
+            if (!(it.first==""&&it.second=="")) {
+                viewModel.instituteName.value = it.first
+                viewModel.institutePassword.value = it.second
+            } else {
+                viewModel.instituteName.value = ""
+                viewModel.institutePassword.value = ""
             }
         })
+
+
 
         binding.etSlotCode.setBackgroundResource(R.drawable.shape_code_edit_text)
 
         binding.etSlotCode.setOnCodeChangedListener { (code, completed) ->
-            //TODO dennis if ones completed to delete a char to ty again
             if (completed) {
                 viewModel.clientSlotCode.value = code
                 viewModel.enterSlotCode()

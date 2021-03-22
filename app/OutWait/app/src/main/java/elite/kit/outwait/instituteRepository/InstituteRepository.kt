@@ -111,7 +111,7 @@ class InstituteRepository @Inject constructor(
     private val errorNotifications = MutableLiveData<List<InstituteErrors>>()
     private val inTransaction = MutableLiveData<Boolean>(false)
     private val loggedIn = MutableLiveData<Boolean>(false)
-    private val loginData = MutableLiveData<Pair<String, String>>(null)
+    private val loginData = MutableLiveData<Pair<String, String>>(Pair("", ""))
 
     /** Provides an observable object that stores all institute preferences */
     fun getObservablePreferences() = preferences as LiveData<Preferences>
@@ -141,6 +141,7 @@ class InstituteRepository @Inject constructor(
     /** Provides an observable boolean that tells if the institute is logged in*/
     fun isLoggedIn() = loggedIn as LiveData<Boolean>
 
+    /** Provides observable Pair with first username and second password */
     fun getLoginData(): LiveData<Pair<String, String>> = loginData
 
 
@@ -205,7 +206,10 @@ class InstituteRepository @Inject constructor(
         CoroutineScope(IO).launch {
             wrapEspressoIdlingResource {
                 remote.logout()
-                if (manual) db.deleteAll()
+                if (manual) {
+                    db.deleteAll()
+                    loginData.postValue(Pair("",""))
+                }
             }
         }
         cleanUp()

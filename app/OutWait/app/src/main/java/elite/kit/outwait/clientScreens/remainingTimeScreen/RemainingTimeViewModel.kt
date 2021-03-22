@@ -42,7 +42,9 @@ class RemainingTimeViewModel @Inject constructor(
      */
     var instituteName: MediatorLiveData<String> = MediatorLiveData<String>().apply {
         addSource(repo.getActiveSlots()) {
-            value = it.first().institutionName
+            if (!it.isNullOrEmpty()) {
+                value = it.first().institutionName
+            }
         }
     }
 
@@ -60,7 +62,7 @@ class RemainingTimeViewModel @Inject constructor(
     private val timer = object : CountDownTimer(TWO_DAYS, ONE_SEC) {
         override fun onTick(millisUntilFinished: Long) {
             if (!repo.isConnectedToServer()){
-                _remainingTime.value = "Internet Error. Try to refresh."
+                _remainingTime.value = "?"
                 return
             }
 
