@@ -100,9 +100,9 @@ class QueueTest {
     }
 
     private fun checkSlotOrder(toCheck: List<Slot>, testList: List<Slot>) {
-        assertEquals(testSlot.size, toCheck.size)
+        assertEquals(testList.size, toCheck.size)
         for (i in 0 until toCheck.size) {
-            assertEquals(testSlot[i].slotCode, toCheck[i].slotCode)
+            assertEquals(testList[i].slotCode, toCheck[i].slotCode)
         }
     }
 
@@ -140,7 +140,7 @@ class QueueTest {
 
         val queue = Queue(QueueId(1), db)
         queue.storeToDB(db)
-        assertEquals(simplteTestSlots, outSlots.captured)
+        assertEquals(simpleTestSlots, outSlots.captured)
     }
 
     /** Checks whether the json construction works. */
