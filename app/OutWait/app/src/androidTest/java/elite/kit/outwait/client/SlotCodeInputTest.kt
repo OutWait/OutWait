@@ -25,7 +25,6 @@ import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
-//@RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
 class SlotCodeInputTest {
 
