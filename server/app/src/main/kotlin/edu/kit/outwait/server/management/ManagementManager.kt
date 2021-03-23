@@ -370,7 +370,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      */
     private fun keepQueueDelayTime(time: Date, managementId: ManagementId) {
         queueDelayTimes.add(Pair(time, managementId))
-        queueDelayTimes.sortedBy { it.first }
+        queueDelayTimes.sortBy { it.first }
         Logger.debug(
             LOG_ID,
             "Queue delay change is set to " + time + " for management " + managementId
@@ -413,11 +413,11 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         Logger.debug(LOG_ID, "Delayed update routine is ready")
 
         val (urgentQueueTime, urgentQueueManagementId) = queueDelayTimes.get(0)
+        queueDelayTimes.removeAt(0)
         Logger.debug(LOG_ID, "Delayed update for management " + urgentQueueManagementId)
 
         // Check if the trigger is valid
         if (urgentQueueTime.getTime() <= Date().getTime()) {
-            queueDelayTimes.removeAt(0)
 
             // Update the queue
 
