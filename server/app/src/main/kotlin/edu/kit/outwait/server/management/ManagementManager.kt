@@ -32,7 +32,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
     private val managements = mutableListOf<Management>()
     private val activeTransactions = hashSetOf<ManagementId>()
     private val queueDelayTimes = mutableListOf<Pair<Date, ManagementId>>()
-    private val nextDelayAlarm = Timer()
+    private var nextDelayAlarm = Timer()
     private val LOG_ID = "MGMT-MGR"
 
     init {
@@ -370,7 +370,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      */
     private fun keepQueueDelayTime(time: Date, managementId: ManagementId) {
         queueDelayTimes.add(Pair(time, managementId))
-        queueDelayTimes.sortedBy { it.first }
+        queueDelayTimes.sortBy { it.first }
         Logger.debug(
             LOG_ID,
             "Queue delay change is set to " + time + " for management " + managementId
@@ -378,6 +378,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
         try {
             nextDelayAlarm.cancel()
+            nextDelayAlarm = Timer()
         } catch (e: java.lang.IllegalStateException) {
             // Timer has not been started jet. Ignore this
             Logger.debug(LOG_ID, "Timer already cancelled")
@@ -387,7 +388,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
                 object : java.util.TimerTask() {
                     override fun run() = queueDelayAlarmHandler()
                 },
-                queueDelayTimes.get(0).first.getTime()
+                queueDelayTimes.get(0).first
             )
         } catch (e: java.lang.IllegalStateException) {
             // Timer has not been started jet. Ignore this
@@ -412,11 +413,11 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         Logger.debug(LOG_ID, "Delayed update routine is ready")
 
         val (urgentQueueTime, urgentQueueManagementId) = queueDelayTimes.get(0)
+        queueDelayTimes.removeAt(0)
         Logger.debug(LOG_ID, "Delayed update for management " + urgentQueueManagementId)
 
         // Check if the trigger is valid
-        if (urgentQueueTime.getTime() >= Date().getTime()) {
-            queueDelayTimes.removeAt(0)
+        if (urgentQueueTime.getTime() <= Date().getTime()) {
 
             // Update the queue
 

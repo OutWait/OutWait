@@ -10,6 +10,7 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="reset_password">Reset</string>
     <string name="reset_text">Enter your username in order to get a new password via your email</string>
+    <string name="password">"Password</string>
     <!-- Strings related to management -->
     <string name="slotcode">Slot code</string>
     <string name="identifier">Identifier</string>
@@ -75,5 +76,6 @@
     <string name="modeTwo">Mode 2</string>
     <string name="navigateUp">Navigate up</string>
     <string name="it_s_your_turn_in">It\'s your turn in:</string>
+    <string name="back_press_client">You can enter a new appointment after your appointment is finished</string>
 
 </resources>

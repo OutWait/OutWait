@@ -68,9 +68,13 @@ class RemainingTimeViewModel @Inject constructor(
 
             if (approximatedTime !== null) {
                 val now = DateTime.now()
-                val diff = Duration(
+                var diff = Duration(
                     approximatedTime!!.millis - now.millis
                 )
+                //Round Time to full minute
+                if (diff.standardSeconds > 30){
+                    diff += Duration.standardSeconds(30)
+                }
 
                 if (diff > Duration(0))
                     _remainingTime.value = TransformationOutput.durationToString(diff)

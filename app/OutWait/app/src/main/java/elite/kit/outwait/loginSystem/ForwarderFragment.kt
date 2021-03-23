@@ -35,27 +35,23 @@ class ForwarderFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-
         userViewModel.loginResponse.observeOnce(viewLifecycleOwner, Observer { listOfUsers ->
             when {
                 listOfUsers.isEmpty() -> {
                     Log.i("navigate", "loginFragment")
                     userViewModel.navigateToLoginFragment()
                 }
-
                 listOfUsers.isNotEmpty() && listOfUsers.component1() is ClientInfo -> {
-                    Log.i("navigate", "remainingFragment")
-                    userViewModel.navigateToRemainingTimeFragment()
-                }
+                        Log.i("navigate", "remainingFragment ${findNavController().currentDestination?.id} ${R.id.remainingTimeFragment}")
+                        userViewModel.navigateToRemainingTimeFragment()
 
+                }
                 listOfUsers.isNotEmpty() && listOfUsers.component1() == true -> {
                     userViewModel.navigateToManagementViewFragment()
                 }
-
                 listOfUsers.isNotEmpty() && listOfUsers.component1() == false -> {
                     userViewModel.navigateToLoginFragment()
                 }
-
             }
         })
 
@@ -77,4 +73,5 @@ class ForwarderFragment : Fragment() {
             }
         })
     }
+
 }

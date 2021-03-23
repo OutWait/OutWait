@@ -2,6 +2,7 @@ package edu.kit.outwait.server.management
 
 import edu.kit.outwait.server.core.DatabaseWrapper
 import edu.kit.outwait.server.core.Logger
+import edu.kit.outwait.server.slot.Priority
 import edu.kit.outwait.server.slot.Slot
 import edu.kit.outwait.server.slot.SlotCode
 import java.time.Duration
@@ -44,7 +45,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
         Logger.debug(LOG_ID, "Updating queue " + queueId)
         delayChangeTime = null
 
-        val delayTimeBuffer = Duration.ofSeconds(30) // The time buffer on top of an overdue slot
+        val delayTimeBuffer = Duration.ofSeconds(20) // The time buffer on top of an overdue slot
 
         // Remove outdated slots (to keep the db clean)
         slots
@@ -90,7 +91,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
                     // Slot has started, but expected end has not been reached
                     endTime
                 } else {
-                    // Slot hast started and expected end has been reached
+                    // Slot has started and expected end has been reached
 
                     // Update the length of the slot to match the gravity-queue protocol
                     // requirements
@@ -136,7 +137,7 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
             // Check if the next spontaneous slot fits in between the line and the next fix slot and
             // if the next spontaneous slot is not prioritized
             if ((timeToNextFixSlot - nextSpontaneous.expectedDuration).isNegative() &&
-                !remainingPrioritizationBuffer.isNegative()
+                remainingPrioritizationBuffer.negated().isNegative()
             ) {
                 // Choose the fix slot
                 val chosenSlot =
@@ -156,7 +157,15 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
 
                 line = chosenSlot.approxTime.toInstant() + chosenSlot.expectedDuration
             } else {
-                val chosenSlot = nextSpontaneous.copy(approxTime = Date.from(line))
+                val chosenSlot =
+                    nextSpontaneous.copy(
+                        approxTime = Date.from(line),
+                        priority =
+                            if (remainingPrioritizationBuffer.negated().isNegative())
+                                Priority.NORMAL
+                            else
+                                Priority.URGENT
+                    )
                 Logger.debug(
                     LOG_ID,
                     "Chose spontaneous slot " + chosenSlot.slotCode + " at " + chosenSlot.approxTime

@@ -10,6 +10,8 @@
     <string name="forgot_password">Passwort vergessen?</string>
     <string name="reset_password">Zurücksetzen</string>
     <string name="reset_text">Geben Sie Ihren Benutzernamen ein, um Ihr Passwort mit Ihrer Email zurückzusetzen</string>
+    <string name="password">"Passwort</string>
+
     <!-- Strings related to management -->
     <string name="slotcode">Slot-Code</string>
     <string name="identifier">Identifizierer</string>
@@ -75,6 +77,8 @@
     <string name="modeTwo">Modus 2</string>
     <string name="navigateUp">Navigate up</string>
     <string name="it_s_your_turn_in">Sie sind an der Reihe in:</string>
+    <string name="back_press_client">Nach dem Ihr Termin abgelaufen ist, können Sie einen neuen eingeben</string>
+
 
 
 </resources>

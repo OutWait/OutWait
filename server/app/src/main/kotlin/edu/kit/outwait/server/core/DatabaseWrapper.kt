@@ -27,9 +27,6 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
     private val connectionProps: Properties = Properties()
     private val LOG_ID = "DB"
 
-    /**
-     * Setting connection properties and trying to connect to the database.
-     */
     init {
         this.connectionProps["user"] = "outwait"
         this.connectionProps["password"] = "OurOutwaitDB"
@@ -309,8 +306,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
                 )
             getManagementByUsernameQuery.setString(1, username)
             val rs = getManagementByUsernameQuery.executeQuery()
-            if(!rs.next())
-                return null // invalid username
+            if (!rs.next()) return null // invalid username
             val managementCredentials =
                 ManagementCredentials(
                     ManagementId(rs.getLong("id")),

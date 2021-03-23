@@ -17,15 +17,19 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.MainActivity
 import elite.kit.outwait.R
+import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.util.VALID_TEST_PASSWORD
 import elite.kit.outwait.util.VALID_TEST_USERNAME
 import elite.kit.outwait.utils.EspressoIdlingResource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
+import javax.inject.Inject
 
 
 @HiltAndroidTest
@@ -36,10 +40,12 @@ class ManagementLoginTest {
 
     @get:Rule(order = 1)
     var openActivityRule = activityScenarioRule<MainActivity>()
-
+    @Inject
+    lateinit var instituteRepo: InstituteRepository
 
     @Before
     fun registerIdlingResource() {
+        hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
     }
 
@@ -69,8 +75,9 @@ class ManagementLoginTest {
 
     @After
     fun unregisterIdlingResource() {
-        onView(withId(R.id.config)).perform(click())
-        onView(withId(R.id.btnLogout)).perform(click())
+        CoroutineScope(Dispatchers.Main).launch {
+            instituteRepo.logout()
+        }
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
     }

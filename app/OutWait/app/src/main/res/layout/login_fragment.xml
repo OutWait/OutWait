@@ -40,7 +40,7 @@
             android:nextFocusDown="@id/btnLoginFrag"
             app:hasClearButton="true"
             app:iconSignifier="@drawable/ic_institue_key"
-            app:labelText="Password"
+            app:labelText="@string/password"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
