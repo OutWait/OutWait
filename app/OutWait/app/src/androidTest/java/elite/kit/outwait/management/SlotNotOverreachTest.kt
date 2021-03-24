@@ -30,7 +30,7 @@ import util.DigitSelector
 import javax.inject.Inject
 
 @HiltAndroidTest
-class   SlotNotOverreach {
+class   SlotNotOverreachTest {
 
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
