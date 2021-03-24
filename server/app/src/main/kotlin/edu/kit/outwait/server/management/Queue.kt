@@ -209,10 +209,10 @@ class Queue(val queueId: QueueId, databaseWrapper: DatabaseWrapper) {
 
             delayChangeTime =
                 Date.from(
-                    (if (nextSlotEnd.isBefore(Date().toInstant()))
+                    if (nextSlotEnd.isBefore(Date().toInstant()))
                         Date().toInstant()
                     else
-                        nextSlotEnd) + delayTimeBuffer
+                        nextSlotEnd
                 )
         }
 

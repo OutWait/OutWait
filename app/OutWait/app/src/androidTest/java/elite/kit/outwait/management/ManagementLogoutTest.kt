@@ -7,6 +7,7 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
@@ -54,7 +55,7 @@ class ManagementLogoutTest {
     fun logoutSuccessfully(){
         //Verify of forwarding
         onView(withId(R.id.floatingActionButton))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            .check(matches(ViewMatchers.isDisplayed()))
         //Click on setting button
         onView(withId(R.id.config)).perform(ViewActions.click())
         //Logout
@@ -64,11 +65,11 @@ class ManagementLogoutTest {
         //Verify on loginFragment
         onView(withId(R.id.tvTitleLogin))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        openActivityRule.scenario.close()
     }
 
     @After
     fun unRegisterIdlingResource() {
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
+        openActivityRule.scenario.close()
     }
 }
