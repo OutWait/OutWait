@@ -213,7 +213,7 @@ class NotificationAfterDelay {
 
         // perform action 7
         instituteRepo.newSpontaneousSlot(THIRD_SLOT_IDENTIFIER, Duration(
-            THIRTY_MINUTE_DURATION_MILLIS))
+            THIRTY_FIVE_MINUTE_DURATION_MILLIS))
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         // save the transaction and the changes made
         CoroutineScope(Dispatchers.Main).launch {
