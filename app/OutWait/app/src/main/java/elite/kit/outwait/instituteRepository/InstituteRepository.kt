@@ -441,6 +441,8 @@ class InstituteRepository @Inject constructor(
             if (transactionEstablished) {
                 inTransaction.postValue(true)
                 return true
+            } else {
+                inTransaction.postValue(false)
             }
             //errorNotification is pushed as reaction to an remote data source error
             return false
