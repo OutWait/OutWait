@@ -92,8 +92,8 @@ class InstituteRepository @Inject constructor(
             if (it !== null) receivedNewList(it)
         }
         remote.getUpdatedPreferences().observeForever {
-            if (preferences !== null) preferences.value = it
-            Log.i("preferences", preferences?.value.toString())
+            if (it !== null) preferences.value = it
+            Log.i("preferences", preferences.value.toString())
         }
 
         CoroutineScope(IO).launch {
