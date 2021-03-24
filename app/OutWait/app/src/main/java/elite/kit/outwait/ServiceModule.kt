@@ -1,11 +1,9 @@
 package elite.kit.outwait
 
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat.getSystemService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -72,4 +70,13 @@ object ServiceModule {
         .setAutoCancel(true)
         // needed for devices with API Level 25 or lower
         .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+    /* //TODO: moved in NotificationManagerModule
+    @notifManager
+    @ServiceScoped
+    @Provides
+    fun provideNotificationManager(@ApplicationContext app: Context)
+        = NotifManager(app)
+
+     */
 }
