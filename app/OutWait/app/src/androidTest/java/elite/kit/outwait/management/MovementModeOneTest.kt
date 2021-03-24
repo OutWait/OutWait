@@ -57,8 +57,8 @@ class MovementModeOneTest {
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(ViewActions.typeText(FIRST_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
-        DigitSelector.digitTwo.perform(click())
-        DigitSelector.digitZero.perform(click())
+        DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Save second slot its slotcode
@@ -76,8 +76,8 @@ class MovementModeOneTest {
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(ViewActions.typeText(SECOND_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
-        DigitSelector.digitTwo.perform(click())
-        DigitSelector.digitFive.perform(click())
+        DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Save second slot its slotcode
@@ -95,8 +95,8 @@ class MovementModeOneTest {
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(ViewActions.typeText(THIRD_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
-        DigitSelector.digitFive.perform(click())
-        DigitSelector.digitZero.perform(click())
+        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Save first slot its slotcode
@@ -114,8 +114,8 @@ class MovementModeOneTest {
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(ViewActions.typeText(FOURTH_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
-        DigitSelector.digitFive.perform(click())
-        DigitSelector.digitFive.perform(click())
+        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Save first slot its slotcode

@@ -57,7 +57,7 @@ class QRCodeValidationTest {
         Espresso.onView(ViewMatchers.withId(R.id.etIdentifierAddDialog))
             .perform(ViewActions.typeText(FIRST_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         Espresso.onView(ViewMatchers.withId(R.id.clear)).perform(ViewActions.click())
-        DigitSelector.digitFive.perform(ViewActions.click())
+        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
         Espresso.onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(ViewActions.click())
         //Add second slot
@@ -65,8 +65,8 @@ class QRCodeValidationTest {
         Espresso.onView(ViewMatchers.withId(R.id.etIdentifierAddDialog))
             .perform(ViewActions.typeText(SECOND_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         Espresso.onView(ViewMatchers.withId(R.id.clear)).perform(ViewActions.click())
-        DigitSelector.digitTwo.perform(ViewActions.click())
-        DigitSelector.digitZero.perform(ViewActions.click())
+        DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         Espresso.onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(ViewActions.click())
         //Display slot information

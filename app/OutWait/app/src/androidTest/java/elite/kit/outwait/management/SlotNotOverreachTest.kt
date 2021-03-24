@@ -58,7 +58,7 @@ class   SlotNotOverreachTest {
             .perform(typeText(FIRST_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         //Duration 2 min
-        DigitSelector.digitTwo.perform(click())
+        DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Add second slot
@@ -67,7 +67,7 @@ class   SlotNotOverreachTest {
             .perform(typeText(SECOND_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         //Duration 5 min
-        DigitSelector.digitFive.perform(click())
+        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Add third slot
@@ -75,8 +75,8 @@ class   SlotNotOverreachTest {
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(typeText(THIRD_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
-        DigitSelector.digitTwo.perform(click())
-        DigitSelector.digitZero.perform(click())
+        DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Save third slot its slotcode
