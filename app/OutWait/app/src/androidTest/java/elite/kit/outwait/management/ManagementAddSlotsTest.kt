@@ -69,7 +69,7 @@ class ManagementAddSlotsTest {
             .perform(typeText(FIRST_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         //Type Duration
-        DigitSelector.digitTwo.perform(click())
+        DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Add second slot
@@ -78,8 +78,8 @@ class ManagementAddSlotsTest {
             .perform(typeText(SECOND_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         //Type Duration
-        DigitSelector.digitTwo.perform(click())
-        DigitSelector.digitFive.perform(click())
+        DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Add third slot
@@ -88,7 +88,7 @@ class ManagementAddSlotsTest {
             .perform(typeText(THIRD_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         //Type Duration
-        DigitSelector.digitFive.perform(click())
+        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Save

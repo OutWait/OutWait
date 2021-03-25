@@ -24,7 +24,8 @@ object ServiceModule {
     @ServiceScoped
     @Provides
     fun provideMainActivityPendingIntent(@ApplicationContext app: Context) = PendingIntent.getActivity(
-        app, 0, Intent(app, MainActivity::class.java), 0)
+        app, 0, Intent(app, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
+
 
     /**
      * Dependency Injection, providing the NotificationBuilder for the permanent push notifications
@@ -44,6 +45,8 @@ object ServiceModule {
         .setContentText(NOTIFICATION_CHANNEL_DEFAULT_TEXT)
         .setSmallIcon(R.drawable.ic_timer)
         .setContentIntent(pendingIntent)
+        // needed for devices with API Level 25 or lower
+        .setPriority(NotificationCompat.PRIORITY_LOW)
 
     /**
      * Dependency Injection, providing the NotificationBuilder for the non-permanent push notifications
@@ -64,4 +67,16 @@ object ServiceModule {
         .setContentText(NOTIFICATION_CHANNEL_DEFAULT_TEXT)
         .setSmallIcon(R.drawable.ic_timer)
         .setContentIntent(pendingIntent)
+        .setAutoCancel(true)
+        // needed for devices with API Level 25 or lower
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+    /* //TODO: moved in NotificationManagerModule
+    @notifManager
+    @ServiceScoped
+    @Provides
+    fun provideNotificationManager(@ApplicationContext app: Context)
+        = NotifManager(app)
+
+     */
 }

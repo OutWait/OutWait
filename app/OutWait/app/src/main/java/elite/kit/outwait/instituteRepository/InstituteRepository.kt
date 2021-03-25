@@ -92,8 +92,8 @@ class InstituteRepository @Inject constructor(
             if (it !== null) receivedNewList(it)
         }
         remote.getUpdatedPreferences().observeForever {
-            if (preferences !== null) preferences.value = it
-            Log.i("preferences", preferences?.value.toString())
+            if (it !== null) preferences.value = it
+            Log.i("instiRepo", "preferences received")
         }
 
         CoroutineScope(IO).launch {
@@ -441,6 +441,8 @@ class InstituteRepository @Inject constructor(
             if (transactionEstablished) {
                 inTransaction.postValue(true)
                 return true
+            } else {
+                inTransaction.postValue(false)
             }
             //errorNotification is pushed as reaction to an remote data source error
             return false

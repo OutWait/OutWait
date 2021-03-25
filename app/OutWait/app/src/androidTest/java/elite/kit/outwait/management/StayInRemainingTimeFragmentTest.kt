@@ -62,7 +62,7 @@ class StayInRemainingTimeFragmentTest {
         Espresso.onView(ViewMatchers.withId(R.id.etIdentifierAddDialog))
             .perform(ViewActions.typeText(FIRST_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         Espresso.onView(ViewMatchers.withId(R.id.clear)).perform(ViewActions.click())
-        DigitSelector.digitFive.perform(ViewActions.click())
+        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(ViewActions.click())
         //Save add slots

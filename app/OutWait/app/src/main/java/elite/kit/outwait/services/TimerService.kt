@@ -3,7 +3,6 @@ package elite.kit.outwait.services
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
@@ -17,14 +16,13 @@ import elite.kit.outwait.channel_1NotificationBuilder
 import elite.kit.outwait.channel_2NotificationBuilder
 import elite.kit.outwait.clientDatabase.ClientInfo
 import elite.kit.outwait.clientDatabase.ClientInfoDao
+import elite.kit.outwait.notifManager
 import elite.kit.outwait.utils.TransformationOutput
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import org.joda.time.Duration
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 /**
@@ -41,6 +39,10 @@ private const val TIME_STEP_FOR_PENDING_CHECK = 30000L
  */
 @AndroidEntryPoint
 class TimerService @Inject constructor(): LifecycleService() {
+
+    @notifManager
+    @Inject
+    lateinit var manager: NotifManager
 
     /**
      * Injected NotificationBuilder for the permanent notification(s) of the foreground service
@@ -90,12 +92,12 @@ class TimerService @Inject constructor(): LifecycleService() {
         super.onCreate()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            //TODO: val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             val serviceChannel1 = NotificationChannel(
                 PERM_CHANNEL_ID,
                 PERM_CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH,
+                NotificationManager.IMPORTANCE_LOW,
             )
             serviceChannel1.description = PERM_CHANNEL_DESCRIPTION
             manager.createNotificationChannel(serviceChannel1)
@@ -108,6 +110,7 @@ class TimerService @Inject constructor(): LifecycleService() {
             manager.createNotificationChannel(serviceChannel2)
         }
         Log.i("TimerService", "NotifChannels created")
+
     }
 
     /**
@@ -121,6 +124,7 @@ class TimerService @Inject constructor(): LifecycleService() {
      * @return indicates what semantics the system should use for the service's current started state
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
         val permNotification = permNotificationBuilder.build()
         startForeground(PERM_NOTIFICATION_ID, permNotification)
         Log.i("TimerService", "startForegroundService called")
@@ -137,6 +141,9 @@ class TimerService @Inject constructor(): LifecycleService() {
                 Thread.sleep(TIME_STEP_FOR_PENDING_CHECK)
             }
             Log.i("TimerService","DB empty, Service should stop")
+            // cancel all remaining (non permament) notifications
+            //TODO: val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.cancelAll()
             stopSelf()
         }
 
@@ -175,6 +182,9 @@ class TimerService @Inject constructor(): LifecycleService() {
                 checkForPendingAppointment(newList)
             } else {
                 Log.i("TimerService/doWork()", "LiveData empty, Service should stop")
+                // cancel all remaining (non permament) notifications
+                //TODO: val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                manager.cancelAll()
                 stopSelf()
             }
         })
@@ -191,18 +201,19 @@ class TimerService @Inject constructor(): LifecycleService() {
         val instituteName = newNextClientInfo.institutionName
         val appointmentTime = newNextClientInfo.approximatedTime
 
-        val formatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
-        val appointmentString = formatter.print(appointmentTime) + " o'clock"
+        val appointmentString = TransformationOutput.appointmentToString(appointmentTime)
 
         val notification: Notification = permNotificationBuilder
             .setContentTitle(getString(R.string.Perm_Notif_BaseTitle))
             .setContentText(getString(R.string.Perm_Notif_Basetext1)
                 + instituteName
                 + getString(R.string.Perm_Notif_Basetext2)
-                + appointmentString)
+                + appointmentString
+                + getString(R.string.Notfi_Basetext_oClock))
             .build()
 
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        //TODO: val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        // update the permanent notification
         manager.notify(PERM_NOTIFICATION_ID, notification)
     }
 
@@ -228,8 +239,8 @@ class TimerService @Inject constructor(): LifecycleService() {
                 val approxTime = next.approximatedTime
                 val delayDuration = Duration(next.approximatedTime.millis - next.originalAppointmentTime.millis)
 
-                val formatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
-                val appointmentString = formatter.print(approxTime) + " o'clock"
+                val appointmentString = TransformationOutput.appointmentToString(approxTime)
+
                 val delayString = TransformationOutput.durationToString(delayDuration)
 
                 val delayNotification: Notification = secondNotificationBuilder
@@ -237,10 +248,14 @@ class TimerService @Inject constructor(): LifecycleService() {
                     .setContentText(getString(R.string.Delay_Notif_BaseText1)
                         + delayString
                         + getString(R.string.Delay_Notif_BaseText2)
-                        + appointmentString)
+                        + appointmentString
+                        + getString(R.string.Notfi_Basetext_oClock))
                     .build()
 
-                val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                //TODO: val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                // cancel old pending appointment notification if existing
+                manager.cancel(PENDING_NOTIFICATION_ID)
+                // update delay notification (replacing old delay notification if existing)
                 manager.notify(DELAY_NOTIFICATION_ID, delayNotification)
 
                 // reset original time to current approx, for new delay checks
@@ -283,8 +298,10 @@ class TimerService @Inject constructor(): LifecycleService() {
                         + getString(R.string.Pending_Notif_BaseTitle2))
                     .setContentText(getString(R.string.Pending_Notif_BaseText))
                     .build()
-
-                val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                //TODO: val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                // cancel old delay notification if existing
+                manager.cancel(DELAY_NOTIFICATION_ID)
+                // update pending appointment notification (replacing old pending appointment notif if existing)
                 manager.notify(PENDING_NOTIFICATION_ID, pendingNotification)
 
                 pendingSlotCodesNotified.add(next.slotCode)
