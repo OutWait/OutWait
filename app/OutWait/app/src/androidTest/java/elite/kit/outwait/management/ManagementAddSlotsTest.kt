@@ -30,7 +30,7 @@ import org.junit.runner.RunWith
 import util.DigitSelector
 import javax.inject.Inject
 
-private const val INSTITUTION_NAME_CORRECT = "test2"
+/*private const val INSTITUTION_NAME_CORRECT = "test2"
 private const val INSTITUTION_PASSWORD_CORRECT = "test2"
 private const val SLOT_IDENTIFIER_ONE = "Slot1"
 private const val SLOT_IDENTIFIER_TWO = "Slot2"
@@ -38,7 +38,7 @@ private const val SLOT_IDENTIFIER_THREE = "Slot3"
 private const val FIRST_DURATION = "00:02"
 private const val SECOND_DURATION = "00:25"
 private const val THIRD_DURATION = "00:05"
-private const val FIRST_SLOT_TRANSACTION = 1
+private const val FIRST_SLOT_TRANSACTION = 1*/
 
 
 @HiltAndroidTest
@@ -66,7 +66,7 @@ class ManagementAddSlotsTest {
         //Add first slot
         onView(withId(R.id.floatingActionButton)).perform(click())
         onView(withId(R.id.etIdentifierAddDialog))
-            .perform(typeText(SLOT_IDENTIFIER_ONE), closeSoftKeyboard())
+            .perform(typeText(FIRST_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         //Type Duration
         DigitSelector.digitTwo.perform(click())
@@ -75,7 +75,7 @@ class ManagementAddSlotsTest {
         //Add second slot
         onView(withId(R.id.floatingActionButton)).perform(click())
         onView(withId(R.id.etIdentifierAddDialog))
-            .perform(typeText(SLOT_IDENTIFIER_TWO), closeSoftKeyboard())
+            .perform(typeText(SECOND_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         //Type Duration
         DigitSelector.digitTwo.perform(click())
@@ -85,7 +85,7 @@ class ManagementAddSlotsTest {
         //Add third slot
         onView(withId(R.id.floatingActionButton)).perform(click())
         onView(withId(R.id.etIdentifierAddDialog))
-            .perform(typeText(SLOT_IDENTIFIER_THREE), closeSoftKeyboard())
+            .perform(typeText(THIRD_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         //Type Duration
         DigitSelector.digitFive.perform(click())

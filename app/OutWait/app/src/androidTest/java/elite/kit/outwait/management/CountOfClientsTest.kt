@@ -27,10 +27,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import javax.inject.Inject
 
-private const val FIRST_SLOT     = 0
-private const val FIRST_SLOT_TRANSACTION     = 1
-private const val THREE = "3"
-
 @HiltAndroidTest
 class CountOfClientsTest {
 
@@ -90,7 +86,7 @@ class CountOfClientsTest {
     @Test
     fun areThreeClientsAdded() {
         onView(withId(R.id.config)).perform(click())
-        onView(withId(R.id.countOfClients)).check(matches(withText(StringResource.getResourceString(R.string.text_counter) + THREE)))
+        onView(withId(R.id.countOfClients)).check(matches(withText(StringResource.getResourceString(R.string.text_counter) + THREE_CLIENTS)))
     }
 
     @After
@@ -99,7 +95,7 @@ class CountOfClientsTest {
 
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                FIRST_SLOT,
+                FIRST_SLOT_POSITION,
                 swipeLeft()
             )
         )

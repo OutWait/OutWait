@@ -19,6 +19,7 @@ const val SLOT_DURATION_TWO = "2"
 const val SLOT_DURATION_FIVE = "5"
 const val SLOT_DURATION_ZERO = "0"
 const val SLOT_DURATION_EIGHT = "8"
+const val THREE_CLIENTS = "3"
 const val DEFAULT_AUX_IDENTIFIER = ""
 const val FIRST_ROW = 0
 const val SECOND_ROW = 1

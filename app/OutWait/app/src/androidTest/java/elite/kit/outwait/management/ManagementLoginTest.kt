@@ -52,7 +52,6 @@ class ManagementLoginTest {
     //T1
     @Test
     fun loginSuccessfully() {
-
         //Input of correct login data
         onView(withId(R.id.etInstituteName))
             .perform(
