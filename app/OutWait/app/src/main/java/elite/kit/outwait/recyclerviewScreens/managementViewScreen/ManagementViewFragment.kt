@@ -99,15 +99,18 @@ class ManagementViewFragment : Fragment(), ItemActionListener {
         })
 
         viewModel.isLoggedIn.observe(viewLifecycleOwner, Observer { isLoggedIn ->
-            Log.i("logout", "observer $isLoggedIn")
-            Log.i("transaction", "observer ${viewModel.isInTransaction.value}")
             if (!isLoggedIn && viewModel.isInTransaction.value!!) {
-                Log.i("logout", "transaction is ${viewModel.isInTransaction.value}")
                 deleteHeader()
             }
 
             if (!isLoggedIn) {
                 findNavController().popBackStack()
+            }
+        })
+
+        viewModel.isInTransaction.observe(viewLifecycleOwner, Observer { isInTransaction->
+            if(!isInTransaction){
+                displayingDialog.dismiss()
             }
         })
 

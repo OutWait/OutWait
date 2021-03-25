@@ -10,7 +10,9 @@ const val VALID_TEST_USERNAME = "global-test"
  */
 const val VALID_TEST_PASSWORD = "global-test"
 
-
+const val FIRST_DURATION = "00:20"
+const val SECOND_DURATION = "00:10"
+const val THIRD_DURATION = "00:30"
 const val FIRST_SLOT_IDENTIFIER = "Slot1"
 const val SECOND_SLOT_IDENTIFIER = "Slot2"
 const val THIRD_SLOT_IDENTIFIER = "Slot3"
@@ -49,6 +51,7 @@ const val TRANSACTION_PAUSE = 100L
 const val RESET_ACCOUNT_NAME="globale-test"
 const val INTERACTION_TIME=10000L
 const val INTERACTION_TIME_LARGE=15000L
+const val FIVE_MINUTES_DURATION="00:05"
 
 
 

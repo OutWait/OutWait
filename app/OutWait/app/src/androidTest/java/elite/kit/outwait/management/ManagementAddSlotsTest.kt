@@ -30,15 +30,9 @@ import org.junit.runner.RunWith
 import util.DigitSelector
 import javax.inject.Inject
 
-/*private const val INSTITUTION_NAME_CORRECT = "test2"
-private const val INSTITUTION_PASSWORD_CORRECT = "test2"
-private const val SLOT_IDENTIFIER_ONE = "Slot1"
-private const val SLOT_IDENTIFIER_TWO = "Slot2"
-private const val SLOT_IDENTIFIER_THREE = "Slot3"
-private const val FIRST_DURATION = "00:02"
-private const val SECOND_DURATION = "00:25"
-private const val THIRD_DURATION = "00:05"
-private const val FIRST_SLOT_TRANSACTION = 1*/
+
+
+
 
 
 @HiltAndroidTest
@@ -70,6 +64,7 @@ class ManagementAddSlotsTest {
         onView(withId(R.id.clear)).perform(click())
         //Type Duration
         DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Add second slot
@@ -78,8 +73,8 @@ class ManagementAddSlotsTest {
             .perform(typeText(SECOND_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         //Type Duration
-        DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
-        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitOne, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Add third slot
@@ -88,7 +83,8 @@ class ManagementAddSlotsTest {
             .perform(typeText(THIRD_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         //Type Duration
-        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitThree, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Save

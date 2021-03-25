@@ -45,7 +45,7 @@ class   SlotNotOverreachTest {
     fun init() {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
-        instituteRepo.login("test2", "test2")
+        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
     }
 
     //TODO testing except
@@ -75,6 +75,7 @@ class   SlotNotOverreachTest {
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(typeText(THIRD_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
+        //Duration 20 min
         DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
         DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         onView(withText(StringResource.getResourceString(R.string.confirm)))
@@ -94,10 +95,11 @@ class   SlotNotOverreachTest {
         onView(withId(R.id.config)).perform(click())
         onView(withId(R.id.btnLogout)).perform(click())
         onView(withId(R.id.etSlotCode)).perform(TextSetter.setTextEditText(thirdPosSlotCode))
-        Thread.sleep(100)
-        //TODO check logic from test 2 min + 5 min
-        //TODO remaining time calculation is wrong
+        Thread.sleep(WAIT_FOR_UI_RESPONSE)
+        //Wait 1 min
+        Thread.sleep(TIME_DECREASES)
         onView(withId(R.id.btn)).check(matches(withText(DECREASED_TIME)))
+        //Wait 2 min
         Thread.sleep(TIME_STAGNATES)
         onView(withId(R.id.btn)).check(matches(withText(STAGNATED_TIME)))
     }

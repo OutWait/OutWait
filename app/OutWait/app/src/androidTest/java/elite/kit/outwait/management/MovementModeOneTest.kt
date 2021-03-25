@@ -57,11 +57,11 @@ class MovementModeOneTest {
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(ViewActions.typeText(FIRST_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
-        DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitOne, R.id.addSlotDuration)
         DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        //Save second slot its slotcode
+        //Save first slot its slotcode
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FIRST_SLOT_TRANSACTION,
@@ -77,7 +77,7 @@ class MovementModeOneTest {
             .perform(ViewActions.typeText(SECOND_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
         DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
-        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
         //Save second slot its slotcode
@@ -95,11 +95,11 @@ class MovementModeOneTest {
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(ViewActions.typeText(THIRD_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
-        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitThree, R.id.addSlotDuration)
         DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        //Save first slot its slotcode
+        //Save third slot its slotcode
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 THIRD_SLOT_TRANSACTION,
@@ -114,11 +114,11 @@ class MovementModeOneTest {
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(ViewActions.typeText(FOURTH_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.clear)).perform(click())
-        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
-        DigitSelector.pressDigit(DigitSelector.digitFive, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitFour, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        //Save first slot its slotcode
+        //Save fourth slot its slotcode
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FOURTH_SLOT_TRANSACTION,
@@ -133,7 +133,6 @@ class MovementModeOneTest {
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.saveTransaction()
         }
-
         //Check right order
         //First slot
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
