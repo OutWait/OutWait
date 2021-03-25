@@ -106,6 +106,7 @@ class   SlotNotOverreachTest {
 
     @After
     fun emptySlot() {
+        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         // clean up waiting queue (on server side also)
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
         if (timeSlots != null && timeSlots.isNotEmpty()) {
