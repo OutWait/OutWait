@@ -1,22 +1,29 @@
 package edu.kit.outwait.server.client
 
+import com.corundumstudio.socketio.SocketIOClient
 import edu.kit.outwait.server.management.ManagementDetails
 import edu.kit.outwait.server.management.SlotManagementInformation
-import edu.kit.outwait.server.protocol.Event
-import edu.kit.outwait.server.protocol.JSONSlotCodeWrapper
-import edu.kit.outwait.server.protocol.JSONSlotDataWrapper
+import edu.kit.outwait.server.protocol.*
 import edu.kit.outwait.server.slot.SlotCode
+import edu.kit.outwait.server.socketHelper.SocketAdapter
 import edu.kit.outwait.server.socketHelper.SocketFacade
 import io.mockk.*
 import java.sql.Date
 import java.time.Duration
 import kotlin.test.assertEquals
 
+/**
+ * Unit-Test for ClientTest
+ */
 class ClientTest {
     var socketFacadeMock = mockk<SocketFacade>(relaxed = true)
     var clientManagerMock = mockk<ClientManager>(relaxed = true)
     var testObj = Client(socketFacadeMock, clientManagerMock)
 
+    /**
+     * Creates mock-objects for socketFacade and clientManager with relaxed mode on since they're needed
+     * to instantiate new ClientManagerObject
+     */
     @org.junit.jupiter.api.BeforeEach
     fun setUp() {
         socketFacadeMock = mockk<SocketFacade>(relaxed = true)
@@ -24,96 +31,151 @@ class ClientTest {
         testObj = Client(socketFacadeMock, clientManagerMock)
     }
 
+    /**
+     * Calls listenSlot on Socket so that a Slot with SlotCode is added. So the callback function can be captured.
+     * With the captured function we can register a new slot with his register on client.
+     * Ensures that registerReceiver on clientManager returns true to be able to remove the receiver
+     *  in the endSlot method.
+     * Checks if removeReceiver is called with correct parameters on clientManager
+     * Checks if Event SLOT_ENDED is send with correct SlotCode
+     */
     @org.junit.jupiter.api.Test
-    internal fun testEndSlotRemovable() {
-        //TODO addSlot auf Client aufrufen.
-        val slotCodeMock = SlotCode("TEST")
-        var slotInformationReceiverCapturer = CapturingSlot<SlotInformationReceiver>()
+    fun testEndSlotRemovable() {
+        socketFacadeMock = mockk<SocketFacade>(relaxed = true)
+        val functionCapturer = CapturingSlot<(receivedData: JSONObjectWrapper) -> Unit>()
         var eventCapturer = CapturingSlot<Event>()
         var toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
-        every {
-            clientManagerMock.registerReceiver(
-                slotCodeMock,
-                capture(slotInformationReceiverCapturer)
-            )
-        } returns true
+        val slotCodeMock = SlotCode("TEST")
+        var slotInformationReceiverCapturer = CapturingSlot<SlotInformationReceiver>()
 
-        verify { socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer)) }
-        verify { clientManagerMock.removeReceiver(slotInformationReceiverCapturer.captured) }
+        //capture callback
+        every {
+             socketFacadeMock.onReceive(Event.LISTEN_SLOT, capture(functionCapturer))
+        } just runs
+        every {
+            socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer))
+        } just runs
+        every { clientManagerMock.registerReceiver(slotCodeMock, capture(slotInformationReceiverCapturer)) } returns true
+
+        testObj = Client(socketFacadeMock, clientManagerMock)
+        val slotCodeWrapperMock = JSONSlotCodeWrapper()
+        slotCodeWrapperMock.setSlotCode(SlotCode("TEST"))
+        functionCapturer.captured(slotCodeWrapperMock)
+
         testObj.endSlot(slotCodeMock)
+        verify {
+            socketFacadeMock.send(Event.READY_TO_SERVE, any())
+            clientManagerMock.removeReceiver(slotInformationReceiverCapturer.captured)
+            socketFacadeMock.send(Event.SLOT_ENDED, any()) }
         assertEquals(Event.SLOT_ENDED, eventCapturer.captured)
         assertEquals("TEST", toSendCapturer.captured.getSlotCode().code)
+
     }
 
+
+    /**
+     * Checks if send is called with correct parameters on socketFacade for a non removable Slot.
+     */
     @org.junit.jupiter.api.Test
-    internal fun testEndSlotNotRemovable() {
+    fun testEndSlotNotRemovable() {
         val slotCodeMock = SlotCode("TEST")
         var eventCapturer = CapturingSlot<Event>()
         var toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
-        verify { socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer)) }
+        every { socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer)) } just runs
         testObj.endSlot(slotCodeMock)
+        verify {
+            socketFacadeMock.send(Event.READY_TO_SERVE, any())
+            socketFacadeMock.send(Event.INVALID_CODE, toSendCapturer.captured)
+        }
         assertEquals(Event.INVALID_CODE, eventCapturer.captured)
         assertEquals("TEST", toSendCapturer.captured.getSlotCode().code)
+
     }
 
+    /**
+     * Calls listenSlot on Socket so that a Slot with SlotCode is added. So the callback function can be captured.
+     * With the captured function we can register a new slot with his register on client.
+     * Ensures that registerReceiver on clientManager returns true to be able to remove the receiver
+     *  in the endSlot method.
+     * Checks if removeReceiver is called with correct parameters on clientManager
+     * Checks if Event SLOT_DELETED is send with correct SlotCode
+     */
     @org.junit.jupiter.api.Test
-    internal fun testDeleteSlotRemovable() {
-        //TODO addSlot auf Client aufrufen.
+    fun testDeleteSlotRemovable() {
+        socketFacadeMock = mockk<SocketFacade>(relaxed = true)
+        val functionCapturer = CapturingSlot<(receivedData: JSONObjectWrapper) -> Unit>()
+        var eventCapturer = CapturingSlot<Event>()
+        var toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
         val slotCodeMock = SlotCode("TEST")
         var slotInformationReceiverCapturer = CapturingSlot<SlotInformationReceiver>()
-        var eventCapturer = CapturingSlot<Event>()
-        var toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
+
+        //capture callback
         every {
-            clientManagerMock.registerReceiver(
-                slotCodeMock,
-                capture(slotInformationReceiverCapturer)
-            )
+            socketFacadeMock.onReceive(Event.LISTEN_SLOT, capture(functionCapturer))
+        } just runs
+        every {
+            socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer))
+        } just runs
+        every {
+            clientManagerMock.registerReceiver(slotCodeMock, capture(slotInformationReceiverCapturer))
         } returns true
 
-        verify { socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer)) }
-        verify { clientManagerMock.removeReceiver(slotInformationReceiverCapturer.captured) }
+        testObj = Client(socketFacadeMock, clientManagerMock)
+        val slotCodeWrapperMock = JSONSlotCodeWrapper()
+        slotCodeWrapperMock.setSlotCode(SlotCode("TEST"))
+        functionCapturer.captured(slotCodeWrapperMock)
+
         testObj.deleteSlot(slotCodeMock)
+        verify {
+            socketFacadeMock.send(Event.READY_TO_SERVE, any())
+            clientManagerMock.removeReceiver(slotInformationReceiverCapturer.captured)
+            socketFacadeMock.send(Event.SLOT_DELETED, any()) }
         assertEquals(Event.SLOT_DELETED, eventCapturer.captured)
         assertEquals("TEST", toSendCapturer.captured.getSlotCode().code)
+
     }
 
+
+    /**
+     * Checks if send is called with correct parameters on socketFacade for a non removable Slot.
+     */
     @org.junit.jupiter.api.Test
-    internal fun testDeleteSlotNotRemovable() {
+    fun testDeleteSlotNotRemovable() {
         val slotCodeMock = SlotCode("TEST")
+        val slotCodeWrapperMock = JSONSlotCodeWrapper()
+        slotCodeWrapperMock.setSlotCode(slotCodeMock)
         var eventCapturer = CapturingSlot<Event>()
         var toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
-        verify { socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer)) }
+        every { socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer)) } just runs
         testObj.deleteSlot(slotCodeMock)
+        verify {
+            socketFacadeMock.send(Event.READY_TO_SERVE, any())
+            socketFacadeMock.send(Event.INVALID_CODE, toSendCapturer.captured) }
         assertEquals(Event.INVALID_CODE, eventCapturer.captured)
         assertEquals("TEST", toSendCapturer.captured.getSlotCode().code)
     }
 
+    /**
+     * Checks if send is called with correct parameters on socketFacade for Slot data.
+     */
     @org.junit.jupiter.api.Test
-    internal fun testSendSlotData() {
+    fun testSendSlotData() {
         val slotCodeMock = SlotCode("TEST")
-        val slotManagementInformationMock =
-            SlotManagementInformation(
-                ManagementDetails("test", "test@test"),
-                Duration.ofMillis(1234),
-                Duration.ofMillis(1234)
-            )
+        val slotManagementInformationMock = SlotManagementInformation(ManagementDetails("test", "test@test"),
+        Duration.ofMillis(1234), Duration.ofMillis(1234))
         val slotApproxMock = SlotCode("TEST")
         var eventCapturer = CapturingSlot<Event>()
         var toSendCapturer = CapturingSlot<JSONSlotDataWrapper>()
-        verify { socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer)) }
+        every { socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer)) } just runs
         testObj.sendSlotData(slotCodeMock, Date(1234), slotManagementInformationMock)
-        assertEquals(Event.INVALID_CODE, eventCapturer.captured)
+        verify {
+            socketFacadeMock.send(Event.READY_TO_SERVE, any())
+            socketFacadeMock.send(Event.SEND_SLOT_DATA, any()) }
+        assertEquals(Event.SEND_SLOT_DATA, eventCapturer.captured)
         assertEquals("TEST", toSendCapturer.captured.getSlotCode().code)
         assertEquals(1234, toSendCapturer.captured.getSlotApprox().time)
         assertEquals("test", toSendCapturer.captured.getInformation().details.name)
-        assertEquals("test@test", toSendCapturer.captured.getInformation().details.email)
-        assertEquals(
-            Duration.ofMillis(1234),
-            toSendCapturer.captured.getInformation().delayNotificationTime
-        )
-        assertEquals(
-            Duration.ofMillis(1234),
-            toSendCapturer.captured.getInformation().notificationTime
-        )
+        assertEquals(Duration.ofMillis(1234), toSendCapturer.captured.getInformation().delayNotificationTime)
+        assertEquals(Duration.ofMillis(1234), toSendCapturer.captured.getInformation().notificationTime)
     }
 }

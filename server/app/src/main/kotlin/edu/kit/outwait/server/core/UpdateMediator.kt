@@ -54,7 +54,7 @@ class UpdateMediator {
                 receivers.remove(slotCode)
             }
         } else {
-            Logger.debug(LOG_ID, "Failed to unsubscribe (not subscribed jet)")
+            Logger.debug(LOG_ID, "Failed to unsubscribe (not subscribed yet)")
         }
     }
 
