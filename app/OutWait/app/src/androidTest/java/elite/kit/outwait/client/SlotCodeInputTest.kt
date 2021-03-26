@@ -11,6 +11,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.MainActivity
 import elite.kit.outwait.R
+import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.util.*
 import elite.kit.outwait.utils.EspressoIdlingResource
@@ -40,7 +41,13 @@ class SlotCodeInputTest {
     @Inject
     lateinit var instituteRepo: InstituteRepository
 
+    @Inject
+    lateinit var clientDBDao: ClientInfoDao
 
+    /**
+     * Advise hilt to inject the needed dependencies, register idling resources and
+     * establish the specified preconditions
+     */
     @Before
     fun init() {
         hiltRule.inject()
@@ -48,19 +55,19 @@ class SlotCodeInputTest {
         establishPreconditions()
     }
 
+    /**
+     * Establish the preconditions as stated in the global test definitions for
+     * T7 and T8
+     */
     private fun establishPreconditions() {
 
         // perform login
-        instituteRepo.login(
-            VALID_TEST_USERNAME,
-            VALID_TEST_PASSWORD
-        )
+        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check that we are logged in
         assert(instituteRepo.isLoggedIn().value!!)
 
-        // ensure that waiting queue is empty to begin with
+        // ensure that waiting queue is empty to begin with (on the server side)
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
 
         if (timeSlots != null && timeSlots.isNotEmpty()) {
@@ -80,6 +87,7 @@ class SlotCodeInputTest {
         // generate valid and invalid slot code
         instituteRepo.newSpontaneousSlot(DEFAULT_AUX_IDENTIFIER, Duration(DEFAULT_DURATION_MILLIS))
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+        // save the transaction (execute on main thread)
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.saveTransaction()
         }
@@ -91,12 +99,11 @@ class SlotCodeInputTest {
             .filterIsInstance<ClientTimeSlot>()
         assert(allClientSlots.size == 1)
 
-        // retrieve (valid) slotCode
+        // retrieve the (valid) slotCode
         validSlotCodeToEnter = allClientSlots.first().slotCode
 
-        // generate (invalid) slotCode by reversing the only valid slotCode
+        // generate invalid slotCode by reversing the only (valid) slotCode
         invalidSlotCodeToEnter = StringBuilder(validSlotCodeToEnter).reverse().toString()
-        Log.i("slotcode","$invalidSlotCodeToEnter+++$validSlotCodeToEnter")
 
         // logout of management
         CoroutineScope(Dispatchers.Main).launch {
@@ -106,6 +113,7 @@ class SlotCodeInputTest {
 
         // check that we are logged out and in the login fragment
         assert(!instituteRepo.isLoggedIn().value!!)
+
         onView(ViewMatchers.withId(R.id.etSlotCode)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()
@@ -113,50 +121,25 @@ class SlotCodeInputTest {
         )
     }
 
+    /**
+     * Unregister idling resources and
+     * close the activity
+     */
     @After
     fun cleanUp() {
-        // perform login
-        instituteRepo.login(
-            VALID_TEST_USERNAME,
-            VALID_TEST_PASSWORD
-        )
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
 
-        // check that we are logged in
-        assert(instituteRepo.isLoggedIn().value!!)
-
-        // clean up waiting queue (on server side also)
-        val timeSlots = instituteRepo.getObservableTimeSlotList().value
-
-
-        if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots){
-                // delete slot with retrieved slotCode from waiting queue
-                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
-                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-            }
-            // save the transaction and the changes made
-            CoroutineScope(Dispatchers.Main).launch {
-                instituteRepo.saveTransaction()
-            }
-            Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-        }
-        // logout of management
-        CoroutineScope(Dispatchers.Main).launch {
-            instituteRepo.logout()
-        }
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
-        // check that we are logged out
-        assert(!instituteRepo.isLoggedIn().value!!)
+        // clean client DB (so view can navigate back to login fragment)
+        clientDBDao.clearTable()
 
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
     }
 
 
-    // tests T8
+    /**
+     * Tests T8, assuming the preconditions are met.
+     * The actions in themselves are conditions to be verified
+     */
     @Test
     fun invalidSlotCodeInput() {
         onView(ViewMatchers.withId(R.id.etSlotCode))
@@ -169,8 +152,12 @@ class SlotCodeInputTest {
         )
     }
 
-
-    // tests T7 and T20 (the "client view" is the "remainingTimeFragment")
+    /**
+     * Tests T7 and T20, assuming the preconditions are met.
+     * The actions in themselves are conditions to be verified.
+     * The "client view" is the same as the "remainingTimeFragment" hence both global test cases are
+     * tested.
+     */
     @Test
     fun validSlotCodeInput() {
         onView(ViewMatchers.withId(R.id.etSlotCode))

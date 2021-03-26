@@ -156,7 +156,7 @@ class NotificationAfterDelay {
     }
 
     /**
-     * Clean up the waiting queue on the serverside, unregister idling resources and
+     * Logout of management, unregister idling resources and
      * close the activity
      */
     @After
