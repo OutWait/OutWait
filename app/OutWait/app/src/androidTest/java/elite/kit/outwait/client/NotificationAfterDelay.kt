@@ -1,11 +1,11 @@
 package elite.kit.outwait.client
 
-import android.content.Context
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -13,16 +13,18 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dagger.hilt.components.SingletonComponent
 import elite.kit.outwait.*
 import elite.kit.outwait.R
+import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.customDataTypes.Preferences
+import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.instituteRepository.InstituteRepository
+import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.services.DELAY_NOTIFICATION_ID
 import elite.kit.outwait.services.NotifManager
 import elite.kit.outwait.util.*
@@ -54,17 +56,17 @@ class NotificationAfterDelay {
     @Module
     @InstallIn(SingletonComponent::class)
     object TestNotifManagerModule {
+
         /**
          * Returns a mocked NotifManager (wrapper for the android systems notification manager)
          * that does nothing when notify() is called
          *
-         * @param app global application context
          * @return mocked instance of NotifManager, the injected wrapper for NotificationManager
          */
         @notifManager
         @Provides
         @Singleton
-        fun bindManagerMockk(@ApplicationContext app: Context): NotifManager {
+        fun bindManagerMockk(): NotifManager {
             val mokka = mockk<NotifManager>()
             every { mokka.notify(any(), any()) } just runs
             return mokka
@@ -84,6 +86,9 @@ class NotificationAfterDelay {
 
     @Inject
     lateinit var instituteRepo: InstituteRepository
+
+    @Inject
+    lateinit var clientDBDao: ClientInfoDao
 
     @notifManager
     @Inject
@@ -105,6 +110,7 @@ class NotificationAfterDelay {
      *
      */
     private fun establishPreconditions() {
+
         // perform login
         instituteRepo.login(
             VALID_TEST_USERNAME,
@@ -113,6 +119,7 @@ class NotificationAfterDelay {
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         // check that we are logged in
         assert(instituteRepo.isLoggedIn().value!!)
+
         // ensure that waiting queue is empty (on server side) to begin with
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
 
@@ -129,6 +136,7 @@ class NotificationAfterDelay {
                 instituteRepo.saveTransaction()
             }
             Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+
         }
         // set preferences according to precondition
         // (notification time 20min and mode 1 is active)
@@ -139,8 +147,12 @@ class NotificationAfterDelay {
         instituteRepo.changePreferences(preconditionPrefs)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
 
-        // ensure that we are logged in for the following tests
-        assert(instituteRepo.isLoggedIn().value!!)
+        // assert that we are in management fragment for the following tests
+        onView(withId(R.id.floatingActionButton)).check(
+           matches(
+                isDisplayed()
+            )
+        )
     }
 
     /**
@@ -159,6 +171,9 @@ class NotificationAfterDelay {
         // check that we are logged out
         assert(!instituteRepo.isLoggedIn().value!!)
 
+        // clean client DB (so view can navigate back to login fragment)
+        clientDBDao.clearTable()
+
 
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
@@ -172,10 +187,10 @@ class NotificationAfterDelay {
     fun receiveDelayNotification() {
 
         // perform action 1 (open settings) and verify success
-        onView(withId(R.id.config)).perform(ViewActions.click())
+        onView(withId(R.id.config)).perform(click())
         onView(withId(R.id.btnLogout)).check(matches(isDisplayed()))
 
-        // perform action 2 (scroll to numpad and set 30min delay notification time)
+        // perform action 2 (scroll to the numpad and set 30min delay notification time)
         onView(withId(R.id.configDelayDuration)).perform(ViewActions.scrollTo())
         // clear the former value and enter new value
         DigitSelector.pressClear(R.id.configDelayDuration)
@@ -204,12 +219,12 @@ class NotificationAfterDelay {
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
 
-        // perform action 2 (add Slot2 with 20min duration)
+        // perform action 5 (add Slot2 with 20min duration)
         onView(withId(R.id.floatingActionButton)).perform(click())
         // add auxiliary identifier
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(ViewActions.typeText(SECOND_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
-        // set duration to 10min
+        // set duration to 20min
         onView(withId(R.id.addSlotDuration)).perform(ViewActions.scrollTo())
         // clear the former value and enter new value
         DigitSelector.pressClear(R.id.addSlotDuration)
@@ -222,21 +237,29 @@ class NotificationAfterDelay {
         // perform action 5.2 (save transaction)
         onView(withId(R.id.ivSaveTransaction)).perform(click())
 
-        // assert only 2 slots are saved in managementDB
+        // assert exactly 2 slots are enqueued
         assert(instituteRepo.getObservableTimeSlotList().value != null)
         var allClientSlots = instituteRepo.getObservableTimeSlotList().value!!
             .filterIsInstance<ClientTimeSlot>()
         assert(allClientSlots.size == 2)
 
-        // retrieve the new slot codes
-        for (clientSlot in allClientSlots) {
-            if (clientSlot.auxiliaryIdentifier == FIRST_SLOT_IDENTIFIER) {
-                firstSlotCode = clientSlot.slotCode
-            }
-            if (clientSlot.auxiliaryIdentifier == SECOND_SLOT_IDENTIFIER) {
-                secondSlotCode = clientSlot.slotCode
-            }
-        }
+        // retrieve the slotCode of the first slot in queue
+        onView(withId(R.id.slotList)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
+                FIRST_SLOT_POSITION, click()))
+        firstSlotCode = ReadText.getText(onView(withId(R.id.tvSlotCodeDetail)))
+        // close slot detail dialog
+        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
+            .perform(click())
+
+        // retrieve the slotCode of the second slot in queue
+        onView(withId(R.id.slotList)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
+                SECOND_SLOT_POSITION, click()))
+        secondSlotCode = ReadText.getText(onView(withId(R.id.tvSlotCodeDetail)))
+        // close slot detail dialog
+        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
+            .perform(click())
 
         // logout of management to get to loginFragment
         CoroutineScope(Dispatchers.Main).launch {
@@ -295,7 +318,9 @@ class NotificationAfterDelay {
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
 
         // check the result and assert expected result is met
-        // notify for delay notification was called (exactly once) on the mock
+        // notify for delay notification was called on the mock
+        // TODO schlägt manchmal fehl, da sendSlotData@C und damit LiveData zweimal aufgerufen/geändert wird
+        // TODO fixen oder atLeast = 1 prüfen?
         verify (exactly = 1)
         { injectedManager.notify(DELAY_NOTIFICATION_ID, any()) }
     }

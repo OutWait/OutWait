@@ -1,6 +1,5 @@
 package elite.kit.outwait.client
 
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
@@ -9,18 +8,29 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
+import dagger.hilt.components.SingletonComponent
 import elite.kit.outwait.MainActivity
+import elite.kit.outwait.NotificationManagerModule
 import elite.kit.outwait.R
+import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.customDataTypes.Mode
 import elite.kit.outwait.customDataTypes.Preferences
 import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.instituteRepository.InstituteRepository
+import elite.kit.outwait.notifManager
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
+import elite.kit.outwait.services.NotifManager
+import elite.kit.outwait.services.PENDING_NOTIFICATION_ID
 import elite.kit.outwait.util.*
 import elite.kit.outwait.utils.EspressoIdlingResource
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
+import io.mockk.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,10 +39,37 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import util.DigitSelector
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@UninstallModules(NotificationManagerModule::class)
 @HiltAndroidTest
 class NotificationAfterSlotDelete {
+
+    /**
+     * Inject a new NotifManager (mocked with MockK, to make notify() calls
+     * for delay notification and pending appointment notifications verifiable
+     */
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object TestNotifManagerModule {
+        /**
+         * Returns a mocked NotifManager (wrapper for the android systems notification manager)
+         * that does nothing when notify() is called
+         *
+         * @return mocked instance of NotifManager, the injected wrapper for NotificationManager
+         */
+        @notifManager
+        @Provides
+        @Singleton
+        fun bindManagerMockk(): NotifManager {
+            val mokka = mockk<NotifManager>()
+            every { mokka.notify(any(), any()) } just runs
+            return mokka
+        }
+
+    }
 
     private lateinit var thirdSlotCode: String
     private lateinit var secondSlotCode: String
@@ -46,6 +83,17 @@ class NotificationAfterSlotDelete {
     @Inject
     lateinit var instituteRepo: InstituteRepository
 
+    @Inject
+    lateinit var clientDBDao: ClientInfoDao
+
+    @notifManager
+    @Inject
+    lateinit var injectedManager: NotifManager
+
+    /**
+     * Advise hilt to inject the needed dependencies, register idling resources and
+     * establish the specified preconditions
+     */
     @Before
     fun init() {
         hiltRule.inject()
@@ -53,6 +101,10 @@ class NotificationAfterSlotDelete {
         establishPreconditions()
     }
 
+    /**
+     * Establish the preconditions as stated in the global test definitions
+     *
+     */
     private fun establishPreconditions() {
         // perform login
         instituteRepo.login(
@@ -60,8 +112,10 @@ class NotificationAfterSlotDelete {
             VALID_TEST_PASSWORD
         )
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+
         // check that we are logged in
         assert(instituteRepo.isLoggedIn().value!!)
+
         // ensure that waiting queue is empty to begin with
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
 
@@ -87,39 +141,22 @@ class NotificationAfterSlotDelete {
         )
         instituteRepo.changePreferences(preconditionPrefs)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+
+        // assert that we are in management fragment
+        onView(withId(R.id.floatingActionButton)).check(
+            ViewAssertions.matches(
+                ViewMatchers.isDisplayed()
+            )
+        )
     }
 
+    /**
+     * Clean up the waiting queue on the serverside, unregister idling resources and
+     * close the activity
+     */
     @After
     fun cleanUp() {
 
-
-        // perform login
-        instituteRepo.login(
-            VALID_TEST_USERNAME,
-            VALID_TEST_PASSWORD
-        )
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
-        // check that we are logged in
-        assert(instituteRepo.isLoggedIn().value!!)
-
-        // clean up waiting queue (on server side also)
-        val timeSlots = instituteRepo.getObservableTimeSlotList().value
-
-
-        if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots){
-                // delete slot with retrieved slotCode from waiting queue
-                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
-                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-            }
-            // save the transaction and the changes made
-            CoroutineScope(Dispatchers.Main).launch {
-                instituteRepo.saveTransaction()
-            }
-            Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-        }
         // logout of management
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.logout()
@@ -129,42 +166,68 @@ class NotificationAfterSlotDelete {
         // check that we are logged out
         assert(!instituteRepo.isLoggedIn().value!!)
 
+        // clean client DB (so view can navigate back to login fragment)
+        clientDBDao.clearTable()
 
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
     }
 
-    // tests T17
+    /**
+     * Tests T16, assuming the preconditions are met.
+     * The actions in themselves are conditions to be verified
+     */
     @Test
     fun receiveSuddenPendingAppointment() {
 
-        // assert that we are in management fragment
-        onView(withId(R.id.floatingActionButton)).check(
-            ViewAssertions.matches(
-                ViewMatchers.isDisplayed()
-            )
-        )
-
         // perform action 1 (add first slot with 20min duration)
-        // TODO Numpad über GUI?
-        instituteRepo.newSpontaneousSlot(FIRST_SLOT_IDENTIFIER, Duration(
-            TWENTY_MINUTE_DURATION_MILLIS))
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+        onView(withId(R.id.floatingActionButton)).perform(ViewActions.click())
+        // add auxiliary identifier
+        onView(withId(R.id.etIdentifierAddDialog))
+            .perform(ViewActions.typeText(FIRST_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
+        // set duration to 20min
+        onView(withId(R.id.addSlotDuration)).perform(ViewActions.scrollTo())
+        // clear the former value and enter new value
+        DigitSelector.pressClear(R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
+        // complete slot allocation
+        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
+            .perform(ViewActions.click())
 
         //perform action 2 (add second slot with 20min duration)
-        //TODO Über GUI mit Numpad EIngabe?
-        instituteRepo.newSpontaneousSlot(SECOND_SLOT_IDENTIFIER, Duration(TWENTY_MINUTE_DURATION_MILLIS))
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+        onView(withId(R.id.floatingActionButton)).perform(ViewActions.click())
+        // add auxiliary identifier
+        onView(withId(R.id.etIdentifierAddDialog))
+            .perform(ViewActions.typeText(SECOND_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
+        // set duration to 20min
+        onView(withId(R.id.addSlotDuration)).perform(ViewActions.scrollTo())
+        // clear the former value and enter new value
+        DigitSelector.pressClear(R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
+        // complete slot allocation
+        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
+            .perform(ViewActions.click())
 
         //perform action 3 (add third slot with 20min duration)
-        //TODO Über GUI mit Numpad EIngabe?
-        instituteRepo.newSpontaneousSlot(THIRD_SLOT_IDENTIFIER, Duration(TWENTY_MINUTE_DURATION_MILLIS))
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+        onView(withId(R.id.floatingActionButton)).perform(ViewActions.click())
+        // add auxiliary identifier
+        onView(withId(R.id.etIdentifierAddDialog))
+            .perform(ViewActions.typeText(THIRD_SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())
+        // set duration to 20min
+        onView(withId(R.id.addSlotDuration)).perform(ViewActions.scrollTo())
+        // clear the former value and enter new value
+        DigitSelector.pressClear(R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.addSlotDuration)
+        DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
+        // complete slot allocation
+        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
+            .perform(ViewActions.click())
 
-        // perform action 3.2 (save the transaction) // TODO fehlt in TestDef!
+        // perform action 3.2 (save the transaction)
         onView(withId(R.id.ivSaveTransaction))
             .perform(ViewActions.click())
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
 
         // retrieve the slotCode of the second slot in queue
         onView(withId(R.id.slotList)).perform(
@@ -190,13 +253,11 @@ class NotificationAfterSlotDelete {
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(ViewActions.click())
 
-        // perform action 3.3 (logout of management to get to loginFragment) //TODO missing in TestDef.
-        // logout of management
+        // logout of management to get to loginFragment
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.logout()
         }
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check that we are logged out
         assert(!instituteRepo.isLoggedIn().value!!)
 
@@ -206,33 +267,34 @@ class NotificationAfterSlotDelete {
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
 
         // check if we navigated to remainingTimeFragment
-        Espresso.onView(ViewMatchers.withId(R.id.btnRefresh)).check(
+        onView(withId(R.id.btnRefresh)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()
             )
         )
 
         // login as management again to perform action 5
-        instituteRepo.login(
-            VALID_TEST_USERNAME,
-            VALID_TEST_PASSWORD
-        )
+        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check that we are logged in
         assert(instituteRepo.isLoggedIn().value!!)
 
-        // perform action 5
+        // perform action 5 (delete the second slot in queue)
+        // (under the view/gui as we are still in remainingTimeFragment)
         instituteRepo.deleteSlot(secondSlotCode)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
 
-        // save the transaction and the changes made (execute on main thread)
+        // perform action 6 (save the transaction and the changes made (execute on main thread))
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.saveTransaction()
         }
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
 
-        //TODO Check for displayed pending appointment push notification using NotifManager Mock
+        // check the result and assert expected result is met
+        // notify for pending appointment notification was called on the mock
+        verify (exactly = 1)
+        { injectedManager.notify(PENDING_NOTIFICATION_ID, any()) }
+
 
     }
 }
