@@ -40,12 +40,8 @@ class CountOfClientsTest {
     lateinit var instituteRepo: InstituteRepository
 
     @Before
-    fun init() {
-        hiltRule.inject()
-    }
-
-    @Before
     fun addSlots() {
+        hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
 
         // login via injected repository

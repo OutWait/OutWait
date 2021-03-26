@@ -22,6 +22,7 @@ import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -90,16 +91,27 @@ class   SlotNotOverreachTest {
             ReadText.getText(onView(withId(R.id.tvSlotCodeDetail)))
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
+        //Logout and enter slotcode
         onView(withId(R.id.ivSaveTransaction)).perform(click())
         onView(withId(R.id.config)).perform(click())
         onView(withId(R.id.btnLogout)).perform(click())
         onView(withId(R.id.etSlotCode)).perform(TextSetter.setTextEditText(thirdPosSlotCode))
         Thread.sleep(WAIT_FOR_UI_RESPONSE)
+        onView(withId(R.id.btn)).check(matches(not(withText(EMPTY_TEXT))))
         //Wait 1 min
-        Thread.sleep(TIME_DECREASES)
+        Thread.sleep(30000)
+        onView(withId(R.id.btn)).check(matches(not(withText(EMPTY_TEXT))))
+        Thread.sleep(30000)
         onView(withId(R.id.btn)).check(matches(withText(DECREASED_TIME)))
         //Wait 2 min
-        Thread.sleep(TIME_STAGNATES)
+        Thread.sleep(30000)
+        onView(withId(R.id.btn)).check(matches(not(withText(EMPTY_TEXT))))
+        Thread.sleep(30000)
+        onView(withId(R.id.btn)).check(matches(not(withText(EMPTY_TEXT))))
+        Thread.sleep(30000)
+        onView(withId(R.id.btn)).check(matches(not(withText(EMPTY_TEXT))))
+        Thread.sleep(30000)
+        
         onView(withId(R.id.btn)).check(matches(withText(STAGNATED_TIME)))
     }
 

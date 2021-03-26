@@ -32,7 +32,7 @@ import org.junit.runner.RunWith
 import javax.inject.Inject
 
 @HiltAndroidTest
-class AppointmentSetter {
+class AppointmentSetterTest {
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
 
