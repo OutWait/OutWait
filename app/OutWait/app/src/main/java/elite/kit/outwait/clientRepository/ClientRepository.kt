@@ -100,7 +100,7 @@ class ClientRepository @Inject constructor(
             }
         }
 
-
+        val repo = this
         CoroutineScope(IO).launch {
             wrapEspressoIdlingResource {
                 withContext(Main) {
@@ -122,7 +122,7 @@ class ClientRepository @Inject constructor(
                         the background
                          */
                             serviceStarted = true
-                            serviceHandler.startTimerService(this)
+                            serviceHandler.startTimerService(repo)
                         } else if (it.isEmpty() && serviceStarted) {
                             /*
                         There is an agreement that the service kills itself

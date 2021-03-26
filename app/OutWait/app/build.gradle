@@ -127,6 +127,7 @@ dependencies {
 
     def mockk_version = "1.9.3"
     androidTestImplementation "io.mockk:mockk-android:$mockk_version"
+    testImplementation "io.mockk:mockk:$mockk_version"
 
 
     testImplementation "com.google.truth:truth:$truth"
