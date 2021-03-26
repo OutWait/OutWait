@@ -7,18 +7,24 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ServiceScoped
+import dagger.hilt.components.SingletonComponent
 import elite.kit.outwait.services.NotifManager
+import javax.inject.Singleton
 
 
 @Module
-@InstallIn(ServiceComponent::class)
+@InstallIn(SingletonComponent::class)
 object NotificationManagerModule {
 
-    // TODO: Injection of NotificationManager wrapper (for easier mocking)
-
+    /*
     @notifManager
     @ServiceScoped
     @Provides
+
+     */
+    @notifManager
+    @Provides
+    @Singleton
     fun provideNotificationManager(@ApplicationContext app: Context)
         = NotifManager(app)
 }

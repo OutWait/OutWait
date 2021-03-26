@@ -3,6 +3,7 @@ package elite.kit.outwait.services
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
@@ -20,6 +21,7 @@ import elite.kit.outwait.notifManager
 import elite.kit.outwait.utils.TransformationOutput
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import org.joda.time.Duration
@@ -42,7 +44,9 @@ class TimerService @Inject constructor(): LifecycleService() {
 
     @notifManager
     @Inject
-    lateinit var manager: NotifManager
+    lateinit var injectedManager: NotifManager
+
+    lateinit var manager: NotificationManager
 
     /**
      * Injected NotificationBuilder for the permanent notification(s) of the foreground service
@@ -91,9 +95,9 @@ class TimerService @Inject constructor(): LifecycleService() {
     override fun onCreate() {
         super.onCreate()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //TODO: val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel1 = NotificationChannel(
                 PERM_CHANNEL_ID,
                 PERM_CHANNEL_NAME,
@@ -136,9 +140,10 @@ class TimerService @Inject constructor(): LifecycleService() {
         // check for pending appointments, independent of LiveData changes
         CoroutineScope(Dispatchers.IO).launch {
             while(db.getAllClientInfo().isNotEmpty()) {
+                Thread.sleep(TIME_STEP_FOR_PENDING_CHECK)
+                //delay(TIME_STEP_FOR_PENDING_CHECK) //TODO funktioniert auch/besser mit delay?
                 checkNotifiedForExpiredSlotCodes(db.getAllClientInfo())
                 checkForPendingAppointment(db.getAllClientInfo())
-                Thread.sleep(TIME_STEP_FOR_PENDING_CHECK)
             }
             Log.i("TimerService","DB empty, Service should stop")
             // cancel all remaining (non permament) notifications
@@ -214,7 +219,7 @@ class TimerService @Inject constructor(): LifecycleService() {
 
         //TODO: val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         // update the permanent notification
-        manager.notify(PERM_NOTIFICATION_ID, notification)
+        injectedManager.notify(PERM_NOTIFICATION_ID, notification)
     }
 
     /**
@@ -232,8 +237,12 @@ class TimerService @Inject constructor(): LifecycleService() {
         while (iterator.hasNext()) {
             val next = iterator.next()
 
+            /* //TODO weg
             if(next.approximatedTime.millis - next.originalAppointmentTime.millis
                  > next.delayNotificationTime.millis) {
+             */
+            if(Duration(next.originalAppointmentTime, next.approximatedTime)
+                >= next.delayNotificationTime) {
 
                // create delay push notification on the second notification channel
                 val approxTime = next.approximatedTime
@@ -256,7 +265,7 @@ class TimerService @Inject constructor(): LifecycleService() {
                 // cancel old pending appointment notification if existing
                 manager.cancel(PENDING_NOTIFICATION_ID)
                 // update delay notification (replacing old delay notification if existing)
-                manager.notify(DELAY_NOTIFICATION_ID, delayNotification)
+                injectedManager.notify(DELAY_NOTIFICATION_ID, delayNotification)
 
                 // reset original time to current approx, for new delay checks
                 CoroutineScope(Dispatchers.IO).launch {
@@ -266,10 +275,14 @@ class TimerService @Inject constructor(): LifecycleService() {
                     )
                     db.update(updatedClientInfo)
                 }
+                // if delayed appointment was pending and notified, reset to not pending resp. not notified
+                if (this.pendingSlotCodesNotified.contains(next.slotCode)) pendingSlotCodesNotified.remove(next.slotCode)
             }
-
+/*            // TODO moved one bracket up
             // if delayed appointment was pending and notified, reset to not pending resp. not notified
             if (this.pendingSlotCodesNotified.contains(next.slotCode)) pendingSlotCodesNotified.remove(next.slotCode)
+
+ */
         }
     }
 
@@ -285,10 +298,13 @@ class TimerService @Inject constructor(): LifecycleService() {
         val iterator = allClientInfoList.iterator()
         while (iterator.hasNext()) {
             val next = iterator.next()
+            /* //TODO weg
             val nextRemainingTimeInMillis = next.approximatedTime.millis - DateTime().millis
+             */
+            val nextRemainingTimeInMillis = Duration(DateTime.now(), next.approximatedTime)
 
             // if appointment is pending and was not notified already
-            if ((nextRemainingTimeInMillis < next.notificationTime.millis)
+            if ((nextRemainingTimeInMillis < next.notificationTime /*TODO weg: .millis*/)
                 && !pendingSlotCodesNotified.contains(next.slotCode)) {
 
                 // create push notification for pending appointment
@@ -302,7 +318,7 @@ class TimerService @Inject constructor(): LifecycleService() {
                 // cancel old delay notification if existing
                 manager.cancel(DELAY_NOTIFICATION_ID)
                 // update pending appointment notification (replacing old pending appointment notif if existing)
-                manager.notify(PENDING_NOTIFICATION_ID, pendingNotification)
+                injectedManager.notify(PENDING_NOTIFICATION_ID, pendingNotification)
 
                 pendingSlotCodesNotified.add(next.slotCode)
             }
