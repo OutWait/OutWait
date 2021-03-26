@@ -81,7 +81,7 @@ class ClientRepositoryTest {
     fun `valid wait code entered - background service started`() = runBlocking{
         repo.newCodeEntered(InternetAndDatabaseFake.VALID_CODE)
 
-        verify(exactly = 1) { serviceHandler.startTimerService(any()) }
+        verify(exactly = 1) { serviceHandler.startTimerService(repo) }
     }
 
     /**
