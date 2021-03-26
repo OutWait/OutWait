@@ -98,6 +98,10 @@ class AuxHelperTest {
             assertEquals("Mr. Mustermann, vac.2x", auxIds["SlotCode1"])
     }
 
+    /**
+     * Simulates the Behavior of the real database, only without persistance
+     *
+     */
     private class DataBaseStub : InstituteDBFacade{
 
         private val auxMap: MutableMap<String, String> = HashMap<String, String>()
