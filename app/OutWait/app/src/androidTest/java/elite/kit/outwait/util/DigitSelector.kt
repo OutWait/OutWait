@@ -7,6 +7,7 @@ import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewInteraction
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import elite.kit.outwait.R
@@ -81,5 +82,24 @@ object DigitSelector {
             ),
             ViewMatchers.isDisplayed()
         )).perform(forceClick())
+    }
+
+    fun pressClear(padRId: Int) {
+        val appCompatImageButton = Espresso.onView(
+            allOf(
+                withId(R.id.clear),
+                childAtPosition(
+                    allOf(
+                        withId(R.id.displayRow),
+                        childAtPosition(
+                            withId(padRId),
+                            0
+                        )
+                    ),
+                    2
+                )
+            )
+        )
+        appCompatImageButton.perform(scrollTo(), click())
     }
 }
