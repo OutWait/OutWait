@@ -55,7 +55,9 @@ class SlotDetailTest {
     fun init() {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
+        //Login as management
         instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
+
         onView(withId(R.id.floatingActionButton)).perform(click())
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(ViewActions.typeText(SLOT_IDENTIFIER), ViewActions.closeSoftKeyboard())

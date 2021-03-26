@@ -30,11 +30,6 @@ import org.junit.runner.RunWith
 import util.DigitSelector
 import javax.inject.Inject
 
-
-
-
-
-
 @HiltAndroidTest
 class ManagementAddSlotsTest {
     @get:Rule(order = 0)

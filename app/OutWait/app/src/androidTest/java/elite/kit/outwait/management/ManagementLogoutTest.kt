@@ -43,7 +43,7 @@ class ManagementLogoutTest {
 
 
     @Before
-    fun registerIdlingResource() {
+    fun init() {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         //Input of correct login data
