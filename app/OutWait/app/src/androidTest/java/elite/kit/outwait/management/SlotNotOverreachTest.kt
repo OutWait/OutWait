@@ -48,7 +48,6 @@ class   SlotNotOverreachTest {
         instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
     }
 
-    //TODO testing except
     //TEST 25
     @Test
     fun slotRunsOn(){
