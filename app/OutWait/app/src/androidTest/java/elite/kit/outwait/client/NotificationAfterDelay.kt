@@ -173,7 +173,6 @@ class NotificationAfterDelay {
 
         // perform action 1 (open settings) and verify success
         onView(withId(R.id.config)).perform(ViewActions.click())
-        //TODO Thread.sleep(WAIT_FOR_UI_RESPONSE)
         onView(withId(R.id.btnLogout)).check(matches(isDisplayed()))
 
         // perform action 2 (scroll to numpad and set 30min delay notification time)
