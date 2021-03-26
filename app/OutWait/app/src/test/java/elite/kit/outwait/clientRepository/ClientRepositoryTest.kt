@@ -13,10 +13,7 @@ import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.*
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.junit.After
@@ -142,6 +139,54 @@ class ClientRepositoryTest {
         assertFalse(repo.isConnectedToServer())
         verify { webDBFake.endCommunication() }
     }
+    /**
+     * Entering an invalid slot code leads to an invalid code error
+     */
+    @Test
+    fun `invalid code - invalid code error`() = runBlocking{
+        //Life data is lazy, so you have to observe it, elsewise it won´t change
+        repo.getErrorNotifications().observeForever {  }
+
+        repo.newCodeEntered(InternetAndDatabaseFake.INVALID_CODE)
+
+        assertEquals(ClientErrors.INVALID_SLOT_CODE, repo.getErrorNotifications().value!!.last())
+    }
+
+    /**
+     * NETWORK_ERROR, COULD_NOT_CONNECT, SERVER_DID_NOT_RESPOND are three possible
+     * errors from the remote data source client handler. All three should make the
+     * client repo pushing an INTERNET_ERROR to the getErrorNotifications() live Data.
+     * This method checks if the error is pushed for NETWORK_ERROR
+     */
+    @Test
+    fun `NETWORK_ERROR - INTERNET_ERROR`() = runBlocking{
+        repo.newCodeEntered(InternetAndDatabaseFake.NETWORK_ERROR_CODE)
+        assertEquals(ClientErrors.INTERNET_ERROR, repo.getErrorNotifications().value!!.last())
+    }
+
+    /**
+     * NETWORK_ERROR, COULD_NOT_CONNECT, SERVER_DID_NOT_RESPOND are three possible
+     * errors from the remote data source client handler. All three should make the
+     * client repo pushing an INTERNET_ERROR to the getErrorNotifications() live Data.
+     * This method checks if the error is pushed for NETWORK_ERROR
+     */
+    @Test
+    fun `COULD_NOT_CONNECT - INTERNET_ERROR`() = runBlocking{
+        repo.newCodeEntered(InternetAndDatabaseFake.COULD_NOT_CONNECT_CODE)
+        assertEquals(ClientErrors.INTERNET_ERROR, repo.getErrorNotifications().value!!.last())
+    }
+
+    /**
+     * NETWORK_ERROR, COULD_NOT_CONNECT, SERVER_DID_NOT_RESPOND are three possible
+     * errors from the remote data source client handler. All three should make the
+     * client repo pushing an INTERNET_ERROR to the getErrorNotifications() live Data.
+     * This method checks if the error is pushed for NETWORK_ERROR
+     */
+    @Test
+    fun `SERVER_DID_NOT_RESPOND - INTERNET_ERROR`() = runBlocking{
+        repo.newCodeEntered(InternetAndDatabaseFake.SERVER_DID_NOT_RESPOND_CODE)
+        assertEquals(ClientErrors.INTERNET_ERROR, repo.getErrorNotifications().value!!.last())
+    }
 
 
     /**
@@ -166,6 +211,18 @@ class ClientRepositoryTest {
              * invalid slot code --> error message
              */
             const val INVALID_CODE = "I"
+            /**
+             * this slot code will "cause" an COULD_NOT_CONNECT error
+             */
+            const val COULD_NOT_CONNECT_CODE = "CNC"
+            /**
+             * this slot code will "cause" an SERVER_DID_NOT_RESPOND error
+             */
+            const val SERVER_DID_NOT_RESPOND_CODE = "SDNR"
+            /**
+             * this slot code will "cause" an SERVER_DID_NOT_RESPOND error
+             */
+            const val NETWORK_ERROR_CODE = "N"
         }
 
         /**
@@ -209,7 +266,12 @@ class ClientRepositoryTest {
                 )
                 INVALID_CODE
                 -> errorMessages.value = errorMessages.value !!+ ClientServerErrors.INVALID_SLOT_CODE
-
+                COULD_NOT_CONNECT_CODE
+                -> errorMessages.value = errorMessages.value !!+ ClientServerErrors.COULD_NOT_CONNECT
+                SERVER_DID_NOT_RESPOND_CODE
+                -> errorMessages.value = errorMessages.value !!+ ClientServerErrors.SERVER_DID_NOT_RESPOND
+                NETWORK_ERROR_CODE
+                -> errorMessages.value = errorMessages.value !!+ ClientServerErrors.SERVER_DID_NOT_RESPOND
             }
         }
 
