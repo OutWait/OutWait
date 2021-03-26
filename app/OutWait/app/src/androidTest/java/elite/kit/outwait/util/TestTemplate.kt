@@ -5,6 +5,7 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.MainActivity
+import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.utils.EspressoIdlingResource
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
@@ -29,35 +30,69 @@ class TestTemplate {
     @Inject
     lateinit var instituteRepo: InstituteRepository
 
+    @Inject
+    lateinit var clientInfoDao: ClientInfoDao
+
+
+
     @Before
     fun init() {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
-        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
+        establishPreconditions()
+    }
+
+    private fun establishPreconditions() {
+
+            // perform login
+            instituteRepo.login(
+                VALID_TEST_USERNAME,
+                VALID_TEST_PASSWORD
+            )
+            Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+
+            // check that we are logged in
+            assert(instituteRepo.isLoggedIn().value!!)
+
+            // ensure that waiting queue is empty to begin with
+            val timeSlots = instituteRepo.getObservableTimeSlotList().value
+
+            if (timeSlots != null && timeSlots.isNotEmpty()) {
+                val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+                for (ClientTimeSlot in onlyClientSlots){
+                    // delete slot with retrieved slotCode from waiting queue
+                    instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
+                    Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+                }
+                // save the transaction and the changes made (execute on main thread)
+                CoroutineScope(Dispatchers.Main).launch {
+                    instituteRepo.saveTransaction()
+                }
+                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+            }
     }
 
     @Test
     fun testMethod(){
-
+        // foo
+        // and
+        // bar
     }
 
     @After
-    fun emptySlot() {
-        // clean up waiting queue (on server side also)
-        val timeSlots = instituteRepo.getObservableTimeSlotList().value
+    fun tearDown() {
 
-        if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots: List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots) {
-                // delete slot with retrieved slotCode from waiting queue
-                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
-                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-            }
-            // save the transaction and the changes made
-            CoroutineScope(Dispatchers.Main).launch {
-                instituteRepo.saveTransaction()
-            }
+        // logout of management
+        CoroutineScope(Dispatchers.Main).launch {
+            instituteRepo.logout()
         }
+        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+
+        // check that we are logged out
+        assert(!instituteRepo.isLoggedIn().value!!)
+
+        // clean client DB (so view can navigate back to login fragment)
+        clientInfoDao.clearTable()
 
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
