@@ -27,7 +27,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
     private val LOG_ID = "CLIENT-MGR"
 
     init {
-        val eventList = listOf<Event>(Event.LISTEN_SLOT, Event.REFRESH_SLOT_APPROX)
+        val eventList = listOf(Event.LISTEN_SLOT, Event.REFRESH_SLOT_APPROX)
         super.configureEventListeners(eventList)
         Logger.debug(LOG_ID, "Client manager initialized")
     }
@@ -55,7 +55,7 @@ class ClientManager(namespace: SocketIONamespace, databaseWrapper: DatabaseWrapp
         Logger.debug(LOG_ID, "Client removed")
 
         if (clients.isEmpty()) {
-            Logger.debug(LOG_ID, "Last active client connection closed.");
+            Logger.debug(LOG_ID, "Last active client connection closed.")
         }
     }
 

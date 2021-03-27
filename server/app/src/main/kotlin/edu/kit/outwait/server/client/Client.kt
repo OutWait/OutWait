@@ -32,30 +32,28 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
     /** Configuration of onReceives through SocketFacade. */
     private fun configureReceives() {
         socketFacade.onReceive(
-            Event.LISTEN_SLOT,
-            { receivedData ->
-                val slotCode = (receivedData as JSONSlotCodeWrapper).getSlotCode()
-                Logger.debug(LOG_ID, "Listen to slot code " + slotCode)
-                addSlot(slotCode)
-            }
-        )
+            Event.LISTEN_SLOT
+        ) { receivedData ->
+            val slotCode = (receivedData as JSONSlotCodeWrapper).getSlotCode()
+            Logger.debug(LOG_ID, "Listen to slot code $slotCode")
+            addSlot(slotCode)
+        }
 
         socketFacade.onReceive(
-            Event.REFRESH_SLOT_APPROX,
-            { receivedData ->
-                val slotCode = (receivedData as JSONSlotCodeWrapper).getSlotCode()
-                Logger.debug(LOG_ID, "Refresh slot approx manually, code " + slotCode)
-                if (receivers[slotCode] == null) {
-                    Logger.debug(LOG_ID, "Slot code to refresh was not registered before")
-                    this.socketFacade.send(Event.INVALID_CLIENT_REQUEST, JSONEmptyWrapper())
-                } else {
-                    val slotApprox = receivers.get(slotCode)!!.getSlotApprox()
-                    val slotManagementInformation =
-                        receivers.get(slotCode)!!.getSlotManagementInformation()
-                    this.sendSlotData(slotCode, slotApprox, slotManagementInformation)
-                }
+            Event.REFRESH_SLOT_APPROX
+        ) { receivedData ->
+            val slotCode = (receivedData as JSONSlotCodeWrapper).getSlotCode()
+            Logger.debug(LOG_ID, "Refresh slot approx manually, code $slotCode")
+            if (receivers[slotCode] == null) {
+                Logger.debug(LOG_ID, "Slot code to refresh was not registered before")
+                this.socketFacade.send(Event.INVALID_CLIENT_REQUEST, JSONEmptyWrapper())
+            } else {
+                val slotApprox = receivers.get(slotCode)!!.getSlotApprox()
+                val slotManagementInformation =
+                    receivers.get(slotCode)!!.getSlotManagementInformation()
+                this.sendSlotData(slotCode, slotApprox, slotManagementInformation)
             }
-        )
+        }
 
         socketFacade.onDisconnect {
             for ((_, receiver) in receivers) {

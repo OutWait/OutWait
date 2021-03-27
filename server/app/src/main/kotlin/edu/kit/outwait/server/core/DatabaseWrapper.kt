@@ -18,7 +18,7 @@ import java.util.Properties
  * @property connection holds connection.
  * @property connectionProps properties of connection.
  * @param dbName the name of the database to connect to.
- * @constructor Connects to the database with name [dbName] and address [dbAddress].
+ * @constructor Connects to the database with name dbName and address dbAddress.
  * @throws SQLException when the connection to the database failed.
  */
 class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, dbAddress: String) {
@@ -96,8 +96,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
             getSlotApproxQuery.setString(1, slotCode.code)
             val rs = getSlotApproxQuery.executeQuery()
             rs.next()
-            val slotApprox = Date(rs.getTimestamp("approx_time").time)
-            return slotApprox
+            return Date(rs.getTimestamp("approx_time").time)
         } catch (e: SQLException) {
             e.printStackTrace()
             return null
@@ -283,8 +282,7 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
             getQueueIdOfManagementQuery.setLong(1, managementId.id)
             val rs = getQueueIdOfManagementQuery.executeQuery()
             rs.next()
-            val queueId = QueueId(rs.getLong("queue_id"))
-            return queueId
+            return QueueId(rs.getLong("queue_id"))
         } catch (e: SQLException) {
             e.printStackTrace()
             return null
@@ -307,13 +305,11 @@ class DatabaseWrapper @Throws(SQLException::class) constructor(dbName : String, 
             getManagementByUsernameQuery.setString(1, username)
             val rs = getManagementByUsernameQuery.executeQuery()
             if (!rs.next()) return null // invalid username
-            val managementCredentials =
-                ManagementCredentials(
-                    ManagementId(rs.getLong("id")),
-                    rs.getString("username"),
-                    rs.getString("password")
-                )
-            return managementCredentials
+            return ManagementCredentials(
+                ManagementId(rs.getLong("id")),
+                rs.getString("username"),
+                rs.getString("password")
+            )
         } catch (e: SQLException) {
             e.printStackTrace()
             return null
