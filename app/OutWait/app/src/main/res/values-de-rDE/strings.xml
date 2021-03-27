@@ -78,7 +78,7 @@
     <string name="navigateUp">Navigate up</string>
     <string name="it_s_your_turn_in">Sie sind an der Reihe in:</string>
     <string name="back_press_client">Nach dem Ihr Termin abgelaufen ist, können Sie einen neuen eingeben</string>
-
+    <string name="save">Speichern</string>
 
 
 </resources>

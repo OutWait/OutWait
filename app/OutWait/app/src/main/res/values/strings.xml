@@ -77,5 +77,6 @@
     <string name="navigateUp">Navigate up</string>
     <string name="it_s_your_turn_in">It\'s your turn in:</string>
     <string name="back_press_client">You can enter a new appointment after your appointment is finished</string>
+    <string name="save">Save</string>
 
 </resources>
