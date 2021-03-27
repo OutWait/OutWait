@@ -188,6 +188,41 @@ class ClientRepositoryTest {
         assertEquals(ClientErrors.INTERNET_ERROR, repo.getErrorNotifications().value!!.last())
     }
 
+    /**
+     * If the internet connection is lost, refreshWaitingTime() must not
+     * send a refresh request as usual, but instead has to re-establish a
+     * connection to the server
+     */
+    @Test
+    fun `refresh waiting time makes a reconnects when internet connection is lost`() = runBlocking{
+        //first enter valid code
+        repo.newCodeEntered(InternetAndDatabaseFake.VALID_CODE)
+        //now we cause the Fake to simulate internet connection error
+        repo.newCodeEntered(InternetAndDatabaseFake.NETWORK_ERROR_CODE)
+        //now we try to refresh and expect the behaviour in the method description
+        repo.refreshWaitingTime(InternetAndDatabaseFake.VALID_CODE)
+
+        //Expected behaviour:
+        verify { webDBFake.initCommunication() }
+        verify { webDBFake.newCodeEntered(InternetAndDatabaseFake.VALID_CODE) }
+        verify(exactly = 0){ webDBFake.refreshWaitingTime(any())}
+    }
+
+    /**
+     * For "historical reasons" (in the beginning of the implementation phase)
+     * the slot code parameter in the newCodeEntered Method is nullable,
+     * This method just checks that calling the method with null leads to an invalid slot
+     * code error.
+     */
+    @Test
+    fun `calling newCodeEntered(null) - invalid slot code error`() = runBlocking{
+        //Life data is lazy, so you have to observe it, elsewise it won´t change
+        repo.getErrorNotifications().observeForever {  }
+        //entering null
+        repo.newCodeEntered(null)
+        //check if error is there
+        assertEquals(ClientErrors.INVALID_SLOT_CODE, repo.getErrorNotifications().value!!.last())
+    }
 
     /**
      * Simulates the ClientHandler of the remote data source and the Room database both
@@ -276,7 +311,19 @@ class ClientRepositoryTest {
         }
 
         override fun refreshWaitingTime(slotCode: String) {
-            TODO("Not yet implemented")
+            if (!clientInfoList.value.isNullOrEmpty()){
+                if (clientInfoList.value!!.first().slotCode == slotCode){
+                    clientInfoList.value = clientInfoList.value!!.minus(clientInfoList.value!!.first())
+                    clientInfoList.value = clientInfoList.value!!.plus(                    ClientInfo(
+                        slotCode,
+                        "Test",
+                        DateTime(),
+                        DateTime(),
+                        Duration(0),
+                        Duration(0)
+                    ))
+                }
+            }
         }
 
         private val errorMessages = MutableLiveData<List<ClientServerErrors>>(listOf())
