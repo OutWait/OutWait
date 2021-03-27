@@ -17,7 +17,7 @@ class AuxHelperTest {
 
     @Before
     fun setUp() {
-        auxHelper = AuxHelper(DataBaseStub())
+        auxHelper = AuxHelper(DataBaseFake())
     }
 
     @After
@@ -96,46 +96,5 @@ class AuxHelperTest {
         auxHelper.changeAux("SlotCode1", "Mr. Mustermann, vac.2x")
         val auxIds = auxHelper.receivedList(prepareReceivedList(1), true)
             assertEquals("Mr. Mustermann, vac.2x", auxIds["SlotCode1"])
-    }
-
-    /**
-     * Simulates the Behavior of the real database, only without persistance
-     *
-     */
-    private class DataBaseStub : InstituteDBFacade{
-
-        private val auxMap: MutableMap<String, String> = HashMap<String, String>()
-
-        override suspend fun insertUpdateAux(slotCode: String, aux: String) {
-            auxMap[slotCode] = aux
-        }
-
-        override suspend fun getAuxiliaryIdentifiers(): Map<String, String> {
-            return auxMap.toMap()
-        }
-
-        override suspend fun deleteAux(slotCode: String) {
-            auxMap.remove(slotCode)
-        }
-
-        override suspend fun deleteAll() {
-            auxMap.clear()
-        }
-
-        override suspend fun insertUpdateLoginData(username: String, password: String) {
-            throw NotImplementedError()
-        }
-
-        override suspend fun getUserName(): String {
-            throw NotImplementedError()
-        }
-
-        override suspend fun getPassword(): String {
-            throw NotImplementedError()
-        }
-
-        override suspend fun loginDataSaved(): Boolean {
-            throw NotImplementedError()
-        }
     }
 }
