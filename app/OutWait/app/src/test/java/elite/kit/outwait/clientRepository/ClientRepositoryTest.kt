@@ -130,6 +130,10 @@ class ClientRepositoryTest {
         verify { webDBFake.initCommunication() }
     }
 
+    /**
+     * check if repo ends server connection when there are no more waiting slots
+     *
+     */
     @Test
     fun `waiting slot expires - repo shuts down server connection`() = runBlocking{
         repo.newCodeEntered(InternetAndDatabaseFake.VALID_CODE)
