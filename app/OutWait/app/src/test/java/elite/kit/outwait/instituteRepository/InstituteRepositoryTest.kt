@@ -12,6 +12,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+/**
+ * tests the institute repo with help of the DataBaseFake and ManagementHandlerFake classes
+ *
+ */
 class InstituteRepositoryTest {
     //Coroutine Test Environment setup
     private val testDispatcher = TestCoroutineDispatcher()
