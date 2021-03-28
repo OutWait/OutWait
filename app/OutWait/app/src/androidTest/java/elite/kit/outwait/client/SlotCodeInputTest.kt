@@ -135,7 +135,7 @@ class SlotCodeInputTest {
                 TextSetter.setTextEditText(invalidSlotCodeToEnter),
                 ViewActions.closeSoftKeyboard()
             )
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+
         //check that code input was not successful
         onView(ViewMatchers.withId(R.id.btnLoginFrag)).check(
             ViewAssertions.matches(
@@ -157,7 +157,7 @@ class SlotCodeInputTest {
                 TextSetter.setTextEditText(validSlotCodeToEnter),
                 ViewActions.closeSoftKeyboard()
             )
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+
         // check if we navigated to remainingTimeFragment
         onView(ViewMatchers.withId(R.id.btnRefresh)).check(
             ViewAssertions.matches(
