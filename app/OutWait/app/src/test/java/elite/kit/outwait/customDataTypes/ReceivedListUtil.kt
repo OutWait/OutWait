@@ -4,6 +4,10 @@ import org.joda.time.DateTime
 import org.joda.time.Duration
 import org.junit.Assert.*
 
+/**
+ * Has static method that helps to create ReceivedList Test instances
+ *
+ */
 class ReceivedListUtil {
     companion object {
         /**
