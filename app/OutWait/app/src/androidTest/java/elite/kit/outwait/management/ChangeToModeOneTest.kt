@@ -29,7 +29,6 @@ import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
 
-//@RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
 class ChangeToModeOneTest {
     @get:Rule(order = 0)
@@ -48,7 +47,10 @@ class ChangeToModeOneTest {
         establishPreconditions()
     }
 
-
+    /**
+     * Establish the preconditions as stated in the global test definitions
+     *
+     */
     private fun establishPreconditions() {
         // perform login
         instituteRepo.login(
@@ -86,57 +88,53 @@ class ChangeToModeOneTest {
         // all specified preconditions are met
     }
 
+    /**
+     * Logout of management, unregister idling resources and
+     * close the activity
+     */
     @After
     fun cleanUp() {
-        // clean up waiting queue (on server side also)
-        val timeSlots = instituteRepo.getObservableTimeSlotList().value
 
-
-        if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots: List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots) {
-                // delete slot with retrieved slotCode from waiting queue
-                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
-                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-            }
-            // save the transaction and the changes made (execute on main thread)
-            CoroutineScope(Dispatchers.Main).launch {
-                instituteRepo.saveTransaction()
-            }
-            Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+        // logout of management
+        CoroutineScope(Dispatchers.Main).launch {
+            instituteRepo.logout()
         }
+        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
 
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
     }
 
-    // tests T29
+    /**
+     * Tests T29, assuming the preconditions are met.
+     * The actions in themselves are conditions to be verified
+     */
     @Test
     fun changeToModeOne() {
         // perform action 1 (open settings)
         onView(withId(R.id.config)).perform(click())
-        Thread.sleep(WAIT_FOR_UI_RESPONSE)
+
         // perform action 2 (set active mode to mode 1)
         onView(withId(R.id.sMode)).perform(click())
-        Thread.sleep(WAIT_FOR_UI_RESPONSE)
         onView(withId(R.id.tvSwitchText)).check(matches(withText(StringResource.getResourceString(R.string.modeOne))))
+
         // perform action 3 (save the settings)
         onView(withId(R.id.btnSave)).perform(scrollTo(), click())
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+
         // navigate back to the waiting queue
         onView(isRoot()).perform((pressBack()))
+
         // perform action 4
         onView(withId(R.id.floatingActionButton)).perform(click())
-        Thread.sleep(WAIT_FOR_UI_RESPONSE)
+
         // check if only spontaneous slots are possible to add
         onView(withId(R.id.cbIsFixedSlot)).check(
             matches(withEffectiveVisibility(Visibility.INVISIBLE))
         )
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         onView(withId(R.id.ivSaveTransaction)).perform(click())
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+
         // check if allocated slot is immediately next (therefore has no appointment time)
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(

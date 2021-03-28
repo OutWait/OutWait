@@ -136,8 +136,12 @@ class SlotCodeInputTest {
                 ViewActions.closeSoftKeyboard()
             )
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-        //check for displayed toast with "invalid code" error message
-
+        //check that code input was not successful
+        onView(ViewMatchers.withId(R.id.btnLoginFrag)).check(
+            ViewAssertions.matches(
+                ViewMatchers.isDisplayed()
+            )
+        )
     }
 
     /**
