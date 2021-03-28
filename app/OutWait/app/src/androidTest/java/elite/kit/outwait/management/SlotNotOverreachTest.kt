@@ -111,7 +111,7 @@ class   SlotNotOverreachTest {
         Thread.sleep(30000)
         onView(withId(R.id.btn)).check(matches(not(withText(EMPTY_TEXT))))
         Thread.sleep(30000)
-        
+
         onView(withId(R.id.btn)).check(matches(withText(STAGNATED_TIME)))
     }
 
