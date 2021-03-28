@@ -1,11 +1,10 @@
 package edu.kit.outwait.server.client
 
-import com.corundumstudio.socketio.SocketIOClient
+
 import edu.kit.outwait.server.management.ManagementDetails
 import edu.kit.outwait.server.management.SlotManagementInformation
 import edu.kit.outwait.server.protocol.*
 import edu.kit.outwait.server.slot.SlotCode
-import edu.kit.outwait.server.socketHelper.SocketAdapter
 import edu.kit.outwait.server.socketHelper.SocketFacade
 import io.mockk.*
 import java.sql.Date
@@ -43,10 +42,10 @@ class ClientTest {
     fun testEndSlotRemovable() {
         socketFacadeMock = mockk<SocketFacade>(relaxed = true)
         val functionCapturer = CapturingSlot<(receivedData: JSONObjectWrapper) -> Unit>()
-        var eventCapturer = CapturingSlot<Event>()
-        var toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
+        val eventCapturer = CapturingSlot<Event>()
+        val toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
         val slotCodeMock = SlotCode("TEST")
-        var slotInformationReceiverCapturer = CapturingSlot<SlotInformationReceiver>()
+        val slotInformationReceiverCapturer = CapturingSlot<SlotInformationReceiver>()
 
         //capture callback
         every {
@@ -79,8 +78,8 @@ class ClientTest {
     @org.junit.jupiter.api.Test
     fun testEndSlotNotRemovable() {
         val slotCodeMock = SlotCode("TEST")
-        var eventCapturer = CapturingSlot<Event>()
-        var toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
+        val eventCapturer = CapturingSlot<Event>()
+        val toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
         every { socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer)) } just runs
         testObj.endSlot(slotCodeMock)
         verify {
@@ -96,7 +95,7 @@ class ClientTest {
      * Calls listenSlot on Socket so that a Slot with SlotCode is added. So the callback function can be captured.
      * With the captured function we can register a new slot with his register on client.
      * Ensures that registerReceiver on clientManager returns true to be able to remove the receiver
-     *  in the endSlot method.
+     *  in the deleteSlot method.
      * Checks if removeReceiver is called with correct parameters on clientManager
      * Checks if Event SLOT_DELETED is send with correct SlotCode
      */
@@ -104,10 +103,10 @@ class ClientTest {
     fun testDeleteSlotRemovable() {
         socketFacadeMock = mockk<SocketFacade>(relaxed = true)
         val functionCapturer = CapturingSlot<(receivedData: JSONObjectWrapper) -> Unit>()
-        var eventCapturer = CapturingSlot<Event>()
-        var toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
+        val eventCapturer = CapturingSlot<Event>()
+        val toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
         val slotCodeMock = SlotCode("TEST")
-        var slotInformationReceiverCapturer = CapturingSlot<SlotInformationReceiver>()
+        val slotInformationReceiverCapturer = CapturingSlot<SlotInformationReceiver>()
 
         //capture callback
         every {
@@ -144,8 +143,8 @@ class ClientTest {
         val slotCodeMock = SlotCode("TEST")
         val slotCodeWrapperMock = JSONSlotCodeWrapper()
         slotCodeWrapperMock.setSlotCode(slotCodeMock)
-        var eventCapturer = CapturingSlot<Event>()
-        var toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
+        val eventCapturer = CapturingSlot<Event>()
+        val toSendCapturer = CapturingSlot<JSONSlotCodeWrapper>()
         every { socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer)) } just runs
         testObj.deleteSlot(slotCodeMock)
         verify {
@@ -163,9 +162,8 @@ class ClientTest {
         val slotCodeMock = SlotCode("TEST")
         val slotManagementInformationMock = SlotManagementInformation(ManagementDetails("test", "test@test"),
         Duration.ofMillis(1234), Duration.ofMillis(1234))
-        val slotApproxMock = SlotCode("TEST")
-        var eventCapturer = CapturingSlot<Event>()
-        var toSendCapturer = CapturingSlot<JSONSlotDataWrapper>()
+        val eventCapturer = CapturingSlot<Event>()
+        val toSendCapturer = CapturingSlot<JSONSlotDataWrapper>()
         every { socketFacadeMock.send(capture(eventCapturer), capture(toSendCapturer)) } just runs
         testObj.sendSlotData(slotCodeMock, Date(1234), slotManagementInformationMock)
         verify {

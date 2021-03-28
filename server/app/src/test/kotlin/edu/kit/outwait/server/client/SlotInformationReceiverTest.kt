@@ -59,7 +59,7 @@ class SlotInformationReceiverTest {
     }
 
     /**
-     * Checks if sendSlotDsata is NOT called with correct parameters on client
+     * Checks if sendSlotData is NOT called with correct parameters on client
      */
     @org.junit.jupiter.api.Test
     fun testSetSlotDataNotChanged() {

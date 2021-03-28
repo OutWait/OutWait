@@ -14,13 +14,12 @@ import java.sql.Timestamp
 import java.time.Duration
 import java.util.*
 import kotlin.test.assertEquals
-import kotlin.time.ExperimentalTime
 
 /**
- * Unit-Tests for SlotInformationReceiver
+ * Unit-Tests for DatabaseWrapper
  */
 class DatabaseWrapperTest {
-    private lateinit var connection: Connection
+    private var connection: Connection
     private val connectionProps: Properties = Properties()
     private var testObj = DatabaseWrapper("OutwaitDBTest", "161.97.168.24")
 
@@ -311,7 +310,7 @@ class DatabaseWrapperTest {
     @org.junit.jupiter.api.Test
     fun testGetQueueIdOfManagement() {
         val queueId = testObj.getQueueIdOfManagement(ManagementId(1))
-        assertEquals(1, 1)
+        assertEquals(1, queueId!!.id)
     }
 
     /**
