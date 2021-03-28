@@ -8,17 +8,15 @@ import java.time.Duration
 import java.util.*
 import kotlin.test.assertEquals
 
-/**
- * Unit-Tests for SlotInformationReceiver
- */
+/** Unit-Tests for SlotInformationReceiver */
 class SlotInformationReceiverTest {
     var clientMock = mockk<Client>(relaxed = true)
     var slotCodeMock = mockk<SlotCode>(relaxed = true)
     var testObj = SlotInformationReceiver(clientMock, slotCodeMock)
 
     /**
-     * Creates mock-objects for Client and SlotCde with relaxed mode on since they're needed
-     * to instantiate new SlotInformationReceiver object
+     * Creates mock-objects for Client and SlotCde with relaxed mode on since they're needed to
+     * instantiate new SlotInformationReceiver object
      */
     @org.junit.jupiter.api.BeforeEach
     fun setUp() {
@@ -27,9 +25,7 @@ class SlotInformationReceiverTest {
         testObj = SlotInformationReceiver(clientMock, slotCodeMock)
     }
 
-    /**
-     * Checks if sendSlotData is called with correct parameters on client
-     */
+    /** Checks if sendSlotData is called with correct parameters on client */
     @org.junit.jupiter.api.Test
     fun testSetSlotDataChanged() {
         val slotManagementInformationMock =
@@ -58,9 +54,7 @@ class SlotInformationReceiverTest {
         assertEquals(slotManagementInformationCapturer.captured, slotManagementInformationMock)
     }
 
-    /**
-     * Checks if sendSlotData is NOT called with correct parameters on client
-     */
+    /** Checks if sendSlotData is NOT called with correct parameters on client */
     @org.junit.jupiter.api.Test
     fun testSetSlotDataNotChanged() {
         val slotManagementInformation =
@@ -71,19 +65,14 @@ class SlotInformationReceiverTest {
         verify(exactly = 0) { clientMock.sendSlotData(any(), any(), any()) }
     }
 
-    /**
-     * Checks if endSlot is called with correct parameters on client
-     */
+    /** Checks if endSlot is called with correct parameters on client */
     @org.junit.jupiter.api.Test
     fun testEndSlot() {
         testObj.end()
         verify { clientMock.endSlot(slotCodeMock) }
     }
 
-
-    /**
-     * Checks if deleteSlot is called with correct parameters on client
-     */
+    /** Checks if deleteSlot is called with correct parameters on client */
     @org.junit.jupiter.api.Test
     fun testDeleteSlot() {
         testObj.delete()
