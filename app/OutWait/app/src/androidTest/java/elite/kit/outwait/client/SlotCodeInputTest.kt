@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.joda.time.Duration
 import org.junit.After
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -102,7 +103,7 @@ class SlotCodeInputTest {
         }
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         // check that we are logged out and in the login fragment
-        assert(!instituteRepo.isLoggedIn().value!!)
+        assertFalse(instituteRepo.isLoggedIn().value!!)
 
         onView(ViewMatchers.withId(R.id.etSlotCode)).check(
             ViewAssertions.matches(
@@ -135,6 +136,7 @@ class SlotCodeInputTest {
                 TextSetter.setTextEditText(invalidSlotCodeToEnter),
                 ViewActions.closeSoftKeyboard()
             )
+        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
 
         //check that code input was not successful
         onView(ViewMatchers.withId(R.id.btnLoginFrag)).check(
@@ -157,6 +159,7 @@ class SlotCodeInputTest {
                 TextSetter.setTextEditText(validSlotCodeToEnter),
                 ViewActions.closeSoftKeyboard()
             )
+        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
 
         // check if we navigated to remainingTimeFragment
         onView(ViewMatchers.withId(R.id.btnRefresh)).check(
