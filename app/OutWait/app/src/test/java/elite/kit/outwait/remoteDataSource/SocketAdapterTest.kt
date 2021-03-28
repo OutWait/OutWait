@@ -17,7 +17,7 @@ class SocketAdapterTest {
     private val jsonSlotCode = JSONObject().put(SLOT_CODE, slotCode)
 
     @Test
-    fun failedInitComm() {
+    fun `communication could not establish`() {
         mockkConstructor(Socket::class)
         every { anyConstructed<Socket>().open() } returns null
         every { anyConstructed<Socket>().connect() } returns null
@@ -27,7 +27,7 @@ class SocketAdapterTest {
     }
 
     @Test
-    fun registerListenersTest() {
+    fun `test listener registration`() {
         mockkConstructor(Socket::class)
         every { anyConstructed<Socket>().open() } returns Socket(mockk(), null, mockk())
         every { anyConstructed<Socket>().connect() } returns Socket(mockk(), null, mockk())
@@ -41,7 +41,7 @@ class SocketAdapterTest {
 
 
     @Test
-    fun testWrapping1() {
+    fun `test wrapping between handler and adapter 1`() {
         mockkConstructor(Socket::class)
         every { anyConstructed<Socket>().open() } returns Socket(mockk(), null, mockk())
         every { anyConstructed<Socket>().connect() } returns Socket(mockk(), null, mockk())
@@ -56,7 +56,7 @@ class SocketAdapterTest {
     }
 
     @Test
-    fun testWrapping2() {
+    fun `test wrapping between handler and adapter 2`() {
         mockkConstructor(Socket::class)
         every { anyConstructed<Socket>().open() } returns Socket(mockk(), null, mockk())
         every { anyConstructed<Socket>().connect() } returns Socket(mockk(), null, mockk())

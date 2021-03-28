@@ -28,7 +28,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun initCommAndEndTest() {
+    fun `init and end communication`() {
 
         val managementHandler = SocketIOManagementHandler()
 
@@ -44,7 +44,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun changePreferencesTest() {
+    fun `change the preferences`() {
         val fakePrefs = Preferences(Duration.ZERO, Duration.ZERO, Duration.ZERO, Duration.ZERO, Mode.ONE)
         val eventString = Event.CHANGE_MANAGEMENT_SETTINGS.getEventString()
 
@@ -57,7 +57,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun resetPasswordTest() {
+    fun `reset the password`() {
         val username = ""
         val eventString = Event.RESET_PASSWORD.getEventString()
 
@@ -70,7 +70,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun endCurrentSlotTest() {
+    fun `end the current slot`() {
         val eventString = Event.END_CURRENT_SLOT.getEventString()
         val managementHandler = SocketIOManagementHandler()
         managementHandler.initCommunication()
@@ -81,7 +81,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun startTransactionTest() {
+    fun `start the transaction`() {
         val eventString = Event.START_TRANSACTION.getEventString()
         val managementHandler = SocketIOManagementHandler()
         managementHandler.initCommunication()
@@ -92,7 +92,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun loginWithoutRequest() {
+    fun `try login without request`() {
         val eventString = Event.MANAGEMENT_LOGIN.getEventString()
         val managementHandler = SocketIOManagementHandler()
         managementHandler.initCommunication()
@@ -103,7 +103,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun addSpontSlotTest() {
+    fun `add spontSlot`() {
         val eventString = Event.ADD_SPONTANEOUS_SLOT.getEventString()
         val timeOfCreation = DateTime.now()
         val duration = Duration(Duration.ZERO)
@@ -117,7 +117,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun changeSlotDuratioTest() {
+    fun `change slotDuration`() {
         val eventString = Event.CHANGE_SLOT_DURATION.getEventString()
         val duration = Duration.ZERO
         val managementHandler = SocketIOManagementHandler()
@@ -129,7 +129,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun changeFixedSlotTimeTest() {
+    fun `change fixedSlotTime`() {
         val eventString = Event.CHANGE_FIXED_SLOT_TIME.getEventString()
         val newTime = DateTime.now()
         val managementHandler = SocketIOManagementHandler()
@@ -141,7 +141,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun moveSlotAfterAnotherTest() {
+    fun `test moveSlotAfterAnother`() {
         val eventString = Event.MOVE_SLOT_AFTER_ANOTHER.getEventString()
         val managementHandler = SocketIOManagementHandler()
         managementHandler.initCommunication()
@@ -152,7 +152,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun addFixedSlotTest() {
+    fun `add fixedSlotTest`() {
         val eventString = Event.ADD_FIXED_SLOT.getEventString()
         val duration = Duration.ZERO
         val appointmentTime = DateTime.now()
@@ -165,7 +165,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun logoutTest() {
+    fun `logout test`() {
         val eventString = Event.MANAGEMENT_LOGOUT.getEventString()
         val managementHandler = SocketIOManagementHandler()
         managementHandler.initCommunication()
@@ -176,7 +176,7 @@ class SocketIOManagementHandlerTest {
     }
 
     @Test
-    fun loginWithoutInit() {
+    fun `test login without init`() {
         val eventString = Event.MANAGEMENT_LOGIN.getEventString()
         val managementHandler = SocketIOManagementHandler()
         managementHandler.login(username, password)

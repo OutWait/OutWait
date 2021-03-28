@@ -9,7 +9,7 @@ import org.junit.Test
 class SocketIOClientHandlerTest {
 
     @Test
-    fun initCommAndEnd() {
+    fun `init and end communication`() {
         mockkConstructor(SocketAdapter::class)
         every { anyConstructed<SocketAdapter>().initializeConnection(any()) } returns true
         every { anyConstructed<SocketAdapter>().releaseConnection() } just runs
@@ -28,7 +28,7 @@ class SocketIOClientHandlerTest {
     }
 
     @Test
-    fun listenNewSlotCalled() {
+    fun `call listen new slot`() {
         val slotCode = "123456789"
         val eventString = Event.LISTEN_SLOT.getEventString()
 
@@ -50,7 +50,7 @@ class SocketIOClientHandlerTest {
     }
 
     @Test
-    fun refreshSlotApproxCalled() {
+    fun `call refreshSlotApprox`() {
         val slotCode = "123456789"
         val eventString = Event.REFRESH_SLOT_APPROX.getEventString()
 
