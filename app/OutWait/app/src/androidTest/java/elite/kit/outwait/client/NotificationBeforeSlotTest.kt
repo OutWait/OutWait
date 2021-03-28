@@ -36,7 +36,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.joda.time.Duration
 import org.junit.*
-import util.DigitSelector
+import elite.kit.outwait.util.DigitSelector
 import javax.inject.Inject
 import javax.inject.Singleton
 

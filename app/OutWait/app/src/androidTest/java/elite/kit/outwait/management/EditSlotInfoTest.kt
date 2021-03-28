@@ -23,7 +23,7 @@ import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.util.StringResource
 import elite.kit.outwait.util.ToastMatcher
 import elite.kit.outwait.util.*
-import util.DigitSelector
+import elite.kit.outwait.util.DigitSelector
 import elite.kit.outwait.utils.EspressoIdlingResource
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
 import kotlinx.coroutines.CoroutineScope

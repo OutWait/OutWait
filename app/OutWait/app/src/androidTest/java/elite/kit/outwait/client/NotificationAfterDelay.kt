@@ -41,7 +41,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import util.DigitSelector
+import elite.kit.outwait.util.DigitSelector
 import javax.inject.Inject
 import javax.inject.Singleton
 

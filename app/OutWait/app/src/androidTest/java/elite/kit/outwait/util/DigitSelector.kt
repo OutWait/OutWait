@@ -1,4 +1,4 @@
-package  util
+package elite.kit.outwait.util
 
 import android.view.View
 import android.view.ViewGroup
