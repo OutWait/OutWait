@@ -369,12 +369,19 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      * @param managementId the id of the institution whose queue should be updated later.
      */
     private fun keepQueueDelayTime(time: Date, managementId: ManagementId) {
+        queueDelayTimes.removeIf { it.second == managementId } // remove previous timers
         queueDelayTimes.add(Pair(time, managementId))
         queueDelayTimes.sortBy { it.first }
         Logger.debug(
             LOG_ID,
             "Queue delay change is set to " + time + " for management " + managementId
         )
+        Logger.debug(LOG_ID, "Currently " + queueDelayTimes.size + " delay changes are tracked:")
+        for (i in 0 until queueDelayTimes.size)
+            Logger.debug(
+                LOG_ID,
+                "time " + queueDelayTimes[i].first + " for management " + queueDelayTimes[i].second
+            )
 
         try {
             nextDelayAlarm.cancel()
