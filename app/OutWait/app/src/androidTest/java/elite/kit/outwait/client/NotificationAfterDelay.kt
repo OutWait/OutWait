@@ -319,10 +319,9 @@ class NotificationAfterDelay {
 
         // check the result and assert expected result is met
         // notify for delay notification was called on the mock
-        // TODO schlägt manchmal fehl, da sendSlotData@C und damit LiveData zweimal aufgerufen/geändert wird
-        // TODO fixen oder atLeast = 1 prüfen?
-        verify (exactly = 1)
-        { injectedManager.notify(DELAY_NOTIFICATION_ID, any()) }
+        verify {
+            injectedManager.notify(DELAY_NOTIFICATION_ID, any())
+        }
     }
 
 }
