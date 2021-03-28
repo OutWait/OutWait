@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="64dp"
                 android:gravity="clip_horizontal|center|center_vertical"
-                android:text="Active Mode is"
+                android:text="@string/active_mode"
                 android:textColor="@color/outwait_color"
                 android:textSize="@dimen/title_big"
                 app:layout_constraintEnd_toEndOf="parent"

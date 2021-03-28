@@ -78,5 +78,6 @@
     <string name="it_s_your_turn_in">It\'s your turn in:</string>
     <string name="back_press_client">You can enter a new appointment after your appointment is finished</string>
     <string name="save">Save</string>
+    <string name="active_mode">Active Mode is</string>
 
 </resources>
