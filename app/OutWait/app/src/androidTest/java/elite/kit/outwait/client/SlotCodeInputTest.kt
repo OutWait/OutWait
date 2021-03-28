@@ -137,11 +137,7 @@ class SlotCodeInputTest {
             )
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         //check for displayed toast with "invalid code" error message
-        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.INVALID_SLOT_CODE))).inRoot(
-            ToastMatcher()
-        ).check(
-            ViewAssertions.matches(ViewMatchers.isDisplayed())
-        )
+
     }
 
     /**

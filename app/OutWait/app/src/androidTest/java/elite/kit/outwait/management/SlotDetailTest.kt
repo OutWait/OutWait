@@ -93,6 +93,9 @@ class SlotDetailTest {
                 instituteRepo.saveTransaction()
             }
         }
+        CoroutineScope(Dispatchers.Main).launch {
+            instituteRepo.logout()
+        }
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
 
