@@ -2,8 +2,6 @@ package edu.kit.outwait.server.client
 
 import com.corundumstudio.socketio.SocketIONamespace
 import edu.kit.outwait.server.core.DatabaseWrapper
-import edu.kit.outwait.server.protocol.Event
-import edu.kit.outwait.server.protocol.JSONSlotCodeWrapper
 import edu.kit.outwait.server.slot.SlotCode
 import edu.kit.outwait.server.socketHelper.SocketFacade
 import io.mockk.*
@@ -23,9 +21,9 @@ class ClientManagerTest {
      */
     @org.junit.jupiter.api.BeforeEach
     fun setUp() {
-        var namespaceMock = mockk<SocketIONamespace>(relaxed = true)
-        var databaseWrapperMock = mockk<DatabaseWrapper>(relaxed = true)
-        var testObj = ClientManager(namespaceMock, databaseWrapperMock)
+        namespaceMock = mockk<SocketIONamespace>(relaxed = true)
+        databaseWrapperMock = mockk<DatabaseWrapper>(relaxed = true)
+        testObj = ClientManager(namespaceMock, databaseWrapperMock)
     }
 
     /**

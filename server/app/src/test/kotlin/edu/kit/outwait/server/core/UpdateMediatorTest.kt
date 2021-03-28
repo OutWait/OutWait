@@ -1,14 +1,11 @@
 package edu.kit.outwait.server.core
 
-import edu.kit.outwait.server.client.Client
+
 import edu.kit.outwait.server.client.SlotInformationReceiver
-import edu.kit.outwait.server.management.ManagementDetails
 import edu.kit.outwait.server.management.SlotManagementInformation
 import edu.kit.outwait.server.slot.SlotCode
 import io.mockk.*
-import java.time.Duration
 import java.util.*
-import kotlin.test.assertEquals
 
 class UpdateMediatorTest {
     var testObj = UpdateMediator()
@@ -26,8 +23,7 @@ class UpdateMediatorTest {
      */
     @org.junit.jupiter.api.Test
     fun testSubscribeAndUnsubscribeReceiver() {
-        //TODO: weird behaviour
-        testObj = spyk<UpdateMediator>(recordPrivateCalls = true)
+        testObj = spyk<UpdateMediator>()
         val slotInformationReceiverMock = mockk<SlotInformationReceiver>(relaxed = true)
         val slotCodeMock = SlotCode("123")
         val slotApproxMock = Date(123000)
@@ -94,10 +90,8 @@ class UpdateMediatorTest {
         val slotCodeMocks = mutableListOf<SlotCode>()
         slotCodeMocks.add(slotCodeMock)
         testObj.setManagementInformation(slotCodeMocks, newSlotManagementInformationMock)
-        //TODO: weird behaviour
         verify {
-            slotInformationReceiverMock.setSlotData(slotInformationReceiverMock.getSlotApprox(),
-                newSlotManagementInformationMock)
+            slotInformationReceiverMock.setSlotData(any(), newSlotManagementInformationMock)
         }
     }
 
