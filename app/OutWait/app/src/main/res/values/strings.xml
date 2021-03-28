@@ -12,6 +12,7 @@
     <string name="reset_text">Enter your username in order to get a new password via your email</string>
     <string name="password">"Password</string>
     <!-- Strings related to management -->
+    <string name="editmode_header">Editmode is enabled</string>
     <string name="slotcode">Slot code</string>
     <string name="identifier">Identifier</string>
     <string name="duration">Duration</string>

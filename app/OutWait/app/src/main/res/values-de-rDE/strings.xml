@@ -13,6 +13,7 @@
     <string name="password">"Passwort</string>
 
     <!-- Strings related to management -->
+    <string name="editmode_header">Bearbeitungsmodus aktiv</string>
     <string name="slotcode">Slot-Code</string>
     <string name="identifier">Identifizierer</string>
     <string name="duration">Dauer</string>
