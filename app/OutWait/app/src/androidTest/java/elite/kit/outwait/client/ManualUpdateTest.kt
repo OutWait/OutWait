@@ -62,8 +62,7 @@ class ManualUpdateTest {
     private fun establishPreconditions() {
 
         // perform login
-        instituteRepo.login("uskhr", "uskhr")
-        //instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
+        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         // check that we are logged in
         assert(instituteRepo.isLoggedIn().value!!)
@@ -148,7 +147,7 @@ class ManualUpdateTest {
         )
 
         // Move slot with management
-        instituteRepo.login("uskhr", "uskhr")
+        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         val slot = (instituteRepo.getObservableTimeSlotList().value!!
             .filterIsInstance<FixedTimeSlot>().first())
