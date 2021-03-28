@@ -99,13 +99,13 @@ class SwitchToModeTwoTest {
         for(i in 0 until seconds) {
             Thread.sleep(1000)
             // NOP check
-            onView(withText("INVALID_DEBUG_TEST_TEXT")).check(ViewAssertion.doesNotExist())
+            onView(withText("INVALID_DEBUG_TEST_TEXT")).check(ViewAssertions.doesNotExist())
         }
     }
 
     // T28
     @Test
-    fun SwitchToModeTwo(){
+    fun switchToModeTwo(){
         // Check Management view
         onView(withId(R.id.floatingActionButton))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
