@@ -12,6 +12,10 @@ import org.junit.Before
 import org.junit.Assert.*
 import org.junit.Test
 
+/**
+ * Unit tests the aux helper class with help of the DataBaseFake class
+ *
+ */
 class AuxHelperTest {
 
     private lateinit var auxHelper : AuxHelper
@@ -21,11 +25,11 @@ class AuxHelperTest {
         auxHelper = AuxHelper(DataBaseFake())
     }
 
-    @After
-    fun tearDown() {
-
-    }
-
+    /**
+     * When the aux helper receives a list with one new slot, it has to match the latest
+     * auxiliary identifier to it
+     *
+     */
     @Test
     fun `new aux is assigned to new received slot in transaction`()= runBlockingTest {
         auxHelper.newAux("Mr. Mustermann, vacunation")
@@ -33,6 +37,12 @@ class AuxHelperTest {
         assertEquals("Mr. Mustermann, vacunation", auxIds["SlotCode1"])
     }
 
+    /**
+     * When the aux helper receives a received list and no new aux was entered before,
+     * all slots get an empty auxiliary identifier by default
+     * (this happens e.g. after login)
+     *
+     */
     @Test
     fun `receive slot list after login - empty identifiers are assigned to received slots`()= runBlockingTest {
         val auxIds = auxHelper.receivedList(ReceivedListUtil.prepareReceivedList(2), true)
@@ -40,6 +50,11 @@ class AuxHelperTest {
         assertEquals("", auxIds["SlotCode2"])
     }
 
+    /**
+     * Checks that the aux helper does not delete auxiliary identifiers during a transaction.
+     * This would lead to the loss of an aux identifier if the transaction gets aborted
+     *
+     */
     @Test
     fun `obsolete identifier is NOT deleted during transaction is running`()= runBlockingTest {
         auxHelper.receivedList(ReceivedListUtil.prepareReceivedList(1), true)
@@ -53,6 +68,11 @@ class AuxHelperTest {
         assertEquals("Hans Jürgen", auxIds["SlotCode2"])
     }
 
+    /**
+     * Checks if our own "auxiliary identifier garbage collector" works and removes the
+     * aux identifiers of slots which are definitely deleted
+     *
+     */
     @Test
     fun `obsolete identifier is deleted AFTER TRANSACTION`()= runBlockingTest {
         auxHelper.receivedList(ReceivedListUtil.prepareReceivedList(1), true)
@@ -67,6 +87,10 @@ class AuxHelperTest {
         assertEquals(1, auxIds.size)
     }
 
+    /**
+     * Tests if an aux identifier can be changes successfully
+     *
+     */
     @Test
     fun `auxiliary identifier can be changed`()= runBlockingTest {
         auxHelper.newAux("Mr. Mustermann, vacunation")

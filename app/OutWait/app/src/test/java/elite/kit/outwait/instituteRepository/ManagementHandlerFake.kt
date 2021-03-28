@@ -61,7 +61,6 @@ class ManagementHandlerFake : ManagementHandler {
             connected = true
             true
         } else {
-            //pushError
             false
         }
 

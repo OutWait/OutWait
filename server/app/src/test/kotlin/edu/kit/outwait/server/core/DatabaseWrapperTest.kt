@@ -15,9 +15,7 @@ import java.time.Duration
 import java.util.*
 import kotlin.test.assertEquals
 
-/**
- * Unit-Tests for DatabaseWrapper
- */
+/** Unit-Tests for DatabaseWrapper */
 class DatabaseWrapperTest {
     private var connection: Connection
     private val connectionProps: Properties = Properties()
@@ -39,9 +37,7 @@ class DatabaseWrapperTest {
         }
     }
 
-    /**
-     * Deletes all existing Slots and creates Testing Slot to be used on tests
-     */
+    /** Deletes all existing Slots and creates Testing Slot to be used on tests */
     @org.junit.jupiter.api.BeforeEach
     fun setUp() {
         try {
@@ -70,10 +66,7 @@ class DatabaseWrapperTest {
         testObj = DatabaseWrapper("OutwaitDBTest", "161.97.168.24")
     }
 
-
-    /**
-     * Checks if getSlots method returns slot with properties of Test Slot
-     */
+    /** Checks if getSlots method returns slot with properties of Test Slot */
     @org.junit.jupiter.api.Test
     fun testGetSlots() {
         val slots = testObj.getSlots(QueueId(1))
@@ -87,10 +80,9 @@ class DatabaseWrapperTest {
         assertEquals(testSlot.priority.name, "NORMAL")
     }
 
-
     /**
-     * Checks if addTemporarySlot inserts slot correctly to Database and also returns
-     * returns correctly.
+     * Checks if addTemporarySlot inserts slot correctly to Database and also returns returns
+     * correctly.
      */
     @org.junit.jupiter.api.Test
     fun testAddTemporarySlot() {
@@ -118,12 +110,9 @@ class DatabaseWrapperTest {
         assertEquals(rs.getLong("expected_duration"), 123000)
         assertEquals(Date(rs.getTimestamp("constructor_time").time).time, Date(123000).time)
         assertEquals(Date(rs.getTimestamp("approx_time").time).time, Date(123000).time)
-
     }
 
-    /**
-     * Checks if temporary Slot is deleted with deleteAllTemporarySlots after insertion
-     */
+    /** Checks if temporary Slot is deleted with deleteAllTemporarySlots after insertion */
     @org.junit.jupiter.api.Test
     fun testdeleteAllTemporarySlot() {
         val addSlotsUpdate =
@@ -149,9 +138,7 @@ class DatabaseWrapperTest {
         assertEquals(rs.next(), false)
     }
 
-    /**
-     * Checks if slot saved with saveSlots method by comparing properties
-     */
+    /** Checks if slot saved with saveSlots method by comparing properties */
     @org.junit.jupiter.api.Test
     fun testSaveSlots() {
 
@@ -171,16 +158,15 @@ class DatabaseWrapperTest {
         val rs = getTempSlotsQuery.executeQuery()
         assertEquals(rs.next(), true)
         assertEquals(rs.getString("priority"), "FIX_APPOINTMENT")
-        assertEquals(Date(rs.getTimestamp("approx_time").time).time,
-         Date(321000).time)
+        assertEquals(Date(rs.getTimestamp("approx_time").time).time, Date(321000).time)
         assertEquals(rs.getLong("expected_duration"), 321000)
-        assertEquals(Date(rs.getTimestamp("constructor_time").time).time,
-            Timestamp.valueOf("2021-03-01 16:13:07").time)
+        assertEquals(
+            Date(rs.getTimestamp("constructor_time").time).time,
+            Timestamp.valueOf("2021-03-01 16:13:07").time
+        )
     }
 
-    /**
-     * Checks if returned management of getManagementById method is correct
-     */
+    /** Checks if returned management of getManagementById method is correct */
     @org.junit.jupiter.api.Test
     fun testGetManagementById() {
         val managementInfo = testObj.getManagementById(ManagementId(1))
@@ -191,7 +177,6 @@ class DatabaseWrapperTest {
         assertEquals(managementInfo!!.settings.notificationTime.toMillis(), 180000)
         assertEquals(managementInfo!!.settings.mode.name, "TWO")
         assertEquals(managementInfo!!.details.email, "test@test.test")
-
     }
 
     /**
@@ -207,9 +192,7 @@ class DatabaseWrapperTest {
         assertEquals(slotManagementInfo!!.notificationTime.toMillis(), 180000)
     }
 
-    /**
-     * Checks if returned managementCredentials of getManagementByUsername method is correct
-     */
+    /** Checks if returned managementCredentials of getManagementByUsername method is correct */
     @org.junit.jupiter.api.Test
     fun testGetManagementByUsername() {
         val managementCredentials = testObj.getManagementByUsername("test")
@@ -220,13 +203,19 @@ class DatabaseWrapperTest {
     }
 
     /**
-     * Checks if returned managementCredentials of getManagementSe method is correct and
-     * sets Settings of management back to default
+     * Checks if returned managementCredentials of getManagementSe method is correct and sets
+     * Settings of management back to default
      */
     @org.junit.jupiter.api.Test
     fun testSaveManagementSettings() {
-        val newManagementSettings = ManagementSettings(Mode.ONE, Duration.ofMillis(123),
-            Duration.ofMillis(123), Duration.ofMillis(123), Duration.ofMillis(123))
+        val newManagementSettings =
+            ManagementSettings(
+                Mode.ONE,
+                Duration.ofMillis(123),
+                Duration.ofMillis(123),
+                Duration.ofMillis(123),
+                Duration.ofMillis(123)
+            )
         val ret = testObj.saveManagementSettings(ManagementId(1), newManagementSettings)
         assertEquals(true, ret)
         val getManagementSettingsQuery =
@@ -244,8 +233,7 @@ class DatabaseWrapperTest {
             connection.prepareStatement(
                 "UPDATE Management " +
                     "SET mode=?, default_slot_duration=?, prioritization_time=?, " +
-                    "notification_time=?, delay_notification_time=? " +
-                    "WHERE Management.id = ?"
+                    "notification_time=?, delay_notification_time=? " + "WHERE Management.id = ?"
             )
         cleanManagementSettingsUpdate.setString(1, "TWO")
         cleanManagementSettingsUpdate.setLong(2, 1800000)
@@ -254,9 +242,7 @@ class DatabaseWrapperTest {
         cleanManagementSettingsUpdate.setLong(5, 120000)
         cleanManagementSettingsUpdate.setLong(6, 1)
         cleanManagementSettingsUpdate.executeUpdate()
-
     }
-
 
     /**
      * Checks if password for management was changed correctly by changeManageamentPassword method
@@ -278,9 +264,7 @@ class DatabaseWrapperTest {
         resetManagementPasswordUpdate.executeUpdate()
     }
 
-    /**
-     * Checks if Slot is deleted from Database after calling endSlot method on it
-     */
+    /** Checks if Slot is deleted from Database after calling endSlot method on it */
     @org.junit.jupiter.api.Test
     fun testEndSlot() {
         val ret = testObj.endSlot(SlotCode("TEST_TEST"))
@@ -291,9 +275,7 @@ class DatabaseWrapperTest {
         assertEquals(rs.next(), false)
     }
 
-    /**
-     * Checks if Slot is deleted from Database after calling deleteSlot method on it
-     */
+    /** Checks if Slot is deleted from Database after calling deleteSlot method on it */
     @org.junit.jupiter.api.Test
     fun testDeleteSlot() {
         val ret = testObj.deleteSlot(SlotCode("TEST_TEST"))
@@ -304,18 +286,14 @@ class DatabaseWrapperTest {
         assertEquals(rs.next(), false)
     }
 
-    /**
-     * Checks if QueueId returned from getQueueIdOfManagement is correct
-     */
+    /** Checks if QueueId returned from getQueueIdOfManagement is correct */
     @org.junit.jupiter.api.Test
     fun testGetQueueIdOfManagement() {
         val queueId = testObj.getQueueIdOfManagement(ManagementId(1))
         assertEquals(1, queueId!!.id)
     }
 
-    /**
-     * Checks if Slot is deleted from Database after calling deleteSlot method on it
-     */
+    /** Checks if Slot is deleted from Database after calling deleteSlot method on it */
     @org.junit.jupiter.api.Test
     fun testRegisterReceiver() {
         val ret = testObj.deleteSlot(SlotCode("TEST_TEST"))
@@ -326,9 +304,7 @@ class DatabaseWrapperTest {
         assertEquals(rs.next(), false)
     }
 
-    /**
-     * Checks if Slot is deleted from Database after calling deleteSlot method on it
-     */
+    /** Checks if Slot is deleted from Database after calling deleteSlot method on it */
     @org.junit.jupiter.api.Test
     fun testUnregisterReceiver() {
         val ret = testObj.deleteSlot(SlotCode("TEST_TEST"))
