@@ -139,8 +139,7 @@ class TimerService @Inject constructor(): LifecycleService() {
         // check for pending appointments, independent of LiveData changes
         CoroutineScope(Dispatchers.IO).launch {
             while(db.getAllClientInfo().isNotEmpty()) {
-                Thread.sleep(TIME_STEP_FOR_PENDING_CHECK)
-                //delay(TIME_STEP_FOR_PENDING_CHECK) //TODO funktioniert auch/besser mit delay?
+                delay(TIME_STEP_FOR_PENDING_CHECK)
                 checkNotifiedForExpiredSlotCodes(db.getAllClientInfo())
                 checkForPendingAppointment(db.getAllClientInfo())
             }
