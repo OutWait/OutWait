@@ -20,3 +20,18 @@ gradle build
 # To start the server: gradle run
 
 ```
+
+## Testing
+```
+cd app/OutWait
+# Unit tests (app)
+./gradlew test
+# Android tests
+./gradlew connectedAndroidTest
+cd ../..
+
+# Unit tests (server)
+cd server
+gradle test
+```
+Sometimes specific android tests fail when executed sequentially. If this happens, just run the tests individually in Android Studio.
