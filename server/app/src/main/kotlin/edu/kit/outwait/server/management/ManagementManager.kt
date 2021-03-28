@@ -105,7 +105,7 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
 
                     // Create new management instance
                     val manager = Management(socketFacade, credentials.id, databaseWrapper, this)
-                    managements.add(manager)
+                    synchronized(this) { managements.add(manager) }
                 }
             }
         }
@@ -139,10 +139,12 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         // Close open transactions
         if (management.isTransactionRunning()) management.abortCurrentTransaction()
 
-        managements.remove(management)
+        synchronized(this) {
+            managements.remove(management)
 
-        if (managements.isEmpty()) {
-            Logger.debug(LOG_ID, "Last active management connection closed.");
+            if (managements.isEmpty()) {
+                Logger.debug(LOG_ID, "Last active management connection closed.");
+            }
         }
     }
 
@@ -160,24 +162,26 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      */
     @Throws(InternalServerErrorException::class)
     fun beginTransaction(managementId: ManagementId): Queue? {
-        if (activeTransactions.contains(managementId)) {
-            Logger.debug(
-                LOG_ID,
-                "New transaction denied. Already running in management " + managementId
-            )
-            return null
-        } else {
-            Logger.debug(LOG_ID, "New transaction granted")
-            activeTransactions.add(managementId)
-
-            // Load the queue
-            val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
-            if (queueId == null) {
-                Logger.internalError(LOG_ID, "Management has no Queue!")
-                throw InternalServerErrorException("Management has no corresponding queue.")
+        synchronized(this) {
+            if (activeTransactions.contains(managementId)) {
+                Logger.debug(
+                    LOG_ID,
+                    "New transaction denied. Already running in management " + managementId
+                )
+                return null
             } else {
-                Logger.debug(LOG_ID, "New transaction queue loaded")
-                return Queue(queueId, databaseWrapper)
+                Logger.debug(LOG_ID, "New transaction granted")
+                activeTransactions.add(managementId)
+
+                // Load the queue
+                val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
+                if (queueId == null) {
+                    Logger.internalError(LOG_ID, "Management has no Queue!")
+                    throw InternalServerErrorException("Management has no corresponding queue.")
+                } else {
+                    Logger.debug(LOG_ID, "New transaction queue loaded")
+                    return Queue(queueId, databaseWrapper)
+                }
             }
         }
     }
@@ -194,12 +198,14 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      */
     @Throws(InternalServerErrorException::class)
     fun abortTransaction(managementId: ManagementId): Queue {
-        Logger.debug(LOG_ID, "Aborting transaction of management " + managementId + "...")
-        assert(activeTransactions.contains(managementId))
+        synchronized(this) {
+            Logger.debug(LOG_ID, "Aborting transaction of management " + managementId + "...")
+            assert(activeTransactions.contains(managementId))
 
-        activeTransactions.remove(managementId)
-        Logger.debug(LOG_ID, "Transaction aborted.")
-        Logger.debug(LOG_ID, "Active transaction removed")
+            activeTransactions.remove(managementId)
+            Logger.debug(LOG_ID, "Transaction aborted.")
+            Logger.debug(LOG_ID, "Active transaction removed")
+        }
 
         // Re-load the queue with the state before the transaction
         val queueId = databaseWrapper.getQueueIdOfManagement(managementId)
@@ -238,9 +244,11 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
         }
 
         // Distribute the queue
-        for (management in managements) {
-            if (management.managementId == managementId) {
-                management.sendUpdatedQueue(queue)
+        synchronized(this) {
+            for (management in managements) {
+                if (management.managementId == managementId) {
+                    management.sendUpdatedQueue(queue)
+                }
             }
         }
 
@@ -263,14 +271,16 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      */
     @Throws(InternalServerErrorException::class)
     fun saveTransaction(managementId: ManagementId, queue: Queue) {
-        Logger.debug(LOG_ID, "Saving transaction. Checking...")
-        assert(activeTransactions.contains(managementId))
-        Logger.debug(LOG_ID, "Check done.")
+        synchronized(this) {
+            Logger.debug(LOG_ID, "Saving transaction. Checking...")
+            assert(activeTransactions.contains(managementId))
+            Logger.debug(LOG_ID, "Check done.")
 
-        handleQueueUpdate(managementId, queue)
+            handleQueueUpdate(managementId, queue)
 
-        activeTransactions.remove(managementId)
-        Logger.debug(LOG_ID, "Active transaction removed")
+            activeTransactions.remove(managementId)
+            Logger.debug(LOG_ID, "Active transaction removed")
+        }
     }
 
     /**
@@ -297,9 +307,11 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
             throw InternalServerErrorException("Failed to save the settings into the database.")
         }
 
-        for (management in managements) {
-            if (management.managementId == managementId)
-                management.sendUpdatedManagementSettings(managementSettings)
+        synchronized(this) {
+            for (management in managements) {
+                if (management.managementId == managementId)
+                    management.sendUpdatedManagementSettings(managementSettings)
+            }
         }
     }
 
@@ -369,43 +381,49 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      * @param managementId the id of the institution whose queue should be updated later.
      */
     private fun keepQueueDelayTime(time: Date, managementId: ManagementId) {
-        queueDelayTimes.removeIf { it.second == managementId } // remove previous timers
-        queueDelayTimes.add(Pair(time, managementId))
-        queueDelayTimes.sortBy { it.first }
-        Logger.debug(
-            LOG_ID,
-            "Queue delay change is set to " + time + " for management " + managementId
-        )
-        Logger.debug(LOG_ID, "Currently " + queueDelayTimes.size + " delay changes are tracked:")
-        for (i in 0 until queueDelayTimes.size)
+        synchronized(this) {
+            queueDelayTimes.removeIf { it.second == managementId } // remove previous timers
+            queueDelayTimes.add(Pair(time, managementId))
+            queueDelayTimes.sortBy { it.first }
             Logger.debug(
                 LOG_ID,
-                "time " + queueDelayTimes[i].first + " for management " + queueDelayTimes[i].second
+                "Queue delay change is set to " + time + " for management " + managementId
             )
+            Logger.debug(
+                LOG_ID,
+                "Currently " + queueDelayTimes.size + " delay changes are tracked:"
+            )
+            for (i in 0 until queueDelayTimes.size)
+                Logger.debug(
+                    LOG_ID,
+                    "time " + queueDelayTimes[i].first + " for management " +
+                        queueDelayTimes[i].second
+                )
 
-        try {
-            nextDelayAlarm.cancel()
-            nextDelayAlarm = Timer()
-        } catch (e: java.lang.IllegalStateException) {
-            // Timer has not been started jet. Ignore this
-            Logger.debug(LOG_ID, "Timer already cancelled")
-        }
-        try {
-            nextDelayAlarm.schedule(
-                object : java.util.TimerTask() {
-                    override fun run() = queueDelayAlarmHandler()
-                },
-                queueDelayTimes.get(0).first
+            try {
+                nextDelayAlarm.cancel()
+                nextDelayAlarm = Timer()
+            } catch (e: java.lang.IllegalStateException) {
+                // Timer has not been started jet. Ignore this
+                Logger.debug(LOG_ID, "Timer already cancelled")
+            }
+            try {
+                nextDelayAlarm.schedule(
+                    object : java.util.TimerTask() {
+                        override fun run() = queueDelayAlarmHandler()
+                    },
+                    queueDelayTimes.get(0).first
+                )
+            } catch (e: java.lang.IllegalStateException) {
+                // Timer has not been started jet. Ignore this
+                Logger.debug(LOG_ID, "Timer already cancelled (in re-schedule)")
+            }
+            Logger.debug(
+                LOG_ID,
+                "New delay timer scheduled for " + queueDelayTimes.get(0).second + " to " +
+                    queueDelayTimes.get(0).first
             )
-        } catch (e: java.lang.IllegalStateException) {
-            // Timer has not been started jet. Ignore this
-            Logger.debug(LOG_ID, "Timer already cancelled (in re-schedule)")
         }
-        Logger.debug(
-            LOG_ID,
-            "New delay timer scheduled for " + queueDelayTimes.get(0).second + " to " +
-                queueDelayTimes.get(0).first
-        )
     }
 
     /**
@@ -415,90 +433,92 @@ class ManagementManager(namespace: SocketIONamespace, databaseWrapper: DatabaseW
      * update the other queues as needed.
      */
     private fun queueDelayAlarmHandler() {
-        Logger.debug(LOG_ID, "Starting delayed queue update routine...")
-        if (queueDelayTimes.isEmpty()) return
-        Logger.debug(LOG_ID, "Delayed update routine is ready")
+        synchronized(this) {
+            Logger.debug(LOG_ID, "Starting delayed queue update routine...")
+            if (queueDelayTimes.isEmpty()) return
+            Logger.debug(LOG_ID, "Delayed update routine is ready")
 
-        val (urgentQueueTime, urgentQueueManagementId) = queueDelayTimes.get(0)
-        queueDelayTimes.removeAt(0)
-        Logger.debug(LOG_ID, "Delayed update for management " + urgentQueueManagementId)
+            val (urgentQueueTime, urgentQueueManagementId) = queueDelayTimes.get(0)
+            queueDelayTimes.removeAt(0)
+            Logger.debug(LOG_ID, "Delayed update for management " + urgentQueueManagementId)
 
-        // Check if the trigger is valid
-        if (urgentQueueTime.getTime() <= Date().getTime()) {
-
-            // Update the queue
-
-            // Load the queue
-            val queueId = databaseWrapper.getQueueIdOfManagement(urgentQueueManagementId)
-            if (queueId == null) {
-                Logger.internalError(LOG_ID, "Management has no Queue!")
-                // Silently ignore this error as it is not the result of a manager request
-            } else {
-                val queue = Queue(queueId, databaseWrapper)
+            // Check if the trigger is valid
+            if (urgentQueueTime.getTime() <= Date().getTime()) {
 
                 // Update the queue
-                val prioritizationTime =
-                    databaseWrapper.getManagementById(urgentQueueManagementId)!!
-                        // managementId must exist
-                        .settings
-                        .prioritizationTime
 
-                queue.updateQueue(prioritizationTime)
-                Logger.debug(LOG_ID, "Delayed queue refreshed")
+                // Load the queue
+                val queueId = databaseWrapper.getQueueIdOfManagement(urgentQueueManagementId)
+                if (queueId == null) {
+                    Logger.internalError(LOG_ID, "Management has no Queue!")
+                    // Silently ignore this error as it is not the result of a manager request
+                } else {
+                    val queue = Queue(queueId, databaseWrapper)
 
-                // this will also set the next timer
-                try {
-                    handleQueueUpdate(urgentQueueManagementId, queue)
-                } catch (e: InternalServerErrorException) {
-                    Logger.internalError(
-                        LOG_ID,
-                        "InternalServerErrorException while updating the delayed queues, with " +
-                            "message: " + e.message
-                    )
+                    // Update the queue
+                    val prioritizationTime =
+                        databaseWrapper.getManagementById(urgentQueueManagementId)!!
+                            // managementId must exist
+                            .settings
+                            .prioritizationTime
 
-                    // Send the error message to all corresponding managements
-                    managements.filter { it.managementId == urgentQueueManagementId }
-                        .forEach {
-                            it.sendInternalErrorMessage(
-                                "Failed to update the queue with an overdue slot. Reason: " +
-                                    e.message!!
-                            )
-                        }
+                    queue.updateQueue(prioritizationTime)
+                    Logger.debug(LOG_ID, "Delayed queue refreshed")
 
-                    // Ensure that the next timer is set
+                    // this will also set the next timer
                     try {
-                        nextDelayAlarm.schedule(
-                            object : java.util.TimerTask() {
-                                override fun run() = queueDelayAlarmHandler()
-                            },
-                            queueDelayTimes.get(0).first.getTime()
+                        handleQueueUpdate(urgentQueueManagementId, queue)
+                    } catch (e: InternalServerErrorException) {
+                        Logger.internalError(
+                            LOG_ID,
+                            "InternalServerErrorException while updating the delayed queues, with" +
+                                " " + "message: " + e.message
                         )
-                    } catch (e: java.lang.IllegalStateException) {
-                        // Timer has not been started jet. Ignore this
-                        Logger.debug(LOG_ID, "Timer already cancelled (in re-schedule)")
+
+                        // Send the error message to all corresponding managements
+                        managements.filter { it.managementId == urgentQueueManagementId }
+                            .forEach {
+                                it.sendInternalErrorMessage(
+                                    "Failed to update the queue with an overdue slot. Reason: " +
+                                        e.message!!
+                                )
+                            }
+
+                        // Ensure that the next timer is set
+                        try {
+                            nextDelayAlarm.schedule(
+                                object : java.util.TimerTask() {
+                                    override fun run() = queueDelayAlarmHandler()
+                                },
+                                queueDelayTimes.get(0).first.getTime()
+                            )
+                        } catch (e: java.lang.IllegalStateException) {
+                            // Timer has not been started jet. Ignore this
+                            Logger.debug(LOG_ID, "Timer already cancelled (in re-schedule)")
+                        }
                     }
                 }
-            }
-        } else if (queueDelayTimes.isNotEmpty()) {
-            Logger.debug(LOG_ID, "Delayed queue is not ready yet")
-            // Reset the next timer, if the trigger was invalid
-            try {
-                nextDelayAlarm.schedule(
-                    object : java.util.TimerTask() {
-                        override fun run() = queueDelayAlarmHandler()
-                    },
-                    queueDelayTimes.get(0).first.getTime()
+            } else if (queueDelayTimes.isNotEmpty()) {
+                Logger.debug(LOG_ID, "Delayed queue is not ready yet")
+                // Reset the next timer, if the trigger was invalid
+                try {
+                    nextDelayAlarm.schedule(
+                        object : java.util.TimerTask() {
+                            override fun run() = queueDelayAlarmHandler()
+                        },
+                        queueDelayTimes.get(0).first.getTime()
+                    )
+                } catch (e: java.lang.IllegalStateException) {
+                    // Timer has not been started jet. Ignore this
+                    Logger.debug(LOG_ID, "Timer already cancelled (in re-schedule)")
+                }
+                Logger.debug(
+                    LOG_ID,
+                    "Scheduled next queue for " + queueDelayTimes.get(0).second + " to " +
+                        queueDelayTimes.get(0).first
                 )
-            } catch (e: java.lang.IllegalStateException) {
-                // Timer has not been started jet. Ignore this
-                Logger.debug(LOG_ID, "Timer already cancelled (in re-schedule)")
             }
-            Logger.debug(
-                LOG_ID,
-                "Scheduled next queue for " + queueDelayTimes.get(0).second + " to " +
-                    queueDelayTimes.get(0).first
-            )
+            Logger.debug(LOG_ID, "Finished delayed queue update routine")
         }
-        Logger.debug(LOG_ID, "Finished delayed queue update routine")
     }
 }
