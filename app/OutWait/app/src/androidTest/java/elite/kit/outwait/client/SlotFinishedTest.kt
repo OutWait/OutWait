@@ -6,14 +6,17 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.MainActivity
 import elite.kit.outwait.R
+import elite.kit.outwait.clientDatabase.ClientInfoDao
 import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
@@ -32,7 +35,6 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 class SlotFinishedTest {
-
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
 
@@ -42,15 +44,41 @@ class SlotFinishedTest {
     @Inject
     lateinit var instituteRepo: InstituteRepository
 
+    @Inject
+    lateinit var clientDBDao: ClientInfoDao
+
+
     @Before
     fun init() {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
-        instituteRepo.login("global-test", "global-test")
+        instituteRepo.login("urgnj", "urgnj")
+        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+
+        // check that we are logged in
+        assert(instituteRepo.isLoggedIn().value!!)
+
+        // ensure that waiting queue is empty to begin with
+        val timeSlots = instituteRepo.getObservableTimeSlotList().value
+
+        if (timeSlots != null && timeSlots.isNotEmpty()) {
+            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots){
+                // delete slot with retrieved slotCode from waiting queue
+                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
+                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+            }
+            // save the transaction and the changes made (execute on main thread)
+            CoroutineScope(Dispatchers.Main).launch {
+                instituteRepo.saveTransaction()
+            }
+            Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+        }
+
     }
 
     @Test
-    fun finishSlot(){
+    fun finishSlot() {
         //Add first slot
         Espresso.onView(ViewMatchers.withId(R.id.floatingActionButton)).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.etIdentifierAddDialog))
@@ -92,21 +120,20 @@ class SlotFinishedTest {
             .perform(ViewActions.click())
         //Save transaction
         onView(withId(R.id.ivSaveTransaction)).perform(click())
-
-
         //Logout
         onView(withId(R.id.config)).perform(click())
         onView(withId(R.id.btnLogout)).perform(click())
         //Enter slotCode
         onView(withId(R.id.etSlotCode)).perform(TextSetter.setTextEditText(firstPosSlotCode))
         // check if we navigated to remainingTimeFragment
+        Thread.sleep(WAIT_FOR_UI_RESPONSE)
         onView(withId(R.id.btnRefresh)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()
             )
         )
         //Login as management
-        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
+        instituteRepo.login("urgnj", "urgnj")
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         //Delete first slot
         instituteRepo.endCurrentSlot()
@@ -115,8 +142,16 @@ class SlotFinishedTest {
             instituteRepo.saveTransaction()
         }
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+        CoroutineScope(Dispatchers.Main).launch {
+            instituteRepo.logout()
+        }
+        Thread.sleep(WAIT_RESPONSE_SERVER_SHORT)
+        //Check client is on loging screen
+        onView(withId(R.id.tvTitleLogin)).check(matches(isDisplayed()))
+        //Login as management
+        instituteRepo.login("urgnj", "urgnj")
         //Check  second Slot is at first position
-       /* Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 FIRST_SLOT_POSITION,
@@ -126,34 +161,21 @@ class SlotFinishedTest {
         onView(withId(R.id.tvSlotCodeDetail)).check(
             ViewAssertions.matches(
                 ViewMatchers.withText(
-                    SECOND_SLOT_IDENTIFIER
+                    secondSlotCode
                 )
             )
         )
-        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))*/
+        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
     }
 
     @After
     fun emptySlot() {
-        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
-        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-        // clean up waiting queue (on server side also)
-        val timeSlots = instituteRepo.getObservableTimeSlotList().value
-
-
-        if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots){
-                // delete slot with retrieved slotCode from waiting queue
-                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
-                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-            }
-            // save the transaction and the changes made
-            CoroutineScope(Dispatchers.Main).launch {
-                instituteRepo.saveTransaction()
-            }
+        // clean client DB (so view can navigate back to login fragment)
+        clientDBDao.clearTable()
+        // logout of management
+        CoroutineScope(Dispatchers.Main).launch {
+            instituteRepo.logout()
         }
-
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
     }
