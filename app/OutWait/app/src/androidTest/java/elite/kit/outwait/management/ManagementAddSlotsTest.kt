@@ -47,6 +47,23 @@ class ManagementAddSlotsTest {
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         //Login
         instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
+        Thread.sleep(WAIT_RESPONSE_SERVER_SHORT)
+        // check that we are logged in
+        assert(instituteRepo.isLoggedIn().value!!)
+        // clean up waiting queue (on server side also)
+        val timeSlots = instituteRepo.getObservableTimeSlotList().value
+        if (timeSlots != null && timeSlots.isNotEmpty()) {
+            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots){
+                // delete slot with retrieved slotCode from waiting queue
+                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
+                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+            }
+            // save the transaction and the changes made
+            CoroutineScope(Dispatchers.Main).launch {
+                instituteRepo.saveTransaction()
+            }
+        }
     }
 
     //TEST 6
@@ -119,22 +136,7 @@ class ManagementAddSlotsTest {
 
     @After
     fun emptyQueue() {
-        // clean up waiting queue (on server side also)
-        val timeSlots = instituteRepo.getObservableTimeSlotList().value
-
-        if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots){
-                // delete slot with retrieved slotCode from waiting queue
-                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
-                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-            }
-            // save the transaction and the changes made
-            CoroutineScope(Dispatchers.Main).launch {
-                instituteRepo.saveTransaction()
-            }
-        }
-
+        //logout of management
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.logout()
         }

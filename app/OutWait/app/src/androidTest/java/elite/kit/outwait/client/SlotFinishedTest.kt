@@ -52,7 +52,7 @@ class SlotFinishedTest {
     fun init() {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
-        instituteRepo.login("urgnj", "urgnj")
+        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
 
         // check that we are logged in
@@ -133,7 +133,7 @@ class SlotFinishedTest {
             )
         )
         //Login as management
-        instituteRepo.login("urgnj", "urgnj")
+        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         //Delete first slot
         instituteRepo.endCurrentSlot()
@@ -149,7 +149,7 @@ class SlotFinishedTest {
         //Check client is on loging screen
         onView(withId(R.id.tvTitleLogin)).check(matches(isDisplayed()))
         //Login as management
-        instituteRepo.login("urgnj", "urgnj")
+        instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         //Check  second Slot is at first position
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         onView(withId(R.id.slotList)).perform(

@@ -47,6 +47,25 @@ class MovementModeOneTest {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
+        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+        // check that we are logged in
+        assert(instituteRepo.isLoggedIn().value!!)
+        // clean up waiting queue (on server side also)
+        val timeSlots = instituteRepo.getObservableTimeSlotList().value
+
+
+        if (timeSlots != null && timeSlots.isNotEmpty()) {
+            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots){
+                // delete slot with retrieved slotCode from waiting queue
+                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
+                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+            }
+            // save the transaction and the changes made
+            CoroutineScope(Dispatchers.Main).launch {
+                instituteRepo.saveTransaction()
+            }
+        }
     }
 
     //TEST 9
@@ -180,23 +199,9 @@ class MovementModeOneTest {
 
     @After
     fun emptySlot() {
-        // clean up waiting queue (on server side also)
-        val timeSlots = instituteRepo.getObservableTimeSlotList().value
-
-
-        if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots){
-                // delete slot with retrieved slotCode from waiting queue
-                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
-                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-            }
-            // save the transaction and the changes made
-            CoroutineScope(Dispatchers.Main).launch {
-                instituteRepo.saveTransaction()
-            }
+        CoroutineScope(Dispatchers.Main).launch {
+            instituteRepo.logout()
         }
-
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
     }

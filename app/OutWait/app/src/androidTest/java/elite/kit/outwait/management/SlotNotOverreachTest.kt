@@ -31,8 +31,7 @@ import util.DigitSelector
 import javax.inject.Inject
 
 @HiltAndroidTest
-class   SlotNotOverreachTest {
-
+class SlotNotOverreachTest {
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
 
@@ -47,11 +46,28 @@ class   SlotNotOverreachTest {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
+        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+        // check that we are logged out
+        assert(instituteRepo.isLoggedIn().value!!)
+        // clean up waiting queue (on server side also)
+        val timeSlots = instituteRepo.getObservableTimeSlotList().value
+        if (timeSlots != null && timeSlots.isNotEmpty()) {
+            val onlyClientSlots: List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots) {
+                // delete slot with retrieved slotCode from waiting queue
+                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
+                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+            }
+            // save the transaction and the changes made
+            CoroutineScope(Dispatchers.Main).launch {
+                instituteRepo.saveTransaction()
+            }
+        }
     }
 
     //TEST 25
     @Test
-    fun slotRunsOn(){
+    fun slotRunsOn() {
         //Add first slot
         onView(withId(R.id.floatingActionButton)).perform(click())
         onView(withId(R.id.etIdentifierAddDialog))
@@ -99,30 +115,32 @@ class   SlotNotOverreachTest {
         Thread.sleep(WAIT_FOR_UI_RESPONSE)
         onView(withId(R.id.btn)).check(matches(not(withText(EMPTY_TEXT))))
         //Wait 1 min
-        Thread.sleep(30000)
+        Thread.sleep(HALF_MINUTE_PAUSE)
         onView(withId(R.id.btn)).check(matches(not(withText(EMPTY_TEXT))))
-        Thread.sleep(30000)
+        Thread.sleep(HALF_MINUTE_PAUSE)
         onView(withId(R.id.btn)).check(matches(withText(DECREASED_TIME)))
         //Wait 2 min
-        Thread.sleep(30000)
+        Thread.sleep(HALF_MINUTE_PAUSE)
         onView(withId(R.id.btn)).check(matches(not(withText(EMPTY_TEXT))))
-        Thread.sleep(30000)
+        Thread.sleep(HALF_MINUTE_PAUSE)
         onView(withId(R.id.btn)).check(matches(not(withText(EMPTY_TEXT))))
-        Thread.sleep(30000)
+        Thread.sleep(HALF_MINUTE_PAUSE)
         onView(withId(R.id.btn)).check(matches(not(withText(EMPTY_TEXT))))
-        Thread.sleep(30000)
-
+        Thread.sleep(HALF_MINUTE_PAUSE)
         onView(withId(R.id.btn)).check(matches(withText(STAGNATED_TIME)))
     }
 
     @After
     fun emptySlot() {
         instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
+        Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+        // check that we are logged out
+        assert(instituteRepo.isLoggedIn().value!!)
         // clean up waiting queue (on server side also)
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
         if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots){
+            val onlyClientSlots: List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots) {
                 // delete slot with retrieved slotCode from waiting queue
                 instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
                 Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
@@ -131,6 +149,10 @@ class   SlotNotOverreachTest {
             CoroutineScope(Dispatchers.Main).launch {
                 instituteRepo.saveTransaction()
             }
+        }
+        // logout of management
+        CoroutineScope(Dispatchers.Main).launch {
+            instituteRepo.logout()
         }
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()

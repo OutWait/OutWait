@@ -20,6 +20,10 @@ import elite.kit.outwait.instituteRepository.InstituteRepository
 import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.util.*
 import elite.kit.outwait.utils.EspressoIdlingResource
+import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -49,7 +53,23 @@ class CountOfClientsTest {
             VALID_TEST_USERNAME,
             VALID_TEST_PASSWORD
         )
-
+        Thread.sleep(WAIT_RESPONSE_SERVER_SHORT)
+        // check that we are logged in
+        assert(instituteRepo.isLoggedIn().value!!)
+        // clean up waiting queue (on server side also)
+        val timeSlots = instituteRepo.getObservableTimeSlotList().value
+        if (timeSlots != null && timeSlots.isNotEmpty()) {
+            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots){
+                // delete slot with retrieved slotCode from waiting queue
+                instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
+                Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
+            }
+            // save the transaction and the changes made
+            CoroutineScope(Dispatchers.Main).launch {
+                instituteRepo.saveTransaction()
+            }
+        }
         //Verify of forwarding
         onView(withId(R.id.floatingActionButton)).perform(click())
 
@@ -88,29 +108,11 @@ class CountOfClientsTest {
     @After
     fun emptyQueue() {
         onView(ViewMatchers.isRoot()).perform(pressBack())
-
-        onView(withId(R.id.slotList)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                FIRST_SLOT_POSITION,
-                swipeLeft()
-            )
-        )
-
-        onView(withId(R.id.slotList)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                FIRST_SLOT_TRANSACTION,
-                swipeLeft()
-            )
-        )
-
-        onView(withId(R.id.slotList)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
-                FIRST_SLOT_TRANSACTION,
-                swipeLeft()
-            )
-        )
         Thread.sleep(TRANSACTION_PAUSE)
-        onView(withId(R.id.ivSaveTransaction)).perform(click())
+        // logout of management
+        CoroutineScope(Dispatchers.Main).launch {
+            instituteRepo.logout()
+        }
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
 

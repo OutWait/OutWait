@@ -169,7 +169,7 @@ class NotificationAfterDelay {
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
 
         // check that we are logged out
-        assert(!instituteRepo.isLoggedIn().value!!)
+        assertFalse(instituteRepo.isLoggedIn().value!!)
 
         // clean client DB (so view can navigate back to login fragment)
         clientDBDao.clearTable()
