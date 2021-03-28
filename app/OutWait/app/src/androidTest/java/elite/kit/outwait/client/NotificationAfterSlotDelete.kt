@@ -39,14 +39,12 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import elite.kit.outwait.util.DigitSelector
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @UninstallModules(NotificationManagerModule::class)
 @HiltAndroidTest
 class NotificationAfterSlotDelete {
-
     /**
      * Inject a new NotifManager (mocked with MockK, to make notify() calls
      * for delay notification and pending appointment notifications verifiable
@@ -112,10 +110,8 @@ class NotificationAfterSlotDelete {
             VALID_TEST_PASSWORD
         )
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check that we are logged in
         assert(instituteRepo.isLoggedIn().value!!)
-
         // ensure that waiting queue is empty to begin with
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
 
@@ -141,7 +137,6 @@ class NotificationAfterSlotDelete {
         )
         instituteRepo.changePreferences(preconditionPrefs)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // assert that we are in management fragment
         onView(withId(R.id.floatingActionButton)).check(
             ViewAssertions.matches(
@@ -156,16 +151,13 @@ class NotificationAfterSlotDelete {
      */
     @After
     fun cleanUp() {
-
         // logout of management
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.logout()
         }
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check that we are logged out
         assert(!instituteRepo.isLoggedIn().value!!)
-
         // clean client DB (so view can navigate back to login fragment)
         clientDBDao.clearTable()
 
@@ -179,7 +171,6 @@ class NotificationAfterSlotDelete {
      */
     @Test
     fun receiveSuddenPendingAppointment() {
-
         // perform action 1 (add first slot with 20min duration)
         onView(withId(R.id.floatingActionButton)).perform(ViewActions.click())
         // add auxiliary identifier
@@ -194,7 +185,6 @@ class NotificationAfterSlotDelete {
         // complete slot allocation
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(ViewActions.click())
-
         //perform action 2 (add second slot with 20min duration)
         onView(withId(R.id.floatingActionButton)).perform(ViewActions.click())
         // add auxiliary identifier
@@ -209,7 +199,6 @@ class NotificationAfterSlotDelete {
         // complete slot allocation
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(ViewActions.click())
-
         //perform action 3 (add third slot with 20min duration)
         onView(withId(R.id.floatingActionButton)).perform(ViewActions.click())
         // add auxiliary identifier
@@ -224,11 +213,9 @@ class NotificationAfterSlotDelete {
         // complete slot allocation
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(ViewActions.click())
-
         // perform action 3.2 (save the transaction)
         onView(withId(R.id.ivSaveTransaction))
             .perform(ViewActions.click())
-
         // retrieve the slotCode of the second slot in queue
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
@@ -240,7 +227,6 @@ class NotificationAfterSlotDelete {
         // close slot detail dialog
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(ViewActions.click())
-
         // retrieve the slotCode of the third slot in queue
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
@@ -252,7 +238,6 @@ class NotificationAfterSlotDelete {
         // close slot detail dialog
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(ViewActions.click())
-
         // logout of management to get to loginFragment
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.logout()
@@ -260,39 +245,33 @@ class NotificationAfterSlotDelete {
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         // check that we are logged out
         assert(!instituteRepo.isLoggedIn().value!!)
-
         // perform action 4 (enter third slotCode as client)
         onView(withId(R.id.etSlotCode))
             .perform(TextSetter.setTextEditText(thirdSlotCode), ViewActions.closeSoftKeyboard())
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check if we navigated to remainingTimeFragment
         onView(withId(R.id.btnRefresh)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()
             )
         )
-
         // login as management again to perform action 5
         instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         // check that we are logged in
         assert(instituteRepo.isLoggedIn().value!!)
-
         // perform action 5 (delete the second slot in queue)
         // (under the view/gui as we are still in remainingTimeFragment)
         instituteRepo.deleteSlot(secondSlotCode)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // perform action 6 (save the transaction and the changes made (execute on main thread))
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.saveTransaction()
         }
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check the result and assert expected result is met
         // notify for pending appointment notification was called on the mock
-        verify (exactly = 1)
+        verify(exactly = 1)
         { injectedManager.notify(PENDING_NOTIFICATION_ID, any()) }
 
 

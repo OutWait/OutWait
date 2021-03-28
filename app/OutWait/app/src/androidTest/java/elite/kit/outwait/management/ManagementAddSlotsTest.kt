@@ -6,9 +6,9 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.activityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.MainActivity
@@ -26,8 +26,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import elite.kit.outwait.util.DigitSelector
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -53,8 +51,8 @@ class ManagementAddSlotsTest {
         // clean up waiting queue (on server side also)
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
         if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots){
+            val onlyClientSlots: List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots) {
                 // delete slot with retrieved slotCode from waiting queue
                 instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
                 Thread.sleep(WAIT_RESPONSE_SERVER_LONG)

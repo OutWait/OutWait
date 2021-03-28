@@ -32,7 +32,6 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 class ManualUpdateTest {
-
     private lateinit var validSlotCodeToEnter: String
     private val firstSlotTime = DateTime().plusHours(1)
 
@@ -60,19 +59,17 @@ class ManualUpdateTest {
     }
 
     private fun establishPreconditions() {
-
         // perform login
         instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         // check that we are logged in
         assert(instituteRepo.isLoggedIn().value!!)
-
         // ensure that waiting queue is empty to begin with (on the server side)
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
 
         if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots){
+            val onlyClientSlots: List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots) {
                 // delete slot with retrieved slotCode from waiting queue
                 instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
                 Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
@@ -83,31 +80,30 @@ class ManualUpdateTest {
             }
             Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         }
-
         // generate valid slot code
-        instituteRepo.newFixedSlot(DEFAULT_AUX_IDENTIFIER, firstSlotTime, Duration(DEFAULT_DURATION_MILLIS))
+        instituteRepo.newFixedSlot(
+            DEFAULT_AUX_IDENTIFIER,
+            firstSlotTime,
+            Duration(DEFAULT_DURATION_MILLIS)
+        )
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         // save the transaction (execute on main thread)
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.saveTransaction()
         }
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // assert that exactly one (valid) slot is in queue and its respective slotCode in instituteDB
         assert(instituteRepo.getObservableTimeSlotList().value != null)
         val allClientSlots = instituteRepo.getObservableTimeSlotList().value!!
             .filterIsInstance<ClientTimeSlot>()
         assert(allClientSlots.size == 1)
-
         // retrieve the (valid) slotCode
         validSlotCodeToEnter = allClientSlots.first().slotCode
-
         // logout of management
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.logout()
         }
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check that we are logged out and in the login fragment
         assert(!instituteRepo.isLoggedIn().value!!)
 
@@ -136,16 +132,17 @@ class ManualUpdateTest {
     @Test
     fun manualUpdate() {
         onView(ViewMatchers.withId(R.id.etSlotCode))
-            .perform(TextSetter.setTextEditText(validSlotCodeToEnter), ViewActions.closeSoftKeyboard())
+            .perform(
+                TextSetter.setTextEditText(validSlotCodeToEnter),
+                ViewActions.closeSoftKeyboard()
+            )
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check if we navigated to remainingTimeFragment
         onView(ViewMatchers.withId(R.id.btnRefresh)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()
             )
         )
-
         // Move slot with management
         instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
@@ -153,12 +150,15 @@ class ManualUpdateTest {
             .filterIsInstance<FixedTimeSlot>().first())
         val newTime = slot.appointmentTime + Duration(60000) // Add a minute
 
-        instituteRepo.changeFixedSlotInfo(slot.slotCode, slot.interval.toDuration(), slot.auxiliaryIdentifier, newTime)
+        instituteRepo.changeFixedSlotInfo(
+            slot.slotCode,
+            slot.interval.toDuration(),
+            slot.auxiliaryIdentifier,
+            newTime
+        )
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // Refresh code
         val newReceivedTime = clientRepo.getActiveSlots().value!!.first().approximatedTime
-
         // Check if codes differ
         assertNotEquals(firstSlotTime, newReceivedTime)
     }

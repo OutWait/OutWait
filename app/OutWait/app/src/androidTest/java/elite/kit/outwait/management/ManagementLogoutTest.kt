@@ -1,24 +1,18 @@
 package elite.kit.outwait.management
 
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.MainActivity
 import elite.kit.outwait.R
 import elite.kit.outwait.instituteRepository.InstituteRepository
-import elite.kit.outwait.util.StringResource
-import elite.kit.outwait.util.ToastMatcher
 import elite.kit.outwait.util.VALID_TEST_PASSWORD
 import elite.kit.outwait.util.VALID_TEST_USERNAME
 import elite.kit.outwait.utils.EspressoIdlingResource
@@ -26,12 +20,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import javax.inject.Inject
 
 @HiltAndroidTest
 class ManagementLogoutTest {
-
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
 
@@ -40,7 +32,6 @@ class ManagementLogoutTest {
 
     @Inject
     lateinit var instituteRepository: InstituteRepository
-
 
     @Before
     fun init() {
@@ -52,7 +43,7 @@ class ManagementLogoutTest {
 
     //T2
     @Test
-    fun logoutSuccessfully(){
+    fun logoutSuccessfully() {
         //Verify of forwarding
         onView(withId(R.id.floatingActionButton))
             .check(matches(ViewMatchers.isDisplayed()))

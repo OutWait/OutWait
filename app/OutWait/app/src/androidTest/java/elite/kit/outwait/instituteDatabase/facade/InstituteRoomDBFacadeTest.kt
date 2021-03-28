@@ -17,14 +17,13 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class InstituteRoomDBFacadeTest {
-
     private lateinit var dataBase: InstituteRoomDatabase
     private lateinit var dbFacade: InstituteDBFacade
     private lateinit var dao: DBAuxiliaryIdentifierDao
     private lateinit var loginDao: DBLoginDataDao
 
     @Before
-    fun setUp(){
+    fun setUp() {
         dataBase = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
             InstituteRoomDatabase::class.java
@@ -37,7 +36,7 @@ class InstituteRoomDBFacadeTest {
     }
 
     @After
-    fun tearDown(){
+    fun tearDown() {
         dataBase.close()
     }
 
@@ -46,24 +45,22 @@ class InstituteRoomDBFacadeTest {
         dbFacade.insertUpdateAux("slot1", "aux1")
         dbFacade.insertUpdateAux("slot2", "aux2")
         dbFacade.insertUpdateAux("slot3", "aux3")
-
         val storedIdentifiers = dbFacade.getAuxiliaryIdentifiers()
 
         assertEquals(storedIdentifiers.keys.size, 3)
-        assertEquals("aux1",storedIdentifiers["slot1"])
-        assertEquals("aux2",storedIdentifiers["slot2"])
-        assertEquals("aux3",storedIdentifiers["slot3"])
+        assertEquals("aux1", storedIdentifiers["slot1"])
+        assertEquals("aux2", storedIdentifiers["slot2"])
+        assertEquals("aux3", storedIdentifiers["slot3"])
     }
 
     @Test
     fun updateAlreadyInsertedAuxiliaryIdentifierCorrectly() = runBlocking {
         dbFacade.insertUpdateAux("slot1", "aux1forSlot1")
         dbFacade.insertUpdateAux("slot1", "aux2forSlot1")
-
         val storedIdentifiers = dbFacade.getAuxiliaryIdentifiers()
 
         assertEquals(storedIdentifiers.keys.size, 1)
-        assertEquals("aux2forSlot1",storedIdentifiers["slot1"])
+        assertEquals("aux2forSlot1", storedIdentifiers["slot1"])
     }
 
     @Test
@@ -75,13 +72,12 @@ class InstituteRoomDBFacadeTest {
         assertEquals(dbFacade.getAuxiliaryIdentifiers().keys.size, 3)
 
         dbFacade.deleteAux("slot2")
-
         val storedIdentifiers = dbFacade.getAuxiliaryIdentifiers()
 
         assertEquals(storedIdentifiers.keys.size, 2)
-        assertEquals("aux1",storedIdentifiers["slot1"])
+        assertEquals("aux1", storedIdentifiers["slot1"])
         assertEquals(null, storedIdentifiers["slot2"])
-        assertEquals("aux3",storedIdentifiers["slot3"])
+        assertEquals("aux3", storedIdentifiers["slot3"])
     }
 
     @Test
@@ -93,21 +89,16 @@ class InstituteRoomDBFacadeTest {
         assertEquals(dbFacade.getAuxiliaryIdentifiers().keys.size, 3)
 
         dbFacade.deleteAll()
-
         val storedIdentifiers = dbFacade.getAuxiliaryIdentifiers()
 
         assertEquals(storedIdentifiers.keys.size, 0)
     }
-
     /*
     getAuxiliaryIdentifiers() is tested implicitly in all the other methods
      */
-
-
     /*
     Following: Tests related to login data saving
      */
-
     @Test
     fun savingLoginDataWorksCorrectly() = runBlocking {
         dbFacade.insertUpdateLoginData("institutionName", "institutionPassword")

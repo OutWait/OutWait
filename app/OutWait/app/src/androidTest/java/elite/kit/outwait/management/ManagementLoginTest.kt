@@ -1,18 +1,13 @@
 package elite.kit.outwait.management
 
-import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.activityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.MainActivity
@@ -28,18 +23,17 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import javax.inject.Inject
 
 
 @HiltAndroidTest
 class ManagementLoginTest {
-
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
     var openActivityRule = activityScenarioRule<MainActivity>()
+
     @Inject
     lateinit var instituteRepo: InstituteRepository
 
@@ -70,7 +64,6 @@ class ManagementLoginTest {
         onView(withId(R.id.config)).check(matches(isDisplayed()))
 
     }
-
 
     @After
     fun unregisterIdlingResource() {

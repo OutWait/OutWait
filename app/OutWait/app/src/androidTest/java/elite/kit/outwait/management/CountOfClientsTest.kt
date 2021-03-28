@@ -4,20 +4,15 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-
 import androidx.test.ext.junit.rules.activityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import elite.kit.outwait.MainActivity
 import elite.kit.outwait.R
-import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.instituteRepository.InstituteRepository
-import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.util.*
 import elite.kit.outwait.utils.EspressoIdlingResource
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
@@ -28,12 +23,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import javax.inject.Inject
 
 @HiltAndroidTest
 class CountOfClientsTest {
-
     @get:Rule(order = 0)
     var hiltRule = HiltAndroidRule(this)
 
@@ -47,7 +40,6 @@ class CountOfClientsTest {
     fun addSlots() {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
-
         // login via injected repository
         instituteRepo.login(
             VALID_TEST_USERNAME,
@@ -59,8 +51,8 @@ class CountOfClientsTest {
         // clean up waiting queue (on server side also)
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
         if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots){
+            val onlyClientSlots: List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots) {
                 // delete slot with retrieved slotCode from waiting queue
                 instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
                 Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
@@ -72,21 +64,18 @@ class CountOfClientsTest {
         }
         //Verify of forwarding
         onView(withId(R.id.floatingActionButton)).perform(click())
-
         //Add first slot
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(typeText(FIRST_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-
         //Add second slot
         onView(withId(R.id.floatingActionButton)).perform(click())
 
         onView(withId(R.id.etIdentifierAddDialog))
-            .perform(typeText(SECOND_SLOT_IDENTIFIER),closeSoftKeyboard())
+            .perform(typeText(SECOND_SLOT_IDENTIFIER), closeSoftKeyboard())
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-
         //Add third slot
         onView(withId(R.id.floatingActionButton)).perform(click())
 
@@ -102,7 +91,15 @@ class CountOfClientsTest {
     @Test
     fun areThreeClientsAdded() {
         onView(withId(R.id.config)).perform(click())
-        onView(withId(R.id.countOfClients)).check(matches(withText(StringResource.getResourceString(R.string.text_counter) + THREE_CLIENTS)))
+        onView(withId(R.id.countOfClients)).check(
+            matches(
+                withText(
+                    StringResource.getResourceString(
+                        R.string.text_counter
+                    ) + THREE_CLIENTS
+                )
+            )
+        )
     }
 
     @After
@@ -117,7 +114,6 @@ class CountOfClientsTest {
         openActivityRule.scenario.close()
 
     }
-
 
 
 }

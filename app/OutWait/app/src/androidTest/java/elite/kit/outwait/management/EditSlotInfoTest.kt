@@ -1,29 +1,23 @@
 package elite.kit.outwait.management
 
-import android.util.Log
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.espresso.contrib.RecyclerViewActions
-import elite.kit.outwait.dataItem.TimeSlotItem
-import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.activityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import android.view.View
 import elite.kit.outwait.MainActivity
 import elite.kit.outwait.R
+import elite.kit.outwait.dataItem.TimeSlotItem
 import elite.kit.outwait.instituteRepository.InstituteRepository
-import elite.kit.outwait.util.StringResource
-import elite.kit.outwait.util.ToastMatcher
+import elite.kit.outwait.recyclerviewSetUp.viewHolder.BaseViewHolder
 import elite.kit.outwait.util.*
-import elite.kit.outwait.util.DigitSelector
 import elite.kit.outwait.utils.EspressoIdlingResource
 import elite.kit.outwait.waitingQueue.timeSlotModel.ClientTimeSlot
 import kotlinx.coroutines.CoroutineScope
@@ -33,7 +27,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import javax.inject.Inject
 
 
@@ -51,7 +44,6 @@ class EditSlotInfoTest {
     @Inject
     lateinit var instituteRepo: InstituteRepository
 
-
     @Before
     fun initTest() {
         hiltRule.inject()
@@ -66,7 +58,7 @@ class EditSlotInfoTest {
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
 
         if (timeSlots != null && timeSlots.isNotEmpty()) {
-            for (slot in timeSlots.filterIsInstance<ClientTimeSlot>()){
+            for (slot in timeSlots.filterIsInstance<ClientTimeSlot>()) {
                 // Delete slot with retrieved slotCode from waiting queue.
                 instituteRepo.deleteSlot(slot.slotCode)
                 Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
@@ -80,23 +72,21 @@ class EditSlotInfoTest {
 
     // T12
     @Test
-    fun editSlotInfo(){
+    fun editSlotInfo() {
         // Check Management view
         onView(withId(R.id.floatingActionButton))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
         // Add a new slot
         onView(withId(R.id.floatingActionButton)).perform(ViewActions.click())
         onView(withId(R.id.etIdentifierAddDialog))
             .perform(typeText(auxIdentifierA), closeSoftKeyboard())
-            // Set initial duration
+        // Set initial duration
         onView(withId(R.id.addSlotDuration)).perform(scrollTo())
         onView(withId(R.id.clear)).perform(click())
         DigitSelector.pressDigit(DigitSelector.digitOne, R.id.addSlotDuration)
         DigitSelector.pressDigit(DigitSelector.digitZero, R.id.addSlotDuration)
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-
         // Edit slot data
         EditSlotDialogHelper.openEditDialog(FIRST_SLOT_TRANSACTION)
         onView(withId(R.id.etIdentifierAddDialog))
@@ -107,16 +97,13 @@ class EditSlotInfoTest {
         DigitSelector.pressDigit(DigitSelector.digitZero, R.id.editTimeDurationEditDialog)
         onView(withText(StringResource.getResourceString(R.string.confirm)))
             .perform(click())
-
         // Save transaction
         onView(withId(R.id.ivSaveTransaction)).perform(click())
-
         // Check text
         onView(withText(auxIdentifierA))
             .check(ViewAssertions.doesNotExist())
         onView(withText(auxIdentifierB))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
         // Check slot duration
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(

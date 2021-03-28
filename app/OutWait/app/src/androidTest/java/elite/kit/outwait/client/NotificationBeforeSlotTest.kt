@@ -36,14 +36,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.joda.time.Duration
 import org.junit.*
-import elite.kit.outwait.util.DigitSelector
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @UninstallModules(NotificationManagerModule::class)
 @HiltAndroidTest
 class NotificationBeforeSlotTest {
-
     /**
      * Inject a new NotifManager (mocked with MockK, to make notify() calls
      * for delay notification and pending appointment notifications verifiable
@@ -51,7 +49,6 @@ class NotificationBeforeSlotTest {
     @Module
     @InstallIn(SingletonComponent::class)
     object TestNotifManagerModule {
-
         /**
          * Returns a mocked NotifManager (wrapper for the android systems notification manager)
          * that does nothing when notify() is called
@@ -108,16 +105,14 @@ class NotificationBeforeSlotTest {
             VALID_TEST_PASSWORD
         )
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check that we are logged in
         assert(instituteRepo.isLoggedIn().value!!)
-
         // ensure that waiting queue is empty to begin with
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
 
         if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots){
+            val onlyClientSlots: List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots) {
                 // delete slot with retrieved slotCode from waiting queue
                 instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
                 Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
@@ -128,15 +123,15 @@ class NotificationBeforeSlotTest {
             }
             Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         }
-
         // set preferences according to precondition
         // (mode 1 is active)
-        val preconditionPrefs = Preferences(Duration(DEFAULT_DURATION_MILLIS), Duration(DEFAULT_DURATION_MILLIS),
-            Duration(DEFAULT_DURATION_MILLIS),Duration(DEFAULT_DURATION_MILLIS), Mode.ONE)
+        val preconditionPrefs = Preferences(
+            Duration(DEFAULT_DURATION_MILLIS), Duration(DEFAULT_DURATION_MILLIS),
+            Duration(DEFAULT_DURATION_MILLIS), Duration(DEFAULT_DURATION_MILLIS), Mode.ONE
+        )
 
         instituteRepo.changePreferences(preconditionPrefs)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // assert that we are in management fragment
         onView(withId(R.id.floatingActionButton)).check(
             ViewAssertions.matches(
@@ -151,16 +146,13 @@ class NotificationBeforeSlotTest {
      */
     @After
     fun cleanUp() {
-
         // logout of management
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.logout()
         }
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check that we are logged out
         assert(!instituteRepo.isLoggedIn().value!!)
-
         // clean client DB (so view can navigate back to login fragment)
         clientDBDao.clearTable()
 
@@ -174,25 +166,20 @@ class NotificationBeforeSlotTest {
      */
     @Test
     fun receiveNotificationForPendingSlot() {
-
         // perform action 1 (open settings) and verify success
         onView(withId(R.id.config)).perform(ViewActions.click())
         onView(withId(R.id.btnLogout)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
         // perform action 2 (scroll to the numpad and set 20min notification time)
         onView(withId(R.id.configDurationNotification)).perform(ViewActions.scrollTo())
         // clear the former value and enter new value
         DigitSelector.pressClear(R.id.configDurationNotification)
         DigitSelector.pressDigit(DigitSelector.digitTwo, R.id.configDurationNotification)
         DigitSelector.pressDigit(DigitSelector.digitZero, R.id.configDurationNotification)
-
         // perform action 2.2 (save changed settings)
         onView(withId(R.id.btnSave)).perform(ViewActions.scrollTo(), ViewActions.click())
-
         // perform action 3 (navigate back to the waiting queue) and verify success
         onView(ViewMatchers.isRoot()).perform((ViewActions.pressBack()))
         onView(withId(R.id.floatingActionButton)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
         // perform action 4 (add first slot with 21min duration)
         onView(withId(R.id.floatingActionButton)).perform(ViewActions.click())
         // add auxiliary identifier
@@ -207,7 +194,6 @@ class NotificationBeforeSlotTest {
         // complete slot allocation
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(ViewActions.click())
-
         // perform action 5 (add second slot with 20min duration)
         onView(withId(R.id.floatingActionButton)).perform(ViewActions.click())
         // add auxiliary identifier
@@ -222,7 +208,6 @@ class NotificationBeforeSlotTest {
         // complete slot allocation
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(ViewActions.click())
-
         // perform action 5.2 (save transaction)
         onView(withId(R.id.ivSaveTransaction)).perform(ViewActions.click())
         // assert exactly two slots are enqueued
@@ -230,17 +215,16 @@ class NotificationBeforeSlotTest {
         val allClientSlots = instituteRepo.getObservableTimeSlotList().value!!
             .filterIsInstance<ClientTimeSlot>()
         assert(allClientSlots.size == 2)
-
         // retrieve the slotCode of the second slot in queue
         onView(withId(R.id.slotList)).perform(
             RecyclerViewActions.actionOnItemAtPosition<BaseViewHolder<TimeSlotItem>>(
                 SECOND_SLOT_POSITION, ViewActions.click()
-            ))
+            )
+        )
         secondSlotCodeToEnter = ReadText.getText(onView(withId(R.id.tvSlotCodeDetail)))
         // close slot detail dialog
         onView(ViewMatchers.withText(StringResource.getResourceString(R.string.confirm)))
             .perform(ViewActions.click())
-
         // logout of management to get to loginFragment
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.logout()
@@ -248,7 +232,6 @@ class NotificationBeforeSlotTest {
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         // assert that we are logged out
         Assert.assertFalse(instituteRepo.isLoggedIn().value!!)
-
         // perform action 6 (input second slot code as client) and verify success
         onView(withId(R.id.etSlotCode))
             .perform(
@@ -258,11 +241,8 @@ class NotificationBeforeSlotTest {
         // assert that we are in remaining time fragment
         Thread.sleep(WAIT_FOR_UI_RESPONSE)
         onView(withId(R.id.btnRefresh)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
         // perform action 7 (wait a minute)
         Thread.sleep(ONE_MINUTE_DURATION_MILLIS)
-
-
         // check the result and assert expected result is met
         // notify for delay notification was called on the mock
         verify(exactly = 1)

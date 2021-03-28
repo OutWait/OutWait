@@ -30,7 +30,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import elite.kit.outwait.util.DigitSelector
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -47,23 +46,20 @@ class SlotFinishedTest {
     @Inject
     lateinit var clientDBDao: ClientInfoDao
 
-
     @Before
     fun init() {
         hiltRule.inject()
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check that we are logged in
         assert(instituteRepo.isLoggedIn().value!!)
-
         // ensure that waiting queue is empty to begin with
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
 
         if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots){
+            val onlyClientSlots: List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots) {
                 // delete slot with retrieved slotCode from waiting queue
                 instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
                 Thread.sleep(WAIT_RESPONSE_SERVER_LONG)

@@ -1,6 +1,5 @@
 package elite.kit.outwait.client
 
-import android.util.Log
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
@@ -28,7 +27,6 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 class SlotCodeInputTest {
-
     private lateinit var invalidSlotCodeToEnter: String
     private lateinit var validSlotCodeToEnter: String
 
@@ -60,19 +58,17 @@ class SlotCodeInputTest {
      * T7 and T8
      */
     private fun establishPreconditions() {
-
         // perform login
         instituteRepo.login(VALID_TEST_USERNAME, VALID_TEST_PASSWORD)
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         // check that we are logged in
         assert(instituteRepo.isLoggedIn().value!!)
-
         // ensure that waiting queue is empty to begin with (on the server side)
         val timeSlots = instituteRepo.getObservableTimeSlotList().value
 
         if (timeSlots != null && timeSlots.isNotEmpty()) {
-            val onlyClientSlots : List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
-            for (ClientTimeSlot in onlyClientSlots){
+            val onlyClientSlots: List<ClientTimeSlot> = timeSlots.filterIsInstance<ClientTimeSlot>()
+            for (ClientTimeSlot in onlyClientSlots) {
                 // delete slot with retrieved slotCode from waiting queue
                 instituteRepo.deleteSlot(ClientTimeSlot.slotCode)
                 Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
@@ -83,7 +79,6 @@ class SlotCodeInputTest {
             }
             Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
         }
-
         // generate valid and invalid slot code
         instituteRepo.newSpontaneousSlot(DEFAULT_AUX_IDENTIFIER, Duration(DEFAULT_DURATION_MILLIS))
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
@@ -92,25 +87,20 @@ class SlotCodeInputTest {
             instituteRepo.saveTransaction()
         }
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // assert that exactly one (valid) slot is in queue and its respective slotCode in instituteDB
         assert(instituteRepo.getObservableTimeSlotList().value != null)
         val allClientSlots = instituteRepo.getObservableTimeSlotList().value!!
             .filterIsInstance<ClientTimeSlot>()
         assert(allClientSlots.size == 1)
-
         // retrieve the (valid) slotCode
         validSlotCodeToEnter = allClientSlots.first().slotCode
-
         // generate invalid slotCode by reversing the only (valid) slotCode
         invalidSlotCodeToEnter = StringBuilder(validSlotCodeToEnter).reverse().toString()
-
         // logout of management
         CoroutineScope(Dispatchers.Main).launch {
             instituteRepo.logout()
         }
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check that we are logged out and in the login fragment
         assert(!instituteRepo.isLoggedIn().value!!)
 
@@ -127,14 +117,12 @@ class SlotCodeInputTest {
      */
     @After
     fun cleanUp() {
-
         // clean client DB (so view can navigate back to login fragment)
         clientDBDao.clearTable()
 
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         openActivityRule.scenario.close()
     }
-
 
     /**
      * Tests T8, assuming the preconditions are met.
@@ -143,11 +131,15 @@ class SlotCodeInputTest {
     @Test
     fun invalidSlotCodeInput() {
         onView(ViewMatchers.withId(R.id.etSlotCode))
-            .perform(TextSetter.setTextEditText(invalidSlotCodeToEnter), ViewActions.closeSoftKeyboard())
+            .perform(
+                TextSetter.setTextEditText(invalidSlotCodeToEnter),
+                ViewActions.closeSoftKeyboard()
+            )
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         //check for displayed toast with "invalid code" error message
-        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.INVALID_SLOT_CODE))).inRoot(ToastMatcher()).check(
+        onView(ViewMatchers.withText(StringResource.getResourceString(R.string.INVALID_SLOT_CODE))).inRoot(
+            ToastMatcher()
+        ).check(
             ViewAssertions.matches(ViewMatchers.isDisplayed())
         )
     }
@@ -161,9 +153,11 @@ class SlotCodeInputTest {
     @Test
     fun validSlotCodeInput() {
         onView(ViewMatchers.withId(R.id.etSlotCode))
-            .perform(TextSetter.setTextEditText(validSlotCodeToEnter), ViewActions.closeSoftKeyboard())
+            .perform(
+                TextSetter.setTextEditText(validSlotCodeToEnter),
+                ViewActions.closeSoftKeyboard()
+            )
         Thread.sleep(WAIT_RESPONSE_SERVER_LONG)
-
         // check if we navigated to remainingTimeFragment
         onView(ViewMatchers.withId(R.id.btnRefresh)).check(
             ViewAssertions.matches(
