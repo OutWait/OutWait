@@ -31,17 +31,13 @@ class Client(private val socketFacade: SocketFacade, private val clientManager: 
 
     /** Configuration of onReceives through SocketFacade. */
     private fun configureReceives() {
-        socketFacade.onReceive(
-            Event.LISTEN_SLOT
-        ) { receivedData ->
+        socketFacade.onReceive(Event.LISTEN_SLOT) { receivedData ->
             val slotCode = (receivedData as JSONSlotCodeWrapper).getSlotCode()
             Logger.debug(LOG_ID, "Listen to slot code $slotCode")
             addSlot(slotCode)
         }
 
-        socketFacade.onReceive(
-            Event.REFRESH_SLOT_APPROX
-        ) { receivedData ->
+        socketFacade.onReceive(Event.REFRESH_SLOT_APPROX) { receivedData ->
             val slotCode = (receivedData as JSONSlotCodeWrapper).getSlotCode()
             Logger.debug(LOG_ID, "Refresh slot approx manually, code $slotCode")
             if (receivers[slotCode] == null) {
