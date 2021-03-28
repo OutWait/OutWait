@@ -1,17 +1,9 @@
 package elite.kit.outwait.instituteRepository
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import elite.kit.outwait.clientRepository.ClientRepository
-import elite.kit.outwait.clientRepository.ClientRepositoryTest
 import elite.kit.outwait.getOrAwaitValue
-import elite.kit.outwait.remoteDataSource.ManagementServerErrors
-import elite.kit.outwait.services.ServiceHandler
-import io.mockk.mockk
 import io.mockk.spyk
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import org.joda.time.Duration
 import org.junit.After
