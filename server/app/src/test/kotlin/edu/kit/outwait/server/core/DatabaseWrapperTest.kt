@@ -172,11 +172,11 @@ class DatabaseWrapperTest {
         val managementInfo = testObj.getManagementById(ManagementId(1))
         assertEquals(managementInfo == null, false)
         assertEquals(managementInfo!!.details.name, "TEST-Praxis")
-        assertEquals(managementInfo!!.settings.defaultSlotDuration.toMillis(), 1800000)
-        assertEquals(managementInfo!!.settings.delayNotificationTime.toMillis(), 120000)
-        assertEquals(managementInfo!!.settings.notificationTime.toMillis(), 180000)
-        assertEquals(managementInfo!!.settings.mode.name, "TWO")
-        assertEquals(managementInfo!!.details.email, "test@test.test")
+        assertEquals(managementInfo.settings.defaultSlotDuration.toMillis(), 1800000)
+        assertEquals(managementInfo.settings.delayNotificationTime.toMillis(), 120000)
+        assertEquals(managementInfo.settings.notificationTime.toMillis(), 180000)
+        assertEquals(managementInfo.settings.mode.name, "TWO")
+        assertEquals(managementInfo.details.email, "test@test.test")
     }
 
     /**
@@ -187,9 +187,9 @@ class DatabaseWrapperTest {
         val slotManagementInfo = testObj.getSlotManagementInformation(SlotCode("TEST_TEST"))
         assertEquals(slotManagementInfo == null, false)
         assertEquals(slotManagementInfo!!.details.name, "TEST-Praxis")
-        assertEquals(slotManagementInfo!!.details.email, "test@test.test")
-        assertEquals(slotManagementInfo!!.delayNotificationTime.toMillis(), 120000)
-        assertEquals(slotManagementInfo!!.notificationTime.toMillis(), 180000)
+        assertEquals(slotManagementInfo.details.email, "test@test.test")
+        assertEquals(slotManagementInfo.delayNotificationTime.toMillis(), 120000)
+        assertEquals(slotManagementInfo.notificationTime.toMillis(), 180000)
     }
 
     /** Checks if returned managementCredentials of getManagementByUsername method is correct */
@@ -198,8 +198,8 @@ class DatabaseWrapperTest {
         val managementCredentials = testObj.getManagementByUsername("test")
         assertEquals(managementCredentials == null, false)
         assertEquals(managementCredentials!!.id.id, 1)
-        assertEquals(managementCredentials!!.password, "test")
-        assertEquals(managementCredentials!!.username, "test")
+        assertEquals(managementCredentials.password, "test")
+        assertEquals(managementCredentials.username, "test")
     }
 
     /**
