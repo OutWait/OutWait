@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 class DatabaseWrapperTest {
     private var connection: Connection
     private val connectionProps: Properties = Properties()
-    private var testObj = DatabaseWrapper("OutwaitDBTest", "161.97.168.24")
+    private var testObj = DatabaseWrapper("OutwaitDBTest", "0.0.0.0") // TODO replace with server ip.
 
     init {
         this.connectionProps["user"] = "outwait"
@@ -27,7 +27,7 @@ class DatabaseWrapperTest {
         try {
             connection =
                 DriverManager.getConnection(
-                    "jdbc:mysql://161.97.168.24:3306/OutwaitDBTest",
+                    "jdbc:mysql://0.0.0.0:3306/OutwaitDBTest", // TODO replace with server ip.
                     connectionProps
                 )!!
         } catch (e : SQLException) {
@@ -63,7 +63,7 @@ class DatabaseWrapperTest {
             e.printStackTrace()
             throw e
         }
-        testObj = DatabaseWrapper("OutwaitDBTest", "161.97.168.24")
+        testObj = DatabaseWrapper("OutwaitDBTest", "0.0.0.0") // TODO replace with server ip.
     }
 
     /** Checks if getSlots method returns slot with properties of Test Slot */

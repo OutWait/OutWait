@@ -24,7 +24,7 @@ private const val TIME_STEP_FOR_CONNECT_WAIT = 100L
 /**
  * The server URI, used together with the namespace to connect to the "outwait server"
  */
-private const val serverURI: String = "http://161.97.168.24:567"
+private const val serverURI: String = "http://0.0.0.0:567" // TODO replace with server ip.
 
 /**
  * This class serves as a facade to the underlying websocket implementation of the
