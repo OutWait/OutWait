@@ -5,6 +5,7 @@
 *.iml
 *.ipr
 *.iws
+local.properties
 
 # Ignore Gradle project-specific cache directory
 .gradle
