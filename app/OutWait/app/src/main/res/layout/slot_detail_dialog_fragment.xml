@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="elite.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogViewModel" />
+            type="edu.kit.outwait.recyclerviewScreens.slotDetailDialog.SlotDetailDialogViewModel" />
 
         <import type="android.view.View" />
     </data>

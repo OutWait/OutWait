@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="elite.kit.outwait.recyclerviewScreens.configurationsScreen.ConfigDialogViewModel" />
+            type="edu.kit.outwait.recyclerviewScreens.configurationsScreen.ConfigDialogViewModel" />
 
         <import type="android.view.View" />
     </data>

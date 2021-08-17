@@ -7,24 +7,24 @@
 
     <fragment
         android:id="@+id/institutLoginFragment"
-        android:name="elite.kit.outwait.managmentLogin.institutLoginScreen.InstitutLoginFragment"
+        android:name="edu.kit.outwait.managmentLogin.institutLoginScreen.InstitutLoginFragment"
         android:label="InstitutLoginFragment" />
     <fragment
         android:id="@+id/passwordForgotFragment"
-        android:name="elite.kit.outwait.managmentLogin.passwordForgottenScreen.PasswordForgotFragment"
+        android:name="edu.kit.outwait.managmentLogin.passwordForgottenScreen.PasswordForgotFragment"
         android:label="passwordForgotFragment" />
     <dialog
         android:id="@+id/addSlotDialogFragment"
-        android:name="elite.kit.outwait.recyclerviewScreens.addSlotDialog.AddSlotDialogFragment"
+        android:name="edu.kit.outwait.recyclerviewScreens.addSlotDialog.AddSlotDialogFragment"
         android:label="AddSlotDialogFragment" />
     <fragment android:id="@+id/placeholder" />
     <fragment
         android:id="@+id/editCodeFragment"
-        android:name="elite.kit.outwait.clientScreens.editCodeScreen.EditCodeFragment"
+        android:name="edu.kit.outwait.clientScreens.editCodeScreen.EditCodeFragment"
         android:label="EditCodeFragment" />
     <fragment
         android:id="@+id/remainingTimeFragment"
-        android:name="elite.kit.outwait.clientScreens.remainingTimeScreen.RemainingTimeFragment"
+        android:name="edu.kit.outwait.clientScreens.remainingTimeScreen.RemainingTimeFragment"
         android:label="RemainingTimeFragment" >
         <action
             android:id="@+id/action_remainingTimeFragment_to_forwarderFragment"
@@ -32,7 +32,7 @@
     </fragment>
     <fragment
         android:id="@+id/configDialogFragment2"
-        android:name="elite.kit.outwait.recyclerviewScreens.configurationsScreen.ConfigDialogFragment"
+        android:name="edu.kit.outwait.recyclerviewScreens.configurationsScreen.ConfigDialogFragment"
         android:label="ConfigDialogFragment" >
         <action
             android:id="@+id/action_configDialogFragment2_to_forwarderFragment"
@@ -41,12 +41,12 @@
     </fragment>
     <dialog
         android:id="@+id/editTimeSlotDialogFragment"
-        android:name="elite.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFragment"
+        android:name="edu.kit.outwait.recyclerviewScreens.editSlotDialog.EditTimeSlotDialogFragment"
         android:label="EditTimeSlotDialogFragment" >
     </dialog>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="elite.kit.outwait.loginSystem.LoginFragment"
+        android:name="edu.kit.outwait.loginSystem.LoginFragment"
         android:label="LoginFragment" >
         <action
             android:id="@+id/action_loginFragment_to_passwordForgotFragment"
@@ -54,7 +54,7 @@
     </fragment>
     <fragment
         android:id="@+id/forwarderFragment"
-        android:name="elite.kit.outwait.loginSystem.ForwarderFragment"
+        android:name="edu.kit.outwait.loginSystem.ForwarderFragment"
         android:label="fragment_forwarder"
         tools:layout="@layout/fragment_forwarder" >
         <action
@@ -69,7 +69,7 @@
     </fragment>
     <fragment
         android:id="@+id/managementViewFragment"
-        android:name="elite.kit.outwait.recyclerviewScreens.managementViewScreen.ManagementViewFragment"
+        android:name="edu.kit.outwait.recyclerviewScreens.managementViewScreen.ManagementViewFragment"
         android:label="ManagementViewFragment" >
         <action
             android:id="@+id/action_managementViewFragment_to_configDialogFragment2"

@@ -15,7 +15,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "elite.kit.outwait"
+        applicationId "edu.kit.outwait"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
@@ -27,7 +27,7 @@ android {
        // testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // CustomTestRunner for using HiltTestApplication in (Instrumented) AndroidTests
-        testInstrumentationRunner "elite.kit.outwait.util.CustomTestRunner"
+        testInstrumentationRunner "edu.kit.outwait.util.CustomTestRunner"
     }
 
     buildTypes {

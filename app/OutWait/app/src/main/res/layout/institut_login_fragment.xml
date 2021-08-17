@@ -6,7 +6,7 @@
 
         <variable
             name="viewModel"
-            type="elite.kit.outwait.managmentLogin.institutLoginScreen.InstitutLoginViewModel" />
+            type="edu.kit.outwait.managmentLogin.institutLoginScreen.InstitutLoginViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
